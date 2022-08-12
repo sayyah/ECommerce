@@ -41,3 +41,16 @@ public class PurchaseListViewModel
     public bool IsPaied { get; set; }
     public string Description { get; set; }
 }
+
+public class PurchaseOptinalListViewModel
+{
+    public DateTime FromDate { get; set; }
+    public DateTime ToDate { get; set; }
+    public int StatusId { get; set; }
+    public decimal MinimumAmount { get; set; }
+    public decimal MaximumAmount { get; set; }
+    public int IsPaid { get; set; }
+    public Shipping? Shipping { get; set; }
+    public int UserId { get; set; }
+    public PaymentMethod? PaymentMethod { get; set; }
+}
