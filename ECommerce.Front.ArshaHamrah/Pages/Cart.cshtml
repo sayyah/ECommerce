@@ -51,11 +51,16 @@
                                             </thead>
                                             <tbody>
                                                 @{
-                                                    decimal sum = 0;
+                                                    decimal? sum = 0;
                                                 }
                                                 @foreach (var product in Model.CartList.ReturnData)
-                                                {
-                                                    sum = sum + product.PriceAmount * product.Quantity;
+                                                {                                                       
+                                                    decimal? Amount = @product.PriceAmount;
+                                                    decimal? Discount = (decimal)@product.DiscountAmount;
+                                                    Amount = Discount == null ? Amount : Amount - Discount;
+                                                    decimal? SumDiscount =@product.Quantity * (decimal)@product.DiscountAmount;
+                                                    decimal? SumAmount = SumDiscount == null ? @product.SumPrice : @product.SumPrice - SumDiscount;                                                                        
+                                                    sum = sum + Amount * product.Quantity;
                                                     <!-- tr -->
                                                     <tr id="Cart-@product.ProductId">
                                                         <td class="product-thumbnail">
@@ -69,7 +74,8 @@
                                                                 <p>برند: @product.Brand</p>
                                                             </div>
                                                         </td>
-                                                        <td>@product.PriceAmount.ToString("N0") تومان</td>
+                                                           
+                                                        <td>@Amount?.ToString("N0") تومان</td>
                                                         <input hidden="hidden" id="price-@product.ProductId" value="@product.PriceAmount" />
 
                                                         <td class="product-quantity">
@@ -80,7 +86,7 @@
                                                             <input hidden="hidden" id="quantity-old-@product.ProductId" value="@product.Quantity" />
                                                         </td>
 
-                                                        <td id="sum-@product.ProductId">@product.SumPrice.ToString("N0") تومان</td>
+                                                        <td id="sum-@product.ProductId">@SumAmount?.ToString("N0") تومان</td>
 
                                                         <td class="product-remove" id="product-remove">
                                                             <a href="javascript:void(0)" class="delete" onclick="RemoveCart(@product.Id ,@product.ProductId,@product.PriceId)">
@@ -107,7 +113,7 @@
                                                 <table>
                                                     <tr>
                                                         <td class="td-title-1">جمع سبد</td>
-                                                        <td class="td-title-2">@sum.ToString("N0") تومان</td>
+                                                        <td class="td-title-2">@sum?.ToString("N0") تومان</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="td-title-1">حمل و نقل</td>
@@ -119,7 +125,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="order-total">مجموع سفارش</td>
-                                                        <td class="order-total-price">@sum.ToString("N0") تومان</td>
+                                                        <td class="order-total-price">@sum?.ToString("N0") تومان</td>
                                                     </tr>
                                                 </table>
                                                 <br />

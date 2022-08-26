@@ -17,11 +17,12 @@ public class PurchaseOrderViewModel
     public decimal SumPrice { get; set; }
     public ushort Quantity { get; set; }
     public double Exist { get; set; }
-    public string ColorName { get; set; }
+    public string? ColorName { get; set; }
     public bool IsColleague { get; set; }
 
     //ForeignKey
     public int UserId { get; set; }
+    public int? DiscountAmount { get; set; }
 }
 
 public class PurchaseFiltreOrderViewModel

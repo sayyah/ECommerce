@@ -54,7 +54,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
         }
 
         var purchaseList = await query.Select(p => new PurchaseListViewModel
-        {
+        {          
           Id = p.Id,
           Amount=p.Amount,
           CreationDate=p.CreationDate,
@@ -90,7 +90,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
     {
         var purchaseOrderViewModel = await _context.PurchaseOrderDetails
             .Where(x => x.PurchaseOrder!.UserId == userId && !x.PurchaseOrder.IsPaid &&
-                        x.PurchaseOrder.Status == Status.New)
+                        x.PurchaseOrder.Status == Status.New).Include(x=>x.Price).ThenInclude(x=>x.Discount)
             .Select(p => new PurchaseOrderViewModel
             {
                 Id = p.Id,
@@ -108,7 +108,8 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
                 UserId = p.PurchaseOrder.UserId,
                 Quantity = p.Quantity,
                 SumPrice = p.Quantity * p.Product.Prices!.First(x => x.Id == p.PriceId).Amount,
-                ColorName = p.Product.Prices!.First(x => x.Id == p.PriceId).Color.Name
+                ColorName = p.Product.Prices!.First(x => x.Id == p.PriceId).Color.Name,
+                DiscountAmount = p.Product.Prices!.First(x => x.Id == p.PriceId).Discount.Amount
             })
             .ToListAsync(cancellationToken);
         return purchaseOrderViewModel;

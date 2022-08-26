@@ -2,7 +2,7 @@
 @model ArshaHamrah.Pages.CheckoutModel
 @{
     ViewData["Title"] = "پرداخت";
-    decimal sum = 0;
+    decimal? sum = 0;
 }
 <!-- BREADCRUMBS SETCTION START -->
 <div class="breadcrumbs-section plr-200 mb-80">
@@ -89,10 +89,15 @@
                         <table>
                             @foreach (var product in Model.CartList.ReturnData)
                             {
-                                sum = sum + product.SumPrice;
+                                decimal? Amount = @product.PriceAmount;
+                                decimal? Discount = (decimal)@product.DiscountAmount;
+                                Amount = Discount == null ? Amount : Amount - Discount;
+                                decimal? SumDiscount =@product.Quantity * (decimal)@product.DiscountAmount;
+                                decimal? SumAmount = SumDiscount == null ? @product.SumPrice : @product.SumPrice - SumDiscount;                                                                        
+                                sum = sum + Amount * product.Quantity;
                                 <tr>
                                     <td class="td-title-1">@product.Name × @product.Quantity</td>
-                                    <td class="td-title-2">@product.SumPrice.ToString("N0") تومان</td>
+                                    <td class="td-title-2">@SumAmount?.ToString("N0") تومان</td>
                                 </tr>
                             }
                             @{
@@ -104,7 +109,7 @@
                             </tr>
                             <tr>
                                 <td class="order-total">مجموع سفارش</td>
-                                <td class="order-total-price">@sum.ToString("N0") تومان</td>
+                                <td class="order-total-price">@sum?.ToString("N0") تومان</td>
                             </tr>
                         </table>
                     </div>

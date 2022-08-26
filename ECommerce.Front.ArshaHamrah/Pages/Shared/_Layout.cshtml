@@ -235,7 +235,7 @@
                                         var cartList = result.ReturnData;
                                         var resultCompare = _compareService.Load(Context);
                                         var compareList = resultCompare.ReturnData;
-                                        decimal allPrice = 0;
+                                        decimal? allPrice = 0;
                                     }
                                     <div class="total-cart total-cart-2 f-left">
                                         <div class="total-cart-in">
@@ -283,26 +283,33 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="cart-info f-left">
-
+                                                                    @{
+                                                                        decimal? Amount = @product.PriceAmount;
+                                                                        decimal? Discount = (decimal)@product.DiscountAmount;
+                                                                        Amount = Discount == null ? Amount : Amount - Discount;
+                                                                        decimal? SumDiscount =@product.Quantity * (decimal)@product.DiscountAmount;
+                                                                        decimal? SumAmount = SumDiscount == null ? @product.SumPrice : @product.SumPrice - SumDiscount;
+                                                                        }
+                                                                    }
                                                                     <p>
                                                                         <span>برند <strong>:</strong></span>@product.Brand
                                                                     </p>
                                                                     <p>
-                                                                        <span>قیمت <strong>:</strong></span>@product.PriceAmount
-                                                                    </p>
+                                                                        <span>قیمت <strong>:</strong></span>@Amount?.ToString("N0")
+                                                                    </p>                                                                  
                                                                     <p>
                                                                         <span>تعداد <strong>:</strong></span>@product.Quantity
                                                                     </p> 
                                                                     <p>
                                                                         <span>رنگ <strong>:</strong></span>@product.ColorName
                                                                     </p>
-                                                                    <p>
+                                                                    <p>                                                                       
                                                                         <input hidden="hidden" value="@product.SumPrice" id="SumPrice-@product.ProductId" />
-                                                                        <span>جمع <strong>:</strong></span>@product.SumPrice.ToString("N0")
+                                                                        <span>جمع <strong>:</strong></span>@SumAmount?.ToString("N0")
                                                                     </p>
                                                                 </div>
                                                             </div>
-                                                            allPrice = allPrice + product.SumPrice;
+                                                             allPrice = allPrice + SumAmount;
                                                         }
                                                     </div>
                                                 </li>
@@ -310,7 +317,7 @@
                                                     <div class="top-cart-inner subtotal">
                                                         <h4>
                                                             جمع =
-                                                            <span id="All-Price">@allPrice.ToString("N0") تومان</span>
+                                                            <span id="All-Price">@allPrice?.ToString("N0") تومان</span>
                                                             <input hidden="hidden" id="AllPrice-Value" value="@allPrice" />
                                                         </h4>
                                                     </div>
@@ -769,7 +776,7 @@
                                         '</p><p><span>قیمت <strong>:</strong></span>' +
                                         product.priceAmount +
                                         '</p><p><span>تعداد <strong>:</strong></span>' +
-                                        product.quantity +
+                                        product.quantity +                                        
                                         '</p><p><span>رنگ <strong>:</strong></span>' +
                                         product.colorName +
                                         '</p><p> <input hidden="hidden" value="' +
@@ -827,7 +834,7 @@
                             '</div>' +
                             '<a  href="/product/'+ result.returnData.url+'" class="see-all">مشاهده همه ویژگی ها</a>' +
                             ' <div class="quick-desc">' +
-                            result.returnData.description+
+                            result.returnData.description+                            
                             '  </div>' +
                             ' <div class="social-sharing">' +
                             ' <div class="widget widget_socialsharing_widget">' +
