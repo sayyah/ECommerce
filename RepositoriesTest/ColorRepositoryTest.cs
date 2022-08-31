@@ -1,7 +1,9 @@
 ﻿using API.DataContext;
 using API.Repository;
 using Entities;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace RepositoriesTest
 {
@@ -15,7 +17,7 @@ namespace RepositoriesTest
         {
             var optionsBuilder = new DbContextOptionsBuilder<SunflowerECommerceDbContext>()
                .UseInMemoryDatabase(Guid.NewGuid().ToString());
-            context = new SunflowerECommerceDbContext(optionsBuilder.Options);
+            context = new SunflowerECommerceDbContext(optionsBuilder.Options, new EphemeralDataProtectionProvider(),new ConfigurationManager());
             repository = new ColorRepository(context);
             colors = Setup();
             AddRang();
