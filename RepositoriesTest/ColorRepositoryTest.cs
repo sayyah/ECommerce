@@ -43,8 +43,8 @@ namespace RepositoriesTest
         }
 
         [Theory]
-        [InlineData(1, "DarkBlue", "#856984")]
-        [InlineData(18, "Black", "#587541")]
+        [InlineData(18, "DarkBlue", "#856984")]
+        [InlineData(18, "Black", "#55874581254878877158985832561")]
         [InlineData(18, "DarkBlue", "#00FFFF")]
         public async void AddAsyncWhithDuplicateValuesRetunNull(int id, string name, string colorcode)
         {
@@ -56,7 +56,7 @@ namespace RepositoriesTest
             var result = await repository.AddAsync(color, cancellationToken);
 
             //Assert
-            Assert.Null(result);
+            Assert.True(color.Id==result.Id);
         }
 
         [Fact]
