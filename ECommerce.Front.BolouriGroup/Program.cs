@@ -23,6 +23,11 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToPage("/register");
     options.Conventions.AllowAnonymousToPage("/Login");
     options.Conventions.AllowAnonymousToPage("/Coming-Soon");
+
+    //options.Conventions.AuthorizeAreaFolder("/admin", "Admin");
+    //options.Conventions.AuthorizeAreaPage("/admin", "Admin");
+    //options.Conventions.AuthorizeFolder("/admin", "Admin");
+    //options.Conventions.AuthorizePage("/admin", "Admin");
 });
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
