@@ -19,12 +19,6 @@ public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int
         _configRoot = configRoot;
     }
 
-    public SunflowerECommerceDbContext(DbContextOptions<SunflowerECommerceDbContext> options) : base(options)
-    {
-
-    }
-
-
     public virtual DbSet<BlogAuthor> BlogAuthors { get; set; }
     public virtual DbSet<BlogCategory> BlogCategories { get; set; }
     public virtual DbSet<BlogComment> BlogComments { get; set; }
