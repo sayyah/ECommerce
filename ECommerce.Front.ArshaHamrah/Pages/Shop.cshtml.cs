@@ -27,9 +27,9 @@ public class ShopModel : PageModel
     public List<CategoryParentViewModel> Categories { get; set; }
     public bool IsColleague { get; set; }
     public int Sort { get; set; }
-    public int Min { get; set; }
-    public int Max { get; set; }
-  [BindProperty]  public bool IsExist { get; set; }
+    [BindProperty]  public int Min { get; set; }
+    [BindProperty]  public int Max { get; set; }
+    [BindProperty]  public bool IsExist { get; set; }
     //public PaginationViewModel Pagination { get; set; }
     public ServiceResult<List<ProductIndexPageViewModel>> Products { get; set; }
     public List<ProductIndexPageViewModel> NewProducts { get; set; }
@@ -38,8 +38,8 @@ public class ShopModel : PageModel
         string? message = null, string? code = null,int minprice= 0, int maxprice = 0, bool isExist = false)
     {
         IsExist = isExist;
-        Min = 100000;
-        Max = 200000000;
+        Min = minprice;
+        Max = maxprice;
         string categoryId = "0";
         if (!string.IsNullOrEmpty(path))
         {
@@ -55,6 +55,9 @@ public class ShopModel : PageModel
         await Initial();
 
         Sort = productSort;
+        Products.PaginationDetails.isExist = isExist;
+        Products.PaginationDetails.MinPrice=minprice;
+        Products.PaginationDetails.MaxPrice=maxprice;
     }
 
     private async Task Initial()
@@ -70,6 +73,8 @@ public class ShopModel : PageModel
     public async Task<IActionResult> OnPostPriceRange(string? path = null,int minprice=0, int maxprice=0, bool isExist=false)
     {
         IsExist = isExist;
+        Min=minprice;
+        Max=maxprice;
         string categoryId = "0";
         if (!string.IsNullOrEmpty(path))
         {
@@ -77,10 +82,10 @@ public class ShopModel : PageModel
             if (resultCategory.Code == ServiceCode.Success) categoryId = resultCategory.ReturnData.Id.ToString();
         }
         Products = await _productService.TopProducts(categoryId, "", 0, 9, 1, maxprice, minprice, IsExist);
-        await Initial();
-        Max = maxprice;
-        Min = minprice;
+        await Initial();      
+        Products.PaginationDetails.isExist=isExist;
+        Products.PaginationDetails.MinPrice = minprice;
+        Products.PaginationDetails.MaxPrice = maxprice;
         return Page();
     }
-
 }
