@@ -38,8 +38,8 @@ public class ShopModel : PageModel
         string? message = null, string? code = null,int minprice= 0, int maxprice = 0, bool isExist = false)
     {
         IsExist = isExist;
-        Min = minprice;
-        Max = maxprice;
+        Min = minprice == 0 ? 100000:minprice;
+        Max = maxprice == 0 ? 200000000:maxprice;
         string categoryId = "0";
         if (!string.IsNullOrEmpty(path))
         {
