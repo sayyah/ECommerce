@@ -3,6 +3,7 @@ using API.Interface;
 using API.Utilities;
 using Entities;
 using Entities.Helper;
+using Entities.ViewModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository;
@@ -30,4 +31,47 @@ public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCatego
         return await _context.BlogCategories.Where(x => x.Name == name && x.Parent!.Id == parentId)
             .FirstOrDefaultAsync(cancellationToken);
     }
+    public async Task<List<CategoryParentViewModel>> Parents(int productId, CancellationToken cancellationToken)
+    {
+
+        var blogCategory = new List<int>();
+        if (productId > 0)
+        {
+            var temp = _context.Blogs.Where(x => x.Id == productId).Include(x => x.BlogCategories);
+            blogCategory = temp.First().BlogCategories.Select(x => x.Id).ToList();
+        }
+
+        var allCategory = await _context.BlogCategories.Where(x => x.IsActive).ToListAsync(cancellationToken);
+
+        var result = await Children(allCategory, blogCategory, null);
+        return result.OrderBy(x => x.DisplayOrder).ToList();
+    }
+
+    private async Task<List<CategoryParentViewModel>> Children(List<BlogCategory> allCategory,
+        List<int> blogCategory, int? parentId)
+    {
+        var temp = new List<CategoryParentViewModel>();
+        var ret = new List<CategoryParentViewModel>();
+        foreach (var parent in allCategory.Where(p => p.ParentId == parentId).ToList())
+        {
+            if (allCategory.Any(p => p.ParentId == parent.Id))
+                temp = await Children(allCategory, blogCategory, parent.Id);
+
+            ret.Add(new CategoryParentViewModel
+            {
+                Id = parent.Id,
+                Name = parent.Name,
+                Path = parent.Path,
+                Depth = parent.Depth,
+                Children = temp,
+                Checked = blogCategory.Contains(parent.Id),
+                DisplayOrder = parent.DisplayOrder
+            });
+            temp = new List<CategoryParentViewModel>();
+        }
+
+        return ret;
+    }
+
+  
 }

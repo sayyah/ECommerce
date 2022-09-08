@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Entities;
 
@@ -37,12 +39,11 @@ public class Blog : BaseEntity
     [Display(Name = "بازدید")] public int Visit { get; set; }
 
     //ForeignKey
+    [JsonIgnore] public ICollection<BlogCategory>? BlogCategories { get; set; }
     public int BlogAuthorId { get; set; }
     public BlogAuthor BlogAuthor { get; set; }
-
     public int BlogCategoryId { get; set; }
     public BlogCategory BlogCategory { get; set; }
-
     public ICollection<BlogComment>? BlogComments { get; set; }
 
     public virtual ICollection<Keyword>? Keywords { get; set; }

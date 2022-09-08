@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using Entities.ViewModel;
 
 namespace ArshaHamrah.Areas.Admin.Pages.BlogCategories;
 
@@ -23,9 +24,12 @@ public class CreateModel : PageModel
     [TempData] public string Message { get; set; }
 
     [TempData] public string Code { get; set; }
+    public List<CategoryParentViewModel> BlogCategories { get; set; }
 
-    public void OnGet()
+    public async void OnGet()
     {
+        var result = await _blogCategoryService.GetParents();
+        BlogCategories = result.ReturnData;
     }
 
     public async Task<IActionResult> OnPost()
@@ -40,7 +44,8 @@ public class CreateModel : PageModel
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
         }
-
+        var resultParent = await _blogCategoryService.GetParents();
+        BlogCategories = resultParent.ReturnData;
         return Page();
     }
 }
