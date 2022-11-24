@@ -15,4 +15,5 @@ public interface ITagService : IEntityService<Tag>
     Task<ServiceResult> Delete(int id);
     Task<ServiceResult<Tag>> GetById(int id);
     Task<ServiceResult<List<TagProductId>>> GetTagsByProductId(int productId);
+    Task<ServiceResult<List<Tag>>> GetAllProductTags();
 }

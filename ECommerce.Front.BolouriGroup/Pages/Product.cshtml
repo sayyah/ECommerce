@@ -127,8 +127,9 @@
                             {
                                 @foreach (var tag in Model.Product.Tags)
                                 {
+                                     var path = $"/Shop/tag={tag.TagText}";
                                     <li>
-                                        <a href="#">@tag.TagText</a>
+                                        <a href="@path">@tag.TagText</a>
                                     </li>
                                 }
                             }

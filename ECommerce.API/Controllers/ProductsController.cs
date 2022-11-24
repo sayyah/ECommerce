@@ -23,11 +23,12 @@ public class ProductsController : ControllerBase
     private readonly IHolooSGroupRepository _sGroupRepository;
     private readonly IHolooABailRepository _aBailRepository;
     private readonly IUnitRepository _unitRepository;
+    private readonly ITagRepository _tagRepository;
 
     public ProductsController(IProductRepository productRepository, IHolooArticleRepository articleRepository,
         IHolooMGroupRepository mGroupRepository, IHolooSGroupRepository sGroupRepository,
         ICategoryRepository categoryRepository, IPriceRepository priceRepository, IUnitRepository unitRepository,
-        ILogger<ProductsController> logger, IHolooABailRepository aBailRepository)
+        ILogger<ProductsController> logger, IHolooABailRepository aBailRepository, ITagRepository tagRepository)
     {
         _productRepository = productRepository;
         _articleRepository = articleRepository;
@@ -38,6 +39,7 @@ public class ProductsController : ControllerBase
         _unitRepository = unitRepository;
         _logger = logger;
         _aBailRepository = aBailRepository;
+        _tagRepository = tagRepository;
     }
 
     private async Task<List<ProductIndexPageViewModel>> AddPriceAndExistFromHolooList(
@@ -265,10 +267,17 @@ public class ProductsController : ControllerBase
         try
         {
             //var products = await _productRepository.TopNew(Convert.ToInt32(productListFilteredViewModel.PaginationParameters.Search), cancellationToken);
+
+            if (!string.IsNullOrEmpty(productListFilteredViewModel.PaginationParameters.TagText))
+            {         
+                var resultTags = await _tagRepository.GetByTagText(productListFilteredViewModel.PaginationParameters.TagText, cancellationToken);
+                productListFilteredViewModel.TagsId=new List<int> { resultTags.Id };                           
+            }
+
             var categoriesId = new List<int>();
             categoriesId = await _categoryRepository.ChildrenCategory(productListFilteredViewModel.PaginationParameters.CategoryId,
                     cancellationToken);
-            categoriesId.Add(productListFilteredViewModel.PaginationParameters.CategoryId);
+            categoriesId.Add(productListFilteredViewModel.PaginationParameters.CategoryId);            
             var productQuery = _productRepository.GetProducts(categoriesId, productListFilteredViewModel.BrandsId,
                 productListFilteredViewModel.StarsCount, productListFilteredViewModel.TagsId);
 

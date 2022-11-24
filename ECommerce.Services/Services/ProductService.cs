@@ -136,7 +136,8 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
     //}
 
     public async Task<ServiceResult<List<ProductIndexPageViewModel>>> TopProducts( string CategoryId = "", string search = "", 
-        int pageNumber = 0, int pageSize = 10, int productSort = 1, int? endPrice=null, int? startPrice=null, bool isExist= false, bool isWithoutBail = false)
+        int pageNumber = 0, int pageSize = 10, int productSort = 1, int? endPrice=null, int? startPrice=null,
+        bool isExist= false, bool isWithoutBail = false, string tagText="")
     {
         //var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, $"NewProducts?count={count}");
         //return Return<List<ProductIndexPageViewModel>>(result);
@@ -147,6 +148,7 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
                       $"PaginationParameters.PageSize={pageSize}&";
         if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
         if (!string.IsNullOrEmpty(CategoryId)) command+= $"PaginationParameters.CategoryId={CategoryId}&";
+        if (!string.IsNullOrEmpty(tagText)) command += $"PaginationParameters.TagText={tagText}&";
         if (startPrice != null) command+= $"StartPrice={startPrice}&";
         if (endPrice != null) command+= $"EndPrice={endPrice}&";
         if (isExist) command+= $"IsExist={isExist}&";
