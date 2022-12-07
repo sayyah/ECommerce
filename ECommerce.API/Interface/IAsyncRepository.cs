@@ -13,6 +13,7 @@ public interface IAsyncRepository<TEntity> where TEntity : class, IBaseEntity<in
     TEntity GetById(params object[] ids);
     Task<IEnumerable<TEntity>> GetAll(CancellationToken cancellationToken);
     Task<TEntity> GetByIdAsync(CancellationToken cancellationToken, params object[] ids);
+    Task<TEntity> GetByIdWithIncludeAsync(string includeProperty, int ids);
 
     Task<IEnumerable<TEntity>> Where(Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken);

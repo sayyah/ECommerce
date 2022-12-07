@@ -58,8 +58,10 @@ public class ProductCommentsController : ControllerBase
     {
         try
         {
-            var result = await _productCommentRepository.GetByIdAsync(cancellationToken, id);
-            if (result.AnswerId!=null) result.Answer = await _productCommentRepository.GetByIdAsync(cancellationToken, result.AnswerId);
+            //var result = await _productCommentRepository.GetByIdAsync(cancellationToken, id);
+            //if (result.AnswerId!=null) result.Answer = await _productCommentRepository.GetByIdAsync(cancellationToken, result.AnswerId);
+            var result = await _productCommentRepository.GetByIdWithIncludeAsync("Answer", id);
+
             if (result == null)
                 return Ok(new ApiResult
                 {
