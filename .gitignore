@@ -365,3 +365,4 @@ FodyWeavers.xsd
 
 # App Settings
 ECommerce.API/appsettings.json
+/ECommerce.Front.BolouriGroup/ECommerce.Front.BolouriGroup.csproj
