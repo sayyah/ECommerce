@@ -153,8 +153,16 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
         if (endPrice != null) command += $"EndPrice={endPrice}&";
         command += $"IsExist={isExist}&";
         command += $"ProductSort={productSort}";
-        var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
-        return Return(result);
+            var cachEntry = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
+
+            var cachEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+
+            _cach.Set("myKey", cachEntry, cachEntryOptions);
+        }
+
+
+        return Return(cachEntry);
     }
 
 
