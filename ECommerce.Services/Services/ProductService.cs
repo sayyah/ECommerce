@@ -1,6 +1,10 @@
 ﻿using Ecommerce.Entities.Helper;
 using Ecommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace ECommerce.Services.Services;
 
@@ -12,15 +16,17 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
     private readonly IImageService _imageService;
     private readonly IKeywordService _keywordService;
     private readonly ITagService _tagService;
+    private readonly IMemoryCache _cach;
 
     public ProductService(IHttpService http, ITagService tagService, IImageService imageService,
-        IKeywordService keywordService, ICategoryService categoryService) : base(http)
+        IKeywordService keywordService, ICategoryService categoryService, IMemoryCache cach) : base(http)
     {
         _http = http;
         _tagService = tagService;
         _imageService = imageService;
         _keywordService = keywordService;
         _categoryService = categoryService;
+        _cach = cach;
     }
 
     public async Task<ServiceResult<ProductViewModel>> FillProductEdit(ProductViewModel productViewModel)
@@ -46,8 +52,15 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
 
     public async Task<ServiceResult<ProductViewModel>> GetProduct(string productUrl)
     {
-        var result = await _http.GetAsync<ProductViewModel>(Url, $"GetByProductUrl?productUrl={productUrl}");
-        return Return(result);
+        //ServiceResult<ProductViewModel> cachEntry;
+         var cachEntry = _cach.GetOrCreate("myKey", async entry =>
+        {
+            var result = await _http.GetAsync<ProductViewModel>(Url, $"GetByProductUrl?productUrl={productUrl}");
+            return result;
+        });
+
+        //return Return(result);
+        return await cachEntry;
     }
 
     public ServiceResult CheckBeforeSend(ProductViewModel product)
@@ -118,9 +131,19 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
 
     public async Task<ServiceResult<List<ProductIndexPageViewModel>>> Search(string search = "", int pageNumber = 0, int pageSize = 9)
     {
-        var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url,
+        ServiceResult<List<ProductIndexPageViewModel>> output;
+        output = _cach.Get<ServiceResult<List<ProductIndexPageViewModel>>>("myKey");
+        if (output is null)
+        {
+            var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url,
             $"GetAllWithPagination?PageNumber={pageNumber}&Search={search}&PageSize={pageSize}");
-        return Return(result);
+            _cach.Set("myKey", result);
+        }
+         
+
+        return output;
+        
+       //return Return(result);
     }
 
     //public async Task<ServiceResult<PaginationViewModel>> Search(string searchText, int page, int quantityPerPage = 9)
@@ -141,20 +164,30 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
     {
         //var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, $"NewProducts?count={count}");
         //return Return<List<ProductIndexPageViewModel>>(result);
-
-        var command = "GetProducts?" +
+        ServiceResult<List<ProductIndexPageViewModel>> output;
+        if (!_cach.TryGetValue("myKey", out output))
+        {
+            var command = "GetProducts?" +
                       $"PaginationParameters.PageNumber={pageNumber}&" +
                        $"IsWithoutBail={isWithoutBail}&" +
                       $"PaginationParameters.PageSize={pageSize}&";
-        if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
-        if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
-        if (!string.IsNullOrEmpty(tagText)) command += $"PaginationParameters.TagText={tagText}&";
-        if (startPrice != null) command += $"StartPrice={startPrice}&";
-        if (endPrice != null) command += $"EndPrice={endPrice}&";
-        command += $"IsExist={isExist}&";
-        command += $"ProductSort={productSort}";
-        var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
-        return Return(result);
+            if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
+            if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
+            if (!string.IsNullOrEmpty(tagText)) command += $"PaginationParameters.TagText={tagText}&";
+            if (startPrice != null) command += $"StartPrice={startPrice}&";
+            if (endPrice != null) command += $"EndPrice={endPrice}&";
+            command += $"IsExist={isExist}&";
+            command += $"ProductSort={productSort}";
+            var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
+
+            var cachEntryOption = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+            _cach.Set("myKey",result,cachEntryOption);
+
+        }
+
+        return output;
+       // return Return(result);
     }
 
 
