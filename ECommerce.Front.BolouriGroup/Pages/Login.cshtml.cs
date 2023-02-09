@@ -40,7 +40,7 @@ public class LoginModel : PageModel
 
         Message = result.Message;
         Code = result.Code.ToString();
-
+        if (result.Code == 0) return RedirectToPage("Index");
         return Page();
     }
 
