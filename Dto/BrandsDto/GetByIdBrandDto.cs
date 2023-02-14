@@ -1,4 +1,4 @@
-﻿namespace Dto.BrandsDtos;
+﻿namespace ECommerce.Dto.BrandsDtos;
 
 public class GetByIdBrandDto : BrandDto
 {
