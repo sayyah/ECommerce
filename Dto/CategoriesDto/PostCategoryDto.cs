@@ -1,4 +1,4 @@
-﻿namespace Dto.CategoriesDtos;
+﻿namespace ECommerce.Dto.CategoriesDtos;
 
 public class PostCategoryDto : CategoryDto
 {

@@ -1,6 +1,6 @@
 ﻿using ECommerce.Dto.Base;
 
-namespace Dto.CategoriesDtos;
+namespace ECommerce.Dto.CategoriesDtos;
 
 public class GetCategoryDto : BaseDto
 {
