@@ -168,6 +168,7 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
             $"GetProducts-{pageNumber}-{isWithoutBail}-{pageSize}-{search}-{CategoryId}-{tagText}-{startPrice}-{endPrice}-{isExist}-{productSort}",
             async entry =>
         {
+            entry.SetAbsoluteExpiration(TimeSpan.FromHours(5));
             var command = "GetProducts?" +
                           $"PaginationParameters.PageNumber={pageNumber}&" +
                            $"IsWithoutBail={isWithoutBail}&" +
@@ -182,21 +183,24 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
             var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
             return Return(result);
         });
+        //cacheItem.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(20);
         //CacheAllProducts();
         return (cacheEntry);
     }
 
-    //private async Task CacheAllProducts()
-    //{
-    //    List<ProductIndexPageViewModel> getAllProducts = await GetAllProducts();
-    //    _cache.CreateEntry("GetAllProducts", getAllProducts);
-    //}
+    private async Task CacheAllProducts()
+    {
+        var getAllProducts= _cache.CreateEntry("GetAllProducts");
+        var options = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(5));
+        _cache.Set("GetAllProducts",await GetAllProducts(),options);
+        getAllProducts.Dispose();
 
-    //private async Task<List<ProductIndexPageViewModel>> GetAllProducts()
-    //{
-    //    ApiResult<List<ProductIndexPageViewModel>> apiResult = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, "GetAllProducts");
-    //    return apiResult.ReturnData;
-    //}
+    }
+    private async Task<List<ProductIndexPageViewModel>> GetAllProducts()
+    {
+        ApiResult<List<ProductIndexPageViewModel>> apiResult = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, "GetAllProducts");
+        return apiResult.ReturnData;
+    }
     public async Task<ServiceResult<List<ProductIndexPageViewModel>>> GetProductList(int categoryId, List<int> brandsId,
         int starCount, int tagId, int pageNumber = 0, int pageSize = 12, int productSort = 1)
     {
