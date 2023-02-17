@@ -160,18 +160,19 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
         int pageNumber = 0, int pageSize = 10, int productSort = 1, int? endPrice = null, int? startPrice = null,
         bool isExist = false, bool isWithoutBail = false, string tagText = "")
     {
-        //var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, $"NewProducts?count={count}");
-        //return Return<List<ProductIndexPageViewModel>>(result);
-        //if "GetAllProducts" is exist =>  get cache;
+        if (_cache.TryGetValue("GetAllProducts", out List<ProductIndexPageViewModel> productIndexPageViewModel))
+        {
+            //if( productIndexPageViewModel.Where(c=>c.)
 
-        ServiceResult<List<ProductIndexPageViewModel>> cacheEntry = await _cache.GetOrCreate(
-            $"GetProducts-{pageNumber}-{isWithoutBail}-{pageSize}-{search}-{CategoryId}-{tagText}-{startPrice}-{endPrice}-{isExist}-{productSort}",
-            async entry =>
+
+            
+        }
+        else
         {
             var command = "GetProducts?" +
-                          $"PaginationParameters.PageNumber={pageNumber}&" +
-                           $"IsWithoutBail={isWithoutBail}&" +
-                          $"PaginationParameters.PageSize={pageSize}&";
+                      $"PaginationParameters.PageNumber={pageNumber}&" +
+                       $"IsWithoutBail={isWithoutBail}&" +
+                      $"PaginationParameters.PageSize={pageSize}&";
             if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
             if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
             if (!string.IsNullOrEmpty(tagText)) command += $"PaginationParameters.TagText={tagText}&";
@@ -179,24 +180,28 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
             if (endPrice != null) command += $"EndPrice={endPrice}&";
             command += $"IsExist={isExist}&";
             command += $"ProductSort={productSort}";
-            var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
-            return Return(result);
-        });
-        //CacheAllProducts();
-        return (cacheEntry);
+            var TempResult = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
+            productIndexPageViewModel = TempResult.ReturnData;
+
+            CacheAllProducts();
+            var ret = new ServiceResult<List<ProductIndexPageViewModel>>
+            {
+                PaginationDetails = TempResult.PaginationDetails,
+                ReturnData = productIndexPageViewModel,
+                Code = (ServiceCode)TempResult.Code,
+                Message = TempResult.Messages.ToString()
+            };
+            return ret;
+        }
+
     }
-
-    //private async Task CacheAllProducts()
-    //{
-    //    List<ProductIndexPageViewModel> getAllProducts = await GetAllProducts();
-    //    _cache.CreateEntry("GetAllProducts", getAllProducts);
-    //}
-
-    //private async Task<List<ProductIndexPageViewModel>> GetAllProducts()
-    //{
-    //    ApiResult<List<ProductIndexPageViewModel>> apiResult = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, "GetAllProducts");
-    //    return apiResult.ReturnData;
-    //}
+    private async Task CacheAllProducts()
+    {
+        var getAllProducts = _cache.CreateEntry("GetAllProducts");
+        var options = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(30));
+        _cache.Set("GetAllProducts", await GetAllProducts(), options);
+        getAllProducts.Dispose();
+    }
     public async Task<ServiceResult<List<ProductIndexPageViewModel>>> GetProductList(int categoryId, List<int> brandsId,
         int starCount, int tagId, int pageNumber = 0, int pageSize = 12, int productSort = 1)
     {
@@ -314,7 +319,7 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
                 "ProductsWithIdsForCart");
             return result;
         });
-        
+
 
         return Return(cacheEntry);
 
