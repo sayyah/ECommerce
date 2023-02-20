@@ -2,6 +2,7 @@
 using Ecommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -160,32 +161,54 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
         int pageNumber = 0, int pageSize = 10, int productSort = 1, int? endPrice = null, int? startPrice = null,
         bool isExist = false, bool isWithoutBail = false, string tagText = "")
     {
-        var command = "GetProducts?" +
-                      $"PaginationParameters.PageNumber={pageNumber}&" +
-                      $"IsWithoutBail={isWithoutBail}&" +
-                      $"PaginationParameters.PageSize={pageSize}&";
-        if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
-        if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
-        if (!string.IsNullOrEmpty(tagText)) command += $"PaginationParameters.TagText={tagText}&";
-        if (startPrice != null) command += $"StartPrice={startPrice}&";
-        if (endPrice != null) command += $"EndPrice={endPrice}&";
-        command += $"IsExist={isExist}&";
-        command += $"ProductSort={productSort}";
-        var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
-        return Return(result);
+        ServiceResult < List<ProductIndexPageViewModel> > result = new();
+
+        if (_cache.TryGetValue("GetAllProducts",out List< ProductIndexPageViewModel > productIndexPageViewModel))
+        {
+            result.ReturnData= productIndexPageViewModel;
+            result.Code = ServiceCode.Success;
+            result.PaginationDetails = new()
+            {
+
+            };
+
+
+        }
+        else
+        {
+            var command = "GetProducts?" +
+                     $"PaginationParameters.PageNumber={pageNumber}&" +
+                     $"IsWithoutBail={isWithoutBail}&" +
+                     $"PaginationParameters.PageSize={pageSize}&";
+            if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
+            if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
+            if (!string.IsNullOrEmpty(tagText)) command += $"PaginationParameters.TagText={tagText}&";
+            if (startPrice != null) command += $"StartPrice={startPrice}&";
+            if (endPrice != null) command += $"EndPrice={endPrice}&";
+            command += $"IsExist={isExist}&";
+            command += $"ProductSort={productSort}";
+            var apiResult = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, command);
+            result = Return(apiResult);
+        }
+
+        CacheAllProducts();
+        return result;
+
     }
 
-    //private async Task CacheAllProducts()
-    //{
-    //    List<ProductIndexPageViewModel> getAllProducts = await GetAllProducts();
-    //    _cache.CreateEntry("GetAllProducts", getAllProducts);
-    //}
+    private async Task CacheAllProducts()
+    {
+        var cache = _cache.CreateEntry("GetAllProducts");
+        var option = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(30));
+        _cache.Set("GetAllProducts", await GetAllProducts(), option);
+        cache.Dispose();
+    }
 
-    //private async Task<List<ProductIndexPageViewModel>> GetAllProducts()
-    //{
-    //    ApiResult<List<ProductIndexPageViewModel>> apiResult = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, "GetAllProducts");
-    //    return apiResult.ReturnData;
-    //}
+    private async Task<List<ProductIndexPageViewModel>> GetAllProducts()
+    {
+        ApiResult<List<ProductIndexPageViewModel>> apiResult = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, "GetAllProducts");
+        return apiResult.ReturnData;
+    }
     public async Task<ServiceResult<List<ProductIndexPageViewModel>>> GetProductList(int categoryId, List<int> brandsId,
         int starCount, int tagId, int pageNumber = 0, int pageSize = 12, int productSort = 1)
     {

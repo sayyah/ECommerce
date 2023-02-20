@@ -30,6 +30,12 @@ public class TagService : EntityService<Tag>, ITagService
         return Return(result);
     }
 
+    public async Task<ServiceResult<Tag>> GetByTagText()
+    {
+        var result = await Read(Url, "GetByTagText");
+        return Return(result);
+    }
+
     public async Task<ServiceResult<Dictionary<int, string>>> LoadDictionary()
     {
         var result = await ReadList(Url);
