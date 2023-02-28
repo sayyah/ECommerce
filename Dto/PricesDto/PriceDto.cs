@@ -18,7 +18,7 @@ public class PriceDto : BaseDto
         Sel_Price9 = 9,
         Sel_Price10 = 10
     }
-
+  
     public decimal Amount { get; set; }
 
     public int MinQuantity { get; set; }  
@@ -33,7 +33,7 @@ public class PriceDto : BaseDto
 
     public double Exist { get; set; }
 
-    //public Grade Grade { get; set; }
+    public Grade Grade { get; set; } 
 
     public int ProductId { get; set; }
     public ProductDto? Product { get; set; }
