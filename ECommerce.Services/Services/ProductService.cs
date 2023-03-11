@@ -140,7 +140,7 @@ public class ProductService : EntityService<ProductViewModel>, IProductService
 
     public async Task<ServiceResult<List<ProductIndexPageViewModel>>> TopProducts(string categoryId = "", string search = "",
         int pageNumber = 0, int pageSize = 10, int productSort = 1, int? endPrice = null, int? startPrice = null,
-        bool isExist = false, bool isWithoutBill = true, string tagText = "")
+        bool isExist = false, bool isWithoutBill = true, string tagText = "", int? brandId = null)
     {
         string key = $"GetProducts-{pageNumber}-{isWithoutBill}-{pageSize}-{search}-{categoryId}-{tagText}-{startPrice}-{endPrice}-{isExist}-{productSort}";
         bool isCached = _cache.TryGetValue(key, out ServiceResult<List<ProductIndexPageViewModel>> cacheEntry);

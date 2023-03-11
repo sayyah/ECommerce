@@ -30,4 +30,24 @@ public class BrandRepository : AsyncRepository<Brand>, IBrandRepository
     {
         return await _context.Brands.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<List<int>> GetByIdList(int brandId, CancellationToken cancellationToken)
+    {
+        var brandsId = new List<int>();
+
+        var brands = _context.Brands.Where(x => x.Id == brandId);
+        if (brands.Any())
+        {
+            foreach (var i in brands.Select(x => x.Id))
+            {
+                brandsId.Add(i);
+            }
+        }
+        else
+        {
+            brandsId.Add(brandId);
+        }
+
+        return brandsId;
+    }
 }

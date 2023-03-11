@@ -8,4 +8,5 @@ public interface IBrandRepository : IAsyncRepository<Brand>
 {
     Task<PagedList<Brand>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
     Task<Brand> GetByName(string name, CancellationToken cancellationToken);
+    Task<List<int>> GetByIdList(int brandId, CancellationToken cancellationToken);
 }

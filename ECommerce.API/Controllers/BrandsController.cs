@@ -28,8 +28,8 @@ public class BrandsController : ControllerBase
         try
         {
             var result = await _brandRepository.GetAll(cancellationToken);
-         var brands =   result.ToList();
-         brands.Insert(0,new Brand
+            var brands = result.ToList();
+            brands.Insert(0, new Brand
             {
                 Name = "بدون برند"
             });
@@ -43,7 +43,7 @@ public class BrandsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -88,7 +88,7 @@ public class BrandsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -115,10 +115,35 @@ public class BrandsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
+    [HttpGet]
+    public async Task<ActionResult<Brand>> GetByIdList(int brandId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _brandRepository.GetByIdList(brandId, cancellationToken);
+            if (result == null)
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.NotFound
+                });
 
+            return Ok(new ApiResult
+            {
+                Code = ResultCode.Success,
+                ReturnData = result
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical(e, e.Message);
+            return Ok(new ApiResult
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+        }
+
+    }
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> Post(Brand brand, CancellationToken cancellationToken)
@@ -137,7 +162,7 @@ public class BrandsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام برند تکراری است"}
+                    Messages = new List<string> { "نام برند تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -150,7 +175,7 @@ public class BrandsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -165,7 +190,7 @@ public class BrandsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام برند تکراری است"}
+                    Messages = new List<string> { "نام برند تکراری است" }
                 });
             if (repetitive != null) _brandRepository.Detach(repetitive);
             await _brandRepository.UpdateAsync(brand, cancellationToken);
@@ -178,7 +203,7 @@ public class BrandsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -198,7 +223,7 @@ public class BrandsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

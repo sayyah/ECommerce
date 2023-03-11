@@ -12,4 +12,5 @@ public interface IBrandService : IEntityService<Brand>
     Task<ServiceResult> Edit(Brand brand);
     Task<ServiceResult> Delete(int id);
     Task<ServiceResult<Brand>> GetById(int id);
+    Task<ServiceResult<Brand>> GetByIdList(int id);
 }
