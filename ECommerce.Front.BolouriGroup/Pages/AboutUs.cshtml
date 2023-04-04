@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "درباره ما";
 }
+<style type="text/css">.material_icon { }</style>
 
 
 <section class="inner-section single-banner">
@@ -144,7 +145,56 @@
         const link1 = 'google.com';
         const link2 = 'https://localhost:7173/AboutUs';
         const msg=encodeURIComponent('Hey, I found this:');
+        
     
         const linkedIn = document.querySelector('.linkedin');
         linkedIn.href=`https://www.linkedin.com/sharing/share-offsite/?url=${link2}`; 
     </script>
+
+
+
+<div class="container">
+    <div class="label">
+        Joining Link
+    </div>
+    <div class="copyright">
+        @*<input type="text" class="text" value="window.location.href"/>*@
+        <button type="button" class="copyright">
+            <i class="fa fa-clone"></i>
+        </button>
+
+    </div>
+
+</div>
+
+@*<script>
+
+    let copyText = document.querySelector(".copyright");
+copyText.querySelector("button").addEventListener("click",function(){
+let input=copyText.querySelector("input.text");
+input.select();
+document.execCommand("copy");
+copyText.classList.add("active");
+}
+);
+</script>*@
+
+
+<script>
+
+    let copyText = document.querySelector(".copyright");
+    copyText.querySelector("button").addEventListener("click", function () {
+        
+        var sURL = window.location.href;
+        sTemp="<input id=\"copyright\" value=\""+ sURL+ "\"/>"
+        $("body").append(sTemp);
+        $("#copyright").select();
+        document.execCommand("copy");
+
+    }
+    );
+</script>
+
+
+
+
