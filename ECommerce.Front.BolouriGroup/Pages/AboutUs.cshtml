@@ -133,3 +133,33 @@
     </div>
 </section>
 
+                
+<div class="container">
+    <div class="label">
+        Joining Link
+    </div>
+    <div class="copyright">
+        <button type="button" class="copyright">
+            <i class="fa fa-clone"></i>
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    let copyText = document.querySelector(".copyright");
+    copyText.querySelector("button").addEventListener("click", function () {
+        
+        var sURL = window.location.href;
+        sTemp="<input id=\"copyright\" value=\""+ sURL+ "\"/>"
+        $("body").append(sTemp);
+        $("#copyright").select();
+        document.execCommand("copy");
+
+    }
+    );
+</script>
