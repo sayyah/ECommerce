@@ -21,7 +21,7 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
         var lastRow = await _context.FBAILPRE.OrderByDescending(o => o.Fac_Code).FirstOrDefaultAsync(x => x.Fac_Type.Equals("P"), cancellationToken);
         var lastFacCode = lastRow == null ? 1 : Convert.ToInt32(lastRow.Fac_Code) + 1;
         bail.Fac_Code_C = lastFacCode;
-        bail.Fac_Code = lastFacCode.ToString("000000");
+        bail.Fac_Code = lastFacCode.ToString("000000").Trim();
         try
         {
             _context.Add(bail);
@@ -33,7 +33,7 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
             _logger.LogCritical(e, e.Message);
             lastFacCode += 2;
             bail.Fac_Code_C = lastFacCode;
-            bail.Fac_Code = lastFacCode.ToString("000000");
+            bail.Fac_Code = lastFacCode.ToString("000000").Trim();
             _context.Add(bail);
             var result = await _context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;

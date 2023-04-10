@@ -75,7 +75,7 @@ public class UserRepository : AsyncRepository<User>, IUserRepository
 
     public async Task<bool> Exists(int id, string email, string phoneNumber, CancellationToken cancellationToken)
     {
-        return await TableNoTracking.AnyAsync(p => p.Id != id && (p.Email == email || p.PhoneNumber == phoneNumber),
+        return await TableNoTracking.AnyAsync(p => p.Id != id && (p.Email == email.Trim() || p.PhoneNumber == phoneNumber.Trim()),
             cancellationToken);
     }
 
@@ -97,8 +97,8 @@ public class UserRepository : AsyncRepository<User>, IUserRepository
         {
             CreationDate = DateTime.Now,
             ExpirationDate = expirationDate,
-            IpAddress = ipAddress,
-            Token = token,
+            IpAddress = ipAddress.Trim(),
+            Token = token.Trim(),
             UserId = userId
         });
         await DbContext.SaveChangesAsync();
@@ -106,7 +106,7 @@ public class UserRepository : AsyncRepository<User>, IUserRepository
 
     public async Task<bool> SetConfirmCodeByUsername(string username, int confirmCode, DateTime codeConfirmExpairDate, CancellationToken cancellationToken)
     {
-        var user = TableNoTracking.Where(x => x.UserName == username).FirstOrDefault();
+        var user = TableNoTracking.Where(x => x.UserName == username.Trim()).FirstOrDefault();
         if (user == null) return false;
         user.ConfirmCode = confirmCode;
         user.ConfirmCodeExpirationDate = codeConfirmExpairDate;

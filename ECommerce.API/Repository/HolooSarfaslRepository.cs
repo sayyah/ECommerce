@@ -17,15 +17,15 @@ namespace ECommerce.API.Repository
         public async Task<string> Add(string username, CancellationToken cancellationToken)
         {
             var lastSarfaslCode = await _context.Sarfasl.Where(c => c.Col_Code == "103").OrderByDescending(x => x.Moien_Code).FirstOrDefaultAsync();
-            var lastMoeinCode = lastSarfaslCode == null ? "0000" : lastSarfaslCode.Moien_Code;
-            var newMoeinCode = (Convert.ToInt32(lastMoeinCode) + 1).ToString("D4");
+            var lastMoeinCode = lastSarfaslCode == null ? "0000" : lastSarfaslCode.Moien_Code.Trim();
+            var newMoeinCode = (Convert.ToInt32(lastMoeinCode) + 1).ToString("D4").Trim();
             var sarfasl = new HolooSarfasl
             {
-                Col_Code = "103",
-                Moien_Code = newMoeinCode,
-                Tafzili_Code = "",
-                Sarfasl_Code = $"103{newMoeinCode}",
-                Sarfasl_Name = username,
+                Col_Code = "103".Trim(),
+                Moien_Code = newMoeinCode.Trim(),
+                Tafzili_Code = "".Trim(),
+                Sarfasl_Code = $"103{newMoeinCode}".Trim(),
+                Sarfasl_Name = username.Trim(),
                 Mandeh = 0,
                 Group = 1,
                 Mahiat = 1,

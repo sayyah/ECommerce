@@ -66,13 +66,13 @@ public class PriceRepository : AsyncRepository<Price>, IPriceRepository
                     {
                         Prices = p.Prices!,
                         Alt = p.Images!.First().Alt,
-                        Brand = p.Brand!.Name,
-                        Name = p.Name,
-                        Description = p.Description,
+                        Brand = p.Brand!.Name.Trim(),
+                        Name = p.Name.Trim(),
+                        Description = p.Description.Trim(),
                         Id = p.Id,
-                        ImagePath = $"{p.Images!.First().Path}/{p.Images!.First().Name}",
+                        ImagePath = $"{p.Images!.First().Path}/{p.Images!.First().Name}".Trim(),
                         Stars = p.Star,
-                        Url = p.Url
+                        Url = p.Url.Trim()
                     })
                     .FirstOrDefaultAsync(cancellationToken));
                 i++;

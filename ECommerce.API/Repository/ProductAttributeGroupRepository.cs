@@ -84,7 +84,7 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
                     _context.ProductAttributeValues.Add(new ProductAttributeValue
                     {
                         ProductId = productId,
-                        Value = productAttribute.AttributeValue[0].Value,
+                        Value = productAttribute.AttributeValue[0].Value.Trim(),
                         ProductAttributeId = productAttribute.Id
                     });
             }
