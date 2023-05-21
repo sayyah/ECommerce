@@ -201,7 +201,8 @@ button:focus {
 
 @media (max-width: 767px) {
     .section {
-        margin-bottom: 55px
+        margin-bottom: 55px;
+        width:92%;
     }
 
     .inner-section {
@@ -8717,7 +8718,6 @@ tbody tr td:last-child {
 }
 
 .maini .section {
-    width: 100%;
     height: 100%;
     position: absolute;
 }
