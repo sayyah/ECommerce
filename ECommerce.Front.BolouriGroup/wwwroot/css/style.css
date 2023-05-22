@@ -422,7 +422,7 @@ button:focus {
 }
 
 .dropdown-list li a:hover {
-    color: var(--blue-dark)
+    color: var(--blue-dark);
 }
 
 .dropdown:hover .dropdown-position-list {
