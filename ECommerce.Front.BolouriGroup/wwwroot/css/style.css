@@ -4565,6 +4565,7 @@ tbody tr td:last-child {
     @media (max-width: 991px) {
         .mobile-menu {
             display: flex
+
         }
     }
 
@@ -5846,16 +5847,19 @@ tbody tr td:last-child {
         padding-left: 10px
     }
 
-    .single-banner {
-        background: url(../img/single-banner.webp);
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        padding: 100px 0;
-        position: relative;
-        text-align: center;
-        z-index: 1
-    }
+.single-banner {
+    background: url(../img/single-banner.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    max-width: 100%;
+    height: 320px;
+    position: relative;
+    text-align: center;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
 
         .single-banner::before {
             /*  background: linear-gradient(to right, rgba(6, 23, 56, 0.8), rgba(17, 151, 68, 0.8));*/
@@ -5877,7 +5881,9 @@ tbody tr td:last-child {
 
     @media (max-width: 767px) {
         .single-banner {
-            padding: 60px 0
+            max-width:100%;
+            height:auto;
+           
         }
 
             .single-banner h2 {
@@ -5987,6 +5993,7 @@ tbody tr td:last-child {
             margin-left: 10px;
             padding: 14px 22px;
         }
+
     }
 
     .suggest-slider li {
@@ -6031,6 +6038,10 @@ tbody tr td:last-child {
     @media (max-width: 950px) {
         .promo-img {
             margin: 12px 0
+        }
+        .single-banner{
+            max-width:100%;
+            height:auto;
         }
     }
 
