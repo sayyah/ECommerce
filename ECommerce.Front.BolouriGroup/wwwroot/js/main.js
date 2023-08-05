@@ -3,6 +3,11 @@ $(window).on("load",
         if ($("#preloader").length) {
             $("#preloader").delay(100).fadeOut("slow", function () { $(this).remove(); });
         }
+        const pathname = window.location.pathname;
+        const shopCategory = $(`#shop-widget-category a[href='${pathname}'], #category-layout a[href='${pathname}'], #category-nav a[href='${pathname}']`);
+        shopCategory.parent().parent().slideToggle("slow");
+        shopCategory.parent().parent().prev().toggleClass("rotate-180");
+        shopCategory.css("background-color", "rgb(0,0,0,0.1)");
     });
 $(window).on("scroll",
     function () {
