@@ -20,8 +20,7 @@ $(window).on("scroll",
     }),
     $(function () {
         $(".dropdown-link").click(function () {
-            $(this).next().slideToggle("slow"), $(".dropdown-list:visible").length > 1 &&
-                ($(".dropdown-list:visible").hide(), $(this).next().show());
+            $(this).next().slideToggle("slow"), $(this).before().toggleClass('rotate-180');
         });
     }),
     $(".header-cate, .cate-btn").on("click",
