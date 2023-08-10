@@ -466,3 +466,8 @@ $(document).ready(function () {
         }
     });
 });
+var openPopUp = document.querySelector("#openPopUp");
+openPopUp.addEventListener("click", commentSentToAdmin)
+function commentSentToAdmin() {
+    alert("نظر شما ثبت شد،پس از تایید توسط ادمین سایت ،نمایش داده می شود");
+}
