@@ -175,12 +175,13 @@
                                 </div>
                             </div>
                         }
+                    <div class="row">
 
                         @if (Model.Product.Prices != null)
                         {
                             @foreach (var price in Model.Product.Prices)
                             {
-                                <div class="row">
+                                <div >
                                     @{
                                         var select = price.Id == priceId ? "checked" : "";
                                         var disabled = price.Exist <= 0 ? "disabled='disabled'" : "";
@@ -198,13 +199,12 @@
                                     }
                                     else if (price.ColorId > 1)
                                     {
-                                        <div class="col-8" style="background-color: @price.Color.ColorCode">
-                                            <input @disabled @select name="price.Id" type="radio" id="price-@price.Id" onclick="SetPriceId(@price.Id)" />
-                                            <span for="price-@price.Id">@price.Color.Name - </span>
-                                            @{
+                                        <div class="col-3" >
+
+                                                <button style="background-color: @price.Color.ColorCode" @disabled @select name="price.Id" id="price-@price.Id" onclick="SetPriceId(@price.Id)" class="circle"></button>
+                                                @{
                                                 string _priceAmount = @price.Exist > 0 ? @price.Amount.ToString("N0") : "-";
                                             }
-                                            <span for="price-@price.Id">قیمت : @_priceAmount </span>
                                         </div>
                                     }
                                     <div class="col-4">
@@ -221,6 +221,7 @@
                                 </div>
                             }
                         }
+                        </div>
                         <div class="details-add-group">
                             <button class="product-add w-100" title="افزودن به سبد خرید" href="javascript:void(0)" onclick="AddSelectedPriceToCart(@Model.Product.Id)">
                                 <i class="far fa-shopping-cart"></i><span>افزودن به سبد خرید</span>
