@@ -6556,6 +6556,21 @@ tbody tr td:last-child {
   margin-bottom: 5px;
   text-transform: capitalize;
 }
+.circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer
+}
+
+    .circle:hover {
+        opacity: 0.6;
+    }
+
+    .circle:focus {
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px #0c4ca3;
+    }
 
 .details-name a {
   -moz-transition: all linear 0.3s;
