@@ -8891,11 +8891,77 @@ tbody tr td:last-child {
   top: 300px;
   right: 200px;
 }
-/************login************/
+@media (max-width: 1200px) {
+    .details-content {
+        background: var(--white);
+        border-radius: 8px;
+        padding: 35px;
+        display: flex;
+        flex-direction: column;
+    }
+    .img-zoom-result {
+        border: 1px solid #d4d4d4;
+        width: 600px;
+        height: 400px;
+    }
+    .pos-absolute {
+        position: absolute;
+        z-index: 1;
+        border-radius: 5px;
+        border: 1px solid rgba(239, 57, 78, 0.204);
+        background: rgba(239, 57, 78, 0.098);
+        transform: translate(-50%, -50%);
+        top: -200px;
+        right: -200px;
+    }
+}
+@media (max-width: 768px) {
+    .img-zoom-container {
+        position: relative;
+    }
 
+    .img-zoom-lens {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        background: rgba(239, 57, 78, 0.098);
+        /*set the size of the lens:*/
+        width: 150px;
+        height: 150px;
+    }
+
+    .img-zoom-result {
+        border: 1px solid #d4d4d4;
+        /*set the size of the result div:*/
+        width: 300px;
+        height: 280px;
+    }
+
+    .pos-absolute {
+        position: absolute;
+        z-index: 1;
+        border-radius: 5px;
+        border: 1px solid rgba(239, 57, 78, 0.204);
+        background: rgba(239, 57, 78, 0.098);
+        transform: translate(-50%, -50%);
+        top: 300px;
+        right: 200px;
+    }
+
+    .pos-absolute {
+        position: absolute;
+        z-index: 1;
+        border-radius: 5px;
+        border: 1px solid rgba(239, 57, 78, 0.204);
+        background: rgba(239, 57, 78, 0.098);
+        transform: translate(-50%, -50%);
+        top: -80px;
+        right: -140px;
+    }
+}
+/************login************/
 .section1 {
-  z-index: 3;
-  text-align: center;
+    z-index: 3;
+    text-align: center;
 }
 
 .section1 > h1,
