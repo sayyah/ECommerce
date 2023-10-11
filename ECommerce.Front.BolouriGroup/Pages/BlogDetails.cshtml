@@ -22,13 +22,15 @@
             <div class="col-lg-8">
                 <article class="blog-details">
                     <a class="blog-details-thumb" href="#">
-                        <img src="~/@($"{Model.Blog.Image?.Path}/{Model.Blog.Image?.Name}")" alt="@Model.Blog.Image.Alt" loading="lazy">
+                        <img src="~/@($"{Model.Blog.Image?.Path}/{Model.Blog.Image?.Name}")" alt="@Model.Blog.Image.Alt"
+                            loading="lazy">
                     </a>
                     <div class="blog-details-content">
                         <ul class="blog-details-meta">
-                            <li><i class="far fa-calendar"></i><span> @Model.Blog.EditDateTime.ToFa()  </span></li>
-                            <li><i class="far fa-user"></i><span> @($"توسط {Model.Blog.BlogAuthor.Name}")  </span></li>
-                            <li><i class="far fa-comments"></i><span>@Model.BlogComments.ReturnData.Count نظر</span></li>
+                            <li><i class="far fa-calendar"></i><span> @Model.Blog.EditDateTime.ToFa() </span></li>
+                            <li><i class="far fa-user"></i><span> @($"توسط {Model.Blog.BlogAuthor.Name}") </span></li>
+                            <li><i class="far fa-comments"></i><span>@Model.BlogComments.ReturnData.Count نظر</span>
+                            </li>
                         </ul>
                         <h1 class="blog-details-title">@Html.Raw(Model.Blog.Title)</h1>
                         <p class="blog-details-desc">
@@ -39,13 +41,15 @@
                             <ul class="blog-details-share">
                                 <h4>اشتراک گذاری:</h4>
                                 <li>
-                                    <a class="fab fa-linkedin" title="لینکدین" href="https://www.linkedin.com/in/boloorico-%D8%AA%D8%AC%D9%87%DB%8C%D8%B2%D8%A7%D8%AA-%D8%B5%D9%86%D8%B9%D8%AA%DB%8C-%D8%A8%D9%84%D9%88%D8%B1%DB%8C-506aa6217/"></a>
+                                    <a class="fab fa-linkedin" title="لینکدین"
+                                        href="https://www.linkedin.com/in/boloorico-%D8%AA%D8%AC%D9%87%DB%8C%D8%B2%D8%A7%D8%AA-%D8%B5%D9%86%D8%B9%D8%AA%DB%8C-%D8%A8%D9%84%D9%88%D8%B1%DB%8C-506aa6217/"></a>
                                 </li>
                                 <li>
                                     <a class="fab fa-pinterest" href="https://pin.it/4PLGQh2" title="پینترست"></a>
                                 </li>
                                 <li>
-                                    <a href="https://www.instagram.com/boloorico/" class="fab fa-instagram" title="اینستاگرام"></a>
+                                    <a href="https://www.instagram.com/boloorico/" class="fab fa-instagram"
+                                        title="اینستاگرام"></a>
                                 </li>
                             </ul>
                             <ul class="blog-details-tag">
@@ -71,7 +75,8 @@
                                     <a class="comment-avatar" href="#">
                                         <img src="~/images/users/user-profile.png" alt="user-profile" loading="lazy">
                                     </a>
-                                    <h6 class="comment-meta"><a href="#"> @blogComment.Name </a><span> @blogComment.DateTime.ToFa("f") </span></h6>
+                                    <h6 class="comment-meta"><a href="#"> @blogComment.Name </a><span>
+                                            @blogComment.DateTime.ToFa("f") </span></h6>
                                 </div>
                                 <p class="comment-desc">
                                     @blogComment.Text
@@ -80,7 +85,11 @@
                                     @{
                                         string _answer = "";
                                     }
-                                    @if (!string.IsNullOrEmpty(blogComment.Answer?.Text)) { _answer = $"{blogComment.Answer?.Name} : {blogComment.Answer?.Text}"; }
+                                    @if (!string.IsNullOrEmpty(blogComment.Answer?.Text))
+                                    {
+                                        _answer =
+                                                    $"{blogComment.Answer?.Name} : {blogComment.Answer?.Text}";
+                                    }
                                     @_answer
                                 </p>
                             </li>
@@ -88,7 +97,7 @@
 
                     </ul>
                 </div>
-                <div class="row"> 
+                <div class="row">
                     <div class="col-lg-12 col-12">
                         <ul class="pagination">
                             <partial name="_Pagination" model="@Model.BlogComments.PaginationDetails" />
@@ -102,13 +111,16 @@
                     <input id="comment_blogUrl" hidden value="@Model.Blog.Url" />
                     <div class="row">
                         <div class="col-6">
-                            <div class="form-group"><input type="text" class="form-control" id="comment_name" placeholder="اسمت را وارد کن"></div>
+                            <div class="form-group"><input type="text" class="form-control" id="comment_name"
+                                    placeholder="اسمت را وارد کن"></div>
                         </div>
                         <div class="col-6">
-                            <div class="form-group"><input type="email" class="form-control" id="comment_email" placeholder="ایمیل خود را وارد کنید"></div>
+                            <div class="form-group"><input type="email" class="form-control" id="comment_email"
+                                    placeholder="ایمیل خود را وارد کنید"></div>
                         </div>
                         <div class="col-12">
-                            <div class="form-group"><textarea class="form-control" id="comment_text" placeholder="نظر خود را بنویسید"></textarea></div>
+                            <div class="form-group"><textarea class="form-control" id="comment_text"
+                                    placeholder="نظر خود را بنویسید"></textarea></div>
                         </div>
                     </div>
                     <button type="button" onclick="RegisterButton()" class="form-btn" role="button">ارسال نظر</button>
@@ -118,7 +130,8 @@
             <div class="col-lg-4">
                 <div class="blog-widget">
                     <h3 class="blog-widget-title">جستجو کردن</h3>
-                    <form class="blog-widget-form"><input type="text" placeholder="جستجو کردن..."><button class="far fa-search"></button></form>
+                    <form class="blog-widget-form"><input type="text" placeholder="جستجو کردن..."><button
+                            class="far fa-search"></button></form>
                 </div>
                 <div class="blog-widget">
                     <h3 class="blog-widget-title">آخرین ارسال ها</h3>
@@ -127,7 +140,9 @@
                         @foreach (var blog in Model.Blogs.ReturnData)
                         {
                             <li>
-                                <a class="blog-widget-media" href="/blog/@blog.Url"><img src="/@($"{blog.Image.Path}/{blog.Image.Name}")" alt="@blog.Image.Alt" loading="lazy"></a>
+                                <a class="blog-widget-media" href="/blog/@blog.Url"><img
+                                        src="/@($"{blog.Image.Path}/{blog.Image.Name}")" alt="@blog.Image.Alt"
+                                        loading="lazy"></a>
                                 <h6 class="blog-widget-text">
                                     <a href="/blog/@blog.Url">@blog.Title</a>
                                     <span>@blog.CreateDateTime</span>
@@ -161,13 +176,15 @@
                     <h3 class="blog-widget-title">ما را دنبال کنید</h3>
                     <ul class="blog-widget-social">
                         <li>
-                            <a class="fab fa-linkedin" title="لینکدین" href="https://www.linkedin.com/in/boloorico-%D8%AA%D8%AC%D9%87%DB%8C%D8%B2%D8%A7%D8%AA-%D8%B5%D9%86%D8%B9%D8%AA%DB%8C-%D8%A8%D9%84%D9%88%D8%B1%DB%8C-506aa6217/"></a>
+                            <a class="fab fa-linkedin" title="لینکدین"
+                                href="https://www.linkedin.com/in/boloorico-%D8%AA%D8%AC%D9%87%DB%8C%D8%B2%D8%A7%D8%AA-%D8%B5%D9%86%D8%B9%D8%AA%DB%8C-%D8%A8%D9%84%D9%88%D8%B1%DB%8C-506aa6217/"></a>
                         </li>
                         <li>
                             <a class="fab fa-pinterest" href="https://pin.it/4PLGQh2" title="پینترست"></a>
                         </li>
                         <li>
-                            <a href="https://www.instagram.com/boloorico/" class="fab fa-instagram" title="اینستاگرام"></a>
+                            <a href="https://www.instagram.com/boloorico/" class="fab fa-instagram"
+                                title="اینستاگرام"></a>
                         </li>
                         <li>
                             <a href="https://t.me/bolouri_group" class="fab fa-telegram" title="تلگرام"></a>
@@ -205,5 +222,3 @@
         }
     </script>
 }
-
-
