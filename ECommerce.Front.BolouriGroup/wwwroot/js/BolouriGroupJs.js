@@ -363,22 +363,33 @@ function DecreaseCart(productId, priceId, id) {
 
 function DeleteCart(id, productId, priceId) {
   $(`#CartDrop-${id}`).append(`<div id='loading-${id}' class='loading-indicator'><progress class='pure-material-progress-circular'/></div>`);
-  $.ajax({
-    type: "Get",
-    url: "/index?handler=DeleteCart&id=" + id + "&productId=" + productId + "&priceId=" + priceId,
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    success: function (result) {
+  swal({
+    icon: "warning",
+    title: "حذف محصول",
+    text: "از حذف این محصول اطمینان دارید؟",
+    buttons: ["خیر", "بله"],
+  }).then((isConfirmed) => {
+    if (isConfirmed) {
+      $.ajax({
+        type: "Get",
+        url: "/index?handler=DeleteCart&id=" + id + "&productId=" + productId + "&priceId=" + priceId,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (result) {
+          $(`#loading-${id}`).remove();
+          swal(result.message);
+          if (result.code === 0) {
+            updateCartItem(id, "remove", productId);
+          }
+        },
+        failure: function (response) {
+          $(`#loading-${id}`).remove();
+          swal(response);
+        },
+      });
+    } else {
       $(`#loading-${id}`).remove();
-      swal(result.message);
-      if (result.code === 0) {
-        updateCartItem(id, "remove", productId);
-      }
-    },
-    failure: function (response) {
-      $(`#loading-${id}`).remove();
-      swal(response);
-    },
+    }
   });
 }
 
