@@ -1,4 +1,5 @@
 import $ from "jquery";
+import * as bootstrap from "bootstrap5";
 import "bootstrap5/dist/css/bootstrap.min.css";
 import "bootstrap5/dist/js/bootstrap.min";
 import "bootstrap3/dist/css/bootstrap.min.css";
@@ -32,3 +33,4 @@ import "./shop";
 import "./BolouriGroupJs";
 
 window.$ = window.jQuery = $;
+window.bootstrap = bootstrap;
