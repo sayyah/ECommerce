@@ -1,5 +1,6 @@
 ﻿using ECommerce.Application.Services.Commands.Purchase.Purchases;
 using ECommerce.Domain.Entities.HolooEntity;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ECommerce.API.Controllers;
 
@@ -61,15 +62,19 @@ public class PurchaseOrdersController : ControllerBase
     }
 
     private async Task<List<PurchaseOrderViewModel>> AddPriceAndExistFromHolooList(
-        List<PurchaseOrderViewModel> products)
+        List<PurchaseOrderViewModel> products, CancellationToken cancellationToken)
     {
+        int userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
         foreach (var product in products.Where(x => x.Price.ArticleCode != null))
             if (product.Price.SellNumber != null && product.Price.SellNumber != Price.HolooSellNumber.خالی)
             {
                 var article = await _articleRepository.GetHolooPrice(product.Price.ArticleCodeCustomer!,
                     product.Price.SellNumber!.Value);
                 product.PriceAmount = article.price / 10;
-                product.Exist = (double)article.exist;
+                double soldExist = 0;
+                foreach (var item in article.a_Code)
+                    soldExist += _aBailRepository.GetWithACode(userCode, item, cancellationToken);
+                product.Exist = (double)article.exist - soldExist;
                 product.SumPrice = product.PriceAmount * product.Quantity;
             }
 
@@ -84,14 +89,18 @@ public class PurchaseOrdersController : ControllerBase
         if (purchaseOrder == null)
             return Ok(new ApiResult
             {
-                Code = ResultCode.DatabaseError, ReturnData = false, Messages = new List<string> { "اشکال در سمت سرور" }
+                Code = ResultCode.DatabaseError,
+                ReturnData = false,
+                Messages = new List<string> { "اشکال در سمت سرور" }
             });
         purchaseOrder.Status = status;
         var result = await _purchaseOrderRepository.UpdateAsync(purchaseOrder, cancellationToken);
         if (result == null)
             return Ok(new ApiResult
             {
-                Code = ResultCode.DatabaseError, ReturnData = false, Messages = new List<string> { "اشکال در سمت سرور" }
+                Code = ResultCode.DatabaseError,
+                ReturnData = false,
+                Messages = new List<string> { "اشکال در سمت سرور" }
             });
 
         return Ok(new ApiResult
@@ -134,7 +143,7 @@ public class PurchaseOrdersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -313,7 +322,9 @@ public class PurchaseOrdersController : ControllerBase
                 });
 
             if (result.Any(x => x.Price.ArticleCode != null))
-                result = await AddPriceAndExistFromHolooList(result.ToList());
+            {
+                result = await AddPriceAndExistFromHolooList(result.ToList(), cancellationToken);
+            }
 
             if (shouldUpdatePurchaseOrderDetails)
                 await _purchaseOrderDetailRepository.UpdateUserCart(result, cancellationToken);
@@ -599,12 +610,13 @@ public class PurchaseOrdersController : ControllerBase
                 double otherWarehouseCount = orderDetail.Quantity;
                 var holoo_A = holooArticle.Where(c => c.A_Code_C == orderDetail.Price.ArticleCodeCustomer)
                     .FirstOrDefault();
-                if (holoo_A.Exist > 0)
+                double soldExist = _holooABailRepository.GetWithACode(userCode, holoo_A.A_Code, cancellationToken);
+                if ((holoo_A.Exist - soldExist) > 0)
                 {
-                    if (holoo_A.Exist < orderDetail.Quantity)
+                    if ((holoo_A.Exist - soldExist) < orderDetail.Quantity)
                     {
                         twoFactor = true;
-                        defaultWarehouseCount = (double)holoo_A.Exist;
+                        defaultWarehouseCount = (double)holoo_A.Exist - soldExist;
                         otherWarehouseCount = orderDetail.Quantity - defaultWarehouseCount;
                     }
 
@@ -622,24 +634,34 @@ public class PurchaseOrdersController : ControllerBase
                     });
                 }
 
-                if (holoo_A.Exist == 0 || twoFactor)
+                if (holoo_A.Exist - soldExist == 0 || twoFactor)
                 {
                     var holooArticleOthere = await _articleRepository.GetHolooArticlesOthereWarehouse(
                         purchaseOrderDetails.Select(c => c.Price.ArticleCodeCustomer).ToList(), cancellationToken);
                     var holoo_A_Othere = holooArticleOthere
                         .Where(c => c.A_Code_C == orderDetail.Price.ArticleCodeCustomer).FirstOrDefault();
-                    aBail.Add(new HolooABail
+                    double soldOtherExist = _holooABailRepository.GetWithACode(userCode, holoo_A_Othere.A_Code, cancellationToken);
+                    if (holoo_A_Othere.Exist - soldOtherExist > 0)
+                        aBail.Add(new HolooABail
+                        {
+                            A_Code = holoo_A_Othere.A_Code,
+                            ACode_C = orderDetail.Price.ArticleCodeCustomer,
+                            A_Index = Convert.ToInt16(i++),
+                            Fac_Code = fBail,
+                            Fac_Type = "P",
+                            Few_Article = otherWarehouseCount,
+                            First_Article = otherWarehouseCount,
+                            Price_BS = Convert.ToDouble(orderDetail.UnitPrice) * 10,
+                            Unit_Few = 0
+                        });
+                    else
                     {
-                        A_Code = holoo_A_Othere.A_Code,
-                        ACode_C = orderDetail.Price.ArticleCodeCustomer,
-                        A_Index = Convert.ToInt16(i++),
-                        Fac_Code = fBail,
-                        Fac_Type = "P",
-                        Few_Article = otherWarehouseCount,
-                        First_Article = otherWarehouseCount,
-                        Price_BS = Convert.ToDouble(orderDetail.UnitPrice) * 10,
-                        Unit_Few = 0
-                    });
+                        return Ok(new ApiResult
+                        {
+                            Code = ResultCode.BadRequest,
+                            Messages = new List<string> { "عدم تطابق موجودی کالا" }
+                        });
+                    }
                 }
             }
 
