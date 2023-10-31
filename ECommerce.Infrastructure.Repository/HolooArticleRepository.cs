@@ -28,7 +28,7 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<(decimal price, double? exist)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice)
+    public async Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice)
     {
         var bolooryFlag = (await _context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
         var article = await _context.ARTICLE
@@ -68,8 +68,13 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
                 price = Convert.ToUInt64(article.FirstOrDefault().Sel_Price10);
                 break;
         }
-
-        return (price, article.Sum(x => x.Exist));
+        List<string> a_code = new List<string>();
+        foreach (var item in article)
+        {
+            if (item.Exist > 0)
+                a_code.Add(item.A_Code);
+        }
+        return (price, article.Sum(x => x.Exist), a_code);
     }
 
     public async Task<List<T>> AddPriceAndExistFromHolooList<T>(
@@ -85,7 +90,6 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
         foreach (var price in prices)
         {
             foreach (var aCode in price) aCodeCs.Add(aCode.ArticleCodeCustomer);
-            ;
         }
 
         products = products.Where(x => x.Prices.Any(p => p.ArticleCode != null)).ToList();
@@ -214,12 +218,18 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
 
                     productPrices.Amount = articlePrice / 10;
                     double soldExist = 0;
+                    List<string> a_code = new List<string>();
+                    foreach (var item in article)
+                    {
+                        
+                            a_code.Add(item.A_Code);
+                    }
                     if (productPrices.ArticleCode != null)
                     {
                         //int userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
                         var userCode = 15;
-                        soldExist = _aBailRepository.GetWithACode(userCode, productPrices.ArticleCode,
-                            cancellationToken);
+                        foreach (var item in a_code)
+                            soldExist += _aBailRepository.GetWithACode(userCode, item, cancellationToken);
                     }
 
                     productPrices.Exist = article.Sum(x => x.Exist) - soldExist ?? 0;
