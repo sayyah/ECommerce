@@ -16,7 +16,7 @@ public interface IHolooArticleRepository : IHolooRepository<HolooArticle>
 
     Task<IEnumerable<HolooArticle>> GetHolooArticles(List<string> aCodeCs, CancellationToken cancellationToken);
 
-    Task<(decimal price, double? exist)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice);
+    Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice);
 
     Task<List<T>> AddPriceAndExistFromHolooList<T>(
         IList<T> products, bool isWithoutBill, bool? isCheckExist, CancellationToken cancellationToken)
