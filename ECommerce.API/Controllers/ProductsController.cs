@@ -79,7 +79,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -155,7 +155,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -286,7 +286,7 @@ public class ProductsController : ControllerBase
                 var s = productIndexPageViewModel.Where(x => x.Prices.Any(e => e.Exist == 0)).ToList();
             }
 
-            if (search == null || (search != null && !search[0].ToLower().Equals("name")))
+            if (search == null || (search != null && (search[0].ToLower().Equals("name") || search[0].ToLower().Equals("articlecodecustomer") || search[0].ToLower().Equals("brandid"))))
                 switch (productListFilteredViewModel.ProductSort)
                 {
                     case ProductSort.New:
@@ -362,7 +362,8 @@ public class ProductsController : ControllerBase
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             {
-                PaginationDetails = new PaginationDetails(), Code = ResultCode.DatabaseError,
+                PaginationDetails = new PaginationDetails(),
+                Code = ResultCode.DatabaseError,
                 Messages = new List<string> { "اشکال در سمت سرور" }
             });
         }
@@ -411,7 +412,8 @@ public class ProductsController : ControllerBase
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             {
-                PaginationDetails = new PaginationDetails(), Code = ResultCode.DatabaseError,
+                PaginationDetails = new PaginationDetails(),
+                Code = ResultCode.DatabaseError,
                 Messages = new List<string> { "اشکال در سمت سرور" }
             });
         }
@@ -439,7 +441,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -468,7 +470,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -497,7 +499,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -527,7 +529,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -556,7 +558,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -583,7 +585,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -602,7 +604,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -652,7 +654,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -680,7 +682,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -723,7 +725,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -752,7 +754,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -782,7 +784,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -811,7 +813,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -854,7 +856,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -898,7 +900,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -918,7 +920,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -937,7 +939,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -963,7 +965,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -1006,7 +1008,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -1136,7 +1138,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -1256,7 +1258,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }
