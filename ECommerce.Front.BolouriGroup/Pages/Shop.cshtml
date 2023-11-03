@@ -44,10 +44,10 @@
                     <form asp-page-handler="OnGet" method="get">
                         <label for="min-price" class="form-label  mt-3">حداقل قیمت (تومان) </label><br/>
                         <span id="min-price-txt">@Model.Min</span>
-                        <input type="range" class="form-range" min="100000" max="200000000" id="min-price" name="minprice" step="100000" value="@Model.Min">
+					    <input type="range" class="form-range" min="1000" max="2000000000" id="min-price" name="minprice" step="100000" value="@Model.Min">
                         <label for="max-price" class="form-label">حداکثر قیمت (تومان) </label><br/>
-                        <span id="max-price-txt">@Model.Max</span>
-                        <input type="range" class="form-range" min="1000000" max="200000000" id="max-price" name="maxprice" step="100000" value="@Model.Max">
+					    <span id="max-price-txt">@Model.Max</span>
+					    <input type="range" class="form-range" min="1000" max="2000000000" id="max-price" name="maxprice" step="100000" value="@Model.Max">
                         <br/>
                         <label class="widget-title border-left" style="font-size: 14px">فقط نمایش کالاهای موجود</label>
                         <label class="switch">
