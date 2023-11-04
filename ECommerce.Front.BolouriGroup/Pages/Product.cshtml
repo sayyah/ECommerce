@@ -486,7 +486,7 @@
         function RegisterButton() {
             var name = $("#comment_name").val();
             var text = $("#comment_text").val();
-            var productUrl = $("#comment_productUrl").val();
+            var productUrl = encodeURIComponent($("#comment_productUrl").val());
             var email = encodeURIComponent($("#comment_email").val());
             $.ajax({
                 type: "Get",
