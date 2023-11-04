@@ -86,7 +86,7 @@ public class CheckoutModel : PageModel
     {
         await Initial();
         var sumPriceResult = await DiscountCalculate(discountCode, SumPrice);
-       
+
         return new JsonResult(sumPriceResult);
     }
 
@@ -108,7 +108,7 @@ public class CheckoutModel : PageModel
             resultData.Description = "تخفیف مورد نظر یافت نشد";
             return resultData;
         }
-        if ( !DiscountResult.ReturnData.IsActive)
+        if (!DiscountResult.ReturnData.IsActive)
         {
             resultData.SumPrice = sumPrice;
             resultData.Succeed = false;
@@ -130,15 +130,24 @@ public class CheckoutModel : PageModel
             resultData.Description = "تخفیف مورد نظر منقضی شده است";
             return resultData;
         }
+        int sumPriceAfterDiscount = 0;
         if (discount.Amount is > 0)
         {
-            sumPrice -= (int)discount.Amount;
-            if (sumPrice < 0) sumPrice = 0;
+            sumPriceAfterDiscount = sumPrice - (int)discount.Amount;
+            if (sumPriceAfterDiscount < 0) sumPriceAfterDiscount = 0;
         }
         else
         {
-            if (discount.Percent != null) sumPrice -= (int)((discount.Percent.Value / 100) * sumPrice);
+            if (discount.Percent != null) sumPriceAfterDiscount = sumPrice - (int)(discount.Percent.Value / 100 * sumPrice);
         }
+        if (sumPriceAfterDiscount <= 0)
+        {
+            resultData.SumPrice = sumPrice;
+            resultData.Succeed = false;
+            resultData.Description = "تخفیف غیرمجاز می‌باشد.";
+            return resultData;
+        }
+        sumPrice = sumPriceAfterDiscount;
         resultData.SumPrice = sumPrice;
         resultData.Succeed = true;
         resultData.Description = "تخفیف بعد از پرداخت در فاکتور شما لحاظ خواهد شد";
@@ -186,7 +195,7 @@ public class CheckoutModel : PageModel
         decimal tempSumPrice = cart.Sum(x => x.SumPrice);
 
         var discountResult = await DiscountCalculate(discountCode, Convert.ToInt32(tempSumPrice));
-        SumPrice= discountResult.SumPrice;
+        SumPrice = discountResult.SumPrice;
         if (SumPrice >= 50000000)
         {
             Message = "مبلغ سفارش نمی تواند بیشتر از 50 میلیون تومان باشد";
