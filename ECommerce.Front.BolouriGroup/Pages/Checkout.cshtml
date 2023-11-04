@@ -200,7 +200,7 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (response) {
-                    $("#sumPrice").html(new Intl.NumberFormat().format(response.sumPrice));
+                    $("#sumPrice").html(new Intl.NumberFormat().format(response));
                     $("#discountCode").val('');
                 }
             });
