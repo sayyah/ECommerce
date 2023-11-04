@@ -1,6 +1,4 @@
-﻿using ECommerce.Domain.Entities.Helper;
-
-namespace ECommerce.Domain.Entities.Helper;
+﻿namespace ECommerce.Domain.Entities.Helper;
 
 
 public class PaginationParameters
