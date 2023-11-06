@@ -13,29 +13,37 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 
-new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", false)
-    .Build();
+DotNetEnv.Env.TraversePath().Load("../.env");
+
+var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
-    .Enrich.FromLogContext()
-    .WriteTo.Console(new CustomLogFormatter(),
-        LogEventLevel.Error)
-    .WriteTo.MSSqlServer(
-        builder.Configuration.GetConnectionString("SunflowerECommerce"),
-        new MSSqlServerSinkOptions
-        {
-            TableName = "LogEvents",
-            SchemaName = "EventLogging",
-            AutoCreateSqlTable = true,
-            BatchPostingLimit = 1000,
-            BatchPeriod = new TimeSpan(00, 00, 30)
-        }
-        , restrictedToMinimumLevel: LogEventLevel.Error)
-    .ReadFrom.Configuration(hostingContext.Configuration)
-);
+builder
+    .Host
+    .UseSerilog(
+        (hostingContext, loggerConfiguration) =>
+            loggerConfiguration
+                .Enrich
+                .FromLogContext()
+                .WriteTo
+                .Console(new CustomLogFormatter(), LogEventLevel.Error)
+                .WriteTo
+                .MSSqlServer(
+                    builder.Configuration.GetConnectionString("SunflowerECommerce"),
+                    new MSSqlServerSinkOptions
+                    {
+                        TableName = "LogEvents",
+                        SchemaName = "EventLogging",
+                        AutoCreateSqlTable = true,
+                        BatchPostingLimit = 1000,
+                        BatchPeriod = new TimeSpan(00, 00, 30)
+                    },
+                    restrictedToMinimumLevel: LogEventLevel.Error
+                )
+                .ReadFrom
+                .Configuration(hostingContext.Configuration)
+    );
 
 //builder.WebHost.ConfigureKestrel((context, options) =>
 //{
@@ -49,67 +57,95 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
 var siteSetting = builder.Configuration.GetSection(nameof(SiteSettings)).Get<SiteSettings>();
 
 builder.Services.AddControllers();
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
+builder
+    .Services
+    .AddControllers()
+    .AddJsonOptions(
+        options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
     );
 
 builder.Services.AddEndpointsApiExplorer();
+
 //builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<SunflowerECommerceDbContext>(option =>
-    option.UseSqlServer(builder.Configuration.GetConnectionString("SunflowerECommerce")));
-builder.Services.AddDbContext<HolooDbContext>(option =>
-    option.UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString"))
-        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+builder
+    .Services
+    .AddDbContext<SunflowerECommerceDbContext>(
+        option =>
+            option.UseSqlServer(builder.Configuration.GetConnectionString("SunflowerECommerce"))
+    );
+builder
+    .Services
+    .AddDbContext<HolooDbContext>(
+        option =>
+            option
+                .UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString"))
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+    );
 
 // Add Hangfire services.
-builder.Services.AddHangfire(configuration => configuration
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(builder.Configuration.GetConnectionString("SunflowerECommerce")));
+builder
+    .Services
+    .AddHangfire(
+        configuration =>
+            configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(
+                    builder.Configuration.GetConnectionString("SunflowerECommerce")
+                )
+    );
 
 // Add the processing server as IHostedService
 builder.Services.AddHangfireServer();
 
-builder.Services.AddSwaggerGen(swagger =>
-{
-    //swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-    //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    //swagger.IncludeXmlComments(xmlPath);
-    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+builder
+    .Services
+    .AddSwaggerGen(swagger =>
     {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description =
-            "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\""
-    });
-    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
+        //swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+        //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        //swagger.IncludeXmlComments(xmlPath);
+        swagger.AddSecurityDefinition(
+            "Bearer",
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description =
+                    "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\""
+            }
+        );
+        swagger.AddSecurityRequirement(
+            new OpenApiSecurityRequirement
+            {
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
                 }
-            },
-            new string[] { }
-        }
+            }
+        );
     });
-});
 
 builder.Services.AddDataProtection();
 
 builder.Services.AddSingleton(siteSetting);
 
-builder.Services.AddIdentity<User, UserRole>(identityOption =>
+builder
+    .Services
+    .AddIdentity<User, UserRole>(identityOption =>
     {
         identityOption.User.RequireUniqueEmail = true;
         identityOption.Password.RequiredLength = 8;
@@ -119,25 +155,29 @@ builder.Services.AddIdentity<User, UserRole>(identityOption =>
     .AddDefaultTokenProviders()
     .AddErrorDescriber<PersianIdentityErrorDescriber>();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters
+builder
+    .Services
+    .AddAuthentication(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidAudience = siteSetting.IdentitySetting?.Audience,
-        ValidIssuer = siteSetting.IdentitySetting?.Issuer,
-        IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(siteSetting.IdentitySetting.IdentitySecretKey))
-    };
-});
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = siteSetting.IdentitySetting?.Audience,
+            ValidIssuer = siteSetting.IdentitySetting?.Issuer,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(siteSetting.IdentitySetting.IdentitySecretKey)
+            )
+        };
+    });
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
@@ -214,7 +254,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseDeveloperExceptionPage();
-    app.UseSwagger(c => { c.SerializeAsV2 = true; });
+    app.UseSwagger(c =>
+    {
+        c.SerializeAsV2 = true;
+    });
 
     app.UseSwaggerUI(c =>
     {
@@ -238,10 +281,10 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-app.UseHangfireDashboard("/SunFlowerHangFire", new DashboardOptions
-{
-    IsReadOnlyFunc = _ => false
-});
+app.UseHangfireDashboard(
+    "/SunFlowerHangFire",
+    new DashboardOptions { IsReadOnlyFunc = _ => false }
+);
 
 app.UseRouting();
 

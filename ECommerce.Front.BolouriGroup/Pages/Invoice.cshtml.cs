@@ -11,20 +11,30 @@ public class InvoiceModel : PageModel
 {
     private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly IUserService _userService;
+    private readonly IConfiguration _configuration;
 
-    public InvoiceModel(IPurchaseOrderService purchaseOrderService, IUserService userService)
+    [BindProperty]
+    public long OrderId { get; set; }
+
+    [TempData]
+    public string Message { get; set; }
+
+    [TempData]
+    public string Code { get; set; }
+    public PurchaseOrder PurchaseOrder { get; set; }
+    public string Refid { get; set; }
+    public string SystemTraceNo { get; set; }
+
+    public InvoiceModel(
+        IPurchaseOrderService purchaseOrderService,
+        IUserService userService,
+        IConfiguration configuration
+    )
     {
         _purchaseOrderService = purchaseOrderService;
         _userService = userService;
+        _configuration = configuration;
     }
-
-    [BindProperty] public long OrderId { get; set; }
-    public string Refid { get; set; }
-    public string SystemTraceNo { get; set; }
-    [TempData] public string Message { get; set; }
-
-    [TempData] public string Code { get; set; }
-    public PurchaseOrder PurchaseOrder { get; set; }
 
     public async Task<ActionResult> OnGet(PurchaseResult result)
     {
@@ -33,8 +43,12 @@ public class InvoiceModel : PageModel
 
     public async Task<ActionResult> OnGetPayZarinpal(string factor, string status, string authority)
     {
-        if (string.IsNullOrEmpty(status) == false && string.IsNullOrEmpty(authority) == false &&
-            string.IsNullOrEmpty(factor) == false && status.ToLower() == "ok")
+        if (
+            string.IsNullOrEmpty(status) == false
+            && string.IsNullOrEmpty(authority) == false
+            && string.IsNullOrEmpty(factor) == false
+            && status.ToLower() == "ok"
+        )
         {
             var resultOrder = await _purchaseOrderService.GetByUserId();
             PurchaseOrder = resultOrder.ReturnData;
@@ -44,7 +58,8 @@ public class InvoiceModel : PageModel
                 if (PurchaseOrder.Discount.Amount != null && PurchaseOrder.Discount.Amount > 0)
                 {
                     amount -= (int)PurchaseOrder.Discount.Amount;
-                    if (amount < 0) amount = 0;
+                    if (amount < 0)
+                        amount = 0;
                 }
                 else
                 {
@@ -91,13 +106,18 @@ public class InvoiceModel : PageModel
 
                     if (result.Code == ServiceCode.Error)
                     {
-                        Message = "مشکل در هنگام ثبت سفارش. لطفا با پشتیبانی سایت تماس حاصل فرمایید.";
+                        Message =
+                            "مشکل در هنگام ثبت سفارش. لطفا با پشتیبانی سایت تماس حاصل فرمایید.";
                         Code = result.Code.ToString();
                     }
                     else if (result.Code == ServiceCode.Success)
                     {
-                        await _userService.SendInvocieSms(result.Message ?? "", "09111307006",
-                            DateTime.Now.ToString("MM/dd/yyyy"));
+                        string num1 = _configuration.GetValue<string>("InvoiceNumbers:num1");
+                        await _userService.SendInvocieSms(
+                            result.Message ?? "",
+                            num1,
+                            DateTime.Now.ToString("MM/dd/yyyy")
+                        );
                         Code = result.Code.ToString();
                         Message = "سفارش شما با موفقیت ثبت شد";
                     }
@@ -115,17 +135,19 @@ public class InvoiceModel : PageModel
         var symmetric = SymmetricAlgorithm.Create("TripleDes");
         symmetric.Mode = CipherMode.ECB;
         symmetric.Padding = PaddingMode.PKCS7;
-        var merchantKey =
-            "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz"; //"8v8AEee8YfZX+wwc1TzfShRgH3O9WOho";// "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz";
-        var encryptor = symmetric.CreateEncryptor(Convert.FromBase64String(merchantKey), new byte[8]);
+        string merchantKey = _configuration.GetValue<string>(
+            "SiteSettings:SanadSettings:terminalKey"
+        );
+        var encryptor = symmetric.CreateEncryptor(
+            Convert.FromBase64String(merchantKey),
+            new byte[8]
+        );
 
-        var signedData = Convert.ToBase64String(encryptor.TransformFinalBlock(dataBytes, 0, dataBytes.Length));
+        var signedData = Convert.ToBase64String(
+            encryptor.TransformFinalBlock(dataBytes, 0, dataBytes.Length)
+        );
 
-        var data = new
-        {
-            token = result.Token,
-            SignData = signedData
-        };
+        var data = new { token = result.Token, SignData = signedData };
 
         var resultOrder = await _purchaseOrderService.GetByUserId();
         PurchaseOrder = resultOrder.ReturnData;
@@ -135,7 +157,8 @@ public class InvoiceModel : PageModel
             if (PurchaseOrder.Discount.Amount is > 0)
             {
                 amount -= (int)PurchaseOrder.Discount.Amount;
-                if (amount < 0) amount = 0;
+                if (amount < 0)
+                    amount = 0;
             }
             else
             {
@@ -174,10 +197,30 @@ public class InvoiceModel : PageModel
                 }
                 else if (resulPay.Code == ServiceCode.Success)
                 {
-                    await _userService.SendInvocieSms(resulPay.Message ?? "", "09118876347", DateTime.Now.ToFa());
-                    await _userService.SendInvocieSms(resulPay.Message ?? "", "09909052454", DateTime.Now.ToFa());
-                    await _userService.SendInvocieSms(resulPay.Message ?? "", "09119384108", DateTime.Now.ToFa());
-                    await _userService.SendInvocieSms(resulPay.Message ?? "", "09111307006", DateTime.Now.ToFa());
+                    string num1 = _configuration.GetValue<string>("InvoiceNumbers:num1");
+                    string num2 = _configuration.GetValue<string>("InvoiceNumbers:num2");
+                    string num3 = _configuration.GetValue<string>("InvoiceNumbers:num3");
+                    string num4 = _configuration.GetValue<string>("InvoiceNumbers:num4");
+                    await _userService.SendInvocieSms(
+                        resulPay.Message ?? "",
+                        num1,
+                        DateTime.Now.ToFa()
+                    );
+                    await _userService.SendInvocieSms(
+                        resulPay.Message ?? "",
+                        num2,
+                        DateTime.Now.ToFa()
+                    );
+                    await _userService.SendInvocieSms(
+                        resulPay.Message ?? "",
+                        num3,
+                        DateTime.Now.ToFa()
+                    );
+                    await _userService.SendInvocieSms(
+                        resulPay.Message ?? "",
+                        num4,
+                        DateTime.Now.ToFa()
+                    );
                     Code = resulPay.Code.ToString();
                     Message = "سفارش شما با موفقیت ثبت شد";
                 }
@@ -186,7 +229,10 @@ public class InvoiceModel : PageModel
                 return Page();
             }
 
-        return RedirectToPage("Error", new { message = "مشکل در درگاه پرداخت " + res.Result.Description });
+        return RedirectToPage(
+            "Error",
+            new { message = "مشکل در درگاه پرداخت " + res.Result.Description }
+        );
     }
 
     public IActionResult OnGetFactorPrint(long orderId)
@@ -200,7 +246,8 @@ public class InvoiceModel : PageModel
         client.BaseAddress = new Uri(apiUrl);
         client.DefaultRequestHeaders.Accept.Clear();
         var response = await client.PostAsJsonAsync(apiUrl, value);
-        if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
+        if (response.IsSuccessStatusCode)
+            return await response.Content.ReadFromJsonAsync<T>();
         return default;
     }
 }

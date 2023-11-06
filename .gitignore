@@ -386,6 +386,8 @@ ECommerce.API/appsettings.json
 
 # dist folder (can be built)
 /ECommerce.Front.BolouriGroup/wwwroot/dist
+
+# appsettings.json
 /ECommerce.API/appsettings.json
 /ECommerce.Front.BolouriGroup/appsettings.json
 /ECommerce.Front.ArshaHamrah/appsettings.json
