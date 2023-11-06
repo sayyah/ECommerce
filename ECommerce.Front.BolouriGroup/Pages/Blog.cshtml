@@ -2,7 +2,6 @@
 @model BlogModel
 @{
     ViewData["Title"] = "وبلاگ مجموعه بلوری";
-    ViewData["description"] = "وبلاگ مجموعه بلوری";
 }
 <section class="inner-section single-banner">
     <div class="container">
@@ -77,25 +76,3 @@
         </div>
     </div>
 </section>
-@section Scripts
-{
-    <script type="application/ld+json">
-        {
-            "@@context": "https://schema.org",
-                "@@type": "Blog",
-                 "@@id": "https://boloorico.com/Blogs/1",
-                 "name": "Boloori Cooking And Catering Equipment Blog",
-             "publisher": {
-        "@@type": "Organization",
-        "@@id": "https://boloorico.com",
-        "name": "Boloori",
-                    "logo": {
-                "@@type": "ImageObject",
-                "@@id": "https://boloorico.com/img/BlueLogo.webp",
-                "url": "https://boloorico.com/img/BlueLogo.webp",
-                "width": "auto",
-                "height": "40"
-            }
-        }
-    </script>
-}

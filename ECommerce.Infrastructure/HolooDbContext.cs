@@ -1,7 +1,11 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
 using Microsoft.EntityFrameworkCore;
 
+<<<<<<<< HEAD:ECommerce.Infrastructure/HolooDbContext.cs
 namespace ECommerce.Infrastructure.DataContext;
+========
+namespace ECommerce.Infrastructure.DataContext.DataContext;
+>>>>>>>> 7e6cf90a (Fixed #565 ddd layers and dot net 8):ECommerce.Infrastructure/DataContext/HolooDbContext.cs
 
 public class HolooDbContext : DbContext
 {
@@ -40,7 +44,10 @@ public class HolooDbContext : DbContext
         modelBuilder.Entity<HolooCustomer>()
             .HasKey(c => new { c.C_Code });
         modelBuilder.Entity<HolooSarfasl>()
+<<<<<<<< HEAD:ECommerce.Infrastructure/HolooDbContext.cs
             .ToTable(tb => tb.HasTrigger("trUpdateParent"))
+========
+>>>>>>>> 7e6cf90a (Fixed #565 ddd layers and dot net 8):ECommerce.Infrastructure/DataContext/HolooDbContext.cs
             .HasKey(c => new { c.ID });
         modelBuilder.Entity<HolooFBail>()
             .HasKey(c => new { c.Fac_Code, c.Fac_Type });
