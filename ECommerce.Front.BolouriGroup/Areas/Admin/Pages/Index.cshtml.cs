@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages;
+﻿namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages;
 
 //[Authorize(AuthenticationSchemes ="ClientCookie")]
 public class IndexModel : PageModel

@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Contacts.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.Contacts.PaginationDetails.CurrentPage - 1) * Model.Contacts.PaginationDetails.PageSize;
 }
@@ -38,9 +38,9 @@
                 <div class="form-actions no-color">
                     <p>
                         جستجو بر اساس نام:
-                        <input type="text" name="search" value="@Model.Contacts.PaginationDetails.Search" />
-                        <input type="text" hidden="hidden" name="pageIndex" value="1" />
-                        <input type="submit" value="بجو" class="btn btn-primary" /> |
+                        <input type="text" name="search" value="@Model.Contacts.PaginationDetails.Search"/>
+                        <input type="text" hidden="hidden" name="pageIndex" value="1"/>
+                        <input type="submit" value="بجو" class="btn btn-primary"/> |
                         تعداد رکورد ها در صفحه :
                         <a asp-page="/Contacts/Index" asp-route-quantityPerPage="5">5</a> -
                         <a asp-page="/Contacts/Index" asp-route-quantityPerPage="10">10</a> -
@@ -51,46 +51,46 @@
             <div class="example-preview table-responsive">
                 <table id="productTableId" class="table table-bordered mb-6">
                     <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">تاریخ</th>
-                            <th scope="col">نام  فرستنده</th>
-                            <th scope="col">ایمیل فرستنده</th>
-                            <th scope="col">پاسخ داده شده</th>
-                            <th scope="col">موضوع</th>
-                            <th scope="col">عملیات</th>
-                        </tr>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">تاریخ</th>
+                        <th scope="col">نام فرستنده</th>
+                        <th scope="col">ایمیل فرستنده</th>
+                        <th scope="col">پاسخ داده شده</th>
+                        <th scope="col">موضوع</th>
+                        <th scope="col">عملیات</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @if (Model.Contacts.ReturnData != null)
+                    @if (Model.Contacts.ReturnData != null)
+                    {
+                        foreach (var contact in Model.Contacts.ReturnData)
                         {
-                            foreach (var contact in Model.Contacts.ReturnData)
-                            {
-                                <tr>
-                                    <th scope="row">@(i++)</th>پ
-                                    <td>@contact.CreatedDate</td>
-                                    <td>@contact.Name</td>
-                                    <td>@contact.Email</td>
-                                    @if (!string.IsNullOrEmpty(contact.ReplayMessage))
-                                    {
-                                        <td>&#x2714</td>
-                                    }
-                                    else
-                                    {
-                                        <td>&cross;</td>
-                                    }
-                                    <td>@contact.Subject</td>
-                                    <td>
-                                        <a asp-page="Answer" asp-route-id="@contact.Id" class="label label-inline label-light-success font-weight-bold">پاسخ</a>
-                                        <a asp-page="Delete" asp-route-id="@contact.Id" class="label label-inline label-light-danger font-weight-bold">حذف</a>
-                                    </td>
-                                </tr>
-                            }
+                            <tr>
+                                <th scope="row">@(i++)</th>پ
+                                <td>@contact.CreatedDate</td>
+                                <td>@contact.Name</td>
+                                <td>@contact.Email</td>
+                                @if (!string.IsNullOrEmpty(contact.ReplayMessage))
+                                {
+                                    <td>&#x2714</td>
+                                }
+                                else
+                                {
+                                    <td>&cross;</td>
+                                }
+                                <td>@contact.Subject</td>
+                                <td>
+                                    <a asp-page="Answer" asp-route-id="@contact.Id" class="label label-inline label-light-success font-weight-bold">پاسخ</a>
+                                    <a asp-page="Delete" asp-route-id="@contact.Id" class="label label-inline label-light-danger font-weight-bold">حذف</a>
+                                </td>
+                            </tr>
                         }
+                    }
                     </tbody>
                 </table>
 
-                <partial name="_Pagination" model="@Model.Contacts.PaginationDetails" />
+                <partial name="_Pagination" model="@Model.Contacts.PaginationDetails"/>
             </div>
 
         </div>

@@ -1,8 +1,4 @@
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.SlideShows;
 
@@ -38,9 +34,11 @@ public class IndexModel : PageModel
                 Message = result.Message;
                 Code = result.Code.ToString();
             }
+
             SlideShows = result.ReturnData;
             return Page();
         }
-        return RedirectToPage("/index", new { message = result.Message, code = result.Code.ToString() });      
+
+        return RedirectToPage("/index", new { message = result.Message, code = result.Code.ToString() });
     }
 }

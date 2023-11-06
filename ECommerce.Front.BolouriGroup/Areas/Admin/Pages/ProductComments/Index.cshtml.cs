@@ -1,19 +1,14 @@
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductComments;
-
 
 public class IndexModel : PageModel
 {
     private readonly IProductCommentService _productComments;
+
     public IndexModel(IProductCommentService productCommentService)
     {
         _productComments = productCommentService;
-
     }
 
     public ServiceResult<List<ProductComment>> ProductComments { get; set; }
@@ -39,14 +34,12 @@ public class IndexModel : PageModel
                 Message = result.Message;
                 Code = result.Code.ToString();
             }
+
             ProductComments = result;
             return Page();
         }
 
         return RedirectToPage("/index", new { message = result.Message, code = result.Code.ToString() });
-
     }
-       
-    
 }
  

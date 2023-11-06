@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------------
 
-  Template Name: Subash Ecommerce Responsive Bootstrap Template
+  Template Name: Subash ECommerce Responsive Bootstrap Template
   Description: This is html5 template
   Author: codecarnival
   Author URI: http://www.codecarnival.net/
@@ -314,9 +314,9 @@
 .banner-img img {
     float: left;
     height: 263px;
+    justify-content: center !important;
     padding-top: 10%;
     width: 100%;
-    justify-content: center !important
 }
 
 .banner-img {
@@ -673,10 +673,10 @@
     opacity: 0;
     padding: 5px 25px;
     position: absolute;
+    text-align: center;
     transition: all 0.3s ease 0s;
     visibility: hidden;
     width: 100%;
-    text-align: center;
 }
 
 .product-item-2 .action-button > li > a {
@@ -1184,9 +1184,9 @@
 /* -------------------------------------
     9.9 Widget color
 ------------------------------------- */
-.widget-color {
-    font-size: 17px
-}
+
+.widget-color { font-size: 17px }
+
 .widget-color ul li {
     display: block;
     position: relative;
@@ -1202,7 +1202,7 @@
 .widget-color ul li a::before {
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
-/*    background: #ff7f00 none repeat scroll 100% 0;*/
+    /*    background: #ff7f00 none repeat scroll 100% 0;*/
     border-radius: 50%;
     content: "";
     height: 12px;

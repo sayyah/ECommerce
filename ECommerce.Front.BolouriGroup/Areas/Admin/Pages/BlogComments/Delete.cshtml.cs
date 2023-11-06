@@ -1,21 +1,19 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogComments;
 
 public class DeleteModel : PageModel
 {
+    private readonly IBlogCommentService _blogCommentService;
 
     private readonly IBlogService _blogService;
-    private readonly IBlogCommentService _blogCommentService;
+
     public DeleteModel(IBlogCommentService blogCommentService, IBlogService blogService)
     {
         _blogCommentService = blogCommentService;
         _blogService = blogService;
-
     }
+
     [BindProperty] public BlogComment BlogComment { get; set; }
     public Blog Blog { get; set; }
     [TempData] public string Message { get; set; }
@@ -25,7 +23,7 @@ public class DeleteModel : PageModel
     {
         var BlogCommentResult = await _blogCommentService.GetById(id);
         BlogComment = BlogCommentResult.ReturnData;
-        int _blogId = BlogComment.BlogId ?? default(int);
+        var _blogId = BlogComment.BlogId ?? default(int);
         var ProductResult = await _blogService.GetById(_blogId);
         Blog = ProductResult.ReturnData;
     }
@@ -39,9 +37,8 @@ public class DeleteModel : PageModel
             return RedirectToPage("/BlogComments/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }
+
         return Page();
     }
-
-
 }
 

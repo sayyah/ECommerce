@@ -1,4 +1,4 @@
-﻿@model List<Ecommerce.Entities.ViewModel.CategoryParentViewModel>
+﻿@model List<CategoryParentViewModel>
 
 @if (Model != null)
 {
@@ -24,7 +24,7 @@
                 <a href="@path">@category.Name</a>
             </li>
         }*@
-        @if (category.Depth== 1)
+        @if (category.Depth == 1)
         {
             <li>
                 <a href="@path" onclick="categoryChangeHandler(event)">@category.Name</a>

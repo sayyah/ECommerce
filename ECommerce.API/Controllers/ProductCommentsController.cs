@@ -1,18 +1,12 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.API.Interface;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class ProductCommentsController : ControllerBase
 {
+    private readonly IImageRepository _imageRepository;
     private readonly ILogger<ProductCommentsController> _logger;
     private readonly IProductCommentRepository _productCommentRepository;
-    private readonly IImageRepository _imageRepository;
 
     public ProductCommentsController(IProductCommentRepository productCommentRepository,
         ILogger<ProductCommentsController> logger, IImageRepository imageRepository)
@@ -54,17 +48,14 @@ public class ProductCommentsController : ControllerBase
         }
     }
 
-   [HttpGet]
+    [HttpGet]
     public async Task<ActionResult<ProductComment>> GetById(int id, CancellationToken cancellationToken)
     {
         try
         {
             var result = _productCommentRepository.GetByIdWithInclude("Answer,Product", id);
             result.Product.Images = await _imageRepository.GetByProductId(result.Product.Id, cancellationToken);
-            if (result.Answer == null)
-            {
-                result.Answer = new ProductComment();
-            }
+            if (result.Answer == null) result.Answer = new ProductComment();
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -119,11 +110,11 @@ public class ProductCommentsController : ControllerBase
     {
         try
         {
-
             ProductComment? _commentAnswer;
             if (productComment.AnswerId != null)
             {
-                _commentAnswer = await _productCommentRepository.GetByIdAsync(cancellationToken, productComment.AnswerId);
+                _commentAnswer =
+                    await _productCommentRepository.GetByIdAsync(cancellationToken, productComment.AnswerId);
                 _commentAnswer.Text = productComment.Answer.Text;
                 _commentAnswer.DateTime = DateTime.Now;
                 await _productCommentRepository.UpdateAsync(_commentAnswer, cancellationToken);
@@ -138,9 +129,12 @@ public class ProductCommentsController : ControllerBase
                     productComment.Answer.IsAnswered = false;
                     productComment.Answer.DateTime = DateTime.Now;
                     _commentAnswer = await _productCommentRepository.AddAsync(productComment.Answer, cancellationToken);
-                    if (_commentAnswer != null) { productComment.Answer = _commentAnswer; productComment.AnswerId = _commentAnswer.Id; }
+                    if (_commentAnswer != null)
+                    {
+                        productComment.Answer = _commentAnswer;
+                        productComment.AnswerId = _commentAnswer.Id;
+                    }
                 }
-
             }
 
             await _productCommentRepository.UpdateAsync(productComment, cancellationToken);
@@ -177,12 +171,13 @@ public class ProductCommentsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAllAccesptedComments([FromQuery] PaginationParameters paginationParameters,
-    CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _productCommentRepository.GetAllAccesptedComments(paginationParameters, cancellationToken);
+            var entity =
+                await _productCommentRepository.GetAllAccesptedComments(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -206,5 +201,4 @@ public class ProductCommentsController : ControllerBase
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
-
 }

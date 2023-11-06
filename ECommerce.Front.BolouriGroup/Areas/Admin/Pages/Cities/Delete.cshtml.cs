@@ -1,8 +1,4 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using ECommerce.Services.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Cities;

@@ -1,11 +1,8 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Users;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Users
+public class CreateModel : PageModel
 {
-    public class CreateModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

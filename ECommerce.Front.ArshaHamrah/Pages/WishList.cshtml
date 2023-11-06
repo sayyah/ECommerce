@@ -1,6 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Pages.WishListModel
+@model WishListModel
 @{
     ViewData["Title"] = "لیست علاقمندی ها";
 }
@@ -29,40 +29,40 @@
 
 <div class="tab-pane container" id="wishlist">
     <div class="row wishlist-content">
-         
-                <table class="table table-bordered mb-50" >
-                    <thead>
-                    <tr style="text-align: center;color: black">
-                        <th class="product-thumbnail" style="width: 55%">محصول</th>
-                        <th class="product-remove">حذف</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var wish in Model.WishList.ReturnData)
-                    {
-                        <!-- tr -->
-                        <tr id="wishlist-@wish.Id">
-                            <td class="product-thumbnail">
-                                <div class="pro-thumbnail-img">
-                                    <img src="~/@wish.ImagePath" alt="@wish.Alt">
-                                </div>
-                                <div class="pro-thumbnail-info text-left">
-                                    <h6 class="product-title-2">
-                                        <a asp-page="Product" asp-route-productId="@wish.Url">@wish.Name</a>
-                                    </h6>
-                                    <p>برند: @wish.Brand</p>
-                                </div>
-                            </td>
-                            <td class="product-remove">
-                                <a href="javascript:void(0)" onclick="RemoveWish(@wish.Id,1)">
-                                    <i class="zmdi zmdi-close"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-        
+
+        <table class="table table-bordered mb-50">
+            <thead>
+            <tr style="color: black; text-align: center;">
+                <th class="product-thumbnail" style="width: 55%">محصول</th>
+                <th class="product-remove">حذف</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var wish in Model.WishList.ReturnData)
+            {
+                <!-- tr -->
+                <tr id="wishlist-@wish.Id">
+                    <td class="product-thumbnail">
+                        <div class="pro-thumbnail-img">
+                            <img src="~/@wish.ImagePath" alt="@wish.Alt">
+                        </div>
+                        <div class="pro-thumbnail-info text-left">
+                            <h6 class="product-title-2">
+                                <a asp-page="Product" asp-route-productId="@wish.Url">@wish.Name</a>
+                            </h6>
+                            <p>برند: @wish.Brand</p>
+                        </div>
+                    </td>
+                    <td class="product-remove">
+                        <a href="javascript:void(0)" onclick="RemoveWish(@wish.Id,1)">
+                            <i class="zmdi zmdi-close"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
     </div>
 </div>
 

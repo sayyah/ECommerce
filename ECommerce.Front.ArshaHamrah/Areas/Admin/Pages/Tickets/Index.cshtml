@@ -1,7 +1,7 @@
 ﻿@page
-@model ArshaHamrah.Areas.Admin.Pages.Tickets.IndexModel
+@model IndexModel
 @{
-	ViewData["Title"] = "تیکت ها";
+    ViewData["Title"] = "تیکت ها";
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -12,9 +12,9 @@
             <h3 class="card-label">لیست کامنت ها</h3>
         </div>
     </div>
-    </div>
-    <div class="container">
-        <div class="row">
+</div>
+<div class="container">
+    <div class="row">
         <!-- single-product-tab -->
         <div class="single-product-tab">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -32,7 +32,10 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
-                    data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">تیکت های پاسخ داده شده</button></li>
+                            data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">
+                        تیکت های پاسخ داده شده
+                    </button>
+                </li>
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -48,25 +51,31 @@
                         <!-- single comments -->
                         <div class="media mt-30">
                             <div class="media-left">
-                                <a href="#"><img class="media-object" src="img/author/1.jpg" alt="#"></a>
+                                <a href="#">
+                                    <img class="media-object" src="img/author/1.jpg" alt="#">
+                                </a>
                             </div>
                             <div class="media-body">
                                 <div class="clearfix">
                                     <div class="name-commenter pull-left">
-                                        <h6 class="media-heading"><a href="#">تونی استارک</a></h6>
+                                        <h6 class="media-heading">
+                                            <a href="#">تونی استارک</a>
+                                        </h6>
                                         <p class="mb-10">27 شهریور 1398 در 14:30</p>
                                     </div>
                                     <div class="pull-right">
                                         <ul class="reply-delate">
-                                            <li><button type="button" data-bs-toggle="modal" data-bs-target="#myModal">پاسخ</button></li>
-                                           
+                                            <li>
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#myModal">پاسخ</button>
+                                            </li>
+
                                         </ul>
                                     </div>
                                 </div>
                                 <p class="mb-0">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک</p>
                             </div>
                         </div>
-               
+
                     </div>
                     <!-- The Modal -->
                     <div class="modal" id="myModal">
@@ -106,7 +115,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                  
+
                                 </div>
 
                             </div>
@@ -116,6 +125,5 @@
                 </div>
             </div>
         </div>
-        </div>
     </div>
-
+</div>

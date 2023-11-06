@@ -1,20 +1,19 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Front.ArshaHamrah.Utilities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ServiceReferenceMellat;
+using ECommerce.Front.ArshaHamrah.Connected Services.ServiceReferenceMellat;
 
 namespace ECommerce.Front.ArshaHamrah.Pages;
 
 public class CheckoutModel : PageModel
 {
     private readonly ICartService _cartService;
-    private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly ICityService _cityService;
+    private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly ISendInformationService _sendInformationService;
     private readonly IStateService _stateService;
 
@@ -47,7 +46,8 @@ public class CheckoutModel : PageModel
     public async Task<IActionResult> OnGet()
     {
         await Initial();
-        if (CartList.ReturnData.Count == 0) return RedirectToPage("Cart", new { Message = "هیچ کالایی انتخاب نشده است" });
+        if (CartList.ReturnData.Count == 0)
+            return RedirectToPage("Cart", new { Message = "هیچ کالایی انتخاب نشده است" });
         return Page();
     }
 
@@ -58,7 +58,7 @@ public class CheckoutModel : PageModel
         CartList = await _cartService.Load(HttpContext);
 
         var cartCount = CartList.ReturnData.Sum(x => x.Quantity) - 2;
-        PostPrice = 18000 + (cartCount * 2000);
+        PostPrice = 18000 + cartCount * 2000;
 
         var userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
         var sendInformationList = (await _sendInformationService.Load()).ReturnData;
@@ -109,15 +109,16 @@ public class CheckoutModel : PageModel
             Message = resultCart.Message;
             Code = resultCart.Code.ToString();
         }
+
         var cart = resultCart.ReturnData;
-        decimal tempSumPrice = cart.Sum(x => x.SumPrice) + PostPrice;
+        var tempSumPrice = cart.Sum(x => x.SumPrice) + PostPrice;
         SumPrice = Convert.ToInt32(tempSumPrice);
         var purchaseOrder = (await _purchaseOrderService.GetByUserId()).ReturnData;
         purchaseOrder.Amount = tempSumPrice;
         purchaseOrder.SendInformationId = SendInformation.Id;
         if (resultSendInformation == 0)
         {
-            string description = "";
+            var description = "";
             switch (Portal)
             {
                 case "zarinpal":
@@ -140,7 +141,7 @@ public class CheckoutModel : PageModel
                     //mellat
                     SumPrice *= 10;
                     purchaseOrder.OrderGuid = Guid.NewGuid();
-                    byte[] gb = purchaseOrder.OrderGuid.ToByteArray();
+                    var gb = purchaseOrder.OrderGuid.ToByteArray();
                     purchaseOrder.OrderId = BitConverter.ToInt64(gb, 0);
                     returnAction = "MellatSuccess";
                     var date = DateTime.Now.ToString("yyyyMMdd");
@@ -171,11 +172,12 @@ public class CheckoutModel : PageModel
                         //var form = MellatHelper.PreparePOSTForm(address, collection);
                         //await Response.WriteAsync(form);
                         //return Redirect($"{address}?RefId={returnCode[1]}");
-                        string refId = returnCode[1];
-                        return RedirectToPage("RedirectToMellat", new { refId = refId });
+                        var refId = returnCode[1];
+                        return RedirectToPage("RedirectToMellat", new { refId });
                     }
+
                     var message = MellatErrorCode.GetMessage(result.Body.@return);
-                    return RedirectToPage("Error", new { message = message });
+                    return RedirectToPage("Error", new { message });
             }
 
             Message = "خطا هنگام اتصال به درگاه بانکی";
@@ -185,9 +187,9 @@ public class CheckoutModel : PageModel
             if (string.IsNullOrEmpty(Message) || Message.Equals("\r\n"))
                 Message = "لطفا اطلاعات آدرس را تکمیل کنید یا از لیست یک آدرس را انتخاب کنید";
         }
+
         Code = resultSendInformation.ToString();
         await Initial();
         return Page();
     }
-
 }

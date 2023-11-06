@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.Services;
 
@@ -76,7 +73,7 @@ public class CategoryService : EntityService<Category>, ICategoryService
             {
                 Code = ServiceCode.Success,
                 ReturnData = result.ReturnData
-                    .Select(x => new TreeViewModel {Id = x.Id, Name = x.Name, ParentId = x.ParentId}).ToList()
+                    .Select(x => new TreeViewModel { Id = x.Id, Name = x.Name, ParentId = x.ParentId }).ToList()
             };
         return new ServiceResult<List<TreeViewModel>>
         {
@@ -101,14 +98,13 @@ public class CategoryService : EntityService<Category>, ICategoryService
     {
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<CategoryViewModel>>> GetCategoriesByProductId(int productId)

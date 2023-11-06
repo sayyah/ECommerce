@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-
-namespace ECommerce.Services.IServices;
+﻿namespace ECommerce.Services.IServices;
 
 public interface IPriceService : IEntityService<Price>
 {

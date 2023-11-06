@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.IServices;
 

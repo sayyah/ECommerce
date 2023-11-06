@@ -1,5 +1,5 @@
 ﻿@page "/Admin/EditCity/{handler?}"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Cities.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -33,7 +33,7 @@
                 </div>
                 <!--begin::Form-->
                 <form class="form" method="post" asp-page-handler="OnPost">
-                    <input hidden="hidden" asp-for="@Model.City.Id" />
+                    <input hidden="hidden" asp-for="@Model.City.Id"/>
                     <div class="card-body">
                         <div class="form-group">
                             <label>انتخاب استان</label>
@@ -41,12 +41,12 @@
                         </div>
                         <div class="form-group">
                             <label>نام</label>
-                            <input asp-for="@Model.City.Name" class="form-control form-control-solid" />
+                            <input asp-for="@Model.City.Name" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.City.Name" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
-                            <input asp-for="@Model.City.CreatedDate" type="datetime" hidden="hidden" />
-                            <input asp-for="@Model.City.CreatorUserId" type="number" hidden="hidden" />                            
+                            <input asp-for="@Model.City.CreatedDate" type="datetime" hidden="hidden"/>
+                            <input asp-for="@Model.City.CreatorUserId" type="number" hidden="hidden"/>
                         </div>
                     </div>
                     <div class="card-footer">

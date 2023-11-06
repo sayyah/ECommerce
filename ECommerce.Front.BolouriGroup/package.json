@@ -15,6 +15,7 @@
     "@types/slick-carousel": "^1.6.37",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
+    "eslint": "^8.53.0",
     "file-loader": "^6.2.0",
     "mini-css-extract-plugin": "^2.7.6",
     "style-loader": "^3.3.3",

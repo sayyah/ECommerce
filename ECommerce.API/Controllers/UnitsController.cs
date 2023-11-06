@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -50,7 +44,7 @@ public class UnitsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -68,7 +62,7 @@ public class UnitsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -93,7 +87,7 @@ public class UnitsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -115,7 +109,7 @@ public class UnitsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام واحد تکراری است"}
+                    Messages = new List<string> { "نام واحد تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -127,7 +121,7 @@ public class UnitsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -141,14 +135,14 @@ public class UnitsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
-                    Messages = new List<string> {"واحد پیشفرض قابل ویرایش نیست"}
+                    Messages = new List<string> { "واحد پیشفرض قابل ویرایش نیست" }
                 });
             var repetitive = await _unitRepository.GetByName(unit.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != unit.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام واحد تکراری است"}
+                    Messages = new List<string> { "نام واحد تکراری است" }
                 });
             if (repetitive != null) _unitRepository.Detach(repetitive);
             await _unitRepository.UpdateAsync(unit, cancellationToken);
@@ -160,7 +154,7 @@ public class UnitsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -174,7 +168,7 @@ public class UnitsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
-                    Messages = new List<string> {"واحد پیشفرض قابل حذف نیست"}
+                    Messages = new List<string> { "واحد پیشفرض قابل حذف نیست" }
                 });
             await _unitRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
@@ -185,7 +179,7 @@ public class UnitsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -213,7 +207,8 @@ public class UnitsController : ControllerBase
                 _logger.LogCritical(e, e.Message);
                 return Ok(new ApiResult
                 {
-                    Code = ResultCode.DatabaseError, Messages = new List<string> {"افزودن اتوماتیک به مشکل برخورد کرد"}
+                    Code = ResultCode.DatabaseError,
+                    Messages = new List<string> { "افزودن اتوماتیک به مشکل برخورد کرد" }
                 });
             }
 
@@ -225,7 +220,7 @@ public class UnitsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 }

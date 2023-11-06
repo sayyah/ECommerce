@@ -57,9 +57,12 @@ editor.setData( '&lt;p&gt;Hello world!&lt;/p&gt;' );
         Advanced Content Filter is enabled by default, working in "automatic mode", yet
         it provides a set of easy rules that allow adjusting filtering rules
         and disabling the entire feature when necessary. The config property
-        responsible for this feature is <code>
+        responsible for this feature is
+        <code>
             <a class="samples"
-               href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent">config.allowedContent</a>
+               href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent">
+                config.allowedContent
+            </a>
         </code>.
     </p>
     <p>
@@ -68,7 +71,8 @@ editor.setData( '&lt;p&gt;Hello world!&lt;/p&gt;' );
         plugin is loaded it implies that <code>&lt;a&gt;</code> tag is
         automatically allowed. Each plugin is given a set
         of predefined <abbr title="Advanced Content Filter">ACF</abbr> rules
-        that control the editor until <code>
+        that control the editor until
+        <code>
             <a class="samples"
                href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent">
                 config.allowedContent
@@ -77,12 +81,14 @@ editor.setData( '&lt;p&gt;Hello world!&lt;/p&gt;' );
         is defined manually.
     </p>
     <p>
-        Let's assume our intention is to restrict the editor to accept (produce) <strong>
+        Let's assume our intention is to restrict the editor to accept (produce)
+        <strong>
             paragraphs
             only: no attributes, no styles, no other tags
         </strong>.
         With <abbr title="Advanced Content Filter">ACF</abbr>
-        this is very simple. Basically set <code>
+        this is very simple. Basically set
+        <code>
             <a class="samples"
                href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent">
                 config.allowedContent
@@ -119,7 +125,8 @@ alert( editor.getData() );
     <p>
         You may, of course, want CKEditor to avoid filtering of any kind.
         To get rid of <abbr title="Advanced Content Filter">ACF</abbr>,
-        basically set <code>
+        basically set
+        <code>
             <a class="samples"
                href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent">
                 config.allowedContent
@@ -158,7 +165,8 @@ CKEDITOR.replace( <em>textarea_id</em>, {
     <h2>Sample configurations</h2>
     <p>
         There are several editor instances below that present different
-        <abbr title="Advanced Content Filter">ACF</abbr> setups. <strong>
+        <abbr title="Advanced Content Filter">ACF</abbr> setups.
+        <strong>
             All of them,
             except the inline instance, share the same HTML content
         </strong> to visualize
@@ -256,14 +264,16 @@ CKEDITOR.replace( 'editor2', {
             </li>
         </ul>
         <p>
-            Please note that <strong>
+            Please note that
+            <strong>
                 <abbr title="User Interface">UI</abbr> of the
                 editor is different
             </strong>. It's a response to what happened to the filters.
             Since <code>text-align</code> isn't allowed, the align toolbar is gone.
             The same thing happened to subscript/superscript, strike, underline
             (<code>&lt;u&gt;</code>, <code>&lt;sub&gt;</code>, <code>&lt;sup&gt;</code>
-            are disallowed by <code>
+            are disallowed by
+            <code>
                 <a class="samples"
                    href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-allowedContent">
                     config.allowedContent
@@ -368,7 +378,8 @@ CKEDITOR.replace( 'editor4', {
             kind of content (for example: the image is missing because
             of <code>removeButtons: 'Image'</code>). The conclusion is that
             <abbr title="Advanced Content Filter">ACF</abbr> works "backwards"
-            as well: <strong>
+            as well:
+            <strong>
                 modifying <abbr title="User Interface">UI</abbr>
                 elements is changing allowed content rules
             </strong>.
@@ -424,7 +435,8 @@ CKEDITOR.replace( 'editor4', {
     <div class="description">
         <p>
             This editor is using a custom configuration for <abbr title="Advanced Content Filter">ACF</abbr>.
-            It's using the <a href="http://docs.ckeditor.com/#!/guide/dev_disallowed_content" target="_blank">
+            It's using the
+            <a href="http://docs.ckeditor.com/#!/guide/dev_disallowed_content" target="_blank">
                 Disallowed Content
             </a> property of the filter to eliminate all <code>title</code> attributes.
         </p>
@@ -480,7 +492,8 @@ CKEDITOR.replace( 'editor6', {
     <div class="description">
         <p>
             This editor is using a custom configuration for <abbr title="Advanced Content Filter">ACF</abbr>.
-            It's using the <a href="http://docs.ckeditor.com/#!/guide/dev_disallowed_content" target="_blank">
+            It's using the
+            <a href="http://docs.ckeditor.com/#!/guide/dev_disallowed_content" target="_blank">
                 Disallowed Content
             </a> property of the filter to eliminate all <code>a</code> and <code>img</code> tags,
             while allowing all other tags.

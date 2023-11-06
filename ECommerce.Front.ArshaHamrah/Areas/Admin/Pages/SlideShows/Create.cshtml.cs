@@ -1,6 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -73,7 +72,7 @@ public class CreateModel : PageModel
             var result = await _slideShowService.Add(SlideShow);
             if (result.Code == 0)
                 return RedirectToPage("/SlideShows/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
@@ -90,7 +89,7 @@ public class CreateModel : PageModel
             Message = result.Message;
             Code = result.Code.ToString();
         }
-        return new JsonResult(result.ReturnData);
 
+        return new JsonResult(result.ReturnData);
     }
 }

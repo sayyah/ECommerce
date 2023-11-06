@@ -1,5 +1,7 @@
 ﻿@page "/blog/{blogUrl}"
-@model ECommerce.Front.BolouriGroup.Pages.BlogDetailsModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using PersianDate.Standard
+@model BlogDetailsModel
 @{
     ViewData["Title"] = "جزئیات وبلاگ مجموعه بلوری";
     ViewData["description"] = "جزئیات وبلاگ مجموعه بلوری";
@@ -27,9 +29,15 @@
                     </a>
                     <div class="blog-details-content">
                         <ul class="blog-details-meta">
-                            <li><i class="far fa-calendar"></i><span> @Model.Blog.EditDateTime.ToFa()  </span></li>
-                            <li><i class="far fa-user"></i><span> @($"توسط {Model.Blog.BlogAuthor.Name}")  </span></li>
-                            <li><i class="far fa-comments"></i><span>@Model.BlogComments.ReturnData.Count نظر</span></li>
+                            <li>
+                                <i class="far fa-calendar"></i><span> @Model.Blog.EditDateTime.ToFa() </span>
+                            </li>
+                            <li>
+                                <i class="far fa-user"></i><span> @($"توسط {Model.Blog.BlogAuthor.Name}") </span>
+                            </li>
+                            <li>
+                                <i class="far fa-comments"></i><span>@Model.BlogComments.ReturnData.Count نظر</span>
+                            </li>
                         </ul>
                         <h1 class="blog-details-title">@Html.Raw(Model.Blog.Title)</h1>
                         <p class="blog-details-desc">
@@ -53,7 +61,9 @@
                                 <h4>برچسب ها:</h4>
                                 @foreach (var item in Model.Blog.Tags)
                                 {
-                                    <li><a href="#"> @item.TagText </a></li>
+                                    <li>
+                                        <a href="#"> @item.TagText </a>
+                                    </li>
                                 }
                             </ul>
                         </div>
@@ -72,16 +82,21 @@
                                     <a class="comment-avatar" href="#">
                                         <img src="~/images/users/user-profile.png" alt="user-profile" loading="lazy">
                                     </a>
-                                    <h6 class="comment-meta"><a href="#"> @blogComment.Name </a><span> @blogComment.DateTime.ToFa("f") </span></h6>
+                                    <h6 class="comment-meta">
+                                        <a href="#"> @blogComment.Name </a><span> @blogComment.DateTime.ToFa("f") </span>
+                                    </h6>
                                 </div>
                                 <p class="comment-desc">
                                     @blogComment.Text
                                 </p>
-                                <p style="background-color:darkgrey">
+                                <p style="background-color: darkgrey">
                                     @{
-                                        string _answer = "";
+                                        var _answer = "";
                                     }
-                                    @if (!string.IsNullOrEmpty(blogComment.Answer?.Text)) { _answer = $"{blogComment.Answer?.Name} : {blogComment.Answer?.Text}"; }
+                                    @if (!string.IsNullOrEmpty(blogComment.Answer?.Text))
+                                    {
+                                        _answer = $"{blogComment.Answer?.Name} : {blogComment.Answer?.Text}";
+                                    }
                                     @_answer
                                 </p>
                             </li>
@@ -89,10 +104,10 @@
 
                     </ul>
                 </div>
-                <div class="row"> 
+                <div class="row">
                     <div class="col-lg-12 col-12">
                         <ul class="pagination">
-                            <partial name="_Pagination" model="@Model.BlogComments.PaginationDetails" />
+                            <partial name="_Pagination" model="@Model.BlogComments.PaginationDetails"/>
                         </ul>
                     </div>
                 </div>
@@ -100,16 +115,22 @@
 
                 <div class="blog-details-form">
                     <h3 class="details-form-title">ارسال نظر</h3>
-                    <input id="comment_blogUrl" hidden value="@Model.Blog.Url" />
+                    <input id="comment_blogUrl" hidden value="@Model.Blog.Url"/>
                     <div class="row">
                         <div class="col-6">
-                            <div class="form-group"><input type="text" class="form-control" id="comment_name" placeholder="اسمت را وارد کن"></div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="comment_name" placeholder="اسمت را وارد کن">
+                            </div>
                         </div>
                         <div class="col-6">
-                            <div class="form-group"><input type="email" class="form-control" id="comment_email" placeholder="ایمیل خود را وارد کنید"></div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" id="comment_email" placeholder="ایمیل خود را وارد کنید">
+                            </div>
                         </div>
                         <div class="col-12">
-                            <div class="form-group"><textarea class="form-control" id="comment_text" placeholder="نظر خود را بنویسید"></textarea></div>
+                            <div class="form-group">
+                                <textarea class="form-control" id="comment_text" placeholder="نظر خود را بنویسید"></textarea>
+                            </div>
                         </div>
                     </div>
                     <button type="button" onclick="RegisterButton()" class="form-btn" role="button">ارسال نظر</button>
@@ -119,7 +140,9 @@
             <div class="col-lg-4">
                 <div class="blog-widget">
                     <h3 class="blog-widget-title">جستجو کردن</h3>
-                    <form class="blog-widget-form"><input type="text" placeholder="جستجو کردن..."><button class="far fa-search"></button></form>
+                    <form class="blog-widget-form">
+                        <input type="text" placeholder="جستجو کردن..."><button class="far fa-search"></button>
+                    </form>
                 </div>
                 <div class="blog-widget">
                     <h3 class="blog-widget-title">آخرین ارسال ها</h3>
@@ -128,7 +151,9 @@
                         @foreach (var blog in Model.Blogs.ReturnData)
                         {
                             <li>
-                                <a class="blog-widget-media" href="/blog/@blog.Url"><img src="/@($"{blog.Image.Path}/{blog.Image.Name}")" alt="@blog.Image.Alt" loading="lazy"></a>
+                                <a class="blog-widget-media" href="/blog/@blog.Url">
+                                    <img src="/@($"{blog.Image.Path}/{blog.Image.Name}")" alt="@blog.Image.Alt" loading="lazy">
+                                </a>
                                 <h6 class="blog-widget-text">
                                     <a href="/blog/@blog.Url">@blog.Title</a>
                                     <span>@blog.CreateDateTime</span>
@@ -143,7 +168,9 @@
                         @foreach (var cat in Model.Categories.ReturnData)
                         {
                             <li>
-                                <a href="/Blogs/@cat.Id">@cat.Name <span></span></a>
+                                <a href="/Blogs/@cat.Id">
+                                    @cat.Name <span></span>
+                                </a>
                             </li>
                         }
                     </ul>
@@ -154,7 +181,9 @@
                         @foreach (var tag in Model.Tags.ReturnData)
                         {
                             var path = $"/Blogs/{tag.TagText}";
-                            <li><a href="@path">@tag.TagText</a></li>
+                            <li>
+                                <a href="@path">@tag.TagText</a>
+                            </li>
                         }
                     </ul>
                 </div>
@@ -205,6 +234,7 @@
             });
         }
     </script>
+<<<<<<< HEAD
 
     <script type="application/ld+json">
         {
@@ -234,3 +264,6 @@
 }
 
 
+=======
+}
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)

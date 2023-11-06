@@ -1,18 +1,16 @@
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages;
+namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Users;
 
 public class PurchaseOrderModel : PageModel
 {
     private readonly IPurchaseOrderService _purchaseOrderService;
+
     public PurchaseOrderModel(IPurchaseOrderService purchaseOrderService)
     {
         _purchaseOrderService = purchaseOrderService;
     }
+
     [BindProperty] public PurchaseOrder PurchaseOrder { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }

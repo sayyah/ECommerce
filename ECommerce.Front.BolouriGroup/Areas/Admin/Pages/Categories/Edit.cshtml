@@ -1,5 +1,5 @@
 ﻿@page "/Admin/EditCategory/{handler?}"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Categories.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -57,21 +57,21 @@
                         <div class="form-group">
                             <label>تصویر بنر</label> <img style="width: 50%" src="@Model.Category.ImagePath">
                             <div class="custom-file">
-                                <input asp-for="Upload" type="file" class="custom-file-input" id="customفایل" accept=".webp" />
+                                <input asp-for="Upload" type="file" class="custom-file-input" id="customفایل" accept=".webp"/>
                                 <label class="custom-file-label" for="customفایل">انتخاب فایل</label>
                                 @Html.ValidationMessage("IvalidFileExtention")
                             </div>
                         </div>
                         <div class="form-group mt-5">
                             <label>ترتیب نمایش در منو برای سردسته ها </label>
-                            @Html.TextBoxFor(x => x.Category.DisplayOrder, new {Value = "0", Class = "form-control form-control-solid"})
+                            @Html.TextBoxFor(x => x.Category.DisplayOrder, new { Value = "0", Class = "form-control form-control-solid" })
                             @*<input  value="0" asp-for="@Model.Category.DisplayOrder" class="form-control form-control-solid"/>*@
                             <span asp-validation-for="@Model.Category.DisplayOrder" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                     </div>
                     <div class="form-group">
-                            <input asp-for="@Model.Category.CreatedDate" type="datetime" hidden="hidden" />
-                            <input asp-for="@Model.Category.CreatorUserId" type="number" hidden="hidden" />                            
+                        <input asp-for="@Model.Category.CreatedDate" type="datetime" hidden="hidden"/>
+                        <input asp-for="@Model.Category.CreatorUserId" type="number" hidden="hidden"/>
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary mr-2">ویرایش</button>

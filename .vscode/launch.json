@@ -37,7 +37,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/ECommerce.API/bin/Debug/net6.0/ECommerce.API.dll",
+      "program": "${workspaceFolder}/ECommerce.API/bin/Debug/net8.0/ECommerce.API.dll",
       "args": [],
       "cwd": "${workspaceFolder}/ECommerce.API",
       "stopAtEntry": false,
@@ -68,7 +68,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/ECommerce.Front.BolouriGroup/bin/Debug/net6.0/ECommerce.Front.BolouriGroup.dll",
+      "program": "${workspaceFolder}/ECommerce.Front.BolouriGroup/bin/Debug/net8.0/ECommerce.Front.BolouriGroup.dll",
       "args": [],
       "cwd": "${workspaceFolder}/ECommerce.Front.BolouriGroup",
       "stopAtEntry": false,
@@ -107,7 +107,7 @@
       "type": "coreclr",
       "request": "launch",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/ECommerce.API/bin/Debug/net6.0/ECommerce.API.dll",
+      "program": "${workspaceFolder}/ECommerce.API/bin/Debug/net8.0/ECommerce.API.dll",
       "args": [],
       "cwd": "${workspaceFolder}/ECommerce.API",
       "stopAtEntry": false,
@@ -137,7 +137,7 @@
       "type": "coreclr",
       "request": "launch",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/ECommerce.Front.BolouriGroup/bin/Debug/net6.0/ECommerce.Front.BolouriGroup.dll",
+      "program": "${workspaceFolder}/ECommerce.Front.BolouriGroup/bin/Debug/net8.0/ECommerce.Front.BolouriGroup.dll",
       "args": [],
       "cwd": "${workspaceFolder}/ECommerce.Front.BolouriGroup",
       "stopAtEntry": false,

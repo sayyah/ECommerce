@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using ECommerce.Services.IServices;
-using ECommerce.Services.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Cities;
@@ -42,7 +38,7 @@ public class EditModel : PageModel
             Code = result.Code.ToString();
             if (result.Code == 0)
                 return RedirectToPage("/Cities/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

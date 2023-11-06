@@ -1,9 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.HolooEntity;
+﻿using ECommerce.Domain.Entities.HolooEntity;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products;
@@ -84,7 +80,7 @@ public class PriceModel : PageModel
         var result = await _priceService.Delete(id);
         if (result.Code == 0)
             return RedirectToPage("/Products/Price",
-                new {area = "Admin", id = productId, message = result.Message, code = result.Code.ToString()});
+                new { area = "Admin", id = productId, message = result.Message, code = result.Code.ToString() });
         Message = result.Message;
         Code = result.Code.ToString();
         await Initial(productId);
@@ -133,9 +129,9 @@ public class PriceModel : PageModel
         var result = await _priceService.Load(productId.ToString(), pageNumber, pageSize);
         if (result.Code == ServiceCode.Success) Prices = result;
 
-        HolooMGroups.Add(new HolooMGroup {M_groupname = "انتخاب گروه اصلی"});
+        HolooMGroups.Add(new HolooMGroup { M_groupname = "انتخاب گروه اصلی" });
         HolooMGroups.AddRange((await _holooMGroupService.Load()).ReturnData);
-        HolooSGroups.Add(new HolooSGroup {S_groupname = "ابتدا گروه اصلی را انتخاب کنید"});
-        HolooArticle.Add(new Product {Name = "ابتدا گروه فرعی را انتخاب کنید"});
+        HolooSGroups.Add(new HolooSGroup { S_groupname = "ابتدا گروه اصلی را انتخاب کنید" });
+        HolooArticle.Add(new Product { Name = "ابتدا گروه فرعی را انتخاب کنید" });
     }
 }

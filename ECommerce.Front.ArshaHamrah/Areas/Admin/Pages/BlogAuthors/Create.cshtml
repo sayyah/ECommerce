@@ -1,6 +1,6 @@
 ﻿@page "/Admin/CreateBlogAuther"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.BlogAuthors.CreateModel
+@model CreateModel
 @{
     ViewData["Title"] = "اضافه کردن نویسنده وبلاگ";
 }
@@ -72,7 +72,7 @@
 
 @section Scripts
 {
-	<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

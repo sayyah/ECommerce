@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class DiscountService : EntityService<Discount>, IDiscountService
 {
@@ -39,14 +35,13 @@ public class DiscountService : EntityService<Discount>, IDiscountService
         //return Return(result);
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Discount>> GetById(int id)
@@ -63,7 +58,7 @@ public class DiscountService : EntityService<Discount>, IDiscountService
 
     public async Task<ServiceResult<Discount>> GetLast()
     {
-        var result = await _http.GetAsync<Discount>(Url, $"GetLast");
+        var result = await _http.GetAsync<Discount>(Url, "GetLast");
         return Return(result);
     }
 

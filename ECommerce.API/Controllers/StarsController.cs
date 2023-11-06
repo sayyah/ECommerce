@@ -1,20 +1,15 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class StarsController : ControllerBase
 {
     private readonly ILogger<StarsController> _logger;
-    private readonly IProductUserRankRepository _productUserRankRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IProductUserRankRepository _productUserRankRepository;
 
-    public StarsController(IProductUserRankRepository productUserRankRepository, ILogger<StarsController> logger, IProductRepository productRepository)
+    public StarsController(IProductUserRankRepository productUserRankRepository, ILogger<StarsController> logger,
+        IProductRepository productRepository)
     {
         _productUserRankRepository = productUserRankRepository;
         _logger = logger;
@@ -43,7 +38,7 @@ public class StarsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -70,7 +65,7 @@ public class StarsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -96,7 +91,7 @@ public class StarsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -112,11 +107,12 @@ public class StarsController : ControllerBase
                     Code = ResultCode.BadRequest
                 });
 
-            if (productUserRank.Stars < 0) return Ok(new ApiResult
-            {
-                Code = ResultCode.BadRequest,
-                Messages = new List<string> { "مقدار وارد شده نادرست می‌باشد." }
-            });
+            if (productUserRank.Stars < 0)
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.BadRequest,
+                    Messages = new List<string> { "مقدار وارد شده نادرست می‌باشد." }
+                });
 
             var repetitiveProductUserRank = await _productUserRankRepository.GetByProductUser(productUserRank.ProductId,
                 productUserRank.UserId, cancellationToken);
@@ -130,7 +126,8 @@ public class StarsController : ControllerBase
                 await _productUserRankRepository.AddAsync(productUserRank, cancellationToken);
             }
 
-            var productUserRanks = await _productUserRankRepository.GetBySumProduct(productUserRank.ProductId, cancellationToken);
+            var productUserRanks =
+                await _productUserRankRepository.GetBySumProduct(productUserRank.ProductId, cancellationToken);
             var product = await _productRepository.GetByIdAsync(cancellationToken, productUserRank.ProductId);
             product.Star = productUserRanks;
             await _productRepository.UpdateAsync(product, cancellationToken);
@@ -144,7 +141,7 @@ public class StarsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -164,7 +161,7 @@ public class StarsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

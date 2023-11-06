@@ -1,8 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+using ECommerce.Application.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -124,7 +122,7 @@ public class CookieService : ICookieService
         {
             var token = GetToken();
             var handler = new JwtSecurityTokenHandler();
-            if(string.IsNullOrEmpty(token)) return new LoginViewModel();
+            if (string.IsNullOrEmpty(token)) return new LoginViewModel();
             var jwtSecurityToken = handler.ReadJwtToken(token);
             var loginViewModel = new LoginViewModel
             {

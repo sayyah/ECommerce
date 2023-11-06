@@ -1,19 +1,16 @@
-﻿using Ecommerce.Entities;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogComments;
- 
-    public class EditModel : PageModel
-    {
+
+public class EditModel : PageModel
+{
     private readonly IBlogCommentService _blogCommentService;
     private readonly IBlogService _blogService;
+
     public EditModel(IBlogCommentService blogCommentService, IBlogService blogService)
     {
         _blogCommentService = blogCommentService;
         _blogService = blogService;
-
     }
 
     [BindProperty] public BlogComment BlogComment { get; set; }
@@ -43,15 +40,13 @@ namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogComments;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
             return RedirectToPage("/BlogComments/Edit",
-                        new { id = BlogComment.Id, area = "Admin", message = $"پیغام خطا:{Message}", code = Code });
+                new { id = BlogComment.Id, area = "Admin", message = $"پیغام خطا:{Message}", code = Code });
         }
         catch (Exception ex)
         {
             return RedirectToPage("/BlogComments/Edit",
-                        new { id = BlogComment.Id, area = "Admin", message = "پیغام خطای غیر منتظره", code = "Error" });
+                new { id = BlogComment.Id, area = "Admin", message = "پیغام خطای غیر منتظره", code = "Error" });
         }
     }
-
-
 }
  

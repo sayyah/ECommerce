@@ -1,5 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
+﻿using ECommerce.Entities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +35,6 @@ public class AttributeValueModel : PageModel
     public async Task<IActionResult> OnPost(List<ProductAttributeGroup> attributeGroups)
     {
         var result = await _attributeGroupService.AddWithAttributeValue(attributeGroups, ProductId);
-        return RedirectToAction("/Products/AttributeValue", new {id = ProductId});
+        return RedirectToAction("/Products/AttributeValue", new { id = ProductId });
     }
 }

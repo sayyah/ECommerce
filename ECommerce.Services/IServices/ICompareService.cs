@@ -1,5 +1,4 @@
-﻿using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Application.ViewModels;
 using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Services.IServices;

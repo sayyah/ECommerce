@@ -1,4 +1,4 @@
-﻿using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -53,6 +53,7 @@ public class LoginModel : PageModel
             Code = "Error";
             return Page();
         }
+
         ModelState["Username"].ValidationState = ModelValidationState.Valid;
         ModelState["Password"].ValidationState = ModelValidationState.Valid;
         ModelState["ReturnUrl"].ValidationState = ModelValidationState.Valid;
@@ -64,7 +65,7 @@ public class LoginModel : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnGetForgotPassword(string email) 
+    public async Task<IActionResult> OnGetForgotPassword(string email)
     {
         var result = await _userService.ForgotPassword(email);
         return new JsonResult(result);

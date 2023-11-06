@@ -1,123 +1,119 @@
 ﻿a:hover, a:focus {
-    text-decoration: none;
     outline: none;
+    text-decoration: none;
 }
 
 .vertical-tab {
-    font-family: 'Nunito', sans-serif;
     display: table;
+    font-family: 'Nunito', sans-serif;
 }
 
-    .vertical-tab .nav-tabs {
-        display: table-cell;
-      /*  width: 28%;*/
-        min-width: 28%;
-        vertical-align: top;
-        border: none;
-    }
+.vertical-tab .nav-tabs {
+    border: none;
+    display: table-cell;
+    /*  width: 28%;*/
+    min-width: 28%;
+    vertical-align: top;
+}
 
-        .vertical-tab .nav-tabs li {
-            float: none;
-            vertical-align: top;
-        }
+.vertical-tab .nav-tabs li {
+    float: none;
+    vertical-align: top;
+}
 
-            .vertical-tab .nav-tabs li a {
-                color: #222;
-                font-size: 14px;
-                font-weight: 700;
-                text-align: center;
-                text-transform: uppercase;
-                padding: 12px 20px;
-                margin: 0;
-                border-radius: 0;
-                border: none;
-                overflow: hidden;
-                position: relative;
-                z-index: 1;
-                transition: all 0.3s ease;
-            }
+.vertical-tab .nav-tabs li a {
+    border: none;
+    border-radius: 0;
+    color: #222;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+    overflow: hidden;
+    padding: 12px 20px;
+    position: relative;
+    text-align: center;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
 
-            .vertical-tab .nav-tabs li:last-child a {
-                margin-bottom: 0;
-            }
+.vertical-tab .nav-tabs li:last-child a { margin-bottom: 0; }
 
-            .vertical-tab .nav-tabs li a:hover,
-            .vertical-tab .nav-tabs li.active a,
-            .vertical-tab .nav-tabs li.active a:hover {
-                color: #222;
-                background-color: #fff;
-                border: none;
-            }
+.vertical-tab .nav-tabs li a:hover,
+.vertical-tab .nav-tabs li.active a,
+.vertical-tab .nav-tabs li.active a:hover {
+    background-color: #fff;
+    border: none;
+    color: #222;
+}
 
-            .vertical-tab .nav-tabs li a:before,
-            .vertical-tab .nav-tabs li a:after {
-                content: "";
-                background-color: #d1d1d1;
-                width: 11px;
-                height: 100%;
-                position: absolute;
-                top: 0;
-                left: 0;
-                z-index: -1;
-                transition: all 0.5s ease 0s;
-            }
+.vertical-tab .nav-tabs li a:before,
+.vertical-tab .nav-tabs li a:after {
+    background-color: #d1d1d1;
+    content: "";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: all 0.5s ease 0s;
+    width: 11px;
+    z-index: -1;
+}
 
-            .vertical-tab .nav-tabs li a:hover:before,
-            .vertical-tab .nav-tabs li.active a:before,
-            .vertical-tab .nav-tabs li.active a:hover:before {
-                width: 50%;
-                opacity: 0;
-            }
+.vertical-tab .nav-tabs li a:hover:before,
+.vertical-tab .nav-tabs li.active a:before,
+.vertical-tab .nav-tabs li.active a:hover:before {
+    opacity: 0;
+    width: 50%;
+}
 
-            .vertical-tab .nav-tabs li a:after {
-                background-color: var(--blue-dark);
-                width: 50%;
-                opacity: 0;
-            }
+.vertical-tab .nav-tabs li a:after {
+    background-color: var(--blue-dark);
+    opacity: 0;
+    width: 50%;
+}
 
-            .vertical-tab .nav-tabs li a:hover:after,
-            .vertical-tab .nav-tabs li.active a:after,
-            .vertical-tab .nav-tabs li.active a:hover:after {
-                width: 11px;
-                opacity: 1;
-            }
+.vertical-tab .nav-tabs li a:hover:after,
+.vertical-tab .nav-tabs li.active a:after,
+.vertical-tab .nav-tabs li.active a:hover:after {
+    opacity: 1;
+    width: 11px;
+}
 
-    .vertical-tab .tab-content {
-        color: #222;
-        background: #fff;
-        font-size: 15px;
-        letter-spacing: 0.5px;
-        line-height: 25px;
-        padding: 20px 20px 10px;
-        margin-top: 10px;
-        display: table-cell;
-      width: 100%;
-        position: relative;
-    }
+.vertical-tab .tab-content {
+    background: #fff;
+    color: #222;
+    display: table-cell;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    line-height: 25px;
+    margin-top: 10px;
+    padding: 20px 20px 10px;
+    position: relative;
+    width: 100%;
+}
 
-        .vertical-tab .tab-content h3 {
-            color: #222;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0 0 7px 0;
-            font-size: 14px;
-        }
+.vertical-tab .tab-content h3 {
+    color: #222;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0 0 7px 0;
+    text-transform: uppercase;
+}
 
 @media only screen and (max-width: 479px) {
     .vertical-tab .nav-tabs {
-        width: 100%;
-        display: block;
         border: none;
+        display: block;
+        width: 100%;
     }
 
     .vertical-tab .tab-content {
-        padding: 25px 20px;
-        margin-top: 0;
         display: block;
+        margin-top: 0;
+        padding: 25px 20px;
     }
 
-        .vertical-tab .tab-content h3 {
-            font-size: 18px;
-        }
+    .vertical-tab .tab-content h3 { font-size: 18px; }
 }

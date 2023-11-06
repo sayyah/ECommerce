@@ -1,20 +1,15 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class PricesController : ControllerBase
 {
+    private readonly IHolooArticleRepository _holooArticleRepository;
     private readonly ILogger<PricesController> _logger;
     private readonly IPriceRepository _priceRepository;
-    private readonly IHolooArticleRepository _holooArticleRepository;
 
-    public PricesController(IPriceRepository priceRepository, ILogger<PricesController> logger, IHolooArticleRepository holooArticleRepository)
+    public PricesController(IPriceRepository priceRepository, ILogger<PricesController> logger,
+        IHolooArticleRepository holooArticleRepository)
     {
         _priceRepository = priceRepository;
         _logger = logger;
@@ -54,7 +49,7 @@ public class PricesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -80,7 +75,7 @@ public class PricesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -106,7 +101,7 @@ public class PricesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -127,11 +122,12 @@ public class PricesController : ControllerBase
                 messages.Add("لطفا یا کد کالا وارد کنید یا مبلغ");
 
             messages.AddRange(await CheckPrice(price, cancellationToken));
-            var holooPrice = await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
+            var holooPrice =
+                await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
             if (holooPrice.price == 0)
                 messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
 
-            if(messages.Count > 0)
+            if (messages.Count > 0)
                 return Ok(new ApiResult
                 {
                     Messages = messages,
@@ -139,7 +135,8 @@ public class PricesController : ControllerBase
                 });
 
             var newPrice = await _priceRepository.AddAsync(price, cancellationToken);
-            await _holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer, newPrice.ProductId, cancellationToken);
+            await _holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer, newPrice.ProductId,
+                cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -150,7 +147,7 @@ public class PricesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -166,7 +163,8 @@ public class PricesController : ControllerBase
 
             messages.AddRange(await CheckPrice(price, cancellationToken));
 
-            var HolooPrice = await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
+            var HolooPrice =
+                await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
 
             if (HolooPrice.price == 0)
                 messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
@@ -188,7 +186,7 @@ public class PricesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -208,7 +206,7 @@ public class PricesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 

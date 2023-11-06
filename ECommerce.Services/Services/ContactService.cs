@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class ContactService : EntityService<Contact>, IContactService
 {
@@ -12,12 +8,6 @@ public class ContactService : EntityService<Contact>, IContactService
     public ContactService(IHttpService http) : base(http)
     {
         _http = http;
-    }
-
-    public async Task<ServiceResult<List<Contact>>> Load()
-    {
-        var result = await ReadList(Url, "GetAll");
-        return Return(result);
     }
 
     public async Task<ServiceResult<List<Contact>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10)
@@ -45,14 +35,13 @@ public class ContactService : EntityService<Contact>, IContactService
         //return Return(result);
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Contact>> GetById(int id)
@@ -70,6 +59,12 @@ public class ContactService : EntityService<Contact>, IContactService
     public async Task<ServiceResult<Contact?>> GetByEmail(string email)
     {
         var result = await _http.GetAsync<Contact>(Url, $"GetByEmail?email={email}");
+        return Return(result);
+    }
+
+    public async Task<ServiceResult<List<Contact>>> Load()
+    {
+        var result = await ReadList(Url, "GetAll");
         return Return(result);
     }
 }

@@ -1,7 +1,4 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Categories;
 
@@ -29,7 +26,7 @@ public class DeleteModel : PageModel
         }
 
         return RedirectToPage("/Categories/Index",
-            new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+            new { area = "Admin", message = result.Message, code = result.Code.ToString() });
     }
 
     public async Task<IActionResult> OnPost(int id)
@@ -40,6 +37,7 @@ public class DeleteModel : PageModel
             return RedirectToPage("/Categories/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }
+
         return Page();
     }
 }

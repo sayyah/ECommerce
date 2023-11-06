@@ -1,5 +1,5 @@
 ﻿@page "/Admin/EditSlideShow/{handler?}"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.SlideShows.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -55,12 +55,12 @@
                         <div class="form-group">
                             <label>تصویر اسلاید شو</label> <img style="width: 50%" src="@Model.SlideShow.ImagePath">
                             <div class="custom-file">
-                                <input asp-for="Upload" type="file" class="custom-file-input" id="customفایل" accept=".webp" />
+                                <input asp-for="Upload" type="file" class="custom-file-input" id="customفایل" accept=".webp"/>
                                 <label class="custom-file-label" for="customفایل">انتخاب فایل</label>
                                 @Html.ValidationMessage("IvalidFileExtention")
                             </div>
                         </div>
-                      @*  <div class="form-group">
+                        @*  <div class="form-group">
                             <input asp-for="@Model.SlideShow.CreatedDate" type="datetime" hidden="hidden" />
                             <input asp-for="@Model.SlideShow.CreatorUserId" type="number" hidden="hidden" />                            
                         </div>*@
@@ -79,7 +79,7 @@
 @section Scripts
 {
     <script src="/Admin/js/bootstrap-touchspin.js"></script>
-<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

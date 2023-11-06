@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.IServices;
 
@@ -17,6 +15,5 @@ public interface ITagService : IEntityService<Tag>
     Task<ServiceResult<Tag>> GetById(int id);
     Task<ServiceResult<List<TagProductId>>> GetTagsByProductId(int productId);
     Task<ServiceResult<List<Tag>>> GetAllProductTags();
-    Task<ServiceResult<List<Tag>>> GetAllBlogTags();    
-
+    Task<ServiceResult<List<Tag>>> GetAllBlogTags();
 }

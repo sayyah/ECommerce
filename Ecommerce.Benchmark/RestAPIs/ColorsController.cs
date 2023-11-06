@@ -1,13 +1,12 @@
 ﻿using System.Drawing;
 using System.Net.Http.Json;
 
-namespace ECommerce.Benchmark.RestAPIs
+namespace ECommerce.Benchmark.RestAPIs;
+
+public class ColorsController : BaseController
 {
-    public class ColorsController : BaseController
+    public async Task<Color> GetAllAsync()
     {
-        public async Task<Color> GetAllAsync()
-        {
-            return await Client.GetFromJsonAsync<Color>($"https://localhost:7257/api/Colors/GetAll");
-        }
+        return await Client.GetFromJsonAsync<Color>("https://localhost:7257/api/Colors/GetAll");
     }
 }

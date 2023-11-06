@@ -1,5 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +44,7 @@ public class CreateModel : PageModel
             var result = await _categoryService.Add(Category);
             if (result.Code == 0)
                 return RedirectToPage("/Categories/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

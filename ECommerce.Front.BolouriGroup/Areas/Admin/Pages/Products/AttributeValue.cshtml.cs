@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products;
 
@@ -34,6 +30,6 @@ public class AttributeValueModel : PageModel
     public async Task<IActionResult> OnPost(List<ProductAttributeGroup> attributeGroups)
     {
         var result = await _attributeGroupService.AddWithAttributeValue(attributeGroups, ProductId);
-        return RedirectToAction("/Products/AttributeValue", new {id = ProductId});
+        return RedirectToAction("/Products/AttributeValue", new { id = ProductId });
     }
 }

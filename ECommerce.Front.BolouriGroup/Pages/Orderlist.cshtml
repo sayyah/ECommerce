@@ -1,0 +1,158 @@
+﻿@page
+@model OrderlistModel
+@{
+    ViewData["Title"] = "فروشگاه اینترنتی بلوری";
+}
+<section class="inner-section single-banner">
+    <div class="container">
+        <p>لیست سفارش</p>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-area="" asp-page="/Index">خانه</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">لیست سفارش</li>
+        </ol>
+    </div>
+</section>
+<section class="inner-section orderlist-part">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="orderlist">
+                    <div class="orderlist-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-scroll p-0">
+                                    <table class="table-list">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">شماره سفارش</th>
+                                            <th scope="col">نام</th>
+                                            <th scope="col">تاریخ</th>
+                                            <th scope="col">جمع</th>
+                                            <th scope="col">وضعیت</th>
+                                            <th scope="col">عمل</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td class="table-name">
+                                                <h6># 12345</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>فران اسمیت</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>5 خرداد 1400 </h6>
+                                            </td>
+                                            <td class="table-price">
+                                                <h6>500 تومان</h6>
+                                            </td>
+                                            <td class="table-brand">
+                                                <h6 class="badge bg-success">تکمیل شده</h6>
+                                            </td>
+                                            <td class="table-action">
+                                                <a class="view" href="order-detail.html" title="جزئیات سفارش">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="table-name">
+                                                <h6># 12345</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>فران اسمیت</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>5 خرداد 1400 </h6>
+                                            </td>
+                                            <td class="table-price">
+                                                <h6>500 تومان</h6>
+                                            </td>
+                                            <td class="table-brand">
+                                                <h6 class="badge bg-success">تکمیل شده</h6>
+                                            </td>
+                                            <td class="table-action">
+                                                <a class="view" href="order-detail.html" title="جزئیات سفارش">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="table-name">
+                                                <h6># 12345</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>فران اسمیت</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>5 خرداد 1400 </h6>
+                                            </td>
+                                            <td class="table-price">
+                                                <h6>500 تومان</h6>
+                                            </td>
+                                            <td class="table-brand">
+                                                <h6 class="badge bg-success">تکمیل شده</h6>
+                                            </td>
+                                            <td class="table-action">
+                                                <a class="view" href="order-detail.html" title="جزئیات سفارش">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="table-name">
+                                                <h6># 12345</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>فران اسمیت</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>5 خرداد 1400 </h6>
+                                            </td>
+                                            <td class="table-price">
+                                                <h6>500 تومان</h6>
+                                            </td>
+                                            <td class="table-brand">
+                                                <h6 class="badge bg-danger">لغو شد</h6>
+                                            </td>
+                                            <td class="table-action">
+                                                <a class="view" href="order-detail.html" title="جزئیات سفارش">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="table-name">
+                                                <h6># 12345</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>فران اسمیت</h6>
+                                            </td>
+                                            <td class="table-name">
+                                                <h6>5 خرداد 1400 </h6>
+                                            </td>
+                                            <td class="table-price">
+                                                <h6>500 تومان</h6>
+                                            </td>
+                                            <td class="table-brand">
+                                                <h6 class="badge bg-secondary">در حال پردازش</h6>
+                                            </td>
+                                            <td class="table-action">
+                                                <a class="view" href="order-detail.html" title="جزئیات سفارش">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

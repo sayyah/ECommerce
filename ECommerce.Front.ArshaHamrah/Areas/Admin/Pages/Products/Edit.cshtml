@@ -1,6 +1,6 @@
 ﻿@page "/Admin/EditProduct/{handler?}"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Products.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -94,14 +94,14 @@
                             <span asp-validation-for="@Model.Product.ArticleCodeCustomer" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>*@
         <div class="form-group">
-	        <label>توضیحات</label>
-	        <textarea id="Description_Edit" asp-for="@Model.Product.Description" class="form-control form-control-solid"></textarea>
-	        <span asp-validation-for="@Model.Product.Description" class="mt-5" style="color: red; margin-top: 10px"></span>
+            <label>توضیحات</label>
+            <textarea id="Description_Edit" asp-for="@Model.Product.Description" class="form-control form-control-solid"></textarea>
+            <span asp-validation-for="@Model.Product.Description" class="mt-5" style="color: red; margin-top: 10px"></span>
         </div>
         <div class="form-group">
-	        <label>نقد و بررسی</label>
-	        <textarea id="Review_Edit" asp-for="@Model.Product.Review" class="form-control form-control-solid"></textarea>
-	        <span asp-validation-for="@Model.Product.Review" class="mt-5" style="color: red; margin-top: 10px"></span>
+            <label>نقد و بررسی</label>
+            <textarea id="Review_Edit" asp-for="@Model.Product.Review" class="form-control form-control-solid"></textarea>
+            <span asp-validation-for="@Model.Product.Review" class="mt-5" style="color: red; margin-top: 10px"></span>
         </div>
         <div class="form-group">
             <label>حداقل سفارش</label>
@@ -158,7 +158,7 @@
                 }
             </select>
         </div>
-       @* <div class="form-group">
+        @* <div class="form-group">
             <label>تخفیف</label>
             <select asp-for="@Model.Product.DiscountId" class="col-md-12 js-example-basic-single form-control">
                 @foreach (var item in Model.Discounts)
@@ -255,7 +255,7 @@
     <script src="~/Admin/js/select2.min.js"></script>
     <script src="~/Admin/js/bootstrap-touchspin.js"></script>
     @*<script src="~/Admin/js/dropzonejs.js"></script>*@
-   	<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class ColorService : EntityService<Color>, IColorService
 {
@@ -27,7 +23,7 @@ public class ColorService : EntityService<Color>, IColorService
             $"GetAllWithPagination?PageNumber={pageNumber}&Search={search}&PageSize={pageSize}");
         return Return(result);
     }
- 
+
     public async Task<ServiceResult<List<Color>>> Filtering(string filter)
     {
         if (_colors == null)
@@ -39,7 +35,7 @@ public class ColorService : EntityService<Color>, IColorService
 
         var result = _colors.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Color>> {Code = ServiceCode.Info, Message = "رنگ یافت نشد"};
+            return new ServiceResult<List<Color>> { Code = ServiceCode.Info, Message = "رنگ یافت نشد" };
         return new ServiceResult<List<Color>>
         {
             Code = ServiceCode.Success,
@@ -68,14 +64,13 @@ public class ColorService : EntityService<Color>, IColorService
         //return Return(result);
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Color>> GetById(int id)
