@@ -1,5 +1,8 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
+<<<<<<< HEAD
 using ECommerce.Infrastructure.DataContext;
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 namespace ECommerce.Infrastructure.Repository;
 
@@ -28,7 +31,11 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
         await _context.SaveChangesAsync(cancellationToken);
     }
 
+<<<<<<< HEAD
     public async Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice)
+=======
+    public async Task<(decimal price, double? exist)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice)
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     {
         var bolooryFlag = (await _context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
         var article = await _context.ARTICLE
@@ -90,6 +97,10 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
         foreach (var price in prices)
         {
             foreach (var aCode in price) aCodeCs.Add(aCode.ArticleCodeCustomer);
+<<<<<<< HEAD
+=======
+            ;
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
         }
 
         products = products.Where(x => x.Prices.Any(p => p.ArticleCode != null)).ToList();
@@ -228,8 +239,13 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
                     {
                         //int userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
                         var userCode = 15;
+<<<<<<< HEAD
                         foreach (var item in a_code)
                             soldExist += _aBailRepository.GetWithACode(userCode, item, cancellationToken);
+=======
+                        soldExist = _aBailRepository.GetWithACode(userCode, productPrices.ArticleCode,
+                            cancellationToken);
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                     }
 
                     productPrices.Exist = article.Sum(x => x.Exist) - soldExist ?? 0;

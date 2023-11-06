@@ -6,8 +6,11 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Brands;
 
+<<<<<<< HEAD
 [CollectionDefinition("BrandTests", DisableParallelization = true)]
 [Collection("BrandTests")]
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 public class BrandTests : BaseTests
 {
     private readonly IBrandRepository _brandRepository;

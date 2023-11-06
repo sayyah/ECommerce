@@ -1,3 +1,10 @@
 {
+<<<<<<< HEAD
   "dotnet.defaultSolution": "ECommerce.sln"
+=======
+  "dotnet.defaultSolution": "ECommerce.sln",
+  "resharpervscode.inspectcode": {
+    "DotnetCoreSdk": "8.0.100-rc.2.23502.2"
+  }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 }

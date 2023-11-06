@@ -10,11 +10,44 @@ DotNetEnv.Env.TraversePath().Load("../.env");
 var builder = WebApplication.CreateBuilder(args);
 var _frontSetting = builder.Configuration.GetSection(nameof(FrontSetting)).Get<FrontSetting>();
 
+<<<<<<< HEAD
 builder
     .Services
     .AddAuthorization(options =>
     {
         // Create policies
+=======
+builder.Services.AddAuthorization(options =>
+{
+    // Create policies
+
+    options.AddPolicy("Admin", p => p.RequireRole("SuperAdmin", "Admin"));
+    options.AddPolicy("Client", p => p.RequireRole("Client", "SuperAdmin", "Admin"));
+});
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/", "Client");
+    options.Conventions.AuthorizeAreaFolder("Admin", "/", "Admin");
+    options.Conventions.AllowAnonymousToPage("/register");
+    options.Conventions.AllowAnonymousToPage("/Shop");
+    options.Conventions.AllowAnonymousToPage("/Login");
+    options.Conventions.AllowAnonymousToPage("/Product");
+    options.Conventions.AllowAnonymousToPage("/Privacy");
+    options.Conventions.AllowAnonymousToPage("/Index");
+    options.Conventions.AllowAnonymousToPage("/Faq");
+    options.Conventions.AllowAnonymousToPage("/Error");
+    options.Conventions.AllowAnonymousToPage("/Contact");
+    options.Conventions.AllowAnonymousToPage("/Compare");
+    options.Conventions.AllowAnonymousToPage("/AboutUs");
+    options.Conventions.AllowAnonymousToPage("/Cart");
+    options.Conventions.AllowAnonymousToPage("/melisuccess");
+    options.Conventions.AllowAnonymousToPage("/Blog");
+    options.Conventions.AllowAnonymousToPage("/BlogDetails");
+    options.Conventions.AllowAnonymousToPage("/Rules");
+});
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation();
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
         options.AddPolicy("Admin", p => p.RequireRole("SuperAdmin", "Admin"));
         options.AddPolicy("Client", p => p.RequireRole("Client", "SuperAdmin", "Admin"));

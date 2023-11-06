@@ -16,10 +16,14 @@
 @section Head{
     <link href="~/css/shop.css" rel="stylesheet"/>
     <style>
+<<<<<<< HEAD
         .single-banner { background: url(@Model.CategoryBannerImagePath);
         background-position:50%;
         background-repeat:no-repeat;
         background-size:contain;}
+=======
+        .single-banner { background: url(@Model.CategoryBannerImagePath); }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     </style>
 }
 
@@ -47,10 +51,17 @@
                     <form asp-page-handler="OnGet" method="get">
                         <label for="min-price" class="form-label  mt-3">حداقل قیمت (تومان) </label><br/>
                         <span id="min-price-txt">@Model.Min</span>
+<<<<<<< HEAD
 					    <input type="range" class="form-range" min="1000" max="2000000000" id="min-price" name="minprice" step="100000" value="@Model.Min">
                         <label for="max-price" class="form-label">حداکثر قیمت (تومان) </label><br/>
 					    <span id="max-price-txt">@Model.Max</span>
 					    <input type="range" class="form-range" min="1000" max="2000000000" id="max-price" name="maxprice" step="100000" value="@Model.Max">
+=======
+                        <input type="range" class="form-range" min="100000" max="200000000" id="min-price" name="minprice" step="100000" value="@Model.Min">
+                        <label for="max-price" class="form-label">حداکثر قیمت (تومان) </label><br/>
+                        <span id="max-price-txt">@Model.Max</span>
+                        <input type="range" class="form-range" min="1000000" max="200000000" id="max-price" name="maxprice" step="100000" value="@Model.Max">
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                         <br/>
                         <label class="widget-title border-left" style="font-size: 14px">فقط نمایش کالاهای موجود</label>
                         <label class="switch">

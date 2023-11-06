@@ -204,7 +204,11 @@ button:focus { outline: none; }
 
 .section { margin-bottom: 60px; }
 
+<<<<<<< HEAD
 .inner-section { margin-bottom: 20px; }
+=======
+.inner-section { margin-bottom: 100px; }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 .section-heading {
     margin-bottom: 40px;
@@ -224,7 +228,11 @@ button:focus { outline: none; }
 @media (max-width: 767px) {
     .section { margin-bottom: 55px; }
 
+<<<<<<< HEAD
     .inner-section { margin-bottom: 20px; }
+=======
+    .inner-section { margin-bottom: 60px; }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
     .res-card { margin: 0 auto; }
 
@@ -237,6 +245,7 @@ button:focus { outline: none; }
         line-height: 36px;
     }
 }
+<<<<<<< HEAD
 @media (min-width: 1199px) and (max-width: 2500px) {
     .single-banner {
         padding: 150px 0 !important;
@@ -245,18 +254,29 @@ button:focus { outline: none; }
         margin-bottom: 40px !important;
         ;
     }
+=======
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .section { margin-bottom: 75px; }
+
+    .inner-section { margin-bottom: 80px; }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 }
     @media (min-width: 768px) and (max-width: 1199px) {
         .section {
             margin-bottom: 75px;
         }
 
+<<<<<<< HEAD
         .inner-section {
             margin-bottom: 20px;
         }
     }
 
     .alert {
+=======
+.alert {
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     border: none;
     border-radius: 0;
     margin: 0;
@@ -5374,6 +5394,7 @@ tbody tr td:last-child { border-left: none; }
 }
 
 @media (max-width: 767px) {
+<<<<<<< HEAD
     .TitleSlide {
         font-size: 20px !important;
     }
@@ -5381,6 +5402,8 @@ tbody tr td:last-child { border-left: none; }
         font-size: 18px;
         margin-bottom: 5px;
     }
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     .single-banner { padding: 40px 0; }
 
     .single-banner-404 { padding: 50px 0; }
@@ -5398,6 +5421,7 @@ tbody tr td:last-child { border-left: none; }
 }
 
 @media (max-width: 575px) {
+<<<<<<< HEAD
     .TitleSlide {
         font-size: 18px !important;
     }
@@ -5405,6 +5429,8 @@ tbody tr td:last-child { border-left: none; }
         font-size: 18px;
         margin-bottom: -15px;
     }
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     .single-banner { padding: 0; }
 
     .single-banner-404 { padding: 0px; }
@@ -5424,6 +5450,7 @@ tbody tr td:last-child { border-left: none; }
 }
 
 @media (max-width: 413px) {
+<<<<<<< HEAD
     .TitleSlide {
         font-size: 18px !important;
     }
@@ -5431,6 +5458,8 @@ tbody tr td:last-child { border-left: none; }
         font-size: 12px;
         margin-bottom: -25px;
     }
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     .single-banner { padding: 0; }
 
     .single-banner-404 {
@@ -7778,7 +7807,11 @@ tbody tr td:last-child { border-left: none; }
     .btn { padding: 3px !important; }
 }
 
+<<<<<<< HEAD
 .TitleSlide { font-size: 35px; }
+=======
+.TitleSlide { font-size: 35px !important; }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 .home-classic-slider .banner-content p {
     color: var(--white);

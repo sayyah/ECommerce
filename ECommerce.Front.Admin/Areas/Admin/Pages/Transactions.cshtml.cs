@@ -1,7 +1,13 @@
 using ECommerce.Services.IServices;
+<<<<<<< HEAD:ECommerce.Front.Admin/Areas/Admin/Pages/Transactions.cshtml.cs
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages;
 
+=======
+
+namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages;
+
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8):ECommerce.Front.BolouriGroup/Areas/Admin/Pages/Transactions.cshtml.cs
 public class TransactionsModel : PageModel
 {
     private readonly IUserService _userService;

@@ -1,9 +1,14 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using ECommerce.Application.PersianTranslations.Identity;
+<<<<<<< HEAD
 using ECommerce.Infrastructure.DataContext;
 using ECommerce.Infrastructure.Repository;
 using Hangfire;
+=======
+using ECommerce.Infrastructure.DataContext.DataContext;
+using ECommerce.Infrastructure.Repository;
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +73,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 //builder.Services.AddSwaggerGen();
 
+<<<<<<< HEAD
 builder
     .Services
     .AddDbContext<SunflowerECommerceDbContext>(
@@ -83,6 +89,13 @@ builder
                     o => o.UseCompatibilityLevel(110))
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
     );
+=======
+builder.Services.AddDbContext<SunflowerECommerceDbContext>(option =>
+    option.UseSqlServer(builder.Configuration.GetConnectionString("SunflowerECommerce")));
+builder.Services.AddDbContext<HolooDbContext>(option =>
+    option.UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString"))
+        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 // Add Hangfire services.
 builder

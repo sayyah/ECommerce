@@ -1,5 +1,8 @@
 using ECommerce.Services.IServices;
+<<<<<<< HEAD:ECommerce.Front.Admin/Areas/Admin/Pages/Products/Detail.cshtml.cs
 using Microsoft.AspNetCore.Http;
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8):ECommerce.Front.BolouriGroup/Areas/Admin/Pages/Products/Detail.cshtml.cs
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 

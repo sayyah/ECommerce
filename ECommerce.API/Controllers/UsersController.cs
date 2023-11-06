@@ -256,7 +256,11 @@ public class UsersController : ControllerBase
                 Kharid = true,
                 Forosh = true
             };
+<<<<<<< HEAD
             var newCustomerCode = await _holooCustomerRepository.AddWithoutSave(holooCustomer, cancellationToken);
+=======
+            var newCustomerCode = await _holooCustomerRepository.Add(holooCustomer, cancellationToken);
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
             var user = new User
             {
@@ -291,7 +295,10 @@ public class UsersController : ControllerBase
             var result = await _userManager.CreateAsync(user, register.Password);
             if (result.Succeeded)
             {
+<<<<<<< HEAD
                 await _holooCustomerRepository.SaveAddedCustomer(cancellationToken);
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                 var s = await _userManager.AddToRoleAsync(user, SystemRoles.Client.ToString());
 
                 return Ok(new ApiResult

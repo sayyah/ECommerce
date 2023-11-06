@@ -67,8 +67,13 @@
                         foreach (var contact in Model.Contacts.ReturnData)
                         {
                             <tr>
+<<<<<<< HEAD:ECommerce.Front.Admin/Areas/Admin/Pages/Contacts/Index.cshtml
                                 <th scope="row">@(i++)</th>
                                 <td class="createdDate">@(contact.CreatedDate > DateTime.MinValue ? contact.CreatedDate.ToString("yyyy/MM/dd") : "")</td>
+=======
+                                <th scope="row">@(i++)</th>پ
+                                <td>@contact.CreatedDate</td>
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8):ECommerce.Front.BolouriGroup/Areas/Admin/Pages/Contacts/Index.cshtml
                                 <td>@contact.Name</td>
                                 <td>@contact.Email</td>
                                 @if (!string.IsNullOrEmpty(contact.ReplayMessage))

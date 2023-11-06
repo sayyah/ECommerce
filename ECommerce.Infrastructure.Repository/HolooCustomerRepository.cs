@@ -1,5 +1,8 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
+<<<<<<< HEAD
 using ECommerce.Infrastructure.DataContext;
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 namespace ECommerce.Infrastructure.Repository;
 
@@ -20,9 +23,16 @@ public class HolooCustomerRepository : HolooRepository<HolooCustomer>, IHolooCus
         return ((Convert.ToInt32(customerCode) + 1).ToString("D5"), (Convert.ToInt32(customerCodeC) + 1).ToString());
     }
 
+<<<<<<< HEAD
     public async Task<string> AddWithoutSave(HolooCustomer customer, CancellationToken cancellationToken)
     {
         await _context.Customer.AddAsync(customer, cancellationToken);     
+=======
+    public async Task<string> Add(HolooCustomer customer, CancellationToken cancellationToken)
+    {
+        await _context.Customer.AddAsync(customer, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
         return customer.C_Code;
     }
 
@@ -30,9 +40,12 @@ public class HolooCustomerRepository : HolooRepository<HolooCustomer>, IHolooCus
     {
         return await _context.Customer.FirstAsync(x => x.C_Code == customerCode);
     }
+<<<<<<< HEAD
 
     public async Task SaveAddedCustomer(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
     }
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 }

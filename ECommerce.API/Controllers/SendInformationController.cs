@@ -108,6 +108,7 @@ public class SendInformationController : ControllerBase
         try
         {
             var repetitive = await _sendInformationRepository.Where(
+<<<<<<< HEAD
                 x =>
                     x.Id != sendInformation.Id
                     && x.UserId == sendInformation.UserId
@@ -127,6 +128,16 @@ public class SendInformationController : ControllerBase
                         Messages = new List<string> { "آدرس تکراری است" }
                     }
                 );
+=======
+                x => x.UserId == sendInformation.UserId && x.RecipientName.Equals(sendInformation.RecipientName) &&
+                     x.Address.Equals(sendInformation.Address), cancellationToken);
+            if (repetitive != null && repetitive.FirstOrDefault().Id != sendInformation.Id)
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.Repetitive,
+                    Messages = new List<string> { "آدرس تکراری است" }
+                });
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
             await _sendInformationRepository.UpdateAsync(sendInformation, cancellationToken);
             return Ok(new ApiResult { Code = ResultCode.Success });
@@ -134,6 +145,7 @@ public class SendInformationController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
+<<<<<<< HEAD
             return Ok(
                 new ApiResult
                 {
@@ -141,6 +153,10 @@ public class SendInformationController : ControllerBase
                     Messages = new List<string> { "اشکال در سمت سرور" }
                 }
             );
+=======
+            return Ok(new ApiResult
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
         }
     }
 

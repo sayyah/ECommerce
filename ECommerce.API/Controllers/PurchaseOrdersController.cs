@@ -1,6 +1,9 @@
 ﻿using ECommerce.Application.Services.Commands.Purchase.Purchases;
 using ECommerce.Domain.Entities.HolooEntity;
+<<<<<<< HEAD
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 namespace ECommerce.API.Controllers;
 
@@ -89,18 +92,26 @@ public class PurchaseOrdersController : ControllerBase
         if (purchaseOrder == null)
             return Ok(new ApiResult
             {
+<<<<<<< HEAD
                 Code = ResultCode.DatabaseError,
                 ReturnData = false,
                 Messages = new List<string> { "اشکال در سمت سرور" }
+=======
+                Code = ResultCode.DatabaseError, ReturnData = false, Messages = new List<string> { "اشکال در سمت سرور" }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
             });
         purchaseOrder.Status = status;
         var result = await _purchaseOrderRepository.UpdateAsync(purchaseOrder, cancellationToken);
         if (result == null)
             return Ok(new ApiResult
             {
+<<<<<<< HEAD
                 Code = ResultCode.DatabaseError,
                 ReturnData = false,
                 Messages = new List<string> { "اشکال در سمت سرور" }
+=======
+                Code = ResultCode.DatabaseError, ReturnData = false, Messages = new List<string> { "اشکال در سمت سرور" }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
             });
 
         return Ok(new ApiResult
@@ -143,7 +154,7 @@ public class PurchaseOrdersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -322,9 +333,13 @@ public class PurchaseOrdersController : ControllerBase
                 });
 
             if (result.Any(x => x.Price.ArticleCode != null))
+<<<<<<< HEAD
             {
                 result = await AddPriceAndExistFromHolooList(result.ToList(), cancellationToken);
             }
+=======
+                result = await AddPriceAndExistFromHolooList(result.ToList());
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
             if (shouldUpdatePurchaseOrderDetails)
                 await _purchaseOrderDetailRepository.UpdateUserCart(result, cancellationToken);
@@ -610,8 +625,12 @@ public class PurchaseOrdersController : ControllerBase
                 double otherWarehouseCount = orderDetail.Quantity;
                 var holoo_A = holooArticle.Where(c => c.A_Code_C == orderDetail.Price.ArticleCodeCustomer)
                     .FirstOrDefault();
+<<<<<<< HEAD
                 double soldExist = _holooABailRepository.GetWithACode(userCode, holoo_A.A_Code, cancellationToken);
                 if ((holoo_A.Exist - soldExist) > 0)
+=======
+                if (holoo_A.Exist > 0)
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                 {
                     if ((holoo_A.Exist - soldExist) < orderDetail.Quantity)
                     {
@@ -634,12 +653,17 @@ public class PurchaseOrdersController : ControllerBase
                     });
                 }
 
+<<<<<<< HEAD
                 if (holoo_A.Exist - soldExist == 0 || twoFactor)
+=======
+                if (holoo_A.Exist == 0 || twoFactor)
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                 {
                     var holooArticleOthere = await _articleRepository.GetHolooArticlesOthereWarehouse(
                         purchaseOrderDetails.Select(c => c.Price.ArticleCodeCustomer).ToList(), cancellationToken);
                     var holoo_A_Othere = holooArticleOthere
                         .Where(c => c.A_Code_C == orderDetail.Price.ArticleCodeCustomer).FirstOrDefault();
+<<<<<<< HEAD
                     double soldOtherExist = _holooABailRepository.GetWithACode(userCode, holoo_A_Othere.A_Code, cancellationToken);
                     if (holoo_A_Othere.Exist - soldOtherExist > 0)
                         aBail.Add(new HolooABail
@@ -662,6 +686,20 @@ public class PurchaseOrdersController : ControllerBase
                             Messages = new List<string> { "عدم تطابق موجودی کالا" }
                         });
                     }
+=======
+                    aBail.Add(new HolooABail
+                    {
+                        A_Code = holoo_A_Othere.A_Code,
+                        ACode_C = orderDetail.Price.ArticleCodeCustomer,
+                        A_Index = Convert.ToInt16(i++),
+                        Fac_Code = fBail,
+                        Fac_Type = "P",
+                        Few_Article = otherWarehouseCount,
+                        First_Article = otherWarehouseCount,
+                        Price_BS = Convert.ToDouble(orderDetail.UnitPrice) * 10,
+                        Unit_Few = 0
+                    });
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                 }
             }
 

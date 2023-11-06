@@ -1,6 +1,10 @@
 using ECommerce.Services.IServices;
 
+<<<<<<< HEAD:ECommerce.Front.Admin/Areas/Admin/Pages/Users/Purchases.cshtml.cs
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Users;
+=======
+namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Users;
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8):ECommerce.Front.BolouriGroup/Areas/Admin/Pages/Users/Purchases.cshtml.cs
 
 public class PurchaseModel : PageModel
 {

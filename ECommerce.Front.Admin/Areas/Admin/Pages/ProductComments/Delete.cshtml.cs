@@ -1,6 +1,10 @@
 using ECommerce.Services.IServices;
 
+<<<<<<< HEAD:ECommerce.Front.Admin/Areas/Admin/Pages/ProductComments/Delete.cshtml.cs
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductComments;
+=======
+namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductComments;
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8):ECommerce.Front.BolouriGroup/Areas/Admin/Pages/ProductComments/Delete.cshtml.cs
 
 public class DeleteModel : PageModel
 {

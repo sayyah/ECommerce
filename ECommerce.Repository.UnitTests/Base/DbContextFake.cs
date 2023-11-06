@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+<<<<<<< HEAD
 using ECommerce.Infrastructure.DataContext;
 using Microsoft.Data.Sqlite;
+=======
+using ECommerce.Infrastructure.DataContext.DataContext;
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 namespace ECommerce.Repository.UnitTests.Base;
 
@@ -13,6 +17,7 @@ public class DbContextFake : DbContext
 
     public DbContextFake()
     {
+<<<<<<< HEAD
         var connection = new SqliteConnection("datasource=:memory:");
         connection.Open();
 
@@ -21,6 +26,13 @@ public class DbContextFake : DbContext
             .Options;
         var optionsHoloo = new DbContextOptionsBuilder<HolooDbContext>()
             .UseSqlite(connection)
+=======
+        var options = new DbContextOptionsBuilder<SunflowerECommerceDbContext>()
+            .UseInMemoryDatabase("SunFlower")
+            .Options;
+        var optionsHoloo = new DbContextOptionsBuilder<HolooDbContext>()
+            .UseInMemoryDatabase("Holoo")
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
             .Options;
         _databaseContext = new SunflowerECommerceDbContext(
             options,

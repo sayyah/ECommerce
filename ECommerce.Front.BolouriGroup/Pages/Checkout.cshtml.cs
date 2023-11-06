@@ -14,6 +14,7 @@ public class CheckoutModel : PageModel
     private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly ISendInformationService _sendInformationService;
     private readonly IStateService _stateService;
+<<<<<<< HEAD
     private readonly IConfiguration _configuration;
 
     [BindProperty]
@@ -35,6 +36,8 @@ public class CheckoutModel : PageModel
     public string Code { get; set; }
     public int SumPrice { get; set; }
     public ServiceResult<Discount> DiscountResult { get; set; }
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
     public CheckoutModel(
         ICartService cartService,
@@ -54,6 +57,20 @@ public class CheckoutModel : PageModel
         _discountService = discountService;
         _configuration = configuration;
     }
+
+
+    [BindProperty] public List<State> StateList { get; set; }
+    [BindProperty] public List<City> CityList { get; set; }
+    [BindProperty] public SendInformation SendInformation { get; set; }
+
+    [BindProperty] public List<SendInformation> SendInformationList { get; set; }
+
+    [TempData] public string Message { get; set; }
+
+    [TempData] public string Code { get; set; }
+
+    public int SumPrice { get; set; }
+    public ServiceResult<Discount> DiscountResult { get; set; }
 
     public async Task OnGet(string message, string code)
     {
@@ -129,6 +146,7 @@ public class CheckoutModel : PageModel
             resultData.Description = "تخفیف مورد نظر یافت نشد";
             return resultData;
         }
+
         if (!DiscountResult.ReturnData.IsActive)
         {
             resultData.SumPrice = sumPrice;
@@ -188,9 +206,13 @@ public class CheckoutModel : PageModel
         ModelState.Remove("discountCode");
         var returnAction = "melisuccess";
         var url = $"https://{Request.Host}{Request.PathBase}/";
+<<<<<<< HEAD
         SendInformation.UserId = Convert.ToInt32(
             User.Claims.FirstOrDefault(c => c.Type == "id")?.Value
         );
+=======
+        SendInformation.UserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
         var resultSendInformation = ServiceCode.Success;
         if (SendInformation.Id == 0)
         {
@@ -237,6 +259,7 @@ public class CheckoutModel : PageModel
         var purchaseOrder = (await _purchaseOrderService.GetByUserId()).ReturnData;
         purchaseOrder.Amount = tempSumPrice;
         purchaseOrder.SendInformationId = SendInformation.Id;
+<<<<<<< HEAD
         if (
             DiscountResult.Code == 0
             && DiscountResult.Status == 200
@@ -250,6 +273,12 @@ public class CheckoutModel : PageModel
                 || DiscountResult.ReturnData.EndDate == null
             )
         )
+=======
+        if (DiscountResult.Code == 0 && DiscountResult.Status == 200 && DiscountResult.ReturnData.IsActive &&
+            (DiscountResult.ReturnData.StartDate?.Date <= DateTime.Now.Date ||
+             DiscountResult.ReturnData.StartDate == null) &&
+            (DiscountResult.ReturnData.EndDate?.Date >= DateTime.Now.Date || DiscountResult.ReturnData.EndDate == null))
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
         {
             purchaseOrder.DiscountId = DiscountResult.ReturnData.Id;
             purchaseOrder.DiscountAmount = (int)tempSumPrice - SumPrice;
@@ -280,6 +309,7 @@ public class CheckoutModel : PageModel
                     purchaseOrder.OrderId = BitConverter.ToInt64(gb, 0);
                     var date = DateTime.Now.ToString("yyyyMMdd");
                     var time = DateTime.Now.ToString("HHmmss");
+<<<<<<< HEAD
                     long merchantId = _configuration.GetValue<long>(
                         "SiteSettings:SanadSettings:merchantId"
                     );
@@ -302,6 +332,19 @@ public class CheckoutModel : PageModel
                     var signData = Convert.ToBase64String(
                         encryptor.TransformFinalBlock(dataBytes, 0, dataBytes.Length)
                     );
+=======
+                    long merchantId = 000000140341290; //000000140336964;//000000140341290;
+                    var terminalId = "24102279"; //24095674;// "24102279";
+                    var terminalKey =
+                        "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz"; //"8v8AEee8YfZX+wwc1TzfShRgH3O9WOho";// "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz";
+                    var dataBytes = Encoding.UTF8.GetBytes($"{terminalId};{purchaseOrder.OrderId};{SumPrice}");
+                    var symmetric = SymmetricAlgorithm.Create("TripleDes");
+                    symmetric.Mode = CipherMode.ECB;
+                    symmetric.Padding = PaddingMode.PKCS7;
+                    var encryptor = symmetric.CreateEncryptor(Convert.FromBase64String(terminalKey), new byte[8]);
+                    var signData =
+                        Convert.ToBase64String(encryptor.TransformFinalBlock(dataBytes, 0, dataBytes.Length));
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
                     var ipgUri = "https://sadad.shaparak.ir/api/v0/Request/PaymentRequest";
                     var data = new
@@ -350,8 +393,12 @@ public class CheckoutModel : PageModel
             client.BaseAddress = new Uri(apiUrl);
             client.DefaultRequestHeaders.Accept.Clear();
             var response = await client.PostAsJsonAsync(apiUrl, value);
+<<<<<<< HEAD
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadFromJsonAsync<T>();
+=======
+            if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
             return default;
         }
     }

@@ -1,5 +1,8 @@
 ﻿using ECommerce.Services.IServices;
+<<<<<<< HEAD:ECommerce.Front.Admin/Areas/Admin/Pages/Employees/Edit.cshtml.cs
 using Microsoft.AspNetCore.Mvc.Rendering;
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8):ECommerce.Front.BolouriGroup/Areas/Admin/Pages/Employees/Edit.cshtml.cs
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 

@@ -6,8 +6,11 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Colors;
 
+<<<<<<< HEAD
 [CollectionDefinition("ColorTests", DisableParallelization = true)]
 [Collection("ColorTests")]
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 public class ColorTests : BaseTests
 {
     private readonly IColorRepository _colorRepository;

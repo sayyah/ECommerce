@@ -81,7 +81,11 @@
                             </div>
                         </div>
 
+<<<<<<< HEAD
                         <select asp-for="RegisterViewModel.StateId" class="custom-select form-control" id="state" onchange="setCities(event);" style="color: gray; margin-top: 10px;">
+=======
+                        <select asp-for="RegisterViewModel.StateId" class="custom-select form-control" id="state" onchange="setCities();" style="color: gray; margin-top: 10px;">
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                             @foreach (var state in Model.StateList)
                             {
                                 <option value="@state.Id">@state.Name</option>

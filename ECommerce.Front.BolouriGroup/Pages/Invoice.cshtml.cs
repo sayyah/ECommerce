@@ -11,6 +11,7 @@ public class InvoiceModel : PageModel
 {
     private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly IUserService _userService;
+<<<<<<< HEAD
     private readonly IConfiguration _configuration;
 
     [BindProperty]
@@ -22,9 +23,20 @@ public class InvoiceModel : PageModel
     [TempData]
     public string Code { get; set; }
     public PurchaseOrder PurchaseOrder { get; set; }
+=======
+
+    public InvoiceModel(IPurchaseOrderService purchaseOrderService, IUserService userService)
+    {
+        _purchaseOrderService = purchaseOrderService;
+        _userService = userService;
+    }
+
+    [BindProperty] public long OrderId { get; set; }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     public string Refid { get; set; }
     public string SystemTraceNo { get; set; }
 
+<<<<<<< HEAD
     public InvoiceModel(
         IPurchaseOrderService purchaseOrderService,
         IUserService userService,
@@ -35,6 +47,10 @@ public class InvoiceModel : PageModel
         _userService = userService;
         _configuration = configuration;
     }
+=======
+    [TempData] public string Code { get; set; }
+    public PurchaseOrder PurchaseOrder { get; set; }
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
     public async Task<ActionResult> OnGet(PurchaseResult result)
     {
@@ -112,12 +128,17 @@ public class InvoiceModel : PageModel
                     }
                     else if (result.Code == ServiceCode.Success)
                     {
+<<<<<<< HEAD
                         string num1 = _configuration.GetValue<string>("InvoiceNumbers:num1");
                         await _userService.SendInvocieSms(
                             result.Message ?? "",
                             num1,
                             DateTime.Now.ToString("MM/dd/yyyy")
                         );
+=======
+                        await _userService.SendInvocieSms(result.Message ?? "", "09111307006",
+                            DateTime.Now.ToString("MM/dd/yyyy"));
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
                         Code = result.Code.ToString();
                         Message = "سفارش شما با موفقیت ثبت شد";
                     }
@@ -135,6 +156,7 @@ public class InvoiceModel : PageModel
         var symmetric = SymmetricAlgorithm.Create("TripleDes");
         symmetric.Mode = CipherMode.ECB;
         symmetric.Padding = PaddingMode.PKCS7;
+<<<<<<< HEAD
         string merchantKey = _configuration.GetValue<string>(
             "SiteSettings:SanadSettings:terminalKey"
         );
@@ -142,6 +164,11 @@ public class InvoiceModel : PageModel
             Convert.FromBase64String(merchantKey),
             new byte[8]
         );
+=======
+        var merchantKey =
+            "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz"; //"8v8AEee8YfZX+wwc1TzfShRgH3O9WOho";// "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz";
+        var encryptor = symmetric.CreateEncryptor(Convert.FromBase64String(merchantKey), new byte[8]);
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
         var signedData = Convert.ToBase64String(
             encryptor.TransformFinalBlock(dataBytes, 0, dataBytes.Length)
@@ -229,10 +256,14 @@ public class InvoiceModel : PageModel
                 return Page();
             }
 
+<<<<<<< HEAD
         return RedirectToPage(
             "Error",
             new { message = "مشکل در درگاه پرداخت " + res.Result.Description }
         );
+=======
+        return RedirectToPage("Error", new { message = "مشکل در درگاه پرداخت " + res.Result.Description });
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     }
 
     public IActionResult OnGetFactorPrint(long orderId)
@@ -246,8 +277,12 @@ public class InvoiceModel : PageModel
         client.BaseAddress = new Uri(apiUrl);
         client.DefaultRequestHeaders.Accept.Clear();
         var response = await client.PostAsJsonAsync(apiUrl, value);
+<<<<<<< HEAD
         if (response.IsSuccessStatusCode)
             return await response.Content.ReadFromJsonAsync<T>();
+=======
+        if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
         return default;
     }
 }

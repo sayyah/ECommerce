@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 ﻿namespace ECommerce.Domain.Entities.Helper;
+=======
+﻿using ECommerce.Domain.Entities.Helper;
+
+namespace ECommerce.Domain.Entities.Helper;
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 
 
 public class PaginationParameters

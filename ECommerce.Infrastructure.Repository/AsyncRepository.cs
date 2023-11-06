@@ -1,5 +1,8 @@
 ﻿using System.Linq.Expressions;
+<<<<<<< HEAD
 using ECommerce.Infrastructure.DataContext;
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 using ECommerce.Infrastructure.DataContext.Utilities;
 
 namespace ECommerce.Infrastructure.Repository;

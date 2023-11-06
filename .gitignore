@@ -386,8 +386,11 @@ ECommerce.API/appsettings.json
 
 # dist folder (can be built)
 /ECommerce.Front.BolouriGroup/wwwroot/dist
+<<<<<<< HEAD
 
 # appsettings.json
+=======
+>>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 /ECommerce.API/appsettings.json
 /ECommerce.Front.BolouriGroup/appsettings.json
 /ECommerce.Front.ArshaHamrah/appsettings.json
