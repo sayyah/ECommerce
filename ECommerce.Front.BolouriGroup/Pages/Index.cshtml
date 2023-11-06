@@ -22,22 +22,26 @@
             if (slide.Product != null)
             {
                 <div class="banner-part banner-1">
-                    <div class="banner-img" style="position: relative;text-align: center;color: white;">
+                    <div class="banner-img" style="color: white; position: relative; text-align: center;">
                         <img src=@slide.ImagePath alt="@slide.Product.Name" loading="lazy">
-                    <div class="container">
-                        <div class="row rtl">
-                                <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6" >
+                        <div class="container">
+                            <div class="row rtl">
+                                <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6">
                                     <div class="banner-content">
                                         <p class="TitleSlide">@slide.Title</p>
-                                    <p>@Html.Raw(slide.Description)</p>
-                                    <div class="banner-btn">
-                                        <a class="btn btn-inline" asp-area="" asp-page="Product" asp-route-productUrl="@slide.Product.Url"><i class="far fa-shopping-cart"></i><span>الان خرید کن</span></a>
-                                        <a class="btn btn-outline" asp-area="" asp-page="Product" asp-route-productUrl="@slide.Product.Url"><i class="far fa-badge-percent"></i><span>بهترین معامله</span></a>
+                                        <p>@Html.Raw(slide.Description)</p>
+                                        <div class="banner-btn">
+                                            <a class="btn btn-inline" asp-area="" asp-page="Product" asp-route-productUrl="@slide.Product.Url">
+                                                <i class="far fa-shopping-cart"></i><span>الان خرید کن</span>
+                                            </a>
+                                            <a class="btn btn-outline" asp-area="" asp-page="Product" asp-route-productUrl="@slide.Product.Url">
+                                                <i class="far fa-badge-percent"></i><span>بهترین معامله</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             }
@@ -46,19 +50,23 @@
                 if (slide.Category != null)
                 {
                     <div class="banner-part banner-1">
-                        <div class="banner-img" style="position: relative;text-align: center;color: white;">
-                                    <img src=@slide.ImagePath alt="@slide.Category.Name" loading="lazy">
+                        <div class="banner-img" style="color: white; position: relative; text-align: center;">
+                            <img src=@slide.ImagePath alt="@slide.Category.Name" loading="lazy">
                             <div class="container">
                                 <div class="row rtl">
                                     <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6">
                                         <div class="banner-content">
                                             <p class="TitleSlide">@slide.Title</p>
-                                        <p>@Html.Raw(slide.Description) </p>
-                                        <div class="banner-btn">
-                                            <a class="btn btn-inline" asp-area="" asp-page="Shop" asp-route-path="@slide.Category.Path"><i class="far fa-shopping-cart"></i><span>الان خرید کن</span></a>
-                                            <a class="btn btn-outline" asp-area="" asp-page="Shop" asp-route-path="@slide.Category.Path"><i class="far fa-badge-percent"></i><span>بهترین معامله</span></a>
+                                            <p>@Html.Raw(slide.Description) </p>
+                                            <div class="banner-btn">
+                                                <a class="btn btn-inline" asp-area="" asp-page="Shop" asp-route-path="@slide.Category.Path">
+                                                    <i class="far fa-shopping-cart"></i><span>الان خرید کن</span>
+                                                </a>
+                                                <a class="btn btn-outline" asp-area="" asp-page="Shop" asp-route-path="@slide.Category.Path">
+                                                    <i class="far fa-badge-percent"></i><span>بهترین معامله</span>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -81,7 +89,7 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
             @foreach (var starProduct in Model.NewProducts)
             {
-                <partial name="Components/_productCard" model="starProduct" />
+                <partial name="Components/_productCard" model="starProduct"/>
             }
 
         </div>
@@ -103,17 +111,23 @@
                 <div class="row justify-content-md-center ">
                     <div class="col-lg-4 res-card">
                         <div class="promo-img">
-                            <a href="/Shop/Coffee/shop/equipment/Tool"><img src="~/images/banner/1.webp" alt="ابزار و لوازم بار گرم" width="370" height="125" loading="lazy"></a>
+                            <a href="/Shop/Coffee/shop/equipment/Tool">
+                                <img src="~/images/banner/1.webp" alt="ابزار و لوازم بار گرم" width="370" height="125" loading="lazy">
+                            </a>
                         </div>
                     </div>
                     <div class="col-lg-4 res-card">
                         <div class="promo-img">
-                            <a href="/Shop/Refrigeration/food-storage/Hot"><img src="~/images/banner/2.webp" alt="تجهیزات نگهداری گرم" width="370" height="125" loading="lazy"></a>
+                            <a href="/Shop/Refrigeration/food-storage/Hot">
+                                <img src="~/images/banner/2.webp" alt="تجهیزات نگهداری گرم" width="370" height="125" loading="lazy">
+                            </a>
                         </div>
                     </div>
                     <div class="col-lg-4 res-card">
                         <div class="promo-img">
-                            <a href="/Shop/ Catering/Containers/Metal/Cast-iron"><img src="~/images/banner/3.webp" alt="ظروف سرو فلزی" width="370" height="125" loading="lazy"></a>
+                            <a href="/Shop/ Catering/Containers/Metal/Cast-iron">
+                                <img src="~/images/banner/3.webp" alt="ظروف سرو فلزی" width="370" height="125" loading="lazy">
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -133,7 +147,7 @@
         <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
             @foreach (var expensiveProducts in Model.ExpensiveProducts)
             {
-                <partial name="Components/_productDetailsCart" model="expensiveProducts" />
+                <partial name="Components/_productDetailsCart" model="expensiveProducts"/>
             }
         </div>
         <div class="row justify-content-center ">
@@ -228,13 +242,10 @@
                 foreach (var blogViewModel in Model.Blogs.ReturnData)
                 {
                     <div class="col-lg-4 col-sm-6">
-                        <partial name="Components/_blogCard" model="blogViewModel" />
+                        <partial name="Components/_blogCard" model="blogViewModel"/>
                     </div>
                 }
-
             }
         </div>
     </div>
 </section>
-
-

@@ -1,8 +1,4 @@
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Currencies;
 
@@ -40,6 +36,7 @@ public class IndexModel : PageModel
                 Message = result.Message;
                 Code = result.Code.ToString();
             }
+
             Currencies = result;
             return Page();
         }

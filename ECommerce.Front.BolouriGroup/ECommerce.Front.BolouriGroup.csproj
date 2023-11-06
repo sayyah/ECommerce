@@ -1,16 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
 
-	
+	<ItemGroup>
+		<Using Include="Microsoft.AspNetCore.Mvc" />
+		<Using Include="Microsoft.AspNetCore.Mvc.RazorPages" />
+		<Using Include="ECommerce.Domain.Interfaces" />
+		<Using Include="ECommerce.Application.ViewModels" />
+		<Using Include="ECommerce.Domain.Entities" />
+		<Using Include="ECommerce.Domain.Entities.Helper" />
+	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.86" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.13" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
 		<PackageReference Include="PersianDate" Version="3.5.5" />
 		<PackageReference Include="PersianDateTimePicker" Version="1.0.1.1" />
@@ -19,7 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Ecommerce.Entities\Ecommerce.Entities.csproj" />
+		<ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
 		<ProjectReference Include="..\ECommerce.Services\ECommerce.Services.csproj" />
 	</ItemGroup>
 	<ItemGroup>
@@ -31,7 +38,7 @@
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
-		</ItemGroup>
+	</ItemGroup>
 
 	<ItemGroup>
 		<UpToDateCheckInput Remove="Pages\Components\CategoriesMobile\Default.cshtml" />

@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
@@ -9,10 +6,12 @@ public class CompareModel : PageModel
 {
     private readonly ICompareService _compareService;
     public int CategoryId;
+
     public CompareModel(ICompareService compareService)
     {
         _compareService = compareService;
     }
+
     public List<ProductCompareViewModel>? ProductsList { get; set; }
     public ProductCompareViewModel? CompareProduct { get; set; }
     public string Message { get; set; }
@@ -26,13 +25,15 @@ public class CompareModel : PageModel
             CategoryId = result.ReturnData.First().ProductCategories.First();
             var CategoriesResult = await _compareService.GetProductsByCategories(CategoryId);
             ProductsList = CategoriesResult.ReturnData;
-        }        
+        }
+
         CompareProduct = result.ReturnData.First();
         if (ProductsList != null && ProductsList.Count() > 0)
         {
-            int Index = ProductsList.FindIndex(a => a.Id == productListId.First());
+            var Index = ProductsList.FindIndex(a => a.Id == productListId.First());
             ProductsList.RemoveAt(Index);
         }
+
         return Page();
     }
 }

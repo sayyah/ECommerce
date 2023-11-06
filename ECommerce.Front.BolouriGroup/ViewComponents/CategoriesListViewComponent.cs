@@ -1,5 +1,4 @@
 ﻿using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.Front.BolouriGroup.ViewComponents;
 

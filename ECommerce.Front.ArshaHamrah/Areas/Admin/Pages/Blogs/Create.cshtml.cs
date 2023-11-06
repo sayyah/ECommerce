@@ -1,6 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,17 +11,17 @@ namespace ECommerce.Front.ArshaHamrah.Areas.Admin.Pages.Blogs;
 [Authorize(Roles = "Admin,SuperAdmin")]
 public class CreateModel : PageModel
 {
+    private readonly IBlogAuthorService _blogAuthorService;
+    private readonly IBlogCategoryService _blogCategoryService;
     private readonly IBlogService _blogService;
     private readonly IHostEnvironment _environment;
     private readonly IImageService _imageService;
-    private readonly IBlogCategoryService _blogCategoryService;
-    private readonly IBlogAuthorService _blogAuthorService;
-    private readonly ITagService _tagService;
     private readonly IKeywordService _keywordService;
+    private readonly ITagService _tagService;
 
-    public CreateModel(IBlogService brandService, IImageService imageService, 
-                        IHostEnvironment environment , IBlogCategoryService blogCategoryService,
-                        IBlogAuthorService blogAuthorService, ITagService tagService, IKeywordService keywordService)
+    public CreateModel(IBlogService brandService, IImageService imageService,
+        IHostEnvironment environment, IBlogCategoryService blogCategoryService,
+        IBlogAuthorService blogAuthorService, ITagService tagService, IKeywordService keywordService)
     {
         _blogService = brandService;
         _imageService = imageService;
@@ -47,7 +46,7 @@ public class CreateModel : PageModel
     public SelectList Keywords { get; set; }
 
     private async Task Initial()
-    {       
+    {
         var blogcategories = (await _blogCategoryService.GetAll()).ReturnData;
         BlogCategories = new SelectList(blogcategories, nameof(Store.Id), nameof(Store.Name));
 
@@ -83,12 +82,8 @@ public class CreateModel : PageModel
         {
             var result = await _blogService.Add(Blog);
             if (result.Code == 0)
-            {
-              
-
                 return RedirectToPage("/Blogs/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
-            }
 
             Message = result.Message;
             Code = result.Code.ToString();

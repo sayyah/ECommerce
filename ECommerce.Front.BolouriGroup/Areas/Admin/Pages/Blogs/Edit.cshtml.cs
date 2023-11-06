@@ -1,24 +1,20 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Blogs;
 
 public class EditModel : PageModel
 {
+    private readonly IBlogAuthorService _blogAuthorService;
+    private readonly IBlogCategoryService _blogCategoryService;
     private readonly IBlogService _blogService;
     private readonly IHostEnvironment _environment;
     private readonly IImageService _imageService;
-    private readonly ITagService _tagService;
     private readonly IKeywordService _keywordService;
-    private readonly IBlogAuthorService _blogAuthorService;
-    private readonly IBlogCategoryService _blogCategoryService;
+    private readonly ITagService _tagService;
 
     public EditModel(IBlogService blogService, IImageService imageService, ITagService tagService,
-        IKeywordService keywordService, IHostEnvironment environment, IBlogAuthorService blogAuthorService, IBlogCategoryService blogCategoryService)
+        IKeywordService keywordService, IHostEnvironment environment, IBlogAuthorService blogAuthorService,
+        IBlogCategoryService blogCategoryService)
     {
         _blogService = blogService;
         _environment = environment;
@@ -40,12 +36,13 @@ public class EditModel : PageModel
 
 
     public async Task<IActionResult> OnGet(int id)
-    {   
+    {
         var result = await Initial(id);
         if (result.Code == 0) return Page();
         return RedirectToPage("/Blogs/Index",
             new { area = "Admin", message = result.Message, code = result.Code.ToString() });
     }
+
     public async Task<IActionResult> OnPost()
     {
         if (Blog.BlogCategoryId == 0)
@@ -55,6 +52,7 @@ public class EditModel : PageModel
             await Initial(Blog.Id);
             return Page();
         }
+
         var _image = await _imageService.GetImagesByBlogId(Blog.Id);
         Blog.Image = _image.ReturnData;
 
@@ -65,14 +63,15 @@ public class EditModel : PageModel
             await Initial(Blog.Id);
             return Page();
         }
-        if (Upload!=null)
-        if (Upload.FileName.Split('.').Last().ToLower() != "webp")
-        {
-            ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
-            await Initial(Blog.Id);
-            return Page();
-        }
-  
+
+        if (Upload != null)
+            if (Upload.FileName.Split('.').Last().ToLower() != "webp")
+            {
+                ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
+                await Initial(Blog.Id);
+                return Page();
+            }
+
 
         if (Upload != null && Blog.Image.Id != 0)
         {
@@ -80,10 +79,11 @@ public class EditModel : PageModel
             _image = await _imageService.GetImagesByBlogId(Blog.Id);
             Blog.Image = _image.ReturnData;
         }
+
         if (Upload != null && Blog.Image.Id == 0)
         {
             var resultImage = await _imageService.Add(Upload, Blog.Id, "Images/Blogs",
-                       _environment.ContentRootPath);
+                _environment.ContentRootPath);
             if (resultImage.Code > 0)
             {
                 Message = resultImage.Message;
@@ -94,17 +94,14 @@ public class EditModel : PageModel
             _image = await _imageService.GetImagesByBlogId(Blog.Id);
             Blog.Image = _image.ReturnData;
         }
-     
+
 
         if (ModelState.IsValid)
         {
             var result = await _blogService.Edit(Blog);
             if (result.Code == 0)
-            {
-
                 return RedirectToPage("/Blogs/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
-            }
 
             Message = result.Message;
             Code = result.Code.ToString();

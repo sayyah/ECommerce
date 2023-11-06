@@ -1,8 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using ECommerce.Application.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers;
@@ -26,7 +22,7 @@ public class BlogsController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";     
+            if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
             var entity = await _blogRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
@@ -48,13 +44,13 @@ public class BlogsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetByTagText([FromQuery] PaginationParameters paginationParameters,
-    CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -106,7 +102,7 @@ public class BlogsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -128,14 +124,14 @@ public class BlogsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"عنوان مقاله تکراری است"}
+                    Messages = new List<string> { "عنوان مقاله تکراری است" }
                 });
             var repetitiveUrl = await _blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
             if (repetitiveUrl != null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"آدرس مقاله تکراری است"}
+                    Messages = new List<string> { "آدرس مقاله تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -147,7 +143,7 @@ public class BlogsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -165,7 +161,7 @@ public class BlogsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"عنوان مقاله تکراری است"}
+                    Messages = new List<string> { "عنوان مقاله تکراری است" }
                 });
             if (repetitiveTitle != null) _blogRepository.Detach(repetitiveTitle);
             var repetitiveUrl = await _blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
@@ -173,7 +169,7 @@ public class BlogsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"آدرس مقاله تکراری است"}
+                    Messages = new List<string> { "آدرس مقاله تکراری است" }
                 });
             if (repetitiveUrl != null) _blogRepository.Detach(repetitiveUrl);
             await _blogRepository.EditWithRelations(blogViewModel, cancellationToken);
@@ -185,7 +181,7 @@ public class BlogsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -204,7 +200,7 @@ public class BlogsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -222,13 +218,13 @@ public class BlogsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpGet]
     public async Task<ActionResult<BlogViewModel>> GetByUrl(string blogUrl, bool isColleague,
-     CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         try
         {

@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Discounts.DetailModel
+@model DetailModel
 @{
 }
 <div class="container">
@@ -34,7 +34,7 @@
                         </div>
                         <div class="form-group">
                             <label>تاریخ پایان</label>
-                            <input asp-for="@Model.Discount.EndDate" class="form-control form-control-solid" id="end-date-g" hidden disabled />
+                            <input asp-for="@Model.Discount.EndDate" class="form-control form-control-solid" id="end-date-g" hidden disabled/>
                             <input class="form-control form-control-solid" id="end-date-p" disabled placeholder="تاریخ پایان‌"/>
                         </div>
                         <div class="checkbox-inline">

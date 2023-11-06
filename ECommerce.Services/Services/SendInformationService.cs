@@ -1,13 +1,10 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class SendInformationService : EntityService<SendInformation>, ISendInformationService
 {
     private const string Url = "api/SendInformation";
     private readonly ICookieService _cookieService;
+
     public SendInformationService(IHttpService http, ICookieService cookieService) : base(http)
     {
         _cookieService = cookieService;

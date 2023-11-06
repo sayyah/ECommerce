@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products.AttributeValueModel
+@model AttributeValueModel
 @{
     ViewData["Title"] = "اضافه کردن مشخثات";
 }
@@ -51,7 +51,7 @@
                                     @for (var j = 0; j < Model.AttributeGroups[g].Attribute[i].AttributeValue.Count; j++)
                                     {
                                         @Html.HiddenFor(model => Model.AttributeGroups[g].Attribute[i].AttributeValue[j].Id)
-                                        @Html.TextBoxFor(model => Model.AttributeGroups[g].Attribute[i].AttributeValue[j].Value, new {@class = "form-control form-control-solid"})
+                                        @Html.TextBoxFor(model => Model.AttributeGroups[g].Attribute[i].AttributeValue[j].Value, new { @class = "form-control form-control-solid" })
                                     }
                                 </div>
                             }

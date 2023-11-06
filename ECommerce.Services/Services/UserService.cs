@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Application.ViewModels;
 using Microsoft.Extensions.Options;
 
 namespace ECommerce.Services.Services;
@@ -18,6 +15,24 @@ public class UserService : EntityService<User>, IUserService
         _http = http;
         _cookieService = cookieService;
         _smsSettings = options.Value;
+    }
+
+    public async Task<bool> GetVerificationByNationalId(string nationalId)
+    {
+        if (nationalId == null || nationalId.Length != 10) return false;
+        var nationalIdArray = new int[10];
+        var sum = 0;
+        for (var i = 0; i < nationalId.Length; i++)
+        {
+            nationalIdArray[i] = int.Parse(nationalId[i].ToString());
+            if (i < 9) sum += nationalIdArray[i] * (10 - i);
+        }
+
+        var remainder = sum % 11;
+        if ((remainder < 2 && nationalIdArray[9] == remainder) ||
+            (remainder >= 2 && nationalIdArray[9] == 11 - remainder)) return true;
+
+        return false;
     }
 
     public async Task<ServiceResult> Logout()
@@ -69,13 +84,14 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult> Register(RegisterViewModel registerViewModel)
     {
-        ApiResult<object> result = await _http.PostAsync(Url, registerViewModel, "Register");
+        var result = await _http.PostAsync(Url, registerViewModel, "Register");
 
-        if (result.Code != 0 || result.Status != 200) return new ServiceResult
-        {
-            Code = ServiceCode.Error,
-            Message = result.GetBody()
-        };
+        if (result.Code != 0 || result.Status != 200)
+            return new ServiceResult
+            {
+                Code = ServiceCode.Error,
+                Message = result.GetBody()
+            };
 
         var loginViewModel = new LoginViewModel
         {
@@ -105,11 +121,12 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult> ChangePassword(string oldPass, string newPass, string newConPass)
     {
-        if (!newPass.Equals(newConPass)) return new ServiceResult
-        {
-            Code = ServiceCode.Success,
-            Message = "پسوردها مطابقت ندارند"
-        };
+        if (!newPass.Equals(newConPass))
+            return new ServiceResult
+            {
+                Code = ServiceCode.Success,
+                Message = "پسوردها مطابقت ندارند"
+            };
         var user = _cookieService.GetCurrentUser();
         var resetPasswordViewModel = new ResetPasswordViewModel
         {
@@ -128,11 +145,12 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult> ChangeForgotPassword(ResetForgotPasswordViewModel resetForgotPasswordViewModel)
     {
-        if (!resetForgotPasswordViewModel.Password.Equals(resetForgotPasswordViewModel.ConPass)) return new ServiceResult
-        {
-            Code = ServiceCode.Success,
-            Message = "پسوردها مطابقت ندارند"
-        };
+        if (!resetForgotPasswordViewModel.Password.Equals(resetForgotPasswordViewModel.ConPass))
+            return new ServiceResult
+            {
+                Code = ServiceCode.Success,
+                Message = "پسوردها مطابقت ندارند"
+            };
         var result = await _http.PostAsync(Url, resetForgotPasswordViewModel, "ResetForgotPassword");
 
         return new ServiceResult
@@ -153,8 +171,10 @@ public class UserService : EntityService<User>, IUserService
             Message = result.GetBody()
         };
     }
+
     public async Task<ServiceResult<List<UserListViewModel>>> UserList(string search = "",
-     int pageNumber = 0, int pageSize = 10, int userSort = 1, bool? isActive = null, bool? isColleague = null, bool? HasBuying = null)
+        int pageNumber = 0, int pageSize = 10, int userSort = 1, bool? isActive = null, bool? isColleague = null,
+        bool? HasBuying = null)
     {
         //var result = await _http.GetAsync<List<ProductIndexPageViewModel>>(Url, $"NewProducts?count={count}");
         //return Return<List<ProductIndexPageViewModel>>(result);
@@ -178,6 +198,85 @@ public class UserService : EntityService<User>, IUserService
         return Return(result);
     }
 
+    public async Task<ServiceResult<User>> GetById(int id)
+    {
+        var result = await _http.GetAsync<User>(Url, $"GetById?id={id}");
+        return Return(result);
+    }
+
+    public async Task<ServiceResult> Delete(int id)
+    {
+        //var result = await Delete(Url, id);
+        //return Return(result);
+        var result = await _http.DeleteAsync(Url, id);
+        if (result.Code == ResultCode.Success)
+            return new ServiceResult
+            {
+                Code = ServiceCode.Success,
+                Message = "با موفقیت حذف شد"
+            };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+    }
+
+    public async Task<ServiceResult> Edit(User user)
+    {
+        var result = await _http.PutAsync(Url, user);
+        return Return(result);
+    }
+
+    public async Task<ResponseVerifySmsIrViewModel> SendInvocieSms(string invoice, string mobile, string persianDate)
+    {
+        var apiKey = _smsSettings.apikey;
+        var apiName = _smsSettings.apiName;
+        var url = _smsSettings.url;
+        var RequestSMSIrViewModel = new RequestVerifySmsIrViewModel();
+        var invoiceParameter = new RequestVerifySmsIrParameters();
+        invoiceParameter.Name = "INVOICE";
+        invoiceParameter.Value = invoice;
+        var dateParameter = new RequestVerifySmsIrParameters();
+        dateParameter.Name = "DATE";
+        dateParameter.Value = persianDate;
+        RequestSMSIrViewModel.Parameters = new[] { invoiceParameter, dateParameter };
+        RequestSMSIrViewModel.TemplateId = _smsSettings.invoiceTemplateId;
+        RequestSMSIrViewModel.Mobile = mobile;
+        var result =
+            await _http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
+                apiName, apiKey, RequestSMSIrViewModel, url);
+        return result;
+    }
+
+    public async Task<ResponseVerifySmsIrViewModel> SendAuthenticationSms(string? mobile, string code)
+    {
+        var apiKey = _smsSettings.apikey;
+        var apiName = _smsSettings.apiName;
+        var url = _smsSettings.url;
+        var RequestSMSIrViewModel = new RequestVerifySmsIrViewModel();
+        var RequestVerifySmsIrParameter = new RequestVerifySmsIrParameters();
+        RequestVerifySmsIrParameter.Name = "CODE";
+        RequestVerifySmsIrParameter.Value = code;
+        RequestSMSIrViewModel.Parameters = new[] { RequestVerifySmsIrParameter };
+        RequestSMSIrViewModel.TemplateId = _smsSettings.authenticationTemplateId;
+        RequestSMSIrViewModel.Mobile = mobile;
+        var result =
+            await _http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
+                apiName, apiKey, RequestSMSIrViewModel, url);
+        return result;
+    }
+
+    public async Task<ServiceResult<bool>> SetConfirmCodeByUsername(string username, string confirmCode)
+    {
+        var result = await _http.GetAsync<bool>(Url, $"SetConfirmCodeByUsername?username={username}" +
+                                                     $"&confirmCode={confirmCode}");
+        return Return(result);
+    }
+
+    public async Task<ServiceResult<int?>> GetSecondsLeftConfirmCodeExpire(string username)
+    {
+        var result = await _http.GetAsync<int?>(Url, $"GetSecondsLeftConfirmCodeExpire?username={username}");
+        return Return(result);
+    }
+
     private ServiceResult<TResult> Return<TResult>(ApiResult<TResult> result)
     {
         if (result is { Code: ResultCode.Success })
@@ -196,101 +295,4 @@ public class UserService : EntityService<User>, IUserService
             ReturnData = (TResult)typeOfTResult
         };
     }
-
-    public async Task<ServiceResult<User>> GetById(int id)
-    {
-        var result = await _http.GetAsync<User>(Url, $"GetById?id={id}");
-        return Return(result);
-    }
-    public async Task<ServiceResult> Delete(int id)
-    {
-        //var result = await Delete(Url, id);
-        //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
-        if (result.Code == ResultCode.Success)
-        {
-            return new ServiceResult
-            {
-                Code = ServiceCode.Success,
-                Message = "با موفقیت حذف شد"
-            };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
-    }
-    public async Task<ServiceResult> Edit(User user)
-    {
-        var result = await _http.PutAsync(Url, user);
-        return Return(result);
-    }
-
-    public async Task<ResponseVerifySmsIrViewModel> SendInvocieSms(string invoice, string mobile, string persianDate)
-    {
-        string apiKey = _smsSettings.apikey;
-        string apiName = _smsSettings.apiName;
-        string url = _smsSettings.url;
-        RequestVerifySmsIrViewModel RequestSMSIrViewModel = new RequestVerifySmsIrViewModel();       
-        RequestVerifySmsIrParameters invoiceParameter = new RequestVerifySmsIrParameters();
-        invoiceParameter.Name = "INVOICE";
-        invoiceParameter.Value = invoice;
-        RequestVerifySmsIrParameters dateParameter = new RequestVerifySmsIrParameters();
-        dateParameter.Name = "DATE";
-        dateParameter.Value = persianDate;
-        RequestSMSIrViewModel.Parameters = new RequestVerifySmsIrParameters[] { invoiceParameter, dateParameter };
-        RequestSMSIrViewModel.TemplateId = _smsSettings.invoiceTemplateId;
-        RequestSMSIrViewModel.Mobile = mobile;
-        var result = await _http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(apiName, apiKey, RequestSMSIrViewModel, url);
-        return result;
-    }
-
-    public async Task<ResponseVerifySmsIrViewModel> SendAuthenticationSms(string? mobile , string code)
-    {
-            string apiKey = _smsSettings.apikey;
-            string apiName = _smsSettings.apiName;
-            string url = _smsSettings.url;
-            RequestVerifySmsIrViewModel RequestSMSIrViewModel = new RequestVerifySmsIrViewModel();
-            RequestVerifySmsIrParameters RequestVerifySmsIrParameter = new RequestVerifySmsIrParameters();
-            RequestVerifySmsIrParameter.Name = "CODE";
-            RequestVerifySmsIrParameter.Value = code;
-            RequestSMSIrViewModel.Parameters = new RequestVerifySmsIrParameters[] { RequestVerifySmsIrParameter };
-            RequestSMSIrViewModel.TemplateId = _smsSettings.authenticationTemplateId;
-            RequestSMSIrViewModel.Mobile = mobile;
-            var result = await _http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(apiName, apiKey, RequestSMSIrViewModel, url);
-            return result;
-    }
-
-    public async Task<ServiceResult<bool>> SetConfirmCodeByUsername(string username, string confirmCode)
-    {
-        var result = await _http.GetAsync<bool>(Url, $"SetConfirmCodeByUsername?username={username}" +
-                                                     $"&confirmCode={confirmCode}");
-        return Return(result);
-    }
-
-    public async Task<ServiceResult<int?>> GetSecondsLeftConfirmCodeExpire(string username)
-    {
-        var result = await _http.GetAsync<int?>(Url, $"GetSecondsLeftConfirmCodeExpire?username={username}");
-        return Return(result);
-    }
-
-    public async Task<bool> GetVerificationByNationalId(string nationalId)
-    {
-        if (nationalId ==null || nationalId.Length!=10) return false;
-        int[] nationalIdArray = new int[10];
-        int sum = 0;
-        for (int i = 0; i < nationalId.Length; i++)
-        {
-            nationalIdArray[i]= int.Parse(nationalId[i].ToString());
-            if (i<9)
-            {
-                sum += nationalIdArray[i] * (10-i);
-            }
-        }
-        int remainder = sum % 11;
-        if (remainder <2 && nationalIdArray[9] == remainder || remainder >=2 && nationalIdArray[9] == 11 - remainder)
-        {
-            return true;
-        }
-
-        return false;
-    }
-    
 }

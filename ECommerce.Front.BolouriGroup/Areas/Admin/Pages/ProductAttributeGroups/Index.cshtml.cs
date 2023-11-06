@@ -1,9 +1,4 @@
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Text.RegularExpressions;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductAttributeGroups;
 
@@ -40,7 +35,9 @@ public class IndexModel : PageModel
             {
                 Message = result.Message;
                 Code = result.Code.ToString();
-            };
+            }
+
+            ;
             ProductAttributeGroups = result;
             return Page();
         }

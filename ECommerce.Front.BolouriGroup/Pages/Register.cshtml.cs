@@ -1,24 +1,13 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
 public class RegisterModel : PageModel
 {
-    private readonly IUserService _userService;
     private readonly ICityService _cityService;
     private readonly IStateService _stateService;
+    private readonly IUserService _userService;
 
-    [BindProperty] public RegisterViewModel RegisterViewModel { get; set; } = new RegisterViewModel();
-
-    [TempData] public string Message { get; set; }
-
-    [TempData] public string Code { get; set; }
-    [BindProperty] public List<State> StateList { get; set; }
-    [BindProperty] public List<City> CityList { get; set; }
     public RegisterModel(IUserService userService, ICityService cityService, IStateService stateService)
     {
         _userService = userService;
@@ -26,12 +15,17 @@ public class RegisterModel : PageModel
         _stateService = stateService;
     }
 
+    [BindProperty] public RegisterViewModel RegisterViewModel { get; set; } = new();
+
+    [TempData] public string Message { get; set; }
+
+    [TempData] public string Code { get; set; }
+    [BindProperty] public List<State> StateList { get; set; }
+    [BindProperty] public List<City> CityList { get; set; }
+
     public async Task<IActionResult> OnGet(string mobile, int confirmCode)
     {
-        if (string.IsNullOrEmpty(mobile))
-        {
-            return RedirectToPage("index");
-        }
+        if (string.IsNullOrEmpty(mobile)) return RedirectToPage("index");
         RegisterViewModel.Username = mobile;
         RegisterViewModel.Mobile = mobile;
         RegisterViewModel.ConfirmCode = confirmCode;
@@ -49,13 +43,14 @@ public class RegisterModel : PageModel
     public async Task<IActionResult> OnPostRegister()
     {
         await Load();
-        if ( !await _userService.GetVerificationByNationalId(RegisterViewModel.NationalCode))
+        if (!await _userService.GetVerificationByNationalId(RegisterViewModel.NationalCode))
 
         {
             Message = "کد ملی نامعتبر می باشد";
             Code = "Error";
             return Page();
         }
+
         var codeConfirm = GenerateCode(RegisterViewModel.Mobile);
         if (RegisterViewModel.ConfirmCode != codeConfirm)
         {
@@ -63,6 +58,7 @@ public class RegisterModel : PageModel
             Code = "Error";
             return Page();
         }
+
         if (!RegisterViewModel.IsRole)
         {
             //          !qa@ws#ed123
@@ -71,6 +67,7 @@ public class RegisterModel : PageModel
             Code = "Error";
             return Page();
         }
+
         ModelState.Remove("RegisterViewModel.Email");
         ModelState.Remove("RegisterViewModel.Username");
 
@@ -96,6 +93,7 @@ public class RegisterModel : PageModel
                 RegisterViewModel.CompanyTypeName = "فروشگاه";
                 break;
         }
+
         RegisterViewModel.Username = RegisterViewModel.Mobile;
         RegisterViewModel.Email = "boloorico@gmail.com";
         RegisterViewModel.IsHaveEmail = false;
@@ -107,14 +105,15 @@ public class RegisterModel : PageModel
             Code = result.Code.ToString();
             return Page();
         }
+
         return RedirectToPage("/index");
     }
 
     public async Task<IActionResult> OnGetSendSms(string username)
     {
-        int code = GenerateCode(username);
+        var code = GenerateCode(username);
         if (code == 0) return new JsonResult(null);
-        ResponseVerifySmsIrViewModel smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
+        var smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
         return new JsonResult(smsResponsModel);
     }
 
@@ -122,7 +121,7 @@ public class RegisterModel : PageModel
     {
         if (mobile == null) return 0;
         int number;
-        if (mobile.Length != 11 & mobile.Length != 10) return 0;
+        if ((mobile.Length != 11) & (mobile.Length != 10)) return 0;
         if (mobile.Substring(0, 1) != "0") mobile = "0" + mobile;
         if (mobile.Substring(0, 2) != "09") return 0;
         if (!int.TryParse(mobile.Substring(1, 9), out number)) return 0;
@@ -149,7 +148,7 @@ public class RegisterModel : PageModel
                 number2 = number1 > 4 ? 1 : 0;
             }
         } while (sum > 10);
+
         return sum + "";
     }
-
 }

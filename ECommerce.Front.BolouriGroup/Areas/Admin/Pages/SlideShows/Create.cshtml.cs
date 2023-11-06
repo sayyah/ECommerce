@@ -1,19 +1,14 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.SlideShows;
 
 public class CreateModel : PageModel
 {
+    private readonly ICategoryService _categoryService;
     private readonly IHostEnvironment _environment;
     private readonly IImageService _imageService;
     private readonly IProductService _productService;
     private readonly ISlideShowService _slideShowService;
-    private readonly ICategoryService _categoryService;
 
     public CreateModel(ISlideShowService slideShowService, IImageService imageService, IHostEnvironment environment,
         IProductService productService, ICategoryService categoryService)
@@ -45,6 +40,7 @@ public class CreateModel : PageModel
             Code = result.Code.ToString();
             Products = result;
         }
+
         var resultCategory = await _categoryService.GetParents();
         Categories = resultCategory.ReturnData;
     }
@@ -52,13 +48,9 @@ public class CreateModel : PageModel
     public async Task<IActionResult> OnPost(int selectItem)
     {
         if (selectItem == 1)
-        {
             SlideShow.CategoryId = null;
-        }
         else
-        {
             SlideShow.ProductId = null;
-        }
         if (Upload == null)
         {
             Message = "لطفا عکس را انتخاب کنید";
@@ -74,8 +66,9 @@ public class CreateModel : PageModel
             await Initial();
             return Page();
         }
+
         SlideShow.ImagePath = $"/{fileName[0]}/{fileName[1]}/{fileName[2]}";
-      
+
         ModelState.Remove("SlideShow.ImagePath");
 
         if (ModelState.IsValid)
@@ -83,7 +76,7 @@ public class CreateModel : PageModel
             var result = await _slideShowService.Add(SlideShow);
             if (result.Code == 0)
                 return RedirectToPage("/SlideShows/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
@@ -109,7 +102,7 @@ public class CreateModel : PageModel
             Message = result.Message;
             Code = result.Code.ToString();
         }
-        return new JsonResult(result.ReturnData);
 
+        return new JsonResult(result.ReturnData);
     }
 }

@@ -1,29 +1,29 @@
-﻿@model Ecommerce.Entities.ViewModel.ProductCompareViewModel
+﻿@model ProductCompareViewModel
 
 @{
-	var singlePrice = Model.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
-	decimal? discount = 0;
-	decimal? amount = 0;
-	decimal? discountAmount = 0;
-	string resultAmount;
-	string resultDiscountAmount;
+    var singlePrice = Model.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
+    decimal? discount = 0;
+    decimal? amount = 0;
+    decimal? discountAmount = 0;
+    string resultAmount;
+    string resultDiscountAmount;
 
-	if (singlePrice != null)
-	{
-		amount = singlePrice.Amount;
+    if (singlePrice != null)
+    {
+        amount = singlePrice.Amount;
 
 
-		if (singlePrice.Discount != null)
-			if (singlePrice.Discount.Amount > 0)
-			{
-				discount = (decimal)singlePrice.Discount.Amount;
-			}
-			else if (singlePrice.Discount.Percent > 0)
-			{
-				discount = singlePrice.Amount * (decimal)singlePrice.Discount.Percent / 100;
-			}
-		discountAmount = amount - discount;
-	}
+        if (singlePrice.Discount != null)
+            if (singlePrice.Discount.Amount > 0)
+            {
+                discount = (decimal)singlePrice.Discount.Amount;
+            }
+            else if (singlePrice.Discount.Percent > 0)
+            {
+                discount = singlePrice.Amount * (decimal)singlePrice.Discount.Percent / 100;
+            }
+        discountAmount = amount - discount;
+    }
 }
 <div class="col-12 col-xs-6 col-sm-4 col-md-4">
     <div class="product-card">
@@ -31,49 +31,49 @@
             <div class="product-label">
                 <label class="label-text new">جدید</label>
             </div>
-            <div id="productCard-@Model.Prices.OrderBy(p => p.Amount).FirstOrDefault()?.Id" @{
-                if (Model.FirstPriceWichlist == true)
-                {
-                    <text> class="product-wish wish active" </text>
-                }
-                else
-                {
-                    <text> class="product-wish wish" </text>
-                }
-            } >
+            <div id="productCard-@Model.Prices.OrderBy(p => p.Amount).FirstOrDefault()?.Id"
+                 @{
+                     if (Model.FirstPriceWichlist == true)
+                     {
+                         <text> class="product-wish wish active" </text>
+                     }
+                     else
+                     {
+                         <text> class="product-wish wish" </text>
+                     }
+                 }>
             </div>
-            <div title='@Model.Name' class="product-image">
+            <div title="@Model.Name" class="product-image">
                 <img src="~/@Model.ImagePath" alt="@Model.Alt" width="177" height="177">
             </div>
             <div class="product-widget">
-				<h1 hidden="hidden">col_@Model.Id</h1>
-                <a title="اضافه به لیست مقایسه" class="far fa-exchange" onclick="AddModalProduct(@Model.Id,@((singlePrice == null) ? "0" :  discountAmount?.ToString()) )" ></a>
+                <h1 hidden="hidden">col_@Model.Id</h1>
+                <a title="اضافه به لیست مقایسه" class="far fa-exchange" onclick="AddModalProduct(@Model.Id,@(singlePrice == null ? "0" : discountAmount?.ToString()) )"></a>
             </div>
         </div>
         <div class="product-content">
             <h6 class="product-name">
-                <div title='@Model.Name'>@Model.Name</div>
+                <div title="@Model.Name">@Model.Name</div>
             </h6>
-            <div class="product-price"> 
-	            @if (singlePrice == null)
-	            {
-		            <h6 class="feature-price">
-			            <span>ناموجود</span>
-		            </h6>
-	            }
-	            else
-	            {
-		            @if (discount > 0)
-		            {
-			            <div class="feature-price">
-				            <del>@amount?.ToString("###,###,###,###") تومان</del>
-			            </div>
-		            }
-		            <h6 class="feature-price">
-			            <span>@discountAmount?.ToString("###,###,###,###") تومان</span>
-		            </h6>
-		        
-	            } 
+            <div class="product-price">
+                @if (singlePrice == null)
+                {
+                    <h6 class="feature-price">
+                        <span>ناموجود</span>
+                    </h6>
+                }
+                else
+                {
+                    @if (discount > 0)
+                    {
+                        <div class="feature-price">
+                            <del>@amount?.ToString("###,###,###,###") تومان</del>
+                        </div>
+                    }
+                    <h6 class="feature-price">
+                        <span>@discountAmount?.ToString("###,###,###,###") تومان</span>
+                    </h6>
+                }
             </div>
         </div>
     </div>

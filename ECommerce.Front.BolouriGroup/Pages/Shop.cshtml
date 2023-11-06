@@ -1,5 +1,5 @@
 ﻿@page "{**path}"
-@model ECommerce.Front.BolouriGroup.Pages.ShopModel
+@model ShopModel
 @{
     ViewData["Title"] = "لیست محصولات مجموعه بلوری";
     ViewData["description"] = "لیست محصولات مجموعه بلوری";
@@ -9,19 +9,19 @@
     }
     else
     {
-        Model.CategoryBannerImagePath =  Model.CategoryBannerImagePath;
+        Model.CategoryBannerImagePath = Model.CategoryBannerImagePath;
     }
 }
+
 @section Head{
-    <link href="~/css/shop.css" rel="stylesheet" />
+    <link href="~/css/shop.css" rel="stylesheet"/>
     <style>
-        .single-banner {
-            background: url(@Model.CategoryBannerImagePath);
-        }
+        .single-banner { background: url(@Model.CategoryBannerImagePath); }
     </style>
 }
+
 <section class="inner-section single-banner">
-   
+
     <div class="container">
         <h2>لیست کالا</h2>
         <ol class="breadcrumb">
@@ -41,47 +41,50 @@
                     <h6 class="shop-widget-title">دسته بندی</h6>
                     @await Component.InvokeAsync("CategoriesMobile")
                     <h6 class="shop-widget-title">فیلتر</h6>
-                        <form asp-page-handler="OnGet" method="get">
-                        <label for="min-price" class="form-label  mt-3">حداقل قیمت (تومان) </label><br />
+                    <form asp-page-handler="OnGet" method="get">
+                        <label for="min-price" class="form-label  mt-3">حداقل قیمت (تومان) </label><br/>
                         <span id="min-price-txt">@Model.Min</span>
-					    <input type="range" class="form-range" min="100000" max="200000000" id="min-price" name="minprice" step="100000" value="@Model.Min">
+                        <input type="range" class="form-range" min="100000" max="200000000" id="min-price" name="minprice" step="100000" value="@Model.Min">
                         <label for="max-price" class="form-label">حداکثر قیمت (تومان) </label><br/>
-					    <span id="max-price-txt">@Model.Max</span>
-					    <input type="range" class="form-range" min="1000000" max="200000000" id="max-price" name="maxprice" step="100000" value="@Model.Max">
+                        <span id="max-price-txt">@Model.Max</span>
+                        <input type="range" class="form-range" min="1000000" max="200000000" id="max-price" name="maxprice" step="100000" value="@Model.Max">
                         <br/>
-                        <label class="widget-title border-left" style="font-size:14px">فقط نمایش کالاهای موجود</label>
+                        <label class="widget-title border-left" style="font-size: 14px">فقط نمایش کالاهای موجود</label>
                         <label class="switch">
-                            <input type="checkbox" name="isCheckExist" value="true" @if(@Model.IsCheckExist){
-                                                                                    <text>checked</text>}/>
+                            <input type="checkbox" name="isCheckExist" value="true"
+                                   @if (Model.IsCheckExist)
+                                   {
+                                       <text>checked</text>
+                                   }/>
                             <span class="slider round"></span>
-                        </label><br />
-                        <br />     <label class="widget-title border-left" style="font-size:14px">مرتب سازی بر اساس ویژگی :</label>
+                        </label><br/>
+                        <br/> <label class="widget-title border-left" style="font-size: 14px">مرتب سازی بر اساس ویژگی :</label>
                         <div class="shop-filter">
                             <select name="ProductSort" id="ProductSort" value="@Model.ProductSort" class="select">
                                 @{
-                                    bool sel1 = false;
-                                    bool sel2 = false;
-                                    bool sel3 = false;
-                                    bool sel4 = false;
+                                    var sel1 = false;
+                                    var sel2 = false;
+                                    var sel3 = false;
+                                    var sel4 = false;
                                     if (Model.ProductSort == 1) sel1 = true;
                                     if (Model.ProductSort == 2) sel2 = true;
                                     if (Model.ProductSort == 3) sel3 = true;
                                     if (Model.ProductSort == 4) sel4 = true;
                                 }
-                                <option value="1" selected=@sel1>جدیدترین ها</option>
-                                <option value="2" selected=@sel2>محبوب ترین ها</option>
-                                <option value="3" selected=@sel3>ارزان ترین ها</option>
-                                <option value="4" selected=@sel4>گران ترین ها</option>
-                        </select>
-                </div>
-                <input name="pageSize" value="@Model.Products.PaginationDetails.PageSize" hidden="hidden" />
-					    <input name="search" value="@Model.Products.PaginationDetails.Search" hidden="hidden" />
+                                <option value="1" selected="@sel1">جدیدترین ها</option>
+                                <option value="2" selected="@sel2">محبوب ترین ها</option>
+                                <option value="3" selected="@sel3">ارزان ترین ها</option>
+                                <option value="4" selected="@sel4">گران ترین ها</option>
+                            </select>
+                        </div>
+                        <input name="pageSize" value="@Model.Products.PaginationDetails.PageSize" hidden="hidden"/>
+                        <input name="search" value="@Model.Products.PaginationDetails.Search" hidden="hidden"/>
                         <div class="form-button">
                             <button type="submit" class="submit-btn-1 black-bg btn-hover-2"
                                     style="margin-top: 20px">
                                 اعمال
                             </button>
-                        </div>       
+                        </div>
                     </form>
                 </div>
             </div>
@@ -105,7 +108,7 @@
                                     <a asp-page="/Shop" asp-route-pageSize="40">40</a> -
                                     <a asp-page="/Shop" asp-route-pageSize="50">50</a>
                                 </p>
-                            </div>                           
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -121,7 +124,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <ul class="pagination">
-                            <partial name="_Pagination" model="@Model.Products.PaginationDetails" />
+                            <partial name="_Pagination" model="@Model.Products.PaginationDetails"/>
                         </ul>
                     </div>
                 </div>
@@ -129,6 +132,7 @@
         </div>
     </div>
 </section>
+
 @section scripts{
     <script>
         window.onload = function () {

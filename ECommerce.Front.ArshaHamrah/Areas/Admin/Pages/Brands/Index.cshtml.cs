@@ -1,5 +1,4 @@
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
+using ECommerce.Entities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +36,6 @@ public class IndexModel : PageModel
             return Page();
         }
 
-        return RedirectToPage("/index", new {message = result.Message, code = result.Code.ToString()});
+        return RedirectToPage("/index", new { message = result.Message, code = result.Code.ToString() });
     }
 }

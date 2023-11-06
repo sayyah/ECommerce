@@ -1,9 +1,9 @@
-﻿@model List<Ecommerce.Entities.ViewModel.CategoryParentViewModel>
+﻿@model List<CategoryParentViewModel>
 
 @foreach (var parentCategory in Model)
 {
     var path = "/Blogs/" + parentCategory.Id;
-    <li>              
+    <li>
         <a href="@path">@parentCategory.Name</a>
     </li>
 }

@@ -1,5 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.HolooEntity;
+﻿using ECommerce.Entities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +38,7 @@ public class CreateModel : PageModel
             var result = await _unitService.Add(Unit);
             if (result.Code == 0)
                 return RedirectToPage("/Units/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

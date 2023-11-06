@@ -1,4 +1,4 @@
-﻿@model Ecommerce.Entities.Helper.PaginationDetails
+﻿@model PaginationDetails
 
 @{
     var prevDisabled = Model.CurrentPage == 1 ? "disabled" : "";
@@ -80,8 +80,8 @@ else
     }
     else
     {
-            var previousPage = @Model.CurrentPage - 1;
-            var nextPage = @Model.CurrentPage + 1;
+        var previousPage = Model.CurrentPage - 1;
+        var nextPage = Model.CurrentPage + 1;
         <li class="page-item">
             <a asp-page=@Model.Address
                asp-route-pageNumber="1"
@@ -96,7 +96,7 @@ else
             </a>
         </li>
         <label>...</label>
-        
+
         <li class="page-item ">
             <a asp-page=@Model.Address
                asp-route-pageNumber="@previousPage"

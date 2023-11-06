@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.HolooEntity;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Domain.Entities.HolooEntity;
 
 namespace ECommerce.Services.Services;
 

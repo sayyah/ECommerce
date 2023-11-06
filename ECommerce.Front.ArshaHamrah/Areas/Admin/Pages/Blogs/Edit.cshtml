@@ -1,6 +1,6 @@
 ﻿@page "/Admin/EditBlog/{handler?}"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Blogs.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -37,9 +37,8 @@
                     <input hidden="hidden" asp-for="@Model.Blog.Id"/>
                     <input hidden="hidden" asp-for="@Model.Blog.Image"/>
                     <div class="card-body">
-                  
-                   
-                  
+
+
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary mr-2">ویرایش</button>
@@ -54,7 +53,7 @@
 
 @section Scripts
 {
-	<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

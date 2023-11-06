@@ -1,30 +1,24 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
 public class IndexModel : PageModel
 {
+    private readonly IBlogService _blogService;
     private readonly IBrandService _brandService;
     private readonly ICartService _cartService;
     private readonly ICompareService _compareService;
     private readonly ICookieService _cookieService;
+    private readonly IDiscountService _discountService;
     private readonly IProductService _productService;
     private readonly ISlideShowService _slideShowService;
-    private readonly IWishListService _wishListService;
     private readonly IStarService _starService;
-    private readonly IDiscountService _discountService;
-    private readonly IBlogService _blogService;
+    private readonly IWishListService _wishListService;
 
     public IndexModel(ISlideShowService slideShowService, IProductService productService,
         IWishListService wishListService, ICartService cartService, ICompareService compareService,
-        ICookieService cookieService, IBrandService brandService, IStarService starService, IBlogService blogService , IDiscountService discountService)
+        ICookieService cookieService, IBrandService brandService, IStarService starService, IBlogService blogService,
+        IDiscountService discountService)
     {
         _slideShowService = slideShowService;
         _productService = productService;
@@ -39,8 +33,8 @@ public class IndexModel : PageModel
     }
 
     public List<SlideShowViewModel> SlideShowViewModels { get; set; }
-    public List<ProductIndexPageViewModel> ExpensiveProducts { get; set; } = new List<ProductIndexPageViewModel>();
-    public List<ProductIndexPageViewModel> NewProducts { get; set; } = new List<ProductIndexPageViewModel>();
+    public List<ProductIndexPageViewModel> ExpensiveProducts { get; set; } = new();
+    public List<ProductIndexPageViewModel> NewProducts { get; set; } = new();
     public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
     public List<Brand> Brands { get; set; }
     public bool IsColleague { get; set; }
@@ -50,14 +44,17 @@ public class IndexModel : PageModel
         //var productTops = (await _productService.GetTops("TopNew:8,TopPrices:4,TopStars:10")).ReturnData;
         var productTops = (await _productService.GetTops("TopPrices:4,TopNew:10")).ReturnData;
         foreach (var top in productTops)
-        {
             switch (top.TopCategory)
             {
                 //case "TopNew": NewProducts.Add(top); break;
-                case "TopPrices": ExpensiveProducts.Add(top); break;
-                case "TopNew": NewProducts.Add(top); break;
+                case "TopPrices":
+                    ExpensiveProducts.Add(top);
+                    break;
+                case "TopNew":
+                    NewProducts.Add(top);
+                    break;
             }
-        }
+
         SlideShowViewModels = (await _slideShowService.TopSlideShow(5)).ReturnData;
         Brands = (await _brandService.Load()).ReturnData;
         Brands.RemoveAt(0);
@@ -106,6 +103,7 @@ public class IndexModel : PageModel
         var result = await _cartService.Delete(HttpContext, id, id, priceId);
         return new JsonResult(result);
     }
+
     public async Task<JsonResult> OnGetDecreaseCart(int id, int productId, int priceId)
     {
         var result = await _cartService.Decrease(HttpContext, id, productId, priceId);
@@ -132,15 +130,16 @@ public class IndexModel : PageModel
 
     public IActionResult OnGetAddCompareList(int id)
     {
-        List<int> productListId = new List<int>();
+        var productListId = new List<int>();
         productListId.Add(id);
-        return RedirectToPage("/Compare", new { productListId = productListId });
+        return RedirectToPage("/Compare", new { productListId });
     }
+
     public IActionResult OnGetLoadCompareList(int CategoryId)
     {
-        List<int> products = new List<int>();
+        var products = new List<int>();
         products.Add(CategoryId);
-        return RedirectToPage("/Compare", "ResultProduct", new { products = products });
+        return RedirectToPage("/Compare", "ResultProduct", new { products });
     }
 
     public IActionResult OnGetDeleteCompare(int id)
@@ -165,8 +164,8 @@ public class IndexModel : PageModel
     public async Task<IActionResult> OnGetStars(int id)
     {
         return new JsonResult(await _starService.SumStarsByProductId(id));
-    } 
-    
+    }
+
     public async Task<IActionResult> OnGetDiscountActivate(int id)
     {
         return new JsonResult(await _discountService.Activate(id));

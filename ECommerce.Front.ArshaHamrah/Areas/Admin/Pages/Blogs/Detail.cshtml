@@ -1,6 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Blogs.DetailModel
+@model DetailModel
 @{
 }
 <div class="container">
@@ -15,8 +15,8 @@
                 <!--begin::Form-->
                 <form class="form" method="post" asp-page-handler="OnPost">
                     <div class="card-body">
-                   
-                   
+
+
                     </div>
                     <div class="card-footer">
                         <a class="btn btn-primary mr-2" asp-Page="/blogs/edit" asp-area="Admin" asp-route-id="@Model.Blog.Id">ویرایش</a>

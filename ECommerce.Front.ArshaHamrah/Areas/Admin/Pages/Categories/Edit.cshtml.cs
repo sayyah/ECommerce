@@ -1,5 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +21,7 @@ public class EditModel : PageModel
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
     public List<CategoryParentViewModel> Categories { get; set; }
+
     public async Task OnGet(int id)
     {
         var result = await _categoryService.GetById(id);

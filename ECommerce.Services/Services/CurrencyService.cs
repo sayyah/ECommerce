@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class CurrencyService : EntityService<Currency>, ICurrencyService
 {
@@ -33,7 +29,7 @@ public class CurrencyService : EntityService<Currency>, ICurrencyService
 
         var result = _currencies.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Currency>> {Code = ServiceCode.Info, Message = "ارزی یافت نشد"};
+            return new ServiceResult<List<Currency>> { Code = ServiceCode.Info, Message = "ارزی یافت نشد" };
         return new ServiceResult<List<Currency>>
         {
             Code = ServiceCode.Success,
@@ -70,8 +66,10 @@ public class CurrencyService : EntityService<Currency>, ICurrencyService
                 Message = "با موفقیت حذف شد"
             };
         }
+
         _currencies = null;
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Currency>> GetById(int id)

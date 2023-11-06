@@ -45,8 +45,8 @@
     --breakpoint-lg: 992px;
     --breakpoint-xl: 1200px;
     --breakpoint-xxl: 1400px;
-    --font-family-sans-serif: -apple-system,   BlinkMacSystemFont,   "Segoe UI",   Roboto,   "Helvetica Neue",   Arial,   "Noto Sans",   sans-serif,   "Apple Color Emoji",   "Segoe UI Emoji",   "Segoe UI Symbol",   "Noto Color Emoji";
-    --font-family-monospace: SFMono-Regular,   Menlo,   Monaco,   Consolas,   "Liberation Mono",   "Courier New",   monospace;
+    --font-family-sans-serif: -apple-system,     BlinkMacSystemFont,     "Segoe UI",     Roboto,     "Helvetica Neue",     Arial,     "Noto Sans",     sans-serif,     "Apple Color Emoji",     "Segoe UI Emoji",     "Segoe UI Symbol",     "Noto Color Emoji";
+    --font-family-monospace: SFMono-Regular,     Menlo,     Monaco,     Consolas,     "Liberation Mono",     "Courier New",     monospace;
 }
 
 *,
@@ -53707,27 +53707,28 @@ code {
 
 
 #discountSwitch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 25px;
+    background-color: #ccc;
     border: 2px solid #ccc;
     border-radius: 25px;
-    background-color: #ccc;
     cursor: pointer;
+    display: inline-block;
+    height: 25px;
+    position: relative;
     transition: background-color 0.3s;
+    width: 50px;
 }
 
 #discountToggle {
+    background-color: white;
+    border-radius: 50%;
+    height: 21px;
+    left: 1px;
     position: absolute;
     top: 0px;
-    left: 1px;
-    width: 22px;
-    height: 21px;
-    border-radius: 50%;
-    background-color: white;
     transition: left 0.3s;
+    width: 22px;
 }
+
 .label.label-inline {
     border-radius: 0.42rem;
     padding: 0.15rem 0.75rem;
@@ -61331,36 +61332,32 @@ code {
 }
 
 
-.symbol-list .symbol {
-    margin-left: 0.5rem;
-}
+.symbol-list .symbol { margin-left: 0.5rem; }
 
 .symbol-list .symbol:last-child { margin-left: 0; }
 
-.home-links i{
+.home-links i {
     background-color: #C9F7F5;
-    color: #1BC5BD;
-    width: 35px;
-    height: 35px;
-    text-align: center;
-    padding: 8px;
     border-radius: 0.42rem;
+    color: #1BC5BD;
     font-size: 1.1rem;
+    height: 35px;
+    padding: 8px;
+    text-align: center;
+    width: 35px;
 }
 
 .home-links i :hover {
     background-color: rgba(77, 89, 149, 0.06);
-    transition: .1s;
-    text-decoration: none !important;
     cursor: pointer;
+    text-decoration: none !important;
+    transition: .1s;
     transition: .1s linear;
 }
 
 
 
-.pulse {
-    position: relative;
-}
+.pulse { position: relative; }
 
 .pulse .pulse-ring {
     -webkit-animation: animation-pulse 3.5s ease-out;
@@ -72804,8 +72801,8 @@ body { background: #EEF0F8; }
 
 .shortened h2 {
     font-size: 14px;
+    height: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    height:150px;
 }

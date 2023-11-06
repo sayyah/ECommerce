@@ -1,5 +1,5 @@
 ﻿@page "/OldLogin"
-@model ECommerce.Front.BolouriGroup.Pages.OldLoginModel
+@model OldLoginModel
 @{
     ViewData["Title"] = "ورود";
 }
@@ -46,7 +46,9 @@
                         <div class="input-group" id="show_hide_password">
                             <input class="form-control" type="password" asp-for="LoginViewModel.Password" placeholder="رمز ورود خود را وارد کنید">
                             <div class="input-group-addon">
-                                <a href="" style="color: #0d6efd"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                                <a href="" style="color: #0d6efd">
+                                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                </a>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -63,9 +65,9 @@
                             <button type="submit" asp-page-handler="Submit">ورود</button>
                             @*<button type="submit" asp-page-handler="Submit" style="margin-top:20px ">ارسال کد یک بار مصرف</button>*@
                             <p>حساب ندارید؟ <a asp-area="" asp-page="/Register">ثبت نام.</a></p>
-                            <div class="nav nav-tabs" role="tablist" style="margin-right: -20px;margin-left: -20px">
+                            <div class="nav nav-tabs" role="tablist" style="margin-left: -20px; margin-right: -20px;">
                                 @*<button data-toggle="tab" href="#home" type="submit" asp-page-handler="SendSms">دریافت رمز یکبار مصرف</button>*@
-                                <input type="button" id="sendSmsButton" value="دریافت رمز یکبار مصرف" onclick="SendConfirmSms()" />
+                                <input type="button" id="sendSmsButton" value="دریافت رمز یکبار مصرف" onclick="SendConfirmSms()"/>
                                 &nbsp;&nbsp;&nbsp;
 
                                 <span id="countdown"></span>
@@ -77,4 +79,3 @@
         </div>
     </div>
 </section>
-

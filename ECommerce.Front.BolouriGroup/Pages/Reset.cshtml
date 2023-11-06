@@ -1,0 +1,38 @@
+﻿@page
+@model ResetModel
+@{
+    ViewData["Title"] = "فروشگاه اینترنتی بلوری";
+}
+
+
+<section class="user-form-part">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-5">
+                <div class="user-form-logo">
+                    <a asp-area="" asp-page="/Index">
+                        <img src="~/img/logo.webp" alt="لوگو" width="250" height="117"loading="lazy">
+                    </a>
+                </div>
+                <div class="user-form-card">
+                    <div class="user-form-title">
+                        <h1>رمز فراموش شده</h1>
+                        <p>ایمیل معتبر خود را وارد کنید</p>
+                    </div>
+                    <form class="user-form">
+                        <div class="form-group">
+                            <label>پست الکترونیک</label><input type="email" class="form-control" placeholder="ایمیل خود را وارد کنید">
+                        </div>
+                        <div class="form-button">
+                            <button type="submit">ارسال پیوند تنظیم مجدد</button>
+                            <p>حساب ندارید؟ <a asp-area="" asp-page="/Register">ثبت نام.</a></p>
+                        </div>
+                    </form>
+                </div>
+                <div class="user-form-footer">
+                    <p> &copy; 2021 - Boloori - <a asp-area="" asp-page="/Privacy">Privacy</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

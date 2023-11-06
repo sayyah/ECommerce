@@ -1,25 +1,28 @@
 ﻿@page "/product/{productUrl}"
-@model ECommerce.Front.BolouriGroup.Pages.ProductdetailsModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using PersianDate.Standard
+@model ProductdetailsModel
 @{
-    ViewData["Title"] = "مشخصات و قیمت و خرید " + @Model.Product.Name;
-    var description = @Html.Raw(Model.Product.Description).ToString();
-    ViewData["description"] = description;
-    int? priceId = Model.WishListPriceId == null ? Model.Product.Prices.OrderBy(x => x.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0)?.Id : Model.WishListPriceId;
+    ViewData["Title"] = "مشخصات و قیمت و خرید " + Model.Product.Name;
+    var priceId = Model.WishListPriceId == null ? Model.Product.Prices.OrderBy(x => x.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0)?.Id : Model.WishListPriceId;
     var imageTemp = Model.Product.Images.FirstOrDefault();
-    string imagePath = $"{@Model.siteUrl}/{imageTemp.Path}/{imageTemp.Name}?x-oss-process=image/resize,m_lfit,h_350,w_350/quality,q_60";
+    var imagePath = $"{Model.siteUrl}/{imageTemp.Path}/{imageTemp.Name}?x-oss-process=image/resize,m_lfit,h_350,w_350/quality,q_60";
+    var description = Html.Raw(Model.Product.Description).ToString();
 }
+
 @section Head{
-    <meta property="og:title" content="@Model.Product.Name" />
-    <meta property="og:image" content="@imagePath" />
-    <meta property="og:locale" content="@imagePath" />
-    <meta property="og:type" content="product" />
-    <meta property="og:description" content="@description" />
-    <meta property="og:locale" content="fa_IR" />
-    <meta property="og:site_name" content="بلوری" />
-    <meta property="og:availability" content="in stock" />
-    <meta property="twitter:title" content="@Model.Product.Name" />
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:image" content="@imagePath" />
+    <meta name="description" content="@description"/>
+    <meta property="og:title" content="@Model.Product.Name"/>
+    <meta property="og:image" content="@imagePath"/>
+    <meta property="og:locale" content="@imagePath"/>
+    <meta property="og:type" content="product"/>
+    <meta property="og:description" content="@description"/>
+    <meta property="og:locale" content="fa_IR"/>
+    <meta property="og:site_name" content="بلوری"/>
+    <meta property="og:availability" content="in stock"/>
+    <meta property="twitter:title" content="@Model.Product.Name"/>
+    <meta property="twitter:card" content="summary_large_image"/>
+    <meta property="twitter:image" content="@imagePath"/>
 }
 
 <section class="inner-section single-banner">
@@ -34,246 +37,246 @@
     </div>
 </section>
 <section class="inner-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="col-lg-7 col-md-10">
-                    <div class="details-content">
-                        <h1 class="details-name">
-                            <a href="#">@Model.Product.Name</a>
-                        </h1>
-                        <div class="details-meta">
-                            @if (Model.Product.Brand != null && string.IsNullOrEmpty(Model.Product.Brand.Name))
-                            {
-                                <p><a href="#">مارک</a> تجاری: <a href="#">@Model.Product.Brand!.Name</a></p>
-                            }
-                        </div>
-                        <div class="pro-rating sin-pro-rating f-right">
-                            <div>
-                                @{
-                                    string[] starFillClasses = { "star-quarter", "star-half", "star-3-quarter", "star-full" };
-                                }
-                                @for (var i = 1; i <= 5; i++)
-                                {
-                                    string cls = "";
-                                    if (Math.Ceiling(Model.Stars) == i)
-                                    {
-                                        var starD = (double)(Model.Stars % 1);
-                                        cls += starFillClasses[(int)Math.Floor(starD / 0.33)];
-                                    }
-                                    if (i <= Model.Stars)
-                                    {
-                                        cls += " rankChecked";
-                                    }
-                                    <label id="starLable-@i" for="@Model.Product.Id-@i" class="@cls">
-                                        <input onclick="SaveStars(@Model.Product.Id,@i)" type="checkbox" id="@Model.Product.Id-@i" class="CheckboxStar" />
-                                        <i class="fas fa-star"></i>
-                                    </label>
-                                }
-                            </div>
-                            <a asp-area="" asp-page="Product" asp-route-productUrl="@Model.Url.ToString().Trim()" style="color: #39404a">(@Model.Stars.ToString("0.##"))امتیاز</a>
-                        </div>
-                        @{
-                            decimal? discount = 0;
-                            decimal? amount = 0;
-                            decimal? discountAmount = 0;
-                            var singlePrice = Model.Product.Prices.OrderBy(x => x.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
-                            if (singlePrice != null)
-                            {
-                                amount = singlePrice.Amount;
-                                if (singlePrice.Discount != null)
-                                    if (singlePrice.Discount.Amount > 0)
-                                    {
-                                        discount = (decimal)singlePrice.Discount.Amount;
-                                    }
-                                    else if (singlePrice.Discount.Percent > 0)
-                                    {
-                                        discount = singlePrice.Amount * (decimal)singlePrice.Discount.Percent / 100;
-                                    }
-                                discountAmount = amount - discount;
-                            }
-                        }
-                        @if (singlePrice == null)
-                        {
-                            <h6 class="details-price">
-                                <span id="price">ناموجود</span>
-                            </h6>
-                        }
-                        else
-                        {
-                            @if (discount > 0)
-                            {
-                                <div class="details-price">
-                                    <del>@amount?.ToString("N0") تومان</del>
-                                </div>
-                            }
-                            <h6 class="details-price">
-                                <span id="price">@discountAmount?.ToString("N0") تومان</span>
-                            </h6>
-
-                        }
-                        <p class="view-desc"> @Html.Raw(Model.Product.Description)</p>
-                        @if (Model.Product.Prices.Count == 1)
-                        {
-                            <div class="details-list-group">
-                                <span class="details-list-title">در انبار:</span>
-                                <div id="exist">
-                                    @if (Model.Product.Prices.First().Exist > 0)
-                                    {
-                                        <span>در دسترس</span>
-                                    }
-                                    else
-                                    {
-                                        <span>عدم موجودی</span>
-                                    }
-                                </div>
-                            </div>
-                        }
-                        <div class="row">
-                            @if (Model.Product.Prices != null)
-                            {
-                                @foreach (var price in Model.Product.Prices)
-                                {
-                                    <div style="font-size:13px">
-                                        @{
-                                            var select = price.Id == priceId ? "checked" : "";
-                                            var circleSelected = price.Id == priceId ? "circleSelected" : "";
-                                            var disabled = price.Exist <= 0 ? $"disabled='disabled'" : "";
-                                            var style = price.Exist <= 0 ? $"background-color: {@price.Color.ColorCode}; opacity: 0.3" : $"background-color: {@price.Color.ColorCode} ";
-                                        }
-                                        @if ((int)price.Grade > 1)
-                                        {
-                                            <div class="col-8" style="background-color: @price.Color.ColorCode">
-                                                <input @disabled @select name="price.Id" type="radio" id="price-@price.Id" onclick="SetPriceId(@price.Id)" />
-                                                <span for="price-@price.Id">درجه کیفیت : @price.Grade - </span>
-                                                @{
-                                                    string _priceAmount = @price.Exist > 0 ? @price.Amount.ToString("N0") : "-";
-                                                }
-                                                <span for="price-@price.Id">قیمت : @_priceAmount </span>
-                                            </div>
-                                        }
-                                        else if (price.ColorId > 1)
-                                        {
-                                            <div class="col-3">
-                                                <button @disabled style="@style" @select name="price.Id" id="price-@price.Id" onclick="SetPriceId(@price.Id)" class="circle @circleSelected"></button>
-                                            </div>
-                                        }
-                                        <div class="col-12">
-                                            @switch (price.Exist)
-                                            {
-                                                case <= 0:
-                                                    <span style="color: red">ناموجود</span>
-                                                    break;
-                                                case <= 3:
-                                                    <span style="color: blue">@price.Exist عدد</span>
-                                                    break;
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                            }
-                        </div><br />
-                        <div class="details-list-group">
-                            <label class="details-list-title">برچسب ها:</label>
-                            <ul class="details-tag-list">
-                                @if (Model.Product.Tags != null)
-                                {
-                                    @foreach (var tag in Model.Product.Tags)
-                                    {
-                                        var path = $"/Shop/tag={tag.TagText}";
-                                        <li>
-                                            <a href="@path">@tag.TagText</a>
-                                        </li>
-                                    }
-                                }
-                            </ul>
-                        </div>
-                        <div class="details-add-group">
-                            <button class="product-add w-100" title="افزودن به سبد خرید" href="javascript:void(0)" onclick="AddSelectedPriceToCart(@Model.Product.Id)">
-                                <i class="far fa-shopping-cart"></i><span>افزودن به سبد خرید</span>
-                            </button>
-                        </div>
-                        <div class="details-action-group heartChecked">
-                            <a href="javascript:void(0)" onclick="InvertWishList('Product',[@priceId])" @{
-                                if (Model.WishListPriceId == null)
-                                {
-                                    <text> class="view-wish wish" </text>
-                                }
-                                else
-                                {
-                                    <text> class="view-wish wish active" </text>
-                                }
-                            }>
-                            <i class="fa fa-heart"></i><span>لیست علاقه مندی ها</span>
-                            </a>
-                            <a class="view-compare" asp-area="" asp-page="Product" asp-page-handler="AddCompareList" asp-route-Id="@Model.Product.Id" title="مقایسه محصول">
-                                <i class="far fa-exchange"></i><span>افزودن برای مقایسه</span>
-                            </a>
-                        </div>
-                        <div class="details-list-group mt-4">
-                            <label class="details-list-title">اشتراک گذاری:</label>
-                            @{
-                                var whatsApp = $"https://api.whatsapp.com/send?text={Request.Path}&{Request.Path}";
-                                var twitter = $"https://twitter.com/intent/tweet?url={Request.Path}&{Request.Path}";
-                                var facebook = $"https://www.facebook.com/sharer.php?u={Request.Path}&{Request.Path}";
-                            }
-                            <ul class="details-share-list">
-                                <li>
-                                    <div class="copyright">
-                                        <button type="button" class="copyright">
-                                            <a class="fa fa-share-alt" title="کپی کردن لینک">  </a>
-                                        </button>
-                                    </div>
-                                </li>
-                                <li>
-                                    <a class="fab fa-whatsapp" href="@whatsApp" title="واتس اپ"></a>
-                                </li>
-                                <li>
-                                    <a class="fab fa-twitter" href="@twitter" title="توییتر"></a>
-                                </li>
-                                <li>
-                                    <a class="fab fa-facebook" href="@facebook" title="فیسبوک"></a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                @if (Model.Product.Images.Any())
+<div class="container">
+<div class="row">
+<div class="col-12">
+<div class="col-lg-7 col-md-10">
+    <div class="details-content">
+        <h1 class="details-name">
+            <a href="#">@Model.Product.Name</a>
+        </h1>
+        <div class="details-meta">
+            @if (Model.Product.Brand != null && string.IsNullOrEmpty(Model.Product.Brand.Name))
+            {
+                <p><a href="#">مارک</a> تجاری: <a href="#">@Model.Product.Brand!.Name</a></p>
+            }
+        </div>
+        <div class="pro-rating sin-pro-rating f-right">
+            <div>
+                @{
+                    string[] starFillClasses = { "star-quarter", "star-half", "star-3-quarter", "star-full" };
+                }
+                @for (var i = 1; i <= 5; i++)
                 {
-                    <div class="col-lg-5 col-md-10 col-sm-12">
-                        <div class="details-gallery img-zoom-container">
-                            <div class="details-label-group">
-                                <label class="details-label new">جدید</label>
-                            </div>
-                            <ul class="details-preview">
-                                @foreach (var image in Model.Product.Images)
-                                {
-                                    var imageId = "myimage" + image.Id;
-                                    <li>
-                                        <img onmouseover="openZoom()" onmouseout="closeZoom()" id="@imageId" src="/@($"{image.Path}/{image.Name}")" alt="@image.Alt" loading="lazy">
-                                    </li>
+                    var cls = "";
+                    if (Math.Ceiling(Model.Stars) == i)
+                    {
+                        var starD = Model.Stars % 1;
+                        cls += starFillClasses[(int)Math.Floor(starD / 0.33)];
+                    }
+                    if (i <= Model.Stars)
+                    {
+                        cls += " rankChecked";
+                    }
+                    <label id="starLable-@i" for="@Model.Product.Id-@i" class="@cls">
+                        <input onclick="SaveStars(@Model.Product.Id,@i)" type="checkbox" id="@Model.Product.Id-@i" class="CheckboxStar"/>
+                        <i class="fas fa-star"></i>
+                    </label>
+                }
+            </div>
+            <a asp-area="" asp-page="Product" asp-route-productUrl="@Model.Url.ToString().Trim()" style="color: #39404a">(@Model.Stars.ToString("0.##"))امتیاز</a>
+        </div>
+        @{
+            decimal? discount = 0;
+            decimal? amount = 0;
+            decimal? discountAmount = 0;
+            var singlePrice = Model.Product.Prices.OrderBy(x => x.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
+            if (singlePrice != null)
+            {
+                amount = singlePrice.Amount;
+                if (singlePrice.Discount != null)
+                    if (singlePrice.Discount.Amount > 0)
+                    {
+                        discount = (decimal)singlePrice.Discount.Amount;
+                    }
+                    else if (singlePrice.Discount.Percent > 0)
+                    {
+                        discount = singlePrice.Amount * (decimal)singlePrice.Discount.Percent / 100;
+                    }
+                discountAmount = amount - discount;
+            }
+        }
+        @if (singlePrice == null)
+        {
+            <h6 class="details-price">
+                <span id="price">ناموجود</span>
+            </h6>
+        }
+        else
+        {
+            @if (discount > 0)
+            {
+                <div class="details-price">
+                    <del>@amount?.ToString("N0") تومان</del>
+                </div>
+            }
+            <h6 class="details-price">
+                <span id="price">@discountAmount?.ToString("N0") تومان</span>
+            </h6>
+        }
+        <p class="view-desc"> @Html.Raw(Model.Product.Description)</p>
+        @if (Model.Product.Prices.Count == 1)
+        {
+            <div class="details-list-group">
+                <span class="details-list-title">در انبار:</span>
+                <div id="exist">
+                    @if (Model.Product.Prices.First().Exist > 0)
+                    {
+                        <span>در دسترس</span>
+                    }
+                    else
+                    {
+                        <span>عدم موجودی</span>
+                    }
+                </div>
+            </div>
+        }
+        <div class="row">
+            @if (Model.Product.Prices != null)
+            {
+                @foreach (var price in Model.Product.Prices)
+                {
+                    <div style="font-size: 13px">
+                        @{
+                            var select = price.Id == priceId ? "checked" : "";
+                            var circleSelected = price.Id == priceId ? "circleSelected" : "";
+                            var disabled = price.Exist <= 0 ? "disabled='disabled'" : "";
+                            var style = price.Exist <= 0 ? $"background-color: {price.Color.ColorCode}; opacity: 0.3" : $"background-color: {price.Color.ColorCode} ";
+                        }
+                        @if ((int)price.Grade > 1)
+                        {
+                            <div class="col-8" style="background-color: @price.Color.ColorCode">
+                                <input @disabled @select name="price.Id" type="radio" id="price-@price.Id" onclick="SetPriceId(@price.Id)"/>
+                                <span for="price-@price.Id">درجه کیفیت : @price.Grade - </span>
+                                @{
+                                    var _priceAmount = price.Exist > 0 ? price.Amount.ToString("N0") : "-";
                                 }
-
-                            </ul>
-                            <ul class="details-thumb">
-                                @foreach (var image in Model.Product.Images)
-                                {
-                                    <li>
-                                        <img id="@image.Id" onclick="ChangeZoomImage(@image.Id)" src="~/@($"{image.Path}/{image.Name}")" alt="@image.Alt" loading="lazy">
-                                    </li>
-                                }
-                            </ul>
-
-                            <div id="zoomModal" class="pos-absolute">
-                                <div id="myresult" class="img-zoom-result"></div>
+                                <span for="price-@price.Id">قیمت : @_priceAmount </span>
                             </div>
+                        }
+                        else if (price.ColorId > 1)
+                        {
+                            <div class="col-3">
+                                <button @disabled style="@style" @select name="price.Id" id="price-@price.Id" onclick="SetPriceId(@price.Id)" class="circle @circleSelected"></button>
+                            </div>
+                        }
+                        <div class="col-12">
+                            @switch (price.Exist)
+                            {
+                                case <= 0:
+                                    <span style="color: red">ناموجود</span>
+                                    break;
+                                case <= 3:
+                                    <span style="color: blue">@price.Exist عدد</span>
+                                    break;
+                            }
                         </div>
                     </div>
                 }
-            </div>
-
+            }
+        </div><br/>
+        <div class="details-list-group">
+            <label class="details-list-title">برچسب ها:</label>
+            <ul class="details-tag-list">
+                @if (Model.Product.Tags != null)
+                {
+                    @foreach (var tag in Model.Product.Tags)
+                    {
+                        var path = $"/Shop/tag={tag.TagText}";
+                        <li>
+                            <a href="@path">@tag.TagText</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+        <div class="details-add-group">
+            <button class="product-add w-100" title="افزودن به سبد خرید" href="javascript:void(0)" onclick="AddSelectedPriceToCart(@Model.Product.Id)">
+                <i class="far fa-shopping-cart"></i><span>افزودن به سبد خرید</span>
+            </button>
+        </div>
+        <div class="details-action-group heartChecked">
+            <a href="javascript:void(0)" onclick="InvertWishList('Product',[@priceId])"
+               @{
+                   if (Model.WishListPriceId == null)
+                   {
+                       <text> class="view-wish wish" </text>
+                   }
+                   else
+                   {
+                       <text> class="view-wish wish active" </text>
+                   }
+               }>
+                <i class="fa fa-heart"></i><span>لیست علاقه مندی ها</span>
+            </a>
+            <a class="view-compare" asp-area="" asp-page="Product" asp-page-handler="AddCompareList" asp-route-Id="@Model.Product.Id" title="مقایسه محصول">
+                <i class="far fa-exchange"></i><span>افزودن برای مقایسه</span>
+            </a>
+        </div>
+        <div class="details-list-group mt-4">
+            <label class="details-list-title">اشتراک گذاری:</label>
+            @{
+                var whatsApp = $"https://api.whatsapp.com/send?text={Request.Path}&{Request.Path}";
+                var twitter = $"https://twitter.com/intent/tweet?url={Request.Path}&{Request.Path}";
+                var facebook = $"https://www.facebook.com/sharer.php?u={Request.Path}&{Request.Path}";
+            }
+            <ul class="details-share-list">
+                <li>
+                    <div class="copyright">
+                        <button type="button" class="copyright">
+                            <a class="fa fa-share-alt" title="کپی کردن لینک"> </a>
+                        </button>
+                    </div>
+                </li>
+                <li>
+                    <a class="fab fa-whatsapp" href="@whatsApp" title="واتس اپ"></a>
+                </li>
+                <li>
+                    <a class="fab fa-twitter" href="@twitter" title="توییتر"></a>
+                </li>
+                <li>
+                    <a class="fab fa-facebook" href="@facebook" title="فیسبوک"></a>
+                </li>
+            </ul>
         </div>
     </div>
+</div>
+@if (Model.Product.Images.Any())
+{
+    <div class="col-lg-5 col-md-10 col-sm-12">
+        <div class="details-gallery img-zoom-container">
+            <div class="details-label-group">
+                <label class="details-label new">جدید</label>
+            </div>
+            <ul class="details-preview">
+                @foreach (var image in Model.Product.Images)
+                {
+                    var imageId = "myimage" + image.Id;
+                    <li>
+                        <img onmouseover="openZoom()" onmouseout="closeZoom()" id="@imageId" src="/@($"{image.Path}/{image.Name}")" alt="@image.Alt" loading="lazy">
+                    </li>
+                }
+
+            </ul>
+            <ul class="details-thumb">
+                @foreach (var image in Model.Product.Images)
+                {
+                    <li>
+                        <img id="@image.Id" onclick="ChangeZoomImage(@image.Id)" src="~/@($"{image.Path}/{image.Name}")" alt="@image.Alt" loading="lazy">
+                    </li>
+                }
+            </ul>
+
+            <div id="zoomModal" class="pos-absolute">
+                <div id="myresult" class="img-zoom-result"></div>
+            </div>
+        </div>
+    </div>
+}
+</div>
+
+</div>
+</div>
 </section>
 <section class="inner-section">
     <div class="container">
@@ -299,17 +302,17 @@
                     <div class="product-details-frame">
                         <table class="table table-bordered">
                             <tbody>
-                                @for (var g = 0; g < Model.AttributeGroups.Count; g++)
+                            @for (var g = 0; g < Model.AttributeGroups.Count; g++)
+                            {
+                                @for (var i = 0; i < Model.AttributeGroups[g].Attribute.Count; i++)
                                 {
-                                    @for (var i = 0; i < Model.AttributeGroups[g].Attribute.Count; i++)
-                                    {
-                                        @if (string.IsNullOrWhiteSpace(Model.AttributeGroups[g].Attribute[i].AttributeValue[0].Value)) continue;
-                                        <tr>
-                                            <th>@Model.AttributeGroups[g].Attribute[i].Title</th>
-                                            <td> @Model.AttributeGroups[g].Attribute[i].AttributeValue[0].Value</td>
-                                        </tr>
-                                    }
+                                    @if (string.IsNullOrWhiteSpace(Model.AttributeGroups[g].Attribute[i].AttributeValue[0].Value)) continue;
+                                    <tr>
+                                        <th>@Model.AttributeGroups[g].Attribute[i].Title</th>
+                                        <td> @Model.AttributeGroups[g].Attribute[i].AttributeValue[0].Value</td>
+                                    </tr>
                                 }
+                            }
                             </tbody>
                         </table>
                     </div>
@@ -337,7 +340,7 @@
                                 <li class="comment-item">
                                     <div class="comment-media">
                                         <a class="comment-avatar" href="#">
-                                            <img src="~/images/users/user-profile.png" alt="user-profile" loading="lazy" />
+                                            <img src="~/images/users/user-profile.png" alt="user-profile" loading="lazy"/>
                                         </a>
                                         <h5 class="comment-meta">
                                             <a href="#">@item.Name</a><span>@item.DateTime.ToFa("f")</span>
@@ -345,11 +348,14 @@
                                     </div>
                                     <div class="comment-desc">
                                         @item.Text
-                                        <p style="background-color:darkgrey">
+                                        <p style="background-color: darkgrey">
                                             @{
-                                                string _answer = "";
+                                                var _answer = "";
                                             }
-                                            @if (!string.IsNullOrEmpty(item.Answer?.Text)) { _answer = $"{item.Answer?.Name} : {item.Answer?.Text}"; }
+                                            @if (!string.IsNullOrEmpty(item.Answer?.Text))
+                                            {
+                                                _answer = $"{item.Answer?.Name} : {item.Answer?.Text}";
+                                            }
                                             @_answer
                                         </p>
                                     </div>
@@ -358,25 +364,31 @@
                         </ul>
 
                     </div>
-                    <div class="row" style="margin-bottom:20px">
+                    <div class="row" style="margin-bottom: 20px">
                         <div class="col-lg-12">
                             <ul class="pagination">
-                                <partial name="_Pagination" model="@Model.ProductComments.PaginationDetails" />
+                                <partial name="_Pagination" model="@Model.ProductComments.PaginationDetails"/>
                             </ul>
                         </div>
                     </div>
                     <div class="blog-details-form">
                         <h3 class="details-form-title">ارسال نظر</h3>
-                        <input hidden id="comment_productUrl" value="@Model.Product.Url" />
+                        <input hidden id="comment_productUrl" value="@Model.Product.Url"/>
                         <div class="row">
                             <div class="col-lg-6">
-                                <div class="form-group"><input type="text" class="form-control" id="comment_name" placeholder="اسمت را وارد کن"></div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="comment_name" placeholder="اسمت را وارد کن">
+                                </div>
                             </div>
                             <div class="col-lg-6">
-                                <div class="form-group"><input type="email" class="form-control" id="comment_email" placeholder="ایمیل خود را وارد کنید"></div>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="comment_email" placeholder="ایمیل خود را وارد کنید">
+                                </div>
                             </div>
                             <div class="col-lg-12">
-                                <div class="form-group"><textarea class="form-control" id="comment_text" placeholder="نظر خود را بنویسید"></textarea></div>
+                                <div class="form-group">
+                                    <textarea class="form-control" id="comment_text" placeholder="نظر خود را بنویسید"></textarea>
+                                </div>
                             </div>
                         </div>
                         <button type="button" onclick="RegisterButton()" class="form-btn">ارسال نظر</button>
@@ -398,11 +410,12 @@
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
             @foreach (var relatedProduct in Model.RelatedProducts)
             {
-                <partial name="Components/_productCard" model="relatedProduct" />
+                <partial name="Components/_productCard" model="relatedProduct"/>
             }
         </div>
     </div>
 </section>
+
 @section Scripts{
     <script src="~/js/Zoom.min.js"></script>
     <script>
@@ -513,5 +526,5 @@
           ]
         }
     </script>
-   
+
 }

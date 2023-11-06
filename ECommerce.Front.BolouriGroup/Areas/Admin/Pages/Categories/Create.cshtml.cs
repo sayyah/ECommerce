@@ -1,18 +1,12 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using ECommerce.Services.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Categories;
 
 public class CreateModel : PageModel
 {
     private readonly ICategoryService _categoryService;
-    private readonly IImageService _imageService;
     private readonly IHostEnvironment _environment;
+    private readonly IImageService _imageService;
 
     public CreateModel(ICategoryService categoryService, IImageService imageService, IHostEnvironment environment)
     {
@@ -43,6 +37,7 @@ public class CreateModel : PageModel
             if (Category.Path == null) Category.Path = Category.Name;
             Category.Depth--;
         }
+
         if (Upload == null)
         {
             Message = "لطفا عکس را انتخاب کنید";
@@ -57,6 +52,7 @@ public class CreateModel : PageModel
             ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
             return Page();
         }
+
         Category.ImagePath = $"/{fileName[0]}/{fileName[1]}/{fileName[2]}";
         ModelState.Remove("Category.ImagePath");
 
@@ -65,7 +61,7 @@ public class CreateModel : PageModel
             var result = await _categoryService.Add(Category);
             if (result.Code == 0)
                 return RedirectToPage("/Categories/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

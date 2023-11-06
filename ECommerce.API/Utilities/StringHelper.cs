@@ -29,7 +29,8 @@ public static class StringHelper
             if (input.Length == format.Length)
             {
                 for (var i = 0; i < input.Length; i++)
-                    if (input[i].Equals('x') && format[i].Equals('-') || input[i].Equals('-') && format[i].Equals('x'))
+                    if ((input[i].Equals('x') && format[i].Equals('-')) ||
+                        (input[i].Equals('-') && format[i].Equals('x')))
                         return false;
 
                 return true;

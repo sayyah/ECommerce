@@ -1,5 +1,5 @@
 ﻿@page "/Admin/EditPaymentMethod/{handler?}"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.PaymentMethods.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -56,8 +56,8 @@
                             <span asp-validation-for="@Model.PaymentMethod.BankCode" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
-                            <input asp-for="@Model.PaymentMethod.CreatedDate" type="datetime" hidden="hidden" />
-                            <input asp-for="@Model.PaymentMethod.CreatorUserId" type="number" hidden="hidden" />                            
+                            <input asp-for="@Model.PaymentMethod.CreatedDate" type="datetime" hidden="hidden"/>
+                            <input asp-for="@Model.PaymentMethod.CreatorUserId" type="number" hidden="hidden"/>
                         </div>
                     </div>
                     <div class="card-footer">

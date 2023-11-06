@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class TransactionService : EntityService<Transaction>, ITransactionService
 {
@@ -14,13 +10,14 @@ public class TransactionService : EntityService<Transaction>, ITransactionServic
         _http = http;
     }
 
-    public async Task<ServiceResult<List<Transaction>>> Load(int userId = 0, string userName = "", string search = "", int pageNumber = 1, int pageSize = 10,
-    string message = null, string code = null , decimal? minimumAmount = null, decimal? maximumAmount = null,
-    Status status = Ecommerce.Entities.Status.New, PurchaseSort purchaseSort = PurchaseSort.HighToLowDateBuying)
+    public async Task<ServiceResult<List<Transaction>>> Load(int userId = 0, string userName = "", string search = "",
+        int pageNumber = 1, int pageSize = 10,
+        string message = null, string code = null, decimal? minimumAmount = null, decimal? maximumAmount = null,
+        Status status = Status.New, PurchaseSort purchaseSort = PurchaseSort.HighToLowDateBuying)
     {
         var command = "Get?" +
-                         $"PaginationParameters.PageNumber={pageNumber}&" +
-                         $"PaginationParameters.PageSize={pageSize}&";
+                      $"PaginationParameters.PageNumber={pageNumber}&" +
+                      $"PaginationParameters.PageSize={pageSize}&";
         if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
         if (userId > 0) command += $"UserId={userId}&";
         if (minimumAmount != null) command += $"MinimumAmount={minimumAmount}&";

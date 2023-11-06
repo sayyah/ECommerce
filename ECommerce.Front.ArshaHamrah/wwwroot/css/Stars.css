@@ -4,28 +4,26 @@
 }
 
 input[type="checkbox"] {
-    visibility: hidden;
-    position: absolute;
-    left: -9999px;
-    top: -9999px;
-    width: 0;
     height: 0;
+    left: -9999px;
+    position: absolute;
+    top: -9999px;
+    visibility: hidden;
+    width: 0;
 }
 
 label {
-    display: inline-block;
     cursor: pointer;
-    text-align: center;
+    display: inline-block;
     margin-bottom: .5rem;
+    text-align: center;
 }
 
-label.rankChecked {
-    color: gold !important;
-}
+label.rankChecked { color: gold !important; }
 
 .rateTitle {
-    font-size: 0.85em;
     color: gray;
     display: inline-block;
+    font-size: 0.85em;
     padding: 0 0 0 0.7em;
 }

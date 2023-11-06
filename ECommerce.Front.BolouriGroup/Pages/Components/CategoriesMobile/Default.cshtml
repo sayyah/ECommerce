@@ -1,4 +1,4 @@
-﻿@model List<Ecommerce.Entities.ViewModel.CategoryParentViewModel>
+﻿@model List<CategoryParentViewModel>
 
 @if (Model != null)
 {
@@ -18,7 +18,7 @@
                     {
                         var secondPath = path + secondChild.Path;
                         <li>
-                            <a style="font-size: 12px; color: gray" href="@secondPath" onclick="categoryChangeHandler(event)">
+                            <a style="color: gray; font-size: 12px;" href="@secondPath" onclick="categoryChangeHandler(event)">
                                 @secondChild.Name
                             </a>
                         </li>

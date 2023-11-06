@@ -1,14 +1,10 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Categories;
 
 public class EditModel : PageModel
 {
-    private readonly ICategoryService _categoryService; 
+    private readonly ICategoryService _categoryService;
     private readonly IHostEnvironment _environment;
     private readonly IImageService _imageService;
 
@@ -41,14 +37,17 @@ public class EditModel : PageModel
                 ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
                 return Page();
             }
+
             Category.ImagePath = $"/{fileName[0]}/{fileName[1]}/{fileName[2]}";
         }
+
         if (Upload == null && Category.ImagePath == null)
         {
             Message = "لطفا عکس را انتخاب کنید";
             Code = ServiceCode.Error.ToString();
             return Page();
         }
+
         ModelState.Remove("Category.ImagePath");
 
         if (ModelState.IsValid)
@@ -58,7 +57,7 @@ public class EditModel : PageModel
             Code = result.Code.ToString();
             if (result.Code == 0)
                 return RedirectToPage("/Categories/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

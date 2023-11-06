@@ -1,6 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,9 @@ namespace ECommerce.Front.ArshaHamrah.Areas.Admin.Pages.Products;
 public class CreateModel : PageModel
 {
     private readonly IBrandService _brandService;
+
     private readonly ICategoryService _categoryService;
+
     //private readonly IDiscountService _discountService;
     private readonly IHostEnvironment _environment;
     private readonly IImageService _imageService;
@@ -26,7 +27,7 @@ public class CreateModel : PageModel
 
     public CreateModel(IProductService productService, ITagService tagService, ICategoryService categoryService,
         IHostEnvironment environment,
-        IKeywordService keywordService, IBrandService brandService, 
+        IKeywordService keywordService, IBrandService brandService,
         //IDiscountService discountService,
         IStoreService storeService,
         ISupplierService supplierService, IImageService imageService)
@@ -119,7 +120,7 @@ public class CreateModel : PageModel
                 }
 
                 return RedirectToPage("/Products/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             }
 
             Message = result.Message;

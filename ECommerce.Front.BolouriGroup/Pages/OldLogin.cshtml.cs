@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
@@ -57,58 +53,52 @@ public class OldLoginModel : PageModel
 
     public async Task<JsonResult> OnGetSecondsLeft(string username)
     {
-        ServiceResult<int?> checkUsernameResult = await CheckUsername(username);
+        var checkUsernameResult = await CheckUsername(username);
         return new JsonResult(checkUsernameResult);
     }
 
     private async Task<ServiceResult<int?>> CheckUsername(string username)
     {
-        ServiceResult<int?> checkUsernameResult = await _userService.GetSecondsLeftConfirmCodeExpire(username);
+        var checkUsernameResult = await _userService.GetSecondsLeftConfirmCodeExpire(username);
 
         if (checkUsernameResult.Code == ServiceCode.Error)
-        {
             return new ServiceResult<int?>
             {
                 Message = "نام کاربری موجود نمی باشد",
                 Code = ServiceCode.Error
             };
-        }
 
         if (checkUsernameResult.ReturnData > 0)
-        {
             return new ServiceResult<int?>
             {
                 Message = $"{checkUsernameResult.ReturnData}ثانیه باقی مانده",
                 Code = ServiceCode.Info,
                 ReturnData = checkUsernameResult.ReturnData
             };
-        }
 
         return new ServiceResult<int?>
         {
-            Message = $"کاربر موجود و امکان ارسال پیامک وجود دارد",
+            Message = "کاربر موجود و امکان ارسال پیامک وجود دارد",
             Code = ServiceCode.Success
         };
     }
 
     public async Task<IActionResult> OnGetSendSms(string username)
     {
-        ServiceResult<int?> checkUsernameResult = await CheckUsername(username);
-        if (checkUsernameResult.Code != ServiceCode.Success)
-        {
-            return Page();
-        }
+        var checkUsernameResult = await CheckUsername(username);
+        if (checkUsernameResult.Code != ServiceCode.Success) return Page();
 
-        Random randomCode = new Random();
-        int code = randomCode.Next(100000000);
+        var randomCode = new Random();
+        var code = randomCode.Next(100000000);
         if (code < 10000000) code = code + 10000000;
-        ResponseVerifySmsIrViewModel smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
+        var smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
         if (smsResponsModel.Status != 1)
         {
             Message = smsResponsModel.Message;
             Code = "Error";
             return Page();
         }
+
         var result = await _userService.SetConfirmCodeByUsername(username, code.ToString());
         if (!result.ReturnData)
         {
@@ -124,11 +114,10 @@ public class OldLoginModel : PageModel
 
     public async Task<JsonResult> OnGetUserLoginSubmit(string username, string password)
     {
-        LoginViewModel _loginViewModel = new LoginViewModel();
+        var _loginViewModel = new LoginViewModel();
         _loginViewModel.Username = username;
         _loginViewModel.Password = password;
-        ServiceResult<LoginViewModel?> result = await _userService.Login(_loginViewModel);       
+        ServiceResult<LoginViewModel?> result = await _userService.Login(_loginViewModel);
         return new JsonResult(result);
     }
-
 }

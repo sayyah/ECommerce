@@ -1,4 +1,3 @@
-using Ecommerce.Entities.Helper;
 using ECommerce.Front.BolouriGroup;
 using ECommerce.Services.IServices;
 using ECommerce.Services.Services;
@@ -12,7 +11,7 @@ var _frontSetting = builder.Configuration.GetSection(nameof(FrontSetting)).Get<F
 builder.Services.AddAuthorization(options =>
 {
     // Create policies
-    
+
     options.AddPolicy("Admin", p => p.RequireRole("SuperAdmin", "Admin"));
     options.AddPolicy("Client", p => p.RequireRole("Client", "SuperAdmin", "Admin"));
 });
@@ -133,6 +132,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseOnlineUsers();

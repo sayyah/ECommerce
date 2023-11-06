@@ -1,6 +1,5 @@
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -8,14 +7,14 @@ namespace ECommerce.Front.ArshaHamrah.Pages;
 
 public class ProductModel : PageModel
 {
-   private readonly IProductAttributeGroupService _productAttributeGroupService;
+    private readonly IProductAttributeGroupService _productAttributeGroupService;
     private readonly IProductService _productService;
     private readonly IStarService _starService;
     private readonly IUserService _userService;
 
 
     public ProductModel(IProductService productService, IStarService starService, ICartService cartService,
-       IProductAttributeGroupService productAttributeGroupService, IUserService userService)
+        IProductAttributeGroupService productAttributeGroupService, IUserService userService)
     {
         _productService = productService;
         _starService = starService;
@@ -46,5 +45,4 @@ public class ProductModel : PageModel
 
         Stars = await _starService.SumStarsByProductId(Product.Id);
     }
- 
 }

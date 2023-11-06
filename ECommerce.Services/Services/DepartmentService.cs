@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class DepartmentService : EntityService<Department>, IDepartmentService
 {
@@ -20,6 +16,7 @@ public class DepartmentService : EntityService<Department>, IDepartmentService
         var result = await ReadList(Url, $"Get?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
+
     public async Task<ServiceResult<List<Department>>> GetAll()
     {
         var result = await ReadList(Url, "GetAll");
@@ -37,7 +34,7 @@ public class DepartmentService : EntityService<Department>, IDepartmentService
 
         var result = _departments.Where(x => x.Title.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Department>> {Code = ServiceCode.Info, Message = "دپارتمان یافت نشد"};
+            return new ServiceResult<List<Department>> { Code = ServiceCode.Info, Message = "دپارتمان یافت نشد" };
         return new ServiceResult<List<Department>>
         {
             Code = ServiceCode.Success,
@@ -74,8 +71,10 @@ public class DepartmentService : EntityService<Department>, IDepartmentService
                 Message = "با موفقیت حذف شد"
             };
         }
+
         _departments = null;
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Department>> GetById(int id)

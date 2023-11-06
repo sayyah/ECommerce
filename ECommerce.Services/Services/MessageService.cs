@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class MessageService : EntityService<Message>, IMessageService
 {
@@ -32,7 +28,7 @@ public class MessageService : EntityService<Message>, IMessageService
 
         var result = _messages.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Message>> {Code = ServiceCode.Info, Message = "پیغامی یافت نشد"};
+            return new ServiceResult<List<Message>> { Code = ServiceCode.Info, Message = "پیغامی یافت نشد" };
         return new ServiceResult<List<Message>>
         {
             Code = ServiceCode.Success,

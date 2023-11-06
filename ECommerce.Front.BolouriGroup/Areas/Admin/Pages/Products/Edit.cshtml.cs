@@ -1,9 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products;
 
@@ -57,7 +52,7 @@ public class EditModel : PageModel
         var result = await Initial(id);
         if (result.Code == 0) return Page();
         return RedirectToPage("/Products/Index",
-            new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+            new { area = "Admin", message = result.Message, code = result.Code.ToString() });
     }
 
     public async Task<IActionResult> OnPost()
@@ -69,6 +64,7 @@ public class EditModel : PageModel
             await Initial(Product.Id);
             return Page();
         }
+
         if (Uploads == null)
         {
             Message = "لطفا عکس را انتخاب کنید";
@@ -76,15 +72,15 @@ public class EditModel : PageModel
             await Initial(Product.Id);
             return Page();
         }
+
         foreach (var upload in Uploads)
-        {
             if (upload.FileName.Split('.').Last().ToLower() != "webp")
             {
                 ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
                 await Initial(Product.Id);
                 return Page();
             }
-        }
+
         if (ModelState.IsValid)
         {
             var result = await _productService.Edit(Product);
@@ -105,7 +101,7 @@ public class EditModel : PageModel
                 }
 
                 return RedirectToPage("/Products/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             }
 
             Message = result.Message;
@@ -124,7 +120,7 @@ public class EditModel : PageModel
 
             if (result.Code == 0)
                 return RedirectToPage("/Products/Edit",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

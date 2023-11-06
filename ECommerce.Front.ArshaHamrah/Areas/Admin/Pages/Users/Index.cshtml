@@ -1,9 +1,9 @@
 ﻿@page "Admin/User/{handler?}"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Users.IndexModel
+@model IndexModel
 @{
     ViewData["Title"] = "کاربران سایت";
-    var i = 1 + (Model.Users.PaginationDetails.CurrentPage) * Model.Users.PaginationDetails.PageSize;
+    var i = 1 + Model.Users.PaginationDetails.CurrentPage * Model.Users.PaginationDetails.PageSize;
 }
 }
 <div class="post d-flex flex-column-fluid" id="kt_post">
@@ -44,7 +44,7 @@
                                 </p>
                                 <div class="col-md-3 my-2 my-md-0">
                                     <div class="input-icon">
-                                        <input type="text" class="form-control" placeholder="جستجو..." id="kt_datatable_search_query" />
+                                        <input type="text" class="form-control" placeholder="جستجو..." id="kt_datatable_search_query"/>
                                         <span>
                                             <i class="flaticon2-search-1 text-muted"></i>
                                         </span>
@@ -80,7 +80,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <input type="submit" value="فیلتر" class="btn btn-primary" />
+                                <input type="submit" value="فیلتر" class="btn btn-primary"/>
 
                             </div>
                         </form>
@@ -88,41 +88,41 @@
                     <div class="example-preview">
                         <table class="table table-bordered mb-6">
                             <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">نام کاربری</th>
-                                    <th scope="col">نوع کاربر</th>
-                                    <th scope="col">فعال بودن</th>
-                                    <th scope="col">همکار بودن</th>
-                                    <th scope="col">استان</th>
-                                    <th scope="col">شهر</th>
-                                    <th scope="col">مبلغ خرید</th>
-                                    <th scope="col">تاریخ ثبت نام</th>
-                                    <th scope="col">عملیات</th>
-                                </tr>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">نام کاربری</th>
+                                <th scope="col">نوع کاربر</th>
+                                <th scope="col">فعال بودن</th>
+                                <th scope="col">همکار بودن</th>
+                                <th scope="col">استان</th>
+                                <th scope="col">شهر</th>
+                                <th scope="col">مبلغ خرید</th>
+                                <th scope="col">تاریخ ثبت نام</th>
+                                <th scope="col">عملیات</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                @foreach (var user in Model.Users.ReturnData)
-                                {
-                                    <tr>
-                                        <th scope="row">@(i++)</th>
-                                        <td>@user.Username</td>
-                                        <td>@user.UserRole</td>
-                                        <td>@user.IsActive</td>
-                                        <td>@user.IsColleague</td>
-                                        <td>@user.State</td>
-                                        <td>@user.City</td>
-                                        <td>@user.BuyingAmount.ToString("###,###,###,###")</td>
-                                        <td>@user.RegisterDate.ToShortDateString()</td>
-                                        <td>
-                                            <a asp-page="PurchaseList" asp-route-id="@user.Id" class="label label-inline label-light-success font-weight-bold">لیست فاکتورها</a>
-                                        </td>
-                                    </tr>
-                                }
+                            @foreach (var user in Model.Users.ReturnData)
+                            {
+                                <tr>
+                                    <th scope="row">@(i++)</th>
+                                    <td>@user.Username</td>
+                                    <td>@user.UserRole</td>
+                                    <td>@user.IsActive</td>
+                                    <td>@user.IsColleague</td>
+                                    <td>@user.State</td>
+                                    <td>@user.City</td>
+                                    <td>@user.BuyingAmount.ToString("###,###,###,###")</td>
+                                    <td>@user.RegisterDate.ToShortDateString()</td>
+                                    <td>
+                                        <a asp-page="PurchaseList" asp-route-id="@user.Id" class="label label-inline label-light-success font-weight-bold">لیست فاکتورها</a>
+                                    </td>
+                                </tr>
+                            }
                             </tbody>
                         </table>
 
-                        <partial name="_Pagination" model="@Model.Users.PaginationDetails" />
+                        <partial name="_Pagination" model="@Model.Users.PaginationDetails"/>
 
                     </div>
                 </div>

@@ -1,52 +1,50 @@
-﻿using ECommerce.API.DataContext;
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ECommerce.Infrastructure.DataContext.DataContext;
 
-namespace ECommerce.Repository.UnitTests.Base
+namespace ECommerce.Repository.UnitTests.Base;
+
+public class DbContextFake : DbContext
 {
-    public class DbContextFake : DbContext
+    private readonly SunflowerECommerceDbContext _databaseContext;
+    private readonly HolooDbContext _holooDatabaseContext;
+
+    public DbContextFake()
     {
-        private readonly SunflowerECommerceDbContext _databaseContext;
-        private readonly HolooDbContext _holooDatabaseContext;
+        var options = new DbContextOptionsBuilder<SunflowerECommerceDbContext>()
+            .UseInMemoryDatabase("SunFlower")
+            .Options;
+        var optionsHoloo = new DbContextOptionsBuilder<HolooDbContext>()
+            .UseInMemoryDatabase("Holoo")
+            .Options;
+        _databaseContext = new SunflowerECommerceDbContext(
+            options,
+            new EphemeralDataProtectionProvider(),
+            new ConfigurationManager());
+        _holooDatabaseContext = new HolooDbContext(
+            optionsHoloo);
+    }
 
-        public DbContextFake()
-        {
-            var options = new DbContextOptionsBuilder<SunflowerECommerceDbContext>()
-                .UseInMemoryDatabase(databaseName: "SunFlower")
-                .Options;
-            var optionsHoloo = new DbContextOptionsBuilder<HolooDbContext>()
-                .UseInMemoryDatabase(databaseName: "Holoo")
-                .Options;
-            _databaseContext = new SunflowerECommerceDbContext(
-                options,
-                new EphemeralDataProtectionProvider(),
-                new ConfigurationManager());
-            _holooDatabaseContext = new HolooDbContext(
-                optionsHoloo);
+    public SunflowerECommerceDbContext CreateDatabaseContext()
+    {
+        _databaseContext.Database.EnsureCreated();
+        return _databaseContext;
+    }
 
-        }
+    public void DeleteDatabaseContact()
+    {
+        _databaseContext.Database.EnsureDeleted();
+    }
 
-        public SunflowerECommerceDbContext CreateDatabaseContext()
-        {
-            _databaseContext.Database.EnsureCreated();
-            return _databaseContext;
-        }
+    public HolooDbContext CreateHolooDatabaseContext()
+    {
+        _holooDatabaseContext.Database.EnsureCreated();
+        return _holooDatabaseContext;
+    }
 
-        public void DeleteDatabaseContact()
-        {
-            _databaseContext.Database.EnsureDeleted();
-        }
-
-        public HolooDbContext CreateHolooDatabaseContext()
-        {
-            _holooDatabaseContext.Database.EnsureCreated();
-            return _holooDatabaseContext;
-        }
-
-        public void DeleteHolooDatabaseContact()
-        {
-            _holooDatabaseContext.Database.EnsureDeleted();
-        }
+    public void DeleteHolooDatabaseContact()
+    {
+        _holooDatabaseContext.Database.EnsureDeleted();
     }
 }

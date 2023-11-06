@@ -1,5 +1,5 @@
 ﻿@page "/Login"
-@model ECommerce.Front.BolouriGroup.Pages.LoginModel
+@model LoginModel
 @{
     ViewData["Title"] = "ورود به فروشگاه اینترنتی بلوری";
     ViewData["description"] = "ورود به فروشگاه اینترنتی بلوری";
@@ -122,11 +122,13 @@
                                 <div class="input-group" id="show_hide_password">
                                     <input class="form-control" id="userPassword" type="password" onkeypress="actionOnEnterPress(this.id)">
                                     <div class="input-group-addon">
-                                        <a href="" style="color: #0d6efd"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                                        <a href="" style="color: #0d6efd">
+                                            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="nav nav-tabs" role="tablist" style="margin-right: -20px;margin-left: -20px">
-                                    <input type="button" id="sendSmsButton" value="دریافت رمز یکبار مصرف" onclick="SendConfirmSmsToExistUser()" />
+                                <div class="nav nav-tabs" role="tablist" style="margin-left: -20px; margin-right: -20px;">
+                                    <input type="button" id="sendSmsButton" value="دریافت رمز یکبار مصرف" onclick="SendConfirmSmsToExistUser()"/>
                                     &nbsp;&nbsp;&nbsp;
                                     <span id="countdown"></span>
                                 </div>
@@ -141,8 +143,9 @@
         </div>
     </section>
 </div><!----maini close--->
+
 @section Scripts
-    {
+{
     <script>
 
         function actionOnEnterPress(id) {

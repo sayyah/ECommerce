@@ -1,34 +1,28 @@
 ﻿@page
-@model ArshaHamrah.Areas.Admin.Pages.Factors.IndexModel
+@model IndexModel
 @{
-	ViewData["Title"] = "فاکتور ها";
+    ViewData["Title"] = "فاکتور ها";
 }
 <style>
 	
-	*{
-		user-select:none;
-	}
-	.wrapper{
-		overflow:hidden;
-		margin-top:150px;
-	}
+    * { user-select: none; }
 
-	img{
-		width:80%;
-	}
+    .wrapper {
+        margin-top: 150px;
+        overflow: hidden;
+    }
 
-	.image-zoom-available{
-		cursor: zoom-in;
-	}
-	.image-zoom-available.is-active{
-		cursor: none;
-	}
+    img { width: 80%; }
+
+    .image-zoom-available { cursor: zoom-in; }
+
+    .image-zoom-available.is-active { cursor: none; }
 </style>
 
 <body>
 
 <div class="wrapper">
-  <img class="image-zoom-available" src="https://picsum.photos/2500/1300/?random" draggable=false>
+    <img class="image-zoom-available" src="https://picsum.photos/2500/1300/?random" draggable="false">
 </div>
 <script>
 
@@ -186,4 +180,3 @@ class Zoombini {
 
 </script>
 </body>
-

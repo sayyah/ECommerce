@@ -1,21 +1,16 @@
 using System.Text;
 using System.Text.Json.Serialization;
-using ECommerce.API.DataContext;
-using ECommerce.API.Interface;
-using ECommerce.API.Repository;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
+using ECommerce.Application.PersianTranslations.Identity;
+using ECommerce.Infrastructure.DataContext.DataContext;
+using ECommerce.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PersianTranslation.Identity;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
-using WebFramework.Middlewares;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", false)
@@ -64,7 +59,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<SunflowerECommerceDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("SunflowerECommerce")));
 builder.Services.AddDbContext<HolooDbContext>(option =>
-    option.UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+    option.UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString"))
+        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
 builder.Services.AddSwaggerGen(swagger =>
 {

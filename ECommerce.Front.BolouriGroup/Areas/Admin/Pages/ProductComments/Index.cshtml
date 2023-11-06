@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductComments.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.ProductComments.PaginationDetails.CurrentPage - 1) * Model.ProductComments.PaginationDetails.PageSize;
 }
@@ -70,13 +70,16 @@
                             <td>@Comment.Name</td>
                             <td >
                                 <div class="shortened">
-                                        <h2 style="height:20px">@Comment.Text</h2>
+                                    <h2 style="height: 20px">@Comment.Text</h2>
                                 </div>
                             </td>
                             <td>@Comment.Product?.Name</td>
-                             @{string acceptResult=""; if (Comment.IsAccepted) acceptResult="√";  }
+                            @{
+                                var acceptResult = "";
+                                if (Comment.IsAccepted) acceptResult = "√";
+                            }
                             <td> @acceptResult </td>
-                            <td>                                
+                            <td>
                                 <a asp-page="Delete" asp-route-id="@Comment.Id" class="label label-inline label-light-danger font-weight-bold">حذف</a>
                                 <a asp-page="Edit" asp-route-id="@Comment.Id" class="label label-inline label-light-warning font-weight-bold">ویرایش</a>
                                 <a asp-page="Accept" asp-route-id="@Comment.Id" class="label label-inline label-light-success font-weight-bold">تایید</a>

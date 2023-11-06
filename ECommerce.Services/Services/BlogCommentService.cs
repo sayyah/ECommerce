@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class BlogCommentService : EntityService<BlogComment>, IBlogCommentService
 {
@@ -73,10 +69,11 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
         _blogComments = null;
         return Return(result);
     }
+
     public async Task<ServiceResult> Accept(BlogComment blogComment)
     {
         var result = await Update(Url, blogComment);
-        if (result.Code == ResultCode.Success && blogComment.IsAccepted == true)
+        if (result.Code == ResultCode.Success && blogComment.IsAccepted)
         {
             _blogComments = null;
             return new ServiceResult
@@ -85,6 +82,7 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
                 Message = "با موفقیت تایید شد"
             };
         }
+
         if (result.Code == ResultCode.Success && blogComment.IsAccepted == false)
         {
             _blogComments = null;
@@ -94,6 +92,7 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
                 Message = "وضعیت پیام به عدم تایید تغییر یافت"
             };
         }
+
         _blogComments = null;
         return Return(result);
     }
@@ -113,8 +112,10 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
                 Message = "با موفقیت حذف شد"
             };
         }
+
         _blogComments = null;
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<BlogComment>> GetById(int id)
@@ -123,10 +124,11 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<BlogComment>>> GetAllAccesptedComments(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<BlogComment>>> GetAllAccesptedComments(string search = "", int pageNumber = 0,
+        int pageSize = 10)
     {
-        var result = await ReadList(Url, $"GetAllAccesptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
+        var result = await ReadList(Url,
+            $"GetAllAccesptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
-
 }
