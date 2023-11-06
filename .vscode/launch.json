@@ -22,6 +22,7 @@
       "cwd": "${workspaceFolder}\\ECommerce.Front.BolouriGroup",
       "program": "dotnet",
       "args": ["watch", "--project", ".", "--verbose"],
+      "envFile": "${workspaceFolder}/.env",
       "presentation": {
         "hidden": false,
         "group": "ECommerce",
@@ -80,6 +81,7 @@
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "envFile": "${workspaceFolder}/.env",
       "sourceFileMap": {
         "/Views": "${workspaceFolder}/Views"
       },
@@ -149,6 +151,7 @@
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "envFile": "${workspaceFolder}/.env",
       "sourceFileMap": {
         "/Views": "${workspaceFolder}/Views"
       },
