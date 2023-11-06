@@ -1,6 +1,5 @@
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,14 +24,17 @@ public class IndexModel : PageModel
     [TempData] public string Code { get; set; }
 
     public async Task<IActionResult> OnGet(int userId = 0, string search = "", int pageNumber = 1, int pageSize = 10,
-        string message = null, string code = null,int purchaseSort =1,bool? isPaied=null, DateTime? fromCreationDate=null, 
-        DateTime? toCreationDate=null, int? statusId=null, decimal? minimumAmount=null, decimal? maximumAmount=null, 
-        PaymentMethodStatus? paymentMethodStatus=null)
+        string message = null, string code = null, int purchaseSort = 1, bool? isPaied = null,
+        DateTime? fromCreationDate = null,
+        DateTime? toCreationDate = null, int? statusId = null, decimal? minimumAmount = null,
+        decimal? maximumAmount = null,
+        PaymentMethodStatus? paymentMethodStatus = null)
     {
         Message = message;
         Code = code;
-        var result = await _purchaseOrderService.PurchaseList(userId,search, pageNumber,pageSize,purchaseSort,isPaied,
-            fromCreationDate,toCreationDate,statusId,minimumAmount,maximumAmount,paymentMethodStatus );
+        var result = await _purchaseOrderService.PurchaseList(userId, search, pageNumber, pageSize, purchaseSort,
+            isPaied,
+            fromCreationDate, toCreationDate, statusId, minimumAmount, maximumAmount, paymentMethodStatus);
         if (result.Code == ServiceCode.Success)
         {
             Message = result.Message;
@@ -41,6 +43,6 @@ public class IndexModel : PageModel
             return Page();
         }
 
-        return RedirectToPage("/index", new {message = result.Message, code = result.Code.ToString()});
+        return RedirectToPage("/index", new { message = result.Message, code = result.Code.ToString() });
     }
 }

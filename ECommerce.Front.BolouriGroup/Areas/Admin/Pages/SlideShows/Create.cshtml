@@ -1,5 +1,5 @@
 ﻿@page "/Admin/CreateSlideShow"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.SlideShows.CreateModel
+@model CreateModel
 @{
     ViewData["Title"] = "اضافه کردن اسلاید شو";
 }
@@ -36,8 +36,8 @@
                     <div class="form-actions no-color">
                         <p>
                             جستجو بر اساس نام:
-                            <input type="text" id="searchId" name="search" value="@Model.Products.PaginationDetails.Search" />
-                            <input type="button" id="searchBtn" value="بجو" class="btn btn-primary" />
+                            <input type="text" id="searchId" name="search" value="@Model.Products.PaginationDetails.Search"/>
+                            <input type="button" id="searchBtn" value="بجو" class="btn btn-primary"/>
                         </p>
                     </div>
                 </form>
@@ -60,15 +60,15 @@
                         </div>
                         <div class="form-group" style="display: none;" id="SelectCatehoryId">
                             <label>انتخاب دسته بندی</label>
-                            <br />
+                            <br/>
                             <input type="radio" id="0" checked="checked" name="SlideShow.CategoryId" value="0">
-                            <input hidden="hidden" id="path_0" value="" />
+                            <input hidden="hidden" id="path_0" value=""/>
 
-                            <partial name="_ParentCategory" model="@Model.Categories" />
+                            <partial name="_ParentCategory" model="@Model.Categories"/>
                         </div>
                         <div class="form-group">
                             <label>عنوان</label>
-                            <input asp-for="@Model.SlideShow.Title" class="form-control form-control-solid" />
+                            <input asp-for="@Model.SlideShow.Title" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.SlideShow.Title" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
@@ -78,12 +78,12 @@
                         </div>
                         <div class="form-group">
                             <label>ترتیب نمایش</label>
-                            <input id="kt_touchspin_4" asp-for="@Model.SlideShow.DisplayOrder" class="form-control form-control-solid bootstrap-touchspin-vertical-btn" />
+                            <input id="kt_touchspin_4" asp-for="@Model.SlideShow.DisplayOrder" class="form-control form-control-solid bootstrap-touchspin-vertical-btn"/>
                         </div>
                         <div class="form-group">
                             <label>تصویر اسلاید شو</label>
                             <div class="custom-file">
-                                <input asp-for="@Model.Upload" type="file" class="custom-file-input" id="customفایل" accept=".webp" />
+                                <input asp-for="@Model.Upload" type="file" class="custom-file-input" id="customفایل" accept=".webp"/>
                                 <label class="custom-file-label" for="customفایل">انتخاب فایل</label>
                                 @Html.ValidationMessage("IvalidFileExtention")
                             </div>
@@ -101,7 +101,7 @@
 </div>
 
 @section Scripts
-    {
+{
     <script src="/Admin/js/bootstrap-touchspin.js"></script>
     <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 

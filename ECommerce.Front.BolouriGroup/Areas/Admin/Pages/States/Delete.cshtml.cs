@@ -1,8 +1,4 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using ECommerce.Services.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.States;
 
@@ -41,6 +37,7 @@ public class DeleteModel : PageModel
             return RedirectToPage("/States/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }
+
         return Page();
     }
 }

@@ -1,6 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Colors.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.Colors.PaginationDetails.CurrentPage - 1) * Model.Colors.PaginationDetails.PageSize;
 }
@@ -80,7 +80,7 @@
                     }
                     </tbody>
                 </table>
-                <partial name="_Pagination" model="@Model.Colors.PaginationDetails" />
+                <partial name="_Pagination" model="@Model.Colors.PaginationDetails"/>
             </div>
 
         </div>

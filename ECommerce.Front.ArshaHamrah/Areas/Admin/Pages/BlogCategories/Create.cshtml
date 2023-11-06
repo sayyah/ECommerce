@@ -1,6 +1,6 @@
 ﻿@page "/Admin/CreateBlogCategory"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.BlogCategories.CreateModel
+@model CreateModel
 @{
     ViewData["Title"] = "اضافه کردن دسته بندی ";
 }
@@ -30,7 +30,7 @@
             <div class="card card-custom">
                 <div class="card-header">
                     <h3 class="card-title">
-                        ایجاد دسته بندی  جدید
+                        ایجاد دسته بندی جدید
                     </h3>
                 </div>
                 <!--begin::Form-->
@@ -65,7 +65,7 @@
 
 @section Scripts
 {
-	<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

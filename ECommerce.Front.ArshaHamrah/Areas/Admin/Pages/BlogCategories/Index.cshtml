@@ -1,6 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.BlogCategories.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.BlogCategories.PaginationDetails.CurrentPage - 1) * Model.BlogCategories.PaginationDetails.PageSize;
 }

@@ -1,6 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

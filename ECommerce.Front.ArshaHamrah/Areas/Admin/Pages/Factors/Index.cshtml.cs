@@ -7,11 +7,6 @@ namespace ECommerce.Front.ArshaHamrah.Areas.Admin.Pages.Factors;
 [Authorize(Roles = "Admin,SuperAdmin")]
 public class IndexModel : PageModel
 {
-    public IndexModel()
-    {
-        
-    }
-   
     [TempData] public string Message { get; set; }
 
     [TempData] public string Code { get; set; }

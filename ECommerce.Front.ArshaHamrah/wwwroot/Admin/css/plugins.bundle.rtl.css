@@ -119,9 +119,9 @@
  */
 
 @font-face {
+    font-display: swap;
     font-family: "Ki";
     font-style: normal;
-    font-display: swap;
     font-weight: normal;
     src: url("../fonts/keenthemes-icons/Ki.eot");
     src: url("../fonts/keenthemes-icons/Ki.eot?#iefix") format("embedded-opentype"), url("../fonts/keenthemes-icons/Ki.woff") format("woff"), url("../fonts/keenthemes-icons/Ki.ttf") format("truetype"), url("../fonts/keenthemes-icons/Ki.svg#Ki") format("svg");
@@ -23834,8 +23834,8 @@ readers do not read off random characters that represent icons */
 
 @font-face {
     font-display: swap;
-    font-family: "Font Awesome 5 Free";
     font-display: swap;
+    font-family: "Font Awesome 5 Free";
     font-weight: 400;
     src: url("../fonts/@fortawesome/fa-regular-400.eot");
     src: url("../fonts/@fortawesome/fa-regular-400.eot?#iefix") format("embedded-opentype"), url("../fonts/@fortawesome/fa-regular-400.woff2") format("woff2"), url("../fonts/@fortawesome/fa-regular-400.woff") format("woff"), url("../fonts/@fortawesome/fa-regular-400.ttf") format("truetype"), url("../fonts/@fortawesome/fa-regular-400.svg#fontawesome") format("svg");

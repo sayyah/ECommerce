@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.Services;
 
@@ -25,7 +23,7 @@ public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowSer
     {
         if (_slideShows == null)
         {
-            var slideShows = await Load(1,5);
+            var slideShows = await Load(1, 5);
             if (slideShows.Code > 0) return slideShows;
             _slideShows = slideShows.ReturnData;
         }
@@ -34,7 +32,7 @@ public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowSer
         var result = _slideShows.OrderBy(x => x.DisplayOrder).Take(top).ToList();
         if (result.Count == 0)
             return new ServiceResult<List<SlideShowViewModel>>
-                {Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد"};
+                { Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد" };
         return new ServiceResult<List<SlideShowViewModel>>
         {
             Code = ServiceCode.Success,
@@ -54,7 +52,7 @@ public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowSer
         var result = _slideShows.Where(x => x.Title.Contains(filter)).ToList();
         if (result.Count == 0)
             return new ServiceResult<List<SlideShowViewModel>>
-                {Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد"};
+                { Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد" };
         return new ServiceResult<List<SlideShowViewModel>>
         {
             Code = ServiceCode.Success,
@@ -84,14 +82,13 @@ public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowSer
         var result = await _http.DeleteAsync(Url, id);
         _slideShows = null;
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<SlideShowViewModel>> GetById(int id)

@@ -1,5 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +12,11 @@ public class IndexModel : PageModel
     private readonly ICartService _cartService;
     private readonly ICompareService _compareService;
     private readonly ICookieService _cookieService;
+    private readonly IDiscountService _discountService;
     private readonly IProductService _productService;
     private readonly ISlideShowService _slideShowService;
-    private readonly IWishListService _wishListService;
-    private readonly IDiscountService _discountService;
     private readonly IStarService _starService;
+    private readonly IWishListService _wishListService;
 
     public IndexModel(ISlideShowService slideShowService, IProductService productService,
         IWishListService wishListService, ICartService cartService, ICompareService compareService,
@@ -47,16 +47,22 @@ public class IndexModel : PageModel
         SlideShowViewModels = (await _slideShowService.TopSlideShow(5)).ReturnData;
         var productTops = (await _productService.GetTops("TopNew:10;TopPrices:4,TopStars:8,TopSells:8")).ReturnData;
         foreach (var top in productTops)
-        {
             switch (top.TopCategory)
             {
-                case "TopNew": NewProducts.Add(top); break;
-                case "TopPrices": ExpensiveProducts.Add(top); break;
-                case "TopStars": StarProducts.Add(top); break;
-                case "TopSells": SellProducts.Add(top); break;
-                default: break;
+                case "TopNew":
+                    NewProducts.Add(top);
+                    break;
+                case "TopPrices":
+                    ExpensiveProducts.Add(top);
+                    break;
+                case "TopStars":
+                    StarProducts.Add(top);
+                    break;
+                case "TopSells":
+                    SellProducts.Add(top);
+                    break;
             }
-        }
+
         NewTop8Products = NewProducts.Take(8).ToList();
         //ExpensiveProducts = (await _productService.TopProducts("","",0,3,4, isExist: true)).ReturnData;
         //ExpensiveProducts = (await _productService.TopPrice(4)).ReturnData;
@@ -86,7 +92,7 @@ public class IndexModel : PageModel
 
     public async Task<JsonResult> OnGetDeleteCart(int id, int productId, int priceId)
     {
-        var result = await _cartService.Delete(HttpContext, id,  productId, priceId);
+        var result = await _cartService.Delete(HttpContext, id, productId, priceId);
         return new JsonResult(result);
     }
 
@@ -106,29 +112,25 @@ public class IndexModel : PageModel
     {
         var result = await _cartService.Load(HttpContext);
         if (result.Code == 0)
-        {
             foreach (var product in result.ReturnData)
             {
-               int? discount = 0;
+                int? discount = 0;
                 if (product.Discount != null)
                 {
                     if (product.Discount.Amount > 0)
-                    {
                         discount = product.Discount.Amount;
-                    }
                     else if (product.Discount.Percent > 0)
-                    {
                         discount = (int)(product.PriceAmount * (decimal)product.Discount.Percent / 100);
-                    }
                 }
+
                 var priceAmount = product.PriceAmount - discount;
-                decimal sumPrice = (priceAmount * product.Quantity) ?? 0;
+                var sumPrice = priceAmount * product.Quantity ?? 0;
 
                 product.DiscountAmount = discount.Value;
                 product.PriceAmount = priceAmount.Value;
                 product.SumPrice = sumPrice;
             }
-        }
+
         return new JsonResult(result);
     }
 

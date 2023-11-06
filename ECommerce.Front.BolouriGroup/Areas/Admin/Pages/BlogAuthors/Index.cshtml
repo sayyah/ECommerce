@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogAuthors.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.BlogAuthors.PaginationDetails.CurrentPage - 1) * Model.BlogAuthors.PaginationDetails.PageSize;
 }
@@ -67,7 +67,7 @@
                         <tr>
                             <th scope="row">@(i++)</th>
                             <td>@blogAuthor.Name</td>
-                          
+
                             <td>
                                 <a asp-page="Edit" asp-route-id="@blogAuthor.Id" class="label label-inline label-light-success font-weight-bold">ویرایش</a>
                                 <a asp-page="Delete" asp-route-id="@blogAuthor.Id" class="label label-inline label-light-danger font-weight-bold">حذف</a>

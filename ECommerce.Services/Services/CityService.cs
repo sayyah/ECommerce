@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class CityService : EntityService<City>, ICityService
 {
@@ -14,20 +10,24 @@ public class CityService : EntityService<City>, ICityService
     {
         _http = http;
     }
+
     public async Task<ServiceResult<List<City>>> LoadAllCity()
     {
         var result = await ReadList(Url, "GetAll");
         return Return(result);
     }
+
     public async Task<ServiceResult<List<City>>> Load(int id)
     {
         var result = await ReadList(Url, $"GetById?id={id}");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<City>>> GetWithPagination(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<City>>> GetWithPagination(string search = "", int pageNumber = 0,
+        int pageSize = 10)
     {
-        var result = await ReadList(Url, $"GetAllWithPagination?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
+        var result = await ReadList(Url,
+            $"GetAllWithPagination?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
 
@@ -42,7 +42,8 @@ public class CityService : EntityService<City>, ICityService
         }
 
         var result = _cities.Where(x => x.Name.Contains(filter)).ToList();
-        if (result.Count == 0) return new ServiceResult<List<City>> {Code = ServiceCode.Info, Message = "شهر یافت نشد"};
+        if (result.Count == 0)
+            return new ServiceResult<List<City>> { Code = ServiceCode.Info, Message = "شهر یافت نشد" };
         return new ServiceResult<List<City>>
         {
             Code = ServiceCode.Success,
@@ -71,20 +72,21 @@ public class CityService : EntityService<City>, ICityService
         //return Return(result);
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
+
     public async Task<ServiceResult<City>> GetByStateId(int id)
     {
         var result = await _http.GetAsync<City>(Url, $"GetByStateId?id={id}");
         return Return(result);
     }
+
     public async Task<ServiceResult<City>> GetById(int id)
     {
         var result = await _http.GetAsync<City>(Url, $"GetById?id={id}");

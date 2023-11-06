@@ -1,20 +1,20 @@
 ﻿@page "/invoice"
-@model ECommerce.Front.BolouriGroup.Pages.InvoiceModel
+@using PersianDate.Standard
+@model InvoiceModel
 @{
-    ViewData["Title"] = "فاکتور فروشگاه اینترنتی بلوری";
-    ViewData["description"] = "فاکتور فروشگاه اینترنتی بلوری";
-    decimal amountAfterDiscount = Model.PurchaseOrder.Amount - (decimal)Model.PurchaseOrder.DiscountAmount;
+    ViewData["Title"] = "فروشگاه اینترنتی بلوری";
+    var amountAfterDiscount = Model.PurchaseOrder.Amount - Model.PurchaseOrder.DiscountAmount;
 }
 
 @* <a class="btn btn-block btn-info" asp-page-handler="FactorPrint" asp-route-orderId="@Model.OrderId">چاپ فاکتور</a> *@
-<a href="@Url.PageLink("InvoiceReportPrint","OnGet", new { orderId = @Model.OrderId })"
-   type="submit" 
-   id="runReport" 
+<a href="@Url.PageLink("InvoiceReportPrint", "OnGet", new { orderId = Model.OrderId })"
+   type="submit"
+   id="runReport"
    target="_blank"
    class="btn btn-block btn-info">
-  چاپ فاکتور
+    چاپ فاکتور
 </a>
-<h2 style="color: rebeccapurple;text-align: center">کد رهگیری: @Model.Refid</h2>
+<h2 style="color: rebeccapurple; text-align: center">کد رهگیری: @Model.Refid</h2>
 @if (Model.Message != null)
 {
     switch (Model.Code)
@@ -50,7 +50,9 @@
                             <h6>شماره پیگیری <span>@Model.SystemTraceNo</span></h6>
                             <h6>تاریخ سفارش <span>@Model.PurchaseOrder.CreationDate.ToFa() </span></h6>
                             <h6>مبلغ کل <span>@amountAfterDiscount.ToString("N0") تومان</span></h6>
-                            <h6><span> روش پرداخت</span><span>درگاه بانکی</span></h6>
+                            <h6>
+                                <span> روش پرداخت</span><span>درگاه بانکی</span>
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -114,7 +116,6 @@
                                     <h6>جمع</h6>
                                     <p>@Model.PurchaseOrder.Amount.ToString("N0") تومان</p>
                                 </li>
-
                             }
                         </ul>
                     </div>
@@ -124,37 +125,37 @@
                 <div class="table-scroll">
                     <table class="table-list">
                         <thead>
-                            <tr>
-                                <th scope="col">ردیف</th>
-                                <th scope="col">نام</th>
-                                <th scope="col">قیمت</th>
-                                <th scope="col">تعداد</th>
-                                <th scope="col">جمع</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">ردیف</th>
+                            <th scope="col">نام</th>
+                            <th scope="col">قیمت</th>
+                            <th scope="col">تعداد</th>
+                            <th scope="col">جمع</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @foreach (var (product, index) in Model.PurchaseOrder.PurchaseOrderDetails.Select((value, i) => (value, i)))
-                            {
-                                var price = product.UnitPrice / 10;
-                                var sumPrice = product.SumPrice / 10;
-                                <tr>
-                                    <td class="table-price">
-                                        @(index+1)
-                                    </td>
-                                    <td class="table-name">
-                                        <h6>@product.Name</h6>
-                                    </td>
-                                    <td class="table-price">
-                                        <h6>@price.ToString("###,###,###") تومان </h6>
-                                    </td>
-                                    <td class="table-price">
-                                        <h6>@product.Quantity</h6>
-                                    </td>
-                                    <td class="table-price">
-                                        <h6>@sumPrice.ToString("N0")</h6>
-                                    </td>
-                                </tr>
-                            }
+                        @foreach (var (product, index) in Model.PurchaseOrder.PurchaseOrderDetails.Select((value, i) => (value, i)))
+                        {
+                            var price = product.UnitPrice / 10;
+                            var sumPrice = product.SumPrice / 10;
+                            <tr>
+                                <td class="table-price">
+                                    @(index + 1)
+                                </td>
+                                <td class="table-name">
+                                    <h6>@product.Name</h6>
+                                </td>
+                                <td class="table-price">
+                                    <h6>@price.ToString("###,###,###") تومان </h6>
+                                </td>
+                                <td class="table-price">
+                                    <h6>@product.Quantity</h6>
+                                </td>
+                                <td class="table-price">
+                                    <h6>@sumPrice.ToString("N0")</h6>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -163,5 +164,3 @@
 
     </div>
 </section>
-
-

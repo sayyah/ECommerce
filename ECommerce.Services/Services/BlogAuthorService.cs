@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class BlogAuthorService : EntityService<BlogAuthor>, IBlogAuthorService
 {
@@ -55,7 +51,7 @@ public class BlogAuthorService : EntityService<BlogAuthor>, IBlogAuthorService
 
         var result = _blogAuthors.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<BlogAuthor>> {Code = ServiceCode.Info, Message = "برندی یافت نشد"};
+            return new ServiceResult<List<BlogAuthor>> { Code = ServiceCode.Info, Message = "برندی یافت نشد" };
         return new ServiceResult<List<BlogAuthor>>
         {
             Code = ServiceCode.Success,
@@ -83,14 +79,13 @@ public class BlogAuthorService : EntityService<BlogAuthor>, IBlogAuthorService
         //return Return(result);
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<BlogAuthor>> GetById(int id)

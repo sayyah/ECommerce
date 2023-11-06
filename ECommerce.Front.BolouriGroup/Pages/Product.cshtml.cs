@@ -1,11 +1,6 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Front.BolouriGroup.Models;
+﻿using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
@@ -13,17 +8,18 @@ public class ProductdetailsModel : PageModel
 {
     private readonly IProductAttributeGroupService _attributeGroupService;
     private readonly ICartService _cartService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IProductCommentService _productCommandService;
     private readonly IProductService _productService;
     private readonly IStarService _starService;
     private readonly ITagService _tagService;
     private readonly IUserService _userService;
-    private readonly IProductCommentService _productCommandService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IWishListService _wishListService;
 
     public ProductdetailsModel(IProductService productService, IStarService starService, ICartService cartService,
         ITagService tagService, IProductAttributeGroupService attributeGroupService, IUserService userService
-        , IProductCommentService productCommandService, IHttpContextAccessor httpContextAccessor, IWishListService wishListService)
+        , IProductCommentService productCommandService, IHttpContextAccessor httpContextAccessor,
+        IWishListService wishListService)
     {
         _productService = productService;
         _starService = starService;
@@ -35,6 +31,7 @@ public class ProductdetailsModel : PageModel
         _httpContextAccessor = httpContextAccessor;
         _wishListService = wishListService;
     }
+
     public string siteUrl { get; set; }
     public ProductViewModel Product { get; set; }
     public int? WishListPriceId { get; set; }
@@ -65,9 +62,10 @@ public class ProductdetailsModel : PageModel
 
         Stars = await _starService.SumStarsByProductId(Product.Id);
 
-        ProductComments = await _productCommandService.GetAllAccesptedComments(search: System.Convert.ToString(Product.Id), pageNumber, pageSize);
+        ProductComments =
+            await _productCommandService.GetAllAccesptedComments(Convert.ToString(Product.Id), pageNumber, pageSize);
 
-        string[] url = HttpContext.Request.GetDisplayUrl().Split("/");
+        var url = HttpContext.Request.GetDisplayUrl().Split("/");
         siteUrl = string.Format("{0}//{1}", url[0], url[2]);
     }
 
@@ -76,7 +74,7 @@ public class ProductdetailsModel : PageModel
         await Initial(productUrl, pageNumber, pageSize);
     }
 
-    public async Task<IActionResult> OnGetComment(string productUrl, string name,string email,string text)
+    public async Task<IActionResult> OnGetComment(string productUrl, string name, string email, string text)
     {
         VerifyResultData resultData = new();
 
@@ -86,18 +84,21 @@ public class ProductdetailsModel : PageModel
             resultData.Succeed = false;
             return new JsonResult(resultData);
         }
+
         if (string.IsNullOrEmpty(email))
         {
             resultData.Description = "لطفا ایمیل خود را برای ثبت نظر وارد کنید";
             resultData.Succeed = false;
             return new JsonResult(resultData);
         }
+
         if (string.IsNullOrEmpty(text))
         {
             resultData.Description = "لطفا نظر خود را برای ثبت نظر وارد کنید";
             resultData.Succeed = false;
             return new JsonResult(resultData);
         }
+
         ProductComment productComment = new()
         {
             Email = email,
@@ -108,10 +109,7 @@ public class ProductdetailsModel : PageModel
         };
 
         var user = await _userService.GetUser();
-        if (user.Code == 0)
-        {
-            productComment.UserId = user.ReturnData.Id;
-        }
+        if (user.Code == 0) productComment.UserId = user.ReturnData.Id;
 
         var resultProduct = await _productService.GetProduct(productUrl, user.ReturnData.Id);
         if (resultProduct.Code > 0)
@@ -120,6 +118,7 @@ public class ProductdetailsModel : PageModel
             resultData.Description = "ثبت نظر با مشکل مواجه شد. لطفا مجددا تست کنید";
             return new JsonResult(resultData);
         }
+
         Product = resultProduct.ReturnData;
         productComment.ProductId = Product.Id;
 
@@ -134,13 +133,14 @@ public class ProductdetailsModel : PageModel
             resultData.Description = "ثبت نظر با مشکل مواجه شد. لطفا مجددا تست کنید";
             resultData.Succeed = false;
         }
+
         return new JsonResult(resultData);
     }
+
     public IActionResult OnGetAddCompareList(int id)
     {
-        List<int> productListId = new List<int>();
+        var productListId = new List<int>();
         productListId.Add(id);
-        return RedirectToPage("/Compare", new { productListId = productListId });
+        return RedirectToPage("/Compare", new { productListId });
     }
-
 }

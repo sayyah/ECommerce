@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.Services;
 
@@ -39,6 +36,7 @@ public class WishListService : EntityService<WishList>, IWishListService
             Message = "لطفا ابتدا وارد شوید"
         };
     }
+
     public async Task<ServiceResult> Invert(int priceId)
     {
         var currentUser = _cookieService.GetCurrentUser();
@@ -53,14 +51,15 @@ public class WishListService : EntityService<WishList>, IWishListService
             PriceId = priceId,
             UserId = currentUser.Id
         };
-        var response = await _http.PutAsync(Url, wishList,"Invert");
-        
+        var response = await _http.PutAsync(Url, wishList, "Invert");
+
         return new ServiceResult
         {
-            Code = response!=null ? ServiceCode.Success: ServiceCode.Error,
-            Message = response.Messages.FirstOrDefault().ToString()
+            Code = response != null ? ServiceCode.Success : ServiceCode.Error,
+            Message = response.Messages.FirstOrDefault()
         };
     }
+
     public async Task<ServiceResult> Add(int priceId)
     {
         var currentUser = _cookieService.GetCurrentUser();
@@ -98,7 +97,7 @@ public class WishListService : EntityService<WishList>, IWishListService
             {
                 Code = ServiceCode.Success,
                 Message = "از لیست علاقه مندی شما حذف شد"
-    };
+            };
         //await _sweet.FireAsync("حذف", "با موفقیت حذف شد", "success");
 
         return new ServiceResult

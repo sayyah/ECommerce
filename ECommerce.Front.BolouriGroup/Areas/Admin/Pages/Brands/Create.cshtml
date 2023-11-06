@@ -1,5 +1,5 @@
 ﻿@page "/Admin/CreateBrand"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Brands.CreateModel
+@model CreateModel
 @{
     ViewData["Title"] = "اضافه کردن برند";
 }
@@ -37,15 +37,17 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label>نام</label>
-                            <input asp-for="@Model.Brand.Name" class="form-control form-control-solid" />
+                            <input asp-for="@Model.Brand.Name" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.Brand.Name" class="mt-5"
-                                style="color: red; margin-top: 10px"></span>
+                                  style="color: red; margin-top: 10px">
+                            </span>
                         </div>
                         <div class="form-group">
                             <label>آدرس اینترنتی</label>
-                            <input asp-for="@Model.Brand.Url" class="form-control form-control-solid" />
+                            <input asp-for="@Model.Brand.Url" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.Brand.Url" class="mt-5"
-                                style="color: red; margin-top: 10px"></span>
+                                  style="color: red; margin-top: 10px">
+                            </span>
                         </div>
                         <div class="form-group">
                             <label>توضیحات</label>
@@ -57,7 +59,7 @@
                             <label>تصویر برند</label>
                             <div class="custom-file">
                                 <input asp-for="@Model.Upload" type="file" class="custom-file-input" id="selectFile"
-                                    accept=".webp" />
+                                       accept=".webp"/>
                                 <label class="custom-file-label" for="selectFile">انتخاب فایل</label>
                                 @Html.ValidationMessage("IvalidFileExtention")
                             </div>

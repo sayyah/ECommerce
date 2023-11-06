@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.Products.PaginationDetails.CurrentPage - 1) * Model.Products.PaginationDetails.PageSize;
 }
@@ -83,7 +83,7 @@
                     }
                     </tbody>
                 </table>
-      
+
                 <partial name="_Pagination" model="@Model.Products.PaginationDetails"/>
             </div>
 
@@ -91,4 +91,3 @@
         <!--end::نمونه-->
     </div>
 </div>
-

@@ -1,21 +1,15 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class BlogCommentsController : ControllerBase
 {
     private readonly IBlogCommentRepository _blogCommentRepository;
-    private readonly ILogger<BlogCommentsController> _logger;
     private readonly IImageRepository _imageRepository;
+    private readonly ILogger<BlogCommentsController> _logger;
 
     public BlogCommentsController(IBlogCommentRepository blogCommentRepository, ILogger<BlogCommentsController> logger
-                                 ,IImageRepository imageRepository)
+        , IImageRepository imageRepository)
     {
         _blogCommentRepository = blogCommentRepository;
         _logger = logger;
@@ -51,7 +45,7 @@ public class BlogCommentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -60,12 +54,9 @@ public class BlogCommentsController : ControllerBase
     {
         try
         {
-            var result = _blogCommentRepository.GetByIdWithInclude("Answer,Blog",id);
+            var result = _blogCommentRepository.GetByIdWithInclude("Answer,Blog", id);
             result.Blog.Image = await _imageRepository.GetByBlogId(result.Blog.Id, cancellationToken);
-            if (result.Answer == null)
-            {
-                result.Answer = new BlogComment();
-            }
+            if (result.Answer == null) result.Answer = new BlogComment();
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -81,7 +72,7 @@ public class BlogCommentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -110,7 +101,7 @@ public class BlogCommentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -137,7 +128,11 @@ public class BlogCommentsController : ControllerBase
                     blogComment.Answer.IsAnswered = false;
                     blogComment.Answer.DateTime = DateTime.Now;
                     _commentAnswer = await _blogCommentRepository.AddAsync(blogComment.Answer, cancellationToken);
-                    if (_commentAnswer != null) { blogComment.Answer = _commentAnswer; blogComment.AnswerId = _commentAnswer.Id; }
+                    if (_commentAnswer != null)
+                    {
+                        blogComment.Answer = _commentAnswer;
+                        blogComment.AnswerId = _commentAnswer.Id;
+                    }
                 }
             }
 
@@ -150,7 +145,7 @@ public class BlogCommentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -169,13 +164,13 @@ public class BlogCommentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllAccesptedComments([FromQuery] PaginationParameters paginationParameters,
-    CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         try
         {

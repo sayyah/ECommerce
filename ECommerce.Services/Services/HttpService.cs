@@ -1,10 +1,6 @@
 ﻿using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Authentication;
 
 namespace ECommerce.Services.Services;
 
@@ -153,6 +149,19 @@ public class HttpService : IHttpService
         return responseDeserialized;
     }
 
+    public async Task<TResponse> PostAsyncWithApiKeyByRequestModel<TRequest, TResponse>(string apiName, string apiKey,
+        TRequest data, string url)
+    {
+        _http.DefaultRequestHeaders.Add(apiName, apiKey);
+        var dataSerialize = JsonSerializer.Serialize(data);
+        HttpContent content = new StringContent(dataSerialize, Encoding.UTF8, "application/json");
+        var response = await _http.PostAsync(url, content);
+        var responseData = new ResponseData<ApiResult<TResponse>>(default, false, response);
+        var responseString = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<TResponse>(responseString, DefaultJsonSerializerOptions);
+        return result;
+    }
+
     public async Task<ApiResult<TResponse>> GetAsync<T, TResponse>(string url, T data, string apiName = "Get")
     {
         var loginResult = _cookieService.GetToken();
@@ -186,17 +195,4 @@ public class HttpService : IHttpService
         var responseString = await httpResponse.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<T>(responseString, options);
     }
-
-    public async Task<TResponse> PostAsyncWithApiKeyByRequestModel<TRequest, TResponse>(string apiName, string apiKey, TRequest data, string url)
-    {
-        _http.DefaultRequestHeaders.Add(apiName, apiKey);
-        var dataSerialize = JsonSerializer.Serialize(data);
-        HttpContent content = new StringContent(dataSerialize, System.Text.Encoding.UTF8, "application/json");
-        var response = await _http.PostAsync(url, content);
-        var responseData = new ResponseData<ApiResult<TResponse>>(default, false, response);
-        var responseString = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<TResponse>(responseString, DefaultJsonSerializerOptions);
-        return result;
-    }
-
 }

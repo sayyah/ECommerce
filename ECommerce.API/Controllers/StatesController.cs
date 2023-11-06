@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ECommerce.API.Repository;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers;
 
@@ -57,7 +51,7 @@ public class StatesController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
-       CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -75,7 +69,6 @@ public class StatesController : ControllerBase
             };
 
 
-
             return Ok(new ApiResult
             {
                 PaginationDetails = paginationDetails,
@@ -87,9 +80,10 @@ public class StatesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
+
     [HttpGet]
     public async Task<ActionResult<State>> GetById(int id, CancellationToken cancellationToken)
     {
@@ -111,7 +105,7 @@ public class StatesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -125,7 +119,7 @@ public class StatesController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
-                      ReturnData = await _stateRepository.GetAll(cancellationToken)
+                    ReturnData = await _stateRepository.GetAll(cancellationToken)
                 });
             state.Name = state.Name.Trim();
 
@@ -134,7 +128,7 @@ public class StatesController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام استان تکراری است"}
+                    Messages = new List<string> { "نام استان تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -146,7 +140,7 @@ public class StatesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -161,7 +155,7 @@ public class StatesController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام استان تکراری است"}
+                    Messages = new List<string> { "نام استان تکراری است" }
                 });
             if (repetitive != null) _stateRepository.Detach(repetitive);
             await _stateRepository.UpdateAsync(state, cancellationToken);
@@ -173,7 +167,7 @@ public class StatesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -192,7 +186,7 @@ public class StatesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class HolooService : IHolooService
 {

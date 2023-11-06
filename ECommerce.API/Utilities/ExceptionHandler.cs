@@ -1,7 +1,4 @@
 ﻿using System.Security.Claims;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 
@@ -47,7 +44,7 @@ public class ExceptionHandler : IActionFilter
                 context.Result = new OkObjectResult(new ApiResult
                 {
                     Status = status,
-                    Messages = new List<string> {message}
+                    Messages = new List<string> { message }
                 })
                 {
                     StatusCode = status
@@ -71,7 +68,7 @@ public class ExceptionHandler : IActionFilter
                 if (_environment.IsDevelopment())
                     result = new ApiResult
                     {
-                        Messages = new List<string> {message},
+                        Messages = new List<string> { message },
                         StackTrace = context.Exception.StackTrace,
                         Status = status
                     };

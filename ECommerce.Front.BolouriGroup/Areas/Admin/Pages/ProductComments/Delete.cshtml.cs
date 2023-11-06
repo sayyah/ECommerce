@@ -1,12 +1,9 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductComments;
+
 public class DeleteModel : PageModel
 {
-
     private readonly IProductCommentService _productComment;
     private readonly IProductService _productService;
 
@@ -25,7 +22,7 @@ public class DeleteModel : PageModel
     {
         var ProductCommentResult = await _productComment.GetById(id);
         ProductComment = ProductCommentResult.ReturnData;
-        int _productId = ProductComment.ProductId ?? default(int);
+        var _productId = ProductComment.ProductId ?? default(int);
         var ProductResult = await _productService.GetById(_productId);
         Product = ProductResult.ReturnData;
     }
@@ -42,7 +39,5 @@ public class DeleteModel : PageModel
 
         return Page();
     }
-
-
 }
 

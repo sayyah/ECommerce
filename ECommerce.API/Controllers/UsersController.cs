@@ -1,35 +1,27 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.HolooEntity;
-using Ecommerce.Entities.ViewModel;
-using Microsoft.AspNetCore.Authorization;
+using ECommerce.Domain.Entities.HolooEntity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ECommerce.API.Controllers;
-
 
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class UsersController : ControllerBase
 {
+    private readonly ICityRepository _cityRepository;
+    private readonly IConfiguration _configuration;
     private readonly IEmailRepository _emailRepository;
+    private readonly IHolooCustomerRepository _holooCustomerRepository;
+    private readonly IHolooSarfaslRepository _holooSarfaslRepository;
     private readonly ILogger<UsersController> _logger;
     private readonly SignInManager<User> _signInManager;
     private readonly SiteSettings _siteSettings;
+    private readonly IStateRepository _stateRepository;
     private readonly UserManager<User> _userManager;
     private readonly IUserRepository _userRepository;
-    private readonly IHolooCustomerRepository _holooCustomerRepository;
-    private readonly IHolooSarfaslRepository _holooSarfaslRepository;
-    private readonly IConfiguration _configuration;
-    private readonly ICityRepository _cityRepository;
-    private readonly IStateRepository _stateRepository;
-
 
 
     public UsersController(
@@ -82,10 +74,11 @@ public class UsersController : ControllerBase
 
                 if (!user.IsActive)
                     return Ok(new ApiResult
-                    { Code = ResultCode.DeActive, Messages = new List<string> { "کاربر غیرفعال شده است" } });
+                        { Code = ResultCode.DeActive, Messages = new List<string> { "کاربر غیرفعال شده است" } });
 
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-                var OneTimePass = (model.Password == user.ConfirmCode + "" && (user.ConfirmCodeExpirationDate! - DateTime.Now).Value.TotalSeconds > 0);
+                var OneTimePass = model.Password == user.ConfirmCode + "" &&
+                                  (user.ConfirmCodeExpirationDate! - DateTime.Now).Value.TotalSeconds > 0;
                 if (result.Succeeded || OneTimePass)
                 {
                     var secretKey = Encoding.ASCII.GetBytes(_siteSettings.IdentitySetting.IdentitySecretKey);
@@ -141,6 +134,7 @@ public class UsersController : ControllerBase
 
                     return Ok(new ApiResult { Code = ResultCode.Success, ReturnData = securityToken });
                 }
+
                 if (result.IsLockedOut)
                     return Ok(new ApiResult
                     {
@@ -152,7 +146,6 @@ public class UsersController : ControllerBase
                     Code = ResultCode.NotFound,
                     Messages = new List<string> { "نام کاربری یا پسورد اشتباه است" }
                 });
-
             }
 
             return Ok(new ApiResult { Code = ResultCode.BadRequest });
@@ -177,8 +170,8 @@ public class UsersController : ControllerBase
             {
                 var list = new List<string>();
                 foreach (var modelState in ModelState.Values)
-                    foreach (var error in modelState.Errors)
-                        list.Add(error.ErrorMessage);
+                foreach (var error in modelState.Errors)
+                    list.Add(error.ErrorMessage);
 
                 return Ok(new ApiResult
                 {
@@ -215,18 +208,20 @@ public class UsersController : ControllerBase
             }
             else
             {
-                string[] emailSplit = register.Email.Split('@');
+                var emailSplit = register.Email.Split('@');
                 emailSplit[0] += _userRepository.TableNoTracking.OrderByDescending(x => x.Id).First().Id;
                 register.Email = $"{emailSplit[0]}@{emailSplit[1]}";
             }
 
             var customerCode = await _holooCustomerRepository.GetNewCustomerCode();
-            string customerName = register.IsColleague ? $"{register.CompanyName} {register.CompanyTypeName}-آنلاین" : $"{register.FirstName}-{register.LastName}-شخصی-آنلاین";
+            var customerName = register.IsColleague
+                ? $"{register.CompanyName} {register.CompanyTypeName}-آنلاین"
+                : $"{register.FirstName}-{register.LastName}-شخصی-آنلاین";
             var moeinCode = await _holooSarfaslRepository.Add(customerName, cancellationToken);
-            string cityName = (await _cityRepository.GetByIdAsync(cancellationToken, register.CityId)).Name;
-            string stateName = (await _stateRepository.GetByIdAsync(cancellationToken, register.StateId)).Name;
+            var cityName = (await _cityRepository.GetByIdAsync(cancellationToken, register.CityId)).Name;
+            var stateName = (await _stateRepository.GetByIdAsync(cancellationToken, register.StateId)).Name;
 
-            int cityCode = register.IsColleague ? register.CompanyType : 45;
+            var cityCode = register.IsColleague ? register.CompanyType : 45;
             var holooCustomer = new HolooCustomer
             {
                 C_Code = customerCode.customerCode,
@@ -261,7 +256,7 @@ public class UsersController : ControllerBase
                 Kharid = true,
                 Forosh = true
             };
-            string newCustomerCode = await _holooCustomerRepository.Add(holooCustomer, cancellationToken);
+            var newCustomerCode = await _holooCustomerRepository.Add(holooCustomer, cancellationToken);
 
             var user = new User
             {
@@ -284,10 +279,7 @@ public class UsersController : ControllerBase
                 StateId = register.StateId
             };
 
-            if (register.IsColleague)
-            {
-                user.CompanyName = register.CompanyName;
-            }
+            if (register.IsColleague) user.CompanyName = register.CompanyName;
 
             //var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
@@ -299,7 +291,7 @@ public class UsersController : ControllerBase
             var result = await _userManager.CreateAsync(user, register.Password);
             if (result.Succeeded)
             {
-              var s =  await _userManager.AddToRoleAsync(user, SystemRoles.Client.ToString());
+                var s = await _userManager.AddToRoleAsync(user, SystemRoles.Client.ToString());
 
                 return Ok(new ApiResult
                 {
@@ -309,14 +301,13 @@ public class UsersController : ControllerBase
             }
 
 
-
             return Ok(new ApiResult { Code = ResultCode.Error, Messages = result.Errors.Select(p => p.Description) });
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -334,7 +325,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -354,7 +345,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -402,7 +393,8 @@ public class UsersController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrEmpty(userFilterdParameters.PaginationParameters.Search)) userFilterdParameters.PaginationParameters.Search = "";
+            if (string.IsNullOrEmpty(userFilterdParameters.PaginationParameters.Search))
+                userFilterdParameters.PaginationParameters.Search = "";
             var entity = await _userRepository.Search(userFilterdParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
@@ -426,7 +418,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -441,7 +433,8 @@ public class UsersController : ControllerBase
 
     [HttpPut]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<ActionResult<bool>> PutOld(MyAccountViewModel accountViewModel, CancellationToken cancellationToken)
+    public async Task<ActionResult<bool>> PutOld(MyAccountViewModel accountViewModel,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -449,8 +442,8 @@ public class UsersController : ControllerBase
             {
                 var list = new List<string>();
                 foreach (var modelState in ModelState.Values)
-                    foreach (var error in modelState.Errors)
-                        list.Add(error.ErrorMessage);
+                foreach (var error in modelState.Errors)
+                    list.Add(error.ErrorMessage);
 
                 return Ok(new ApiResult
                 {
@@ -504,7 +497,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -521,7 +514,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -541,7 +534,8 @@ public class UsersController : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model,
+        CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(model.EmailOrPhoneNumber);
         if (user == null) return Ok(new ApiResult { Code = ResultCode.BadRequest });
@@ -551,10 +545,13 @@ public class UsersController : ControllerBase
         //var emailMessage = Url.Link(url,
         //    new { username = user.Email, token = emailPasswordResetToken });
         var emailMessage = "<!DOCTYPE html><html><body><a href='"
-                           + "localhost:7176" + "/ResetForgotPassword/token=" + emailPasswordResetToken + "&user=" + user.UserName
+                           + "localhost:7176" + "/ResetForgotPassword/token=" + emailPasswordResetToken + "&user=" +
+                           user.UserName
                            + "'>dsf</a></body></html>";
-        var verifytoken = _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", emailPasswordResetToken);
-        await _emailRepository.SendEmailAsync(model.EmailOrPhoneNumber, "تغییر کلمه عبور", emailMessage, cancellationToken);
+        var verifytoken = _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword",
+            emailPasswordResetToken);
+        await _emailRepository.SendEmailAsync(model.EmailOrPhoneNumber, "تغییر کلمه عبور", emailMessage,
+            cancellationToken);
 
         return Ok(new ApiResult
         {
@@ -565,7 +562,8 @@ public class UsersController : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> ResetForgotPassword([FromBody] ResetForgotPasswordViewModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> ResetForgotPassword([FromBody] ResetForgotPasswordViewModel model,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -574,7 +572,7 @@ public class UsersController : ControllerBase
                 var user = await _userRepository.GetByEmailOrUserName(model.Email, cancellationToken);
                 if (user == null)
                     return new ApiResult
-                    { Code = ResultCode.NotFound, Messages = new List<string> { "کاربری با این مشخصات یافت نشد" } };
+                        { Code = ResultCode.NotFound, Messages = new List<string> { "کاربری با این مشخصات یافت نشد" } };
 
                 //var passToken = UserManager<User>.ResetPasswordTokenPurpose;
                 //string resetToken = model.PasswordResetToken.Replace(" ", "+");
@@ -590,21 +588,23 @@ public class UsersController : ControllerBase
                         Messages = new List<string> { "پسورد با موفقیت تغییر کرد" }
                     });
 
-                return Ok(new ApiResult { Code = ResultCode.Error, Messages = new List<string> { "تغییر پسورد با شکست مواجه شد" } });
+                return Ok(new ApiResult
+                    { Code = ResultCode.Error, Messages = new List<string> { "تغییر پسورد با شکست مواجه شد" } });
 
                 //
                 //}
             }
+
             return Ok(new ApiResult { Code = ResultCode.BadRequest });
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
-        return Ok();
 
+        return Ok();
     }
 
     [HttpPost]
@@ -625,7 +625,7 @@ public class UsersController : ControllerBase
 
                 if (user == null)
                     return new ApiResult
-                    { Code = ResultCode.NotFound, Messages = new List<string> { "کاربری با این مشخصات یافت نشد" } };
+                        { Code = ResultCode.NotFound, Messages = new List<string> { "کاربری با این مشخصات یافت نشد" } };
                 var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.Password);
 
                 if (result.Succeeded)
@@ -635,7 +635,8 @@ public class UsersController : ControllerBase
                         Messages = new List<string> { "پسورد با موفقیت تغییر کرد" }
                     });
 
-                return Ok(new ApiResult { Code = ResultCode.Error, Messages = new List<string> { "تغییر پسورد با شکست مواجه شد" } });
+                return Ok(new ApiResult
+                    { Code = ResultCode.Error, Messages = new List<string> { "تغییر پسورد با شکست مواجه شد" } });
             }
 
             return Ok(new ApiResult { Code = ResultCode.BadRequest });
@@ -644,7 +645,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -667,8 +668,8 @@ public class UsersController : ControllerBase
             {
                 var list = new List<string>();
                 foreach (var modelState in ModelState.Values)
-                    foreach (var error in modelState.Errors)
-                        list.Add(error.ErrorMessage);
+                foreach (var error in modelState.Errors)
+                    list.Add(error.ErrorMessage);
 
                 return Ok(new ApiResult
                 {
@@ -677,23 +678,22 @@ public class UsersController : ControllerBase
                 });
             }
 
-            var result = await _userRepository.UpdateAsync(user,cancellationToken);
+            var result = await _userRepository.UpdateAsync(user, cancellationToken);
             if (result != null)
-            {
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Success,
                     Messages = new List<string> { "ویرایش با موفقیت انجام شد" }
                 });
-            }
 
-            return Ok(new ApiResult { Code = ResultCode.Error, Messages = new List<string> { "ویرایش با مشکل مواجه شد" } });
+            return Ok(new ApiResult
+                { Code = ResultCode.Error, Messages = new List<string> { "ویرایش با مشکل مواجه شد" } });
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -724,12 +724,15 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<bool>> SetConfirmCodeByUsername(string username, int confirmCode, CancellationToken cancellationToken)
+    public async Task<ActionResult<bool>> SetConfirmCodeByUsername(string username, int confirmCode,
+        CancellationToken cancellationToken)
     {
         var codeConfirmExpairDate = DateTime.Now.AddSeconds(130);
         try
         {
-            var result = await _userRepository.SetConfirmCodeByUsername(username, confirmCode, codeConfirmExpairDate, cancellationToken);
+            var result =
+                await _userRepository.SetConfirmCodeByUsername(username, confirmCode, codeConfirmExpairDate,
+                    cancellationToken);
             if (result == false)
                 return Ok(new ApiResult
                 {
@@ -752,7 +755,8 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<int?>> GetSecondsLeftConfirmCodeExpire(string username, CancellationToken cancellationToken)
+    public async Task<ActionResult<int?>> GetSecondsLeftConfirmCodeExpire(string username,
+        CancellationToken cancellationToken)
     {
         try
         {

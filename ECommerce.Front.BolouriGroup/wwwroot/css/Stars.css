@@ -4,131 +4,109 @@
 }
 
 .CheckboxStar {
-    visibility: hidden;
-    position: absolute;
-    left: -9999px;
-    top: -9999px;
-    width: 0;
     height: 0;
+    left: -9999px;
+    position: absolute;
+    top: -9999px;
+    visibility: hidden;
+    width: 0;
 }
 
 .pro-rating,
 .feature-rating {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 .pro-rating div,
-.feature-rating div {
-  display: flex;
-}
+.feature-rating div { display: flex; }
 
 .pro-rating div label:hover ~ label,
 .feature-rating div label:hover ~ label {
-  color: var(--text) !important;
-  transition: color 200ms;
-  transition-delay: 0ms;
+    color: var(--text) !important;
+    transition: color 200ms;
+    transition-delay: 0ms;
 }
 
 .pro-rating div:hover label,
-.feature-rating div:hover label {
-  color: var(--blue-customer) !important;
-}
+.feature-rating div:hover label { color: var(--blue-customer) !important; }
 
 .pro-rating div:hover label::after,
-.feature-rating div:hover label::after {
-  content: '';
-}
+.feature-rating div:hover label::after { content: ''; }
 
-div label:hover label:nth-child(2) {
-  transition-delay: 30ms;
-}
+div label:hover label:nth-child(2) { transition-delay: 30ms; }
 
-div label:hover label:nth-child(3) {
-  transition-delay: 60ms;
-}
+div label:hover label:nth-child(3) { transition-delay: 60ms; }
 
-div label:hover label:nth-child(4) {
-  transition-delay: 90ms;
-}
+div label:hover label:nth-child(4) { transition-delay: 90ms; }
 
-div label:hover label:nth-child(5) {
-  transition-delay: 120ms;
-}
+div label:hover label:nth-child(5) { transition-delay: 120ms; }
 
 .pro-rating div label,
-.feature-rating div label {
-  position: relative;
-}
+.feature-rating div label { position: relative; }
 
 .star-quarter::after {
-  font-family: 'Font Awesome 5 Pro';
-  content: '\f005';
-  position: absolute;
-  right: 0;
-  top: -3px;
-  width: 25%;
-  overflow: hidden;
-  color: var(--blue-dark);
+    color: var(--blue-dark);
+    content: '\f005';
+    font-family: 'Font Awesome 5 Pro';
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: -3px;
+    width: 25%;
 }
 
 .star-half::after {
-  font-family: 'Font Awesome 5 Pro';
-  content: '\f005';
-  position: absolute;
-  right: 0;
-  top: -3px;
-  width: 50%;
-  overflow: hidden;
-  color: var(--blue-dark);
+    color: var(--blue-dark);
+    content: '\f005';
+    font-family: 'Font Awesome 5 Pro';
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: -3px;
+    width: 50%;
 }
 
 .star-3-quarter::after {
-  font-family: 'Font Awesome 5 Pro';
-  content: '\f005';
-  position: absolute;
-  right: 0;
-  top: -3px;
-  width: 75%;
-  overflow: hidden;
-  color: var(--blue-dark);
+    color: var(--blue-dark);
+    content: '\f005';
+    font-family: 'Font Awesome 5 Pro';
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: -3px;
+    width: 75%;
 }
 
 label {
-    display: inline-block;
     cursor: pointer;
-    text-align: center;
+    display: inline-block;
     margin-bottom: .5rem;
+    text-align: center;
 }
 
-label.rankChecked {
-  color: var(--blue-dark) !important;
-}
+label.rankChecked { color: var(--blue-dark) !important; }
 
-label.heartChecked {
-  color: red !important;
-}
+label.heartChecked { color: red !important; }
+
 .rateTitle {
-    font-size: 0.85em;
     color: gray;
     display: inline-block;
+    font-size: 0.85em;
     padding: 0 0 0 0.7em;
 }
 
 /***********magnifier***********/
-* {
-    box-sizing: border-box;
-}
 
-.img-magnifier-container {
-    position: relative;
-}
+* { box-sizing: border-box; }
+
+.img-magnifier-container { position: relative; }
 
 .img-magnifier-glass {
-    position: absolute;
     border: 3px solid #000;
     cursor: none;
+    height: 300px;
+    position: absolute;
     /*Set the size of the magnifier glass:*/
     width: 300px;
-    height: 300px;
 }

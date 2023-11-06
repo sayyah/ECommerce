@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
 using System.Text;
-using Ecommerce.Entities.Helper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -93,10 +92,10 @@ public static class JwtConfiguration
                     {
                         case SecurityTokenExpiredException:
 
-                            context.Response.StatusCode = (int) CustomHttpStatus.TokenExpired;
+                            context.Response.StatusCode = (int)CustomHttpStatus.TokenExpired;
                             await context.Response.WriteAsJsonAsync(new ApiResult
                             {
-                                Messages = new List<string> {CustomHttpStatus.TokenExpired.GetDescription()},
+                                Messages = new List<string> { CustomHttpStatus.TokenExpired.GetDescription() },
                                 Status = context.Response.StatusCode
                             });
                             break;
@@ -107,7 +106,7 @@ public static class JwtConfiguration
                             await context.Response.WriteAsJsonAsync(new ApiResult
                             {
                                 Status = exception.Status,
-                                Messages = new List<string> {exception.Message}
+                                Messages = new List<string> { exception.Message }
                             });
 
                             break;

@@ -28,9 +28,9 @@ public static class RangeUtility
 
     public static bool HasOverlap<T>(T inputMin1, T inputMax1, T inputMin2, T inputMax2) where T : IComparable<T>
     {
-        if (inputMin2.CompareTo(inputMin1) >= 0 && inputMin2.CompareTo(inputMax1) <= 0 ||
-            inputMax2.CompareTo(inputMin1) >= 0 && inputMax2.CompareTo(inputMax1) <= 0 ||
-            inputMin2.CompareTo(inputMin1) <= 0 && inputMax2.CompareTo(inputMax1) >= 0)
+        if ((inputMin2.CompareTo(inputMin1) >= 0 && inputMin2.CompareTo(inputMax1) <= 0) ||
+            (inputMax2.CompareTo(inputMin1) >= 0 && inputMax2.CompareTo(inputMax1) <= 0) ||
+            (inputMin2.CompareTo(inputMin1) <= 0 && inputMax2.CompareTo(inputMax1) >= 0))
             return true;
 
         return false;

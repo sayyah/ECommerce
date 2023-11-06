@@ -1,27 +1,24 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
 public class ContactModel : PageModel
 {
     private readonly IContactService _contactService;
-    [BindProperty] public Contact Contact { get; set; }
-    [TempData] public string Message { get; set; }
-
-    [TempData] public string Code { get; set; }
 
     public ContactModel(IContactService contactService)
     {
         _contactService = contactService;
     }
 
+    [BindProperty] public Contact Contact { get; set; }
+    [TempData] public string Message { get; set; }
+
+    [TempData] public string Code { get; set; }
+
     public void OnGet()
     {
-        if(Contact == null)
+        if (Contact == null)
             Contact = new Contact();
     }
 
@@ -32,10 +29,7 @@ public class ContactModel : PageModel
             var result = await _contactService.Add(Contact);
             Message = result.Message;
             Code = result.Code.ToString();
-            if (result.Code != 0)
-            {
-                return Page();
-            }
+            if (result.Code != 0) return Page();
             ModelState.Clear();
             return Page();
         }

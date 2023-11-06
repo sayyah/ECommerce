@@ -1,5 +1,4 @@
-﻿@using Microsoft.Extensions.Configuration
-@inject IConfiguration Configuration;
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
 @{
     var cartList = await Component.InvokeAsync("CartList");
 }
@@ -7,94 +6,92 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content=@Html.Raw(ViewData["description"])>
-    <meta name="google-site-verification" content="z3ydWsuK_iOyw9Qjy_D8cYh2K7UC1UP5szESjLB5mVg" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content="Website for selling kitchen appliances and equipment">
+    <meta name="google-site-verification" content="z3ydWsuK_iOyw9Qjy_D8cYh2K7UC1UP5szESjLB5mVg"/>
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
     <title>@Html.Raw(ViewData["Title"]) - Boloori</title>
 
-   
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Title"/>
+    <meta property="og:description" content="Description"/>
+    <meta property="og:image" content="https://boloorico.com/Images/SlideShows/5526550d-8e3d-478d-ab11-c575990f4db8.webp"/>
+    <meta property="og:url" content="https://boloorico.com"/>
+    <meta property="og:site_name" content="مجموعه بلوری"/>
 
 
-    <link rel="canonical" href="https://boloorico.com" />
-    <link rel="icon" href="~/img/favicon.webp" />
-    <link href="~/dist/styles.css" rel="stylesheet" onload="this.media='all'" />
-    <link rel="alternate" href="https://boloorico.com" hreflang="fa" />
+    <link rel="canonical" href="https://boloorico.com"/>
+    <link rel="icon" href="~/img/favicon.webp"/>
+    <link href="~/dist/styles.css" rel="stylesheet" onload="this.media='all'"/>
+    <link rel="alternate" href="https://boloorico.com" hreflang="fa"/>
     <!-- CSS only -->
     @await RenderSectionAsync("Head", false)
     <style>
-        .cryptedmail:after {
-  content: attr(data-name) "@@" attr(data-domain) "." attr(data-tld); 
-}
+        .cryptedmail:after { content: attr(data-name) "@@" attr(data-domain) "." attr(data-tld); }
     </style>
 </head>
 <body>
-    <div class="header-top">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-5 col-lg-5">
-                    <div class="header-top-welcome"><p>@Configuration.GetSection("TopHeaderWelcome").Value</p></div>
+<div class="header-top">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 col-lg-5">
+                <div class="header-top-welcome">
+                    <p>@Configuration.GetSection("TopHeaderWelcome").Value</p>
                 </div>
-                <div class="col-md-4 col-lg-4">
-                    <ul class="header-top-list">
-                        <li><a asp-area="" asp-page="/Contact">با ما تماس بگیرید</a></li>
-                        <li><a href="offer.html">تخفیف</a></li>
-                        <li><a asp-area="" asp-page="/Faq">کمک خواستن؟</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 col-lg-3">
-                    <div class="header-top-select">
-                        <div class="header-select justify-content-lg-end">
-                            @if (User.Identity!.IsAuthenticated)
-                            {
-                                <span class="user-name">@await Component.InvokeAsync("Username")</span>
-                            }
-                        </div>
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <ul class="header-top-list">
+                    <li>
+                        <a asp-area="" asp-page="/Contact">با ما تماس بگیرید</a>
+                    </li>
+                    <li>
+                        <a href="offer.html">تخفیف</a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-page="/Faq">کمک خواستن؟</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-lg-3">
+                <div class="header-top-select">
+                    <div class="header-select justify-content-lg-end">
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <span class="user-name">@await Component.InvokeAsync("Username")</span>
+                        }
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="header-part">
-        <div class="container">
-            <div class="header-content-group">
-                <div class="header-widget-group left">
-                    <button class="header-widget header-user" title="حساب من">
-                        <img src="~/img/Hamburger.webp" alt="کاربر" width="40" height="40" loading="lazy">
-                    </button>
+</div>
+<div class="header-part">
+    <div class="container">
+        <div class="header-content-group">
+            <div class="header-widget-group left">
+                <button class="header-widget header-user" title="حساب من">
+                    <img src="~/img/Hamburger.webp" alt="کاربر" width="40" height="40" loading="lazy">
+                </button>
 
-                    <a class="header-logo" asp-area="" asp-page="/Index" hreflang="fa">
-                        <img id="BlueLogoImage" style="display: none;" src="~/img/BlueLogo.webp" width="107" height="50" alt="لوگو" loading="lazy">
-                        <img id="WhiteLogoImage" style="display: inline;" src="~/img/BlueLogo.webp" width="107" height="50" alt="لوگو" loading="lazy">
-                    </a>
-                    @if (User.Identity!.IsAuthenticated)
+                <a class="header-logo" asp-area="" asp-page="/Index" hreflang="fa">
+                    <img id="BlueLogoImage" style="display: none;" src="~/img/BlueLogo.webp" width="107" height="50" alt="لوگو" loading="lazy">
+                    <img id="WhiteLogoImage" style="display: inline;" src="~/img/BlueLogo.webp" width="107" height="50" alt="لوگو" loading="lazy">
+                </a>
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
                     {
-                        if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
-                        {
-                            <div class="dropdown dropdown-mobile">
-                                <a class="header-widget dropdown" title="حساب من" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fal fa-user"></i>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    <a class="dropdown-item" href="/index?handler=Logout">خروج</a>
-                                    <a class="dropdown-item" asp-area="Admin" asp-page="/Index">مدیریت</a>
-                                </div>
+                        <div class="dropdown dropdown-mobile">
+                            <a class="header-widget dropdown" title="حساب من" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fal fa-user"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="/index?handler=Logout">خروج</a>
+                                <a class="dropdown-item" asp-area="Admin" asp-page="/Index">مدیریت</a>
                             </div>
-                        }
-                        else
-                        {
-                            <div class="dropdown dropdown-mobile">
-                                <a class="header-widget dropdown" title="حساب من" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fal fa-user"></i>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    <a class="dropdown-item" asp-area="" asp-page="/UserProfile">پروفایل من</a>
-                                    <a class="dropdown-item" href="/index?handler=Logout">خروج</a>
-                                </div>
-                            </div>
-                        }
+                        </div>
                     }
                     else
                     {
@@ -103,432 +100,455 @@
                                 <i class="fal fa-user"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" asp-area="" asp-page="/Login">ورود</a>
+                                <a class="dropdown-item" asp-area="" asp-page="/UserProfile">پروفایل من</a>
+                                <a class="dropdown-item" href="/index?handler=Logout">خروج</a>
                             </div>
                         </div>
                     }
-                    <button class="header-widget header-src" title="نوار جستجو">
-                        <i class="far fa-search"></i>
-                    </button>
-                    <button class="header-widget header-cate" title="لیست دسته بندی">
-                        <i class="flaticon-menu-1"></i>
-                    </button>
-                </div>
-                <form method="Get" action="~/Shop" class="header-form">
-                    <input type="text" MinLength="3" oninvalid="setCustomValidity('تعداد کاراکترهای ورودی باید بیشتر از 3 باشد')" name="search" id="searchBox" placeholder="مورد خود را در اینجا جستجو کنید ...">
-                    <button type="submit">
-                        <i class="far fa-search"></i>
-                    </button>
-                    <div class='search-result' style="display: none;">
-                        <div class="search-result-items"></div>
-                        <div class="search-result-all-btn"></div>
-                    </div>
-                </form>
-
-
-                <div class="header-widget-group right">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
-                        {
-                            <div class="dropdown">
-                                <a class="header-widget" asp-area="Admin" asp-page="/Index" title="حساب من">
-                                    <i class="fal fa-user"></i>
-                                </a>
-                                <div class="dropdown-content">
-                                    <a href="/index?handler=Logout">خروج</a>
-                                    <a asp-area="Admin" asp-page="/Index">مدیریت</a>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="dropdown">
-                                <a class="header-widget" asp-area="" asp-page="/UserProfile" title="حساب من">
-                                    <i class="fal fa-user"></i>
-                                </a>
-                                <div class="dropdown-content">
-                                    <a asp-area="" asp-page="/UserProfile">پروفایل من</a>
-                                    <a href="/index?handler=Logout">خروج</a>
-                                </div>
-                            </div>
-                        }
-                        <a class="header-widget" asp-area="" asp-page="/Wishlist" title="">
-                            <i class="far fa-heart"></i>
+                }
+                else
+                {
+                    <div class="dropdown dropdown-mobile">
+                        <a class="header-widget dropdown" title="حساب من" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fal fa-user"></i>
                         </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" asp-area="" asp-page="/Login">ورود</a>
+                        </div>
+                    </div>
+                }
+                <button class="header-widget header-src" title="نوار جستجو">
+                    <i class="far fa-search"></i>
+                </button>
+                <button class="header-widget header-cate" title="لیست دسته بندی">
+                    <i class="flaticon-menu-1"></i>
+                </button>
+            </div>
+            <form method="Get" action="~/Shop" class="header-form">
+                <input type="text" MinLength="3" oninvalid="setCustomValidity('تعداد کاراکترهای ورودی باید بیشتر از 3 باشد')" name="search" id="searchBox" placeholder="مورد خود را در اینجا جستجو کنید ...">
+                <button type="submit">
+                    <i class="far fa-search"></i>
+                </button>
+                <div class="search-result" style="display: none;">
+                    <div class="search-result-items"></div>
+                    <div class="search-result-all-btn"></div>
+                </div>
+            </form>
+
+
+            <div class="header-widget-group right">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                    {
+                        <div class="dropdown">
+                            <a class="header-widget" asp-area="Admin" asp-page="/Index" title="حساب من">
+                                <i class="fal fa-user"></i>
+                            </a>
+                            <div class="dropdown-content">
+                                <a href="/index?handler=Logout">خروج</a>
+                                <a asp-area="Admin" asp-page="/Index">مدیریت</a>
+                            </div>
+                        </div>
                     }
                     else
                     {
                         <div class="dropdown">
-                            <a class="header-widget dropbtn" asp-area="" asp-page="/Login" title="حساب من">
+                            <a class="header-widget" asp-area="" asp-page="/UserProfile" title="حساب من">
                                 <i class="fal fa-user"></i>
                             </a>
                             <div class="dropdown-content">
-                                <a asp-area="" asp-page="/Login">ورود</a>
+                                <a asp-area="" asp-page="/UserProfile">پروفایل من</a>
+                                <a href="/index?handler=Logout">خروج</a>
                             </div>
                         </div>
                     }
-                    <button class="header-widget header-cart" title="سبد خرید">
-                        <i class="far fa-shopping-cart"></i><sup id="Cart-Count">@TempData["cartLength"]</sup>
-                        <input hidden="hidden" value="@TempData["cartLength"]" id="Cart-Count-Value-Icon" />
-                    </button>
-                </div>
+                    <a class="header-widget" asp-area="" asp-page="/Wishlist" title="">
+                        <i class="far fa-heart"></i>
+                    </a>
+                }
+                else
+                {
+                    <div class="dropdown">
+                        <a class="header-widget dropbtn" asp-area="" asp-page="/Login" title="حساب من">
+                            <i class="fal fa-user"></i>
+                        </a>
+                        <div class="dropdown-content">
+                            <a asp-area="" asp-page="/Login">ورود</a>
+                        </div>
+                    </div>
+                }
+                <button class="header-widget header-cart" title="سبد خرید">
+                    <i class="far fa-shopping-cart"></i><sup id="Cart-Count">@TempData["cartLength"]</sup>
+                    <input hidden="hidden" value="@TempData["cartLength"]" id="Cart-Count-Value-Icon"/>
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <nav class="navbar-part">
-        <div class="container" style="background-color: white">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="navbar-content">
-                        <ul class="navbar-list">
-                            <li class="navbar-item dropdown">
-                                <a class="navbar-link" asp-area="" asp-page="/Index">خانه</a>
-                            </li>
-                            <li class="navbar-item dropdown">
-                                <a class="navbar-link dropdown-arrow" href="#">دسته بندی</a>
-                                <div class="dropdown-position-list">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                @await Component.InvokeAsync("CategoriesMenu")
-                                            </div>
+<nav class="navbar-part">
+    <div class="container" style="background-color: white">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="navbar-content">
+                    <ul class="navbar-list">
+                        <li class="navbar-item dropdown">
+                            <a class="navbar-link" asp-area="" asp-page="/Index">خانه</a>
+                        </li>
+                        <li class="navbar-item dropdown">
+                            <a class="navbar-link dropdown-arrow" href="#">دسته بندی</a>
+                            <div class="dropdown-position-list">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            @await Component.InvokeAsync("CategoriesMenu")
                                         </div>
                                     </div>
                                 </div>
-                            </li>
-                            <li class="navbar-item dropdown">
-                                <a class="navbar-link dropdown-arrow" href="#">با بلوری</a>
-                                <ul class="dropdown-position-list" style="right:0">
-                                    <li>
-                                        <a asp-area="" asp-page="/AboutUs">درباره ما</a>
-                                    </li>
-                                    <li>
-                                        <a asp-area="" asp-page="/Contact">با ما تماس بگیرید</a>
-                                    </li>
-                                    <li>
-                                        <a asp-area="" asp-page="/Faq">سوالات متداول</a>
-                                    </li>
-                                    <li>
-                                        <a asp-area="" asp-page="/Privacy">حریم خصوصی</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="navbar-item dropdown">
-                                <a class="navbar-link dropdown-arrow" href="#">وبلاگ</a>
-                                <ul class="dropdown-position-list" style="right:0">
-                                    @await Component.InvokeAsync("BlogCategoriesMenu")
-                                </ul>
-                            </li>
-                        </ul>
-                        <div class="navbar-info-group">
-                            <div class="navbar-info">
-                                <i class="fal fa-phone"></i>
-                                <p>
-                                    <small>شماره تماس</small><span>۰۱۳-۳۳۹۵</span>
-                                </p>
                             </div>
-                            <div class="navbar-info">
-                                <i class="fal fa-envelope-open-text"></i>
-                                <p>
-                                    <small>برای ما ایمیل بزنید </small>
-                                    <span>
-                                        <a style="color: #555555">boloorico&#64;gmail&#46;com</a>
-                                    </span>
-                                </p>
-                            </div>
-                            <div>
-                                <span class="nav-link text-dark font-weight-bold">
-                                    حاضرین در سایت: <span>@OnlineUsersMiddleware.GetOnlineUsersCount()</span>
+                        </li>
+                        <li class="navbar-item dropdown">
+                            <a class="navbar-link dropdown-arrow" href="#">با بلوری</a>
+                            <ul class="dropdown-position-list" style="right: 0">
+                                <li>
+                                    <a asp-area="" asp-page="/AboutUs">درباره ما</a>
+                                </li>
+                                <li>
+                                    <a asp-area="" asp-page="/Contact">با ما تماس بگیرید</a>
+                                </li>
+                                <li>
+                                    <a asp-area="" asp-page="/Faq">سوالات متداول</a>
+                                </li>
+                                <li>
+                                    <a asp-area="" asp-page="/Privacy">حریم خصوصی</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="navbar-item dropdown">
+                            <a class="navbar-link dropdown-arrow" href="#">وبلاگ</a>
+                            <ul class="dropdown-position-list" style="right: 0">
+                                @await Component.InvokeAsync("BlogCategoriesMenu")
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="navbar-info-group">
+                        <div class="navbar-info">
+                            <i class="fal fa-phone"></i>
+                            <p>
+                                <small>شماره تماس</small><span>۰۱۳-۳۳۹۵</span>
+                            </p>
+                        </div>
+                        <div class="navbar-info">
+                            <i class="fal fa-envelope-open-text"></i>
+                            <p>
+                                <small>برای ما ایمیل بزنید </small>
+                                <span>
+                                    <a style="color: #555555">boloorico&#64;gmail&#46;com</a>
                                 </span>
-                            </div>
+                            </p>
+                        </div>
+                        <div>
+                            <span class="nav-link text-dark font-weight-bold">
+                                حاضرین در سایت: <span>@OnlineUsersMiddleware.GetOnlineUsersCount()</span>
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <aside class="category-part">
-        <div class="category-container" id="category-layout">
-            <div class="category-header">
-                <a href="#">
-                    <img src="~/img/logo.webp" alt="لوگو" width="86" height="40" loading="lazy">
-                </a>
-                <button class="category-close" role="button">
-                    <i class="far fa-times"></i>
-                </button>
-            </div>
-            <ul class="category-list">
-                @await Component.InvokeAsync("CategoriesMobile")
-            </ul>
-            <div class="category-footer">
-                <p> &copy; 2021 - Boloori - <a asp-area="" asp-page="/Privacy">Privacy</a></p>
-            </div>
+<aside class="category-part">
+    <div class="category-container" id="category-layout">
+        <div class="category-header">
+            <a href="#">
+                <img src="~/img/logo.webp" alt="لوگو" width="86" height="40" loading="lazy">
+            </a>
+            <button class="category-close" role="button">
+                <i class="far fa-times"></i>
+            </button>
         </div>
-    </aside>
-    <aside class="cart-part">
-        <div class="cart-container">
-            <div class="cart-header">
-                <div class="cart-total">
-                    <i class="far fa-shopping-cart"></i><span id="Cart-Count2">کل مورد (@TempData["cartLength"])</span>
-                    <input hidden="hidden" value="@TempData["cartLength"]" id="Cart-Count-Value" />
-                </div>
-                <button class="cart-close">
-                    <i class="far fa-times"></i>
-                </button>
-            </div>
-            <ul id="Cart-List" class="cart-list">
-                @cartList
-            </ul>
-            <div class="cart-footer">
-                <a class="cart-checkout-btn" asp-area="" asp-page="/Checkout"><span class="checkout-label">ادامه پرداخت </span><span id="All-Price" class="checkout-price">@TempData["cartAllPrice-formatted"]</span><span class="checkout-text">تومان</span></a>
-                <input hidden="hidden" id="AllPrice-Value" value="@TempData["cartAllPrice"]" />
-            </div>
+        <ul class="category-list">
+            @await Component.InvokeAsync("CategoriesMobile")
+        </ul>
+        <div class="category-footer">
+            <p> &copy; 2021 - Boloori - <a asp-area="" asp-page="/Privacy">Privacy</a></p>
         </div>
-    </aside>
-    <aside class="mobile-nav">
-        <div class="nav-container">
-            <div class="nav-header">
-                <a asp-area="" asp-page="/Index">
-                    <img src="~/img/logo.webp" alt="لوگو" width="86" height="40" loading="lazy">
-                </a>
-                <button class="nav-close">
-                    <i class="fal fa-times"></i>
-                </button>
+    </div>
+</aside>
+<aside class="cart-part">
+    <div class="cart-container">
+        <div class="cart-header">
+            <div class="cart-total">
+                <i class="far fa-shopping-cart"></i><span id="Cart-Count2">کل مورد (@TempData["cartLength"])</span>
+                <input hidden="hidden" value="@TempData["cartLength"]" id="Cart-Count-Value"/>
             </div>
-            <div class="nav-content">
-                <div class="nav-profile">
-                    <a class="nav-user" asp-area="" asp-page="/Index">
-                        <img src="~/img/user.webp" height="85" width="85" alt="کاربر" loading="lazy">
+            <button class="cart-close">
+                <i class="far fa-times"></i>
+            </button>
+        </div>
+        <ul id="Cart-List" class="cart-list">
+            @cartList
+        </ul>
+        <div class="cart-footer">
+            <a class="cart-checkout-btn" asp-area="" asp-page="/Checkout">
+                <span class="checkout-label">ادامه پرداخت </span><span id="All-Price" class="checkout-price">@TempData["cartAllPrice-formatted"]</span><span class="checkout-text">تومان</span>
+            </a>
+            <input hidden="hidden" id="AllPrice-Value" value="@TempData["cartAllPrice"]"/>
+        </div>
+    </div>
+</aside>
+<aside class="mobile-nav">
+    <div class="nav-container">
+        <div class="nav-header">
+            <a asp-area="" asp-page="/Index">
+                <img src="~/img/logo.webp" alt="لوگو" width="86" height="40" loading="lazy">
+            </a>
+            <button class="nav-close">
+                <i class="fal fa-times"></i>
+            </button>
+        </div>
+        <div class="nav-content">
+            <div class="nav-profile">
+                <a class="nav-user" asp-area="" asp-page="/Index">
+                    <img src="~/img/user.webp" height="85" width="85" alt="کاربر" loading="lazy">
+                </a>
+            </div>
+            <ul class="nav-list" id="category-nav">
+                <li>
+                    <a class="nav-link" asp-area="" asp-page="/Index">
+                        <h3>خانه</h3>
                     </a>
-                </div>
-                <ul class="nav-list" id="category-nav">
-                    <li>
-                        <a class="nav-link" asp-area="" asp-page="/Index">   <h3>خانه</h3></a>
-                    </li>
-                    <li>
-                        <ul>
-                            @await Component.InvokeAsync("CategoriesMobile")
-                        </ul>
-                    </li>
-                    <li>
-                        <a class="nav-link dropdown-link" href="#"><h3>با بلوری</h3></a>
-                        <ul class="dropdown-list">
-                            <li>
-                                <a asp-area="" asp-page="/AboutUs">درباره ما</a>
-                            </li>
-                            <li>
-                                <a asp-area="" asp-page="/Contact">با ما تماس بگیرید</a>
-                            </li>
-                            <li>
-                                <a asp-area="" asp-page="/Faq">سوالات متداول</a>
-                            </li>
-                            <li>
-                                <a asp-area="" asp-page="/Privacy">حریم خصوصی</a>
-                            </li>
-                        </ul>
-                    </li>
+                </li>
+                <li>
+                    <ul>
+                        @await Component.InvokeAsync("CategoriesMobile")
+                    </ul>
+                </li>
+                <li>
+                    <a class="nav-link dropdown-link" href="#">
+                        <h3>با بلوری</h3>
+                    </a>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a asp-area="" asp-page="/AboutUs">درباره ما</a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Contact">با ما تماس بگیرید</a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Faq">سوالات متداول</a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Privacy">حریم خصوصی</a>
+                        </li>
+                    </ul>
+                </li>
 
-                    <li>
-                        <a class="nav-link dropdown-link" href="#"><h3>وبلاگ ها</h3></a>
-                        <ul class="dropdown-list">
-                            <li>
-                                @await Component.InvokeAsync("BlogCategoriesMenu")
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a class="nav-link dropdown-link" href="#"><h3>حساب</h3></a>
-                        <ul class="dropdown-list">
-                            @if (User.Identity.IsAuthenticated)
+                <li>
+                    <a class="nav-link dropdown-link" href="#">
+                        <h3>وبلاگ ها</h3>
+                    </a>
+                    <ul class="dropdown-list">
+                        <li>
+                            @await Component.InvokeAsync("BlogCategoriesMenu")
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="nav-link dropdown-link" href="#">
+                        <h3>حساب</h3>
+                    </a>
+                    <ul class="dropdown-list">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
                             {
-                                if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
-                                {
-                                    <li>
-                                        <a asp-area="Admin" asp-page="/Index">مدیریت</a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <a asp-area="" asp-page="/UserProfile">پروفایل من</a>
-                                    </li>
-                                }
                                 <li>
-                                    <a href="/index?handler=Logout">خروج</a>
+                                    <a asp-area="Admin" asp-page="/Index">مدیریت</a>
                                 </li>
                             }
                             else
                             {
                                 <li>
-                                    <a asp-area="" asp-page="/Login">ورود</a>
-                                </li>
-                            }
-
-                        </ul>
-                    </li>
-                </ul>
-                <div class="nav-info-group">
-                    <div class="nav-info">
-                        <i class="icofont-ui-touch-phone"></i>
-                        <p>
-                            <small>شماره تماس</small><span>0133395</span>
-                        </p>
-                    </div>
-                    <div class="nav-info">
-                        <i class="icofont-ui-email"></i>
-                        <p>
-                            <small>برای ما ایمیل بزنید </small>
-                            <a>
-                                <span>boloorico&#64;gmail&#46;com</span>
-                            </a>
-                        </p>
-                    </div>
-                </div>
-                <div class="nav-footer">
-                    <p> &copy; 2021 - Boloori - <a asp-area="" asp-page="/Privacy">Privacy</a></p>
-                </div>
-            </div>
-        </div>
-    </aside>
-    <div class="mobile-menu">
-        <button class="cart-btn" title="سبد خرید">
-            <i class="far fa-shopping-cart"></i><span>سبد خرید </span><sup id="Cart-Count1">@TempData["cartLength"]</sup>
-            <input hidden="hidden" value="@TempData["cartLength"]" id="Cart-Count-Value-Icon1" />
-        </button>
-        <button class="cate-btn" title="لیست دسته بندی">
-            <i class="far fa-th-large"></i><span>دسته بندی</span>
-        </button>
-        <a asp-area="" asp-page="/Index" title="صفحه نخست">
-            <i class="far fa-home"></i><span>خانه</span>
-        </a>
-        <a asp-area="" asp-page="/Wishlist" title="لیست علاقه مندیها">
-            <i class="far fa-heart"></i><span>لیست علاقه مندیها </span>
-        </a>
-    </div>
-    @RenderBody()
-    <footer class="footer-part">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-md-4 col-xl-4">
-                    <div class="footer-widget">
-                        <a class="footer-logo" href="#">
-                            <img src="~/img/Logo.webp" alt="لوگو" width="240" height="112" loading="lazy">
-                        </a>
-                        <p class="footer-desc">
-                            برای یک خرید خوب و مطمئن باید خوب ببینید، مقایسه کنید و اطلاعات کافی کسب کنید.
-                            تجهیزات آشپزی و پذیرایی بلوری یک فروشگاه حرفه ای، قابل اعتماد و با سابقه درزمینه تجهیز و تامین کلیه لوازم مورد نیاز  فعالان حوزه خوراک، این امکان را فراهم نموده تا شما مشتری عزیز بتوانید به راحتی ضمن مقایسه و دریافت اطلاعات کافی با اطمینان خرید و از خدمات پس از فروش  نیز برخوردار شوید.
-                        </p>
-                        <ul class="footer-social">
-                            <partial name="Components/_socialMedia" />
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-4 col-xl-4">
-                    <div class="footer-widget">
-                        <h3 class="footer-title">لینک های سریع</h3>
-                        <div class="footer-links">
-                            <ul>
-                                <li>
                                     <a asp-area="" asp-page="/UserProfile">پروفایل من</a>
                                 </li>
-                                <li>
-                                    <a asp-area="" asp-page="/Login">ورود به سیستم</a>
-                                </li>
-                                <li>
-                                    <a asp-area="" asp-page="/Wishlist">لیست علاقه مندیها</a>
-                                </li>
+                            }
+                            <li>
+                                <a href="/index?handler=Logout">خروج</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a asp-area="" asp-page="/Login">ورود</a>
+                            </li>
+                        }
+
+                    </ul>
+                </li>
+            </ul>
+            <div class="nav-info-group">
+                <div class="nav-info">
+                    <i class="icofont-ui-touch-phone"></i>
+                    <p>
+                        <small>شماره تماس</small><span>0133395</span>
+                    </p>
+                </div>
+                <div class="nav-info">
+                    <i class="icofont-ui-email"></i>
+                    <p>
+                        <small>برای ما ایمیل بزنید </small>
+                        <a>
+                            <span>boloorico&#64;gmail&#46;com</span>
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="nav-footer">
+                <p> &copy; 2021 - Boloori - <a asp-area="" asp-page="/Privacy">Privacy</a></p>
+            </div>
+        </div>
+    </div>
+</aside>
+<div class="mobile-menu">
+    <button class="cart-btn" title="سبد خرید">
+        <i class="far fa-shopping-cart"></i><span>سبد خرید </span><sup id="Cart-Count1">@TempData["cartLength"]</sup>
+        <input hidden="hidden" value="@TempData["cartLength"]" id="Cart-Count-Value-Icon1"/>
+    </button>
+    <button class="cate-btn" title="لیست دسته بندی">
+        <i class="far fa-th-large"></i><span>دسته بندی</span>
+    </button>
+    <a asp-area="" asp-page="/Index" title="صفحه نخست">
+        <i class="far fa-home"></i><span>خانه</span>
+    </a>
+    <a asp-area="" asp-page="/Wishlist" title="لیست علاقه مندیها">
+        <i class="far fa-heart"></i><span>لیست علاقه مندیها </span>
+    </a>
+</div>
+@RenderBody()
+<footer class="footer-part">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-xl-4">
+                <div class="footer-widget">
+                    <a class="footer-logo" href="#">
+                        <img src="~/img/Logo.webp" alt="لوگو" width="240" height="112" loading="lazy">
+                    </a>
+                    <p class="footer-desc">
+                        برای یک خرید خوب و مطمئن باید خوب ببینید، مقایسه کنید و اطلاعات کافی کسب کنید.
+                        تجهیزات آشپزی و پذیرایی بلوری یک فروشگاه حرفه ای، قابل اعتماد و با سابقه درزمینه تجهیز و تامین کلیه لوازم مورد نیاز فعالان حوزه خوراک، این امکان را فراهم نموده تا شما مشتری عزیز بتوانید به راحتی ضمن مقایسه و دریافت اطلاعات کافی با اطمینان خرید و از خدمات پس از فروش نیز برخوردار شوید.
+                    </p>
+                    <ul class="footer-social">
+                        <partial name="Components/_socialMedia"/>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-xl-4">
+                <div class="footer-widget">
+                    <h3 class="footer-title">لینک های سریع</h3>
+                    <div class="footer-links">
+                        <ul>
+                            <li>
+                                <a asp-area="" asp-page="/UserProfile">پروفایل من</a>
+                            </li>
+                            <li>
+                                <a asp-area="" asp-page="/Login">ورود به سیستم</a>
+                            </li>
+                            <li>
+                                <a asp-area="" asp-page="/Wishlist">لیست علاقه مندیها</a>
+                            </li>
 
                             @*     <li>
                                     <a referrerpolicy="origin" rel="noopener" target="_blank" href="https://trustseal.enamad.ir/?id=303389&amp;Code=4pI0nWt9IaoFM0izrXoa">
                                 <img referrerpolicy="origin" src="https://Trustseal.eNamad.ir/logo.aspx?id=303389&amp;Code=4pI0nWt9IaoFM0izrXoa" alt="enamad.boloorico" style="cursor: pointer" id="4pI0nWt9IaoFM0izrXoa" width="125" height="136">
                                     </a>
                                 </li> *@
-                            </ul>
-                            <ul>
-                                <li>
-                                    <a asp-area="" asp-page="/AboutUs">درباره ما</a>
-                                </li>
-                                <li>
-                                    <a asp-area="" asp-page="/contact">با ما تماس بگیرید</a>
-                                </li>
-                                <li>
-                                    <a asp-area="" asp-page="/Privacy">حریم خصوصی</a>
-                                </li>
-                                <li>
-                                    <a asp-area="" asp-page="/faq">پرسش و پاسخ</a>
-                                </li>
-                                <li>
-                                    <a asp-area="" asp-page="/Rules">قوانین و مقررات</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-4 col-xl-4">
-                    <div class="footer-widget contact">
-                        <h3 class="footer-title">با ما تماس بگیرید</h3>
-                        <ul class="footer-contact">
+                        </ul>
+                        <ul>
                             <li>
-                                <i class="fal fa-envelope-open-text"></i>
-                                <p>
-                                    <span>
-                                        <a style="color: #555555">boloorico&#64;gmail&#46;com</a>
-                                    </span>
-                                </p>
+                                <a asp-area="" asp-page="/AboutUs">درباره ما</a>
                             </li>
                             <li>
-                                <i class="fal fa-phone"></i>
-                                <p>
-                                    <span>۰۱۳-۳۳۹۵ خط ویژه</span><span>۰۱۳-۳۴۴۹۷۴۸۰</span><span>۰۱۳-۳۴۴۹۷۴۸1</span><span>۰۱۳-۳۴۴۹۷۴۸2</span>
-                                </p>
+                                <a asp-area="" asp-page="/contact">با ما تماس بگیرید</a>
                             </li>
                             <li>
-                                <i class="fal fa-map-marker-alt"></i>
-                                <p>
-                                    ایران، گیلان، رشت، خمام، جاده چوکام، جنب سایپا پور رستگار، خیابان شریفی
-                                    <br />
-                                    کدپستی : ۴۳۴۵۱۴۱۴۴۱
-                                </p>
+                                <a asp-area="" asp-page="/Privacy">حریم خصوصی</a>
+                            </li>
+                            <li>
+                                <a asp-area="" asp-page="/faq">پرسش و پاسخ</a>
+                            </li>
+                            <li>
+                                <a asp-area="" asp-page="/Rules">قوانین و مقررات</a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="footer-bottom">
-                        <p class="footer-copytext"> &copy; 2021 - Boloori - <a asp-area="" asp-page="/Privacy">حریم خصوصی</a></p>
-                    </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-xl-4">
+                <div class="footer-widget contact">
+                    <h3 class="footer-title">با ما تماس بگیرید</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fal fa-envelope-open-text"></i>
+                            <p>
+                                <span>
+                                    <a style="color: #555555">boloorico&#64;gmail&#46;com</a>
+                                </span>
+                            </p>
+                        </li>
+                        <li>
+                            <i class="fal fa-phone"></i>
+                            <p>
+                                <span>۰۱۳-۳۳۹۵ خط ویژه</span><span>۰۱۳-۳۴۴۹۷۴۸۰</span><span>۰۱۳-۳۴۴۹۷۴۸1</span><span>۰۱۳-۳۴۴۹۷۴۸2</span>
+                            </p>
+                        </li>
+                        <li>
+                            <i class="fal fa-map-marker-alt"></i>
+                            <p>
+                                ایران، گیلان، رشت، خمام، جاده چوکام، جنب سایپا پور رستگار، خیابان شریفی
+                                <br/>
+                                کدپستی : ۴۳۴۵۱۴۱۴۴۱
+                            </p>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </footer>
-    <div class="modal" id="product-view">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <button class="modal-close far fa-times" data-bs-dismiss="modal"></button>
-                <div class="product-view" id="modal_body">
+        <div class="row">
+            <div class="col-12">
+                <div class="footer-bottom">
+                    <p class="footer-copytext"> &copy; 2021 - Boloori - <a asp-area="" asp-page="/Privacy">حریم خصوصی</a></p>
                 </div>
             </div>
         </div>
     </div>
+</footer>
+<div class="modal" id="product-view">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <button class="modal-close far fa-times" data-bs-dismiss="modal"></button>
+            <div class="product-view" id="modal_body">
+            </div>
+        </div>
+    </div>
+</div>
 
 
-    <a href="#" class="back-to-top">
-        <i class="far fa-long-arrow-up"></i>
-    </a>
+<a href="#" class="back-to-top">
+    <i class="far fa-long-arrow-up"></i>
+</a>
 
-    
-    <script src="~/dist/index.bundle.js"></script>
-    @await RenderSectionAsync("Scripts", false)
-    <script>
+
+<script src="~/dist/index.bundle.js"></script>
+@await RenderSectionAsync("Scripts", false)
+<script>
         toggleCheckout();
     </script>
 
-    <script type="application/ld+json">
+<script type="application/ld+json">
         {
             "@@context": "https://schema.org",
                 "@@type": "Organization",
