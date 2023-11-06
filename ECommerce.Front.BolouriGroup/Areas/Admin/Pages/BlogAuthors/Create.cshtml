@@ -36,13 +36,13 @@
                 <form class="form" method="post" asp-page-handler="OnPost" enctype="multipart/form-data">
                     <div class="card-body">
                         <div class="form-group">
-                            <label>نام</label>
+                            <label>نام فارسی</label>
                             <input asp-for="@Model.BlogAuthor.Name" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.BlogAuthor.Name" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
                             <label>نام انگلیسی</label>
-                            <input asp-for="@Model.BlogAuthor.EnglishName" class="form-control form-control-solid"/>
+                            <input asp-for="@Model.BlogAuthor.EnglishName" class="form-control form-control-solid"   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 48 && event.charCode <= 57)"/>
                             <span asp-validation-for="@Model.BlogAuthor.EnglishName" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
