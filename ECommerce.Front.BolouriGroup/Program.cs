@@ -5,55 +5,74 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
+DotNetEnv.Env.TraversePath().Load("../.env");
+
 var builder = WebApplication.CreateBuilder(args);
 var _frontSetting = builder.Configuration.GetSection(nameof(FrontSetting)).Get<FrontSetting>();
 
-builder.Services.AddAuthorization(options =>
-{
-    // Create policies
+builder
+    .Services
+    .AddAuthorization(options =>
+    {
+        // Create policies
 
-    options.AddPolicy("Admin", p => p.RequireRole("SuperAdmin", "Admin"));
-    options.AddPolicy("Client", p => p.RequireRole("Client", "SuperAdmin", "Admin"));
-});
-builder.Services.AddRazorPages(options =>
-{
-    options.Conventions.AuthorizeFolder("/", "Client");
-    options.Conventions.AuthorizeAreaFolder("Admin", "/", "Admin");
-    options.Conventions.AllowAnonymousToPage("/register");
-    options.Conventions.AllowAnonymousToPage("/Shop");
-    options.Conventions.AllowAnonymousToPage("/Login");
-    options.Conventions.AllowAnonymousToPage("/Product");
-    options.Conventions.AllowAnonymousToPage("/Privacy");
-    options.Conventions.AllowAnonymousToPage("/Index");
-    options.Conventions.AllowAnonymousToPage("/Faq");
-    options.Conventions.AllowAnonymousToPage("/Error");
-    options.Conventions.AllowAnonymousToPage("/Contact");
-    options.Conventions.AllowAnonymousToPage("/Compare");
-    options.Conventions.AllowAnonymousToPage("/AboutUs");
-    options.Conventions.AllowAnonymousToPage("/Cart");
-    options.Conventions.AllowAnonymousToPage("/melisuccess");
-    options.Conventions.AllowAnonymousToPage("/Blog");
-    options.Conventions.AllowAnonymousToPage("/BlogDetails");
-    options.Conventions.AllowAnonymousToPage("/Rules");
-});
-builder.Services.AddRazorPages()
-    .AddRazorRuntimeCompilation();
-
+        options.AddPolicy("Admin", p => p.RequireRole("SuperAdmin", "Admin"));
+        options.AddPolicy("Client", p => p.RequireRole("Client", "SuperAdmin", "Admin"));
+    });
+builder
+    .Services
+    .AddRazorPages(options =>
+    {
+        options.Conventions.AuthorizeFolder("/", "Client");
+        options.Conventions.AuthorizeAreaFolder("Admin", "/", "Admin");
+        options.Conventions.AllowAnonymousToPage("/register");
+        options.Conventions.AllowAnonymousToPage("/Shop");
+        options.Conventions.AllowAnonymousToPage("/Login");
+        options.Conventions.AllowAnonymousToPage("/Product");
+        options.Conventions.AllowAnonymousToPage("/Privacy");
+        options.Conventions.AllowAnonymousToPage("/Index");
+        options.Conventions.AllowAnonymousToPage("/Faq");
+        options.Conventions.AllowAnonymousToPage("/Error");
+        options.Conventions.AllowAnonymousToPage("/Contact");
+        options.Conventions.AllowAnonymousToPage("/Compare");
+        options.Conventions.AllowAnonymousToPage("/AboutUs");
+        options.Conventions.AllowAnonymousToPage("/Cart");
+        options.Conventions.AllowAnonymousToPage("/melisuccess");
+        options.Conventions.AllowAnonymousToPage("/Blog");
+        options.Conventions.AllowAnonymousToPage("/BlogDetails");
+        options.Conventions.AllowAnonymousToPage("/Rules");
+    });
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 //builder.Services.AddMvc().AddRazorPagesOptions(options =>
 //{
 //    options.Conventions.AddPageRoute("/Coming-Soon", "");
 //});
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => { options.LoginPath = "/Login"; });
+builder
+    .Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Login";
+    });
 
 builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
-//If using Kestrel:
-builder.Services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
 
+//If using Kestrel:
+builder
+    .Services
+    .Configure<KestrelServerOptions>(options =>
+    {
+        options.AllowSynchronousIO = true;
+    });
 
 //If using IIS:
-builder.Services.Configure<IISServerOptions>(options => { options.AllowSynchronousIO = true; });
+builder
+    .Services
+    .Configure<IISServerOptions>(options =>
+    {
+        options.AllowSynchronousIO = true;
+    });
 
 //builder.Services.Configure<RouteOptions>(options =>
 //{
@@ -62,7 +81,9 @@ builder.Services.Configure<IISServerOptions>(options => { options.AllowSynchrono
 //    //options.AppendTrailingSlash = true;
 //});
 builder.Services.AddMemoryCache();
-builder.Services.AddTransient(_ => new HttpClient { BaseAddress = new Uri(_frontSetting.BaseAddress) });
+builder
+    .Services
+    .AddTransient(_ => new HttpClient { BaseAddress = new Uri(_frontSetting.BaseAddress) });
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<SmsIrSettings>(builder.Configuration.GetSection("SmsIr"));
