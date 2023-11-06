@@ -1,5 +1,5 @@
 ﻿@page "/Admin/CreateDiscount"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Discounts.CreateModel
+@model CreateModel
 @if (Model.Message != null)
 {
     switch (Model.Code)
@@ -97,8 +97,8 @@
     <script type="text/javascript">
         $(document).ready(function() {
             @{
-                string sd = "";
-                string ed = "";
+                var sd = "";
+                var ed = "";
                 if (Model.Discount != null)
                 {
                     if (Model.Discount.StartDate.HasValue)

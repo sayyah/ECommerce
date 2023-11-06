@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Ecommerce.Entities;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -116,7 +115,7 @@ public static class ModelBuilderExtensions
                 iface.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>))
             {
                 var applyConcreteMethod = applyGenericMethod.MakeGenericMethod(iface.GenericTypeArguments[0]);
-                applyConcreteMethod.Invoke(modelBuilder, new[] {Activator.CreateInstance(type)});
+                applyConcreteMethod.Invoke(modelBuilder, new[] { Activator.CreateInstance(type) });
             }
     }
 

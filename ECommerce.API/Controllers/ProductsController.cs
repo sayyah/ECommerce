@@ -1,11 +1,5 @@
-﻿using ECommerce.API.Interface;
-using ECommerce.API.Utilities;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.HolooEntity;
-using Ecommerce.Entities.ViewModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using ECommerce.API.Utilities;
+using ECommerce.Domain.Entities.HolooEntity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers;
@@ -21,8 +15,8 @@ public class ProductsController : ControllerBase
     private readonly IPriceRepository _priceRepository;
     private readonly IProductRepository _productRepository;
     private readonly IHolooSGroupRepository _sGroupRepository;
-    private readonly IUnitRepository _unitRepository;
     private readonly ITagRepository _tagRepository;
+    private readonly IUnitRepository _unitRepository;
     private readonly IWishListRepository _wishListRepository;
 
     public ProductsController(IProductRepository productRepository, IHolooArticleRepository articleRepository,
@@ -42,7 +36,8 @@ public class ProductsController : ControllerBase
         _wishListRepository = wishListRepository;
     }
 
-    private async Task<Product> AddPriceAndExistFromHoloo(Product product, bool isWithoutBill, bool? isCheckExist, CancellationToken cancellationToken)
+    private async Task<Product> AddPriceAndExistFromHoloo(Product product, bool isWithoutBill, bool? isCheckExist,
+        CancellationToken cancellationToken)
     {
         var products = await _articleRepository.AddPriceAndExistFromHolooList(
             new List<ProductIndexPageViewModel> { product },
@@ -73,7 +68,6 @@ public class ProductsController : ControllerBase
             };
 
 
-
             return Ok(new ApiResult
             {
                 PaginationDetails = paginationDetails,
@@ -85,7 +79,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -161,18 +155,18 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     /// <summary>
-    /// 
     /// </summary>
     /// <param name="productListFilteredViewModel"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromQuery] ProductListFilteredViewModel productListFilteredViewModel, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetProducts([FromQuery] ProductListFilteredViewModel productListFilteredViewModel,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -180,13 +174,16 @@ public class ProductsController : ControllerBase
 
             if (!string.IsNullOrEmpty(productListFilteredViewModel.PaginationParameters.TagText))
             {
-                var resultTags = await _tagRepository.GetByTagText(productListFilteredViewModel.PaginationParameters.TagText, cancellationToken);
+                var resultTags =
+                    await _tagRepository.GetByTagText(productListFilteredViewModel.PaginationParameters.TagText,
+                        cancellationToken);
                 productListFilteredViewModel.TagsId = new List<int> { resultTags.Id };
             }
 
             var categoriesId = new List<int>();
-            categoriesId = await _categoryRepository.ChildrenCategory(productListFilteredViewModel.PaginationParameters.CategoryId,
-                    cancellationToken);
+            categoriesId = await _categoryRepository.ChildrenCategory(
+                productListFilteredViewModel.PaginationParameters.CategoryId,
+                cancellationToken);
             categoriesId.Add(productListFilteredViewModel.PaginationParameters.CategoryId);
             var productQuery = _productRepository.GetProducts(categoriesId, productListFilteredViewModel.BrandsId,
                 productListFilteredViewModel.StarsCount, productListFilteredViewModel.TagsId);
@@ -194,7 +191,6 @@ public class ProductsController : ControllerBase
             var search = productListFilteredViewModel.PaginationParameters.Search?.Split('='); //name=ali
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             if (search is { Length: > 1 })
-            {
                 switch (search[0].ToLower())
                 {
                     case "brandid":
@@ -215,10 +211,9 @@ public class ProductsController : ControllerBase
                             .ToListAsync(cancellationToken));
                         break;
                     case "name":
-                        var searchWorlds = new List<string>() { search[1].Trim() };
+                        var searchWorlds = new List<string> { search[1].Trim() };
                         searchWorlds.AddRange(search[1].Trim().Split(' '));
                         foreach (var searchWorld in searchWorlds)
-                        {
                             productIndexPageViewModel.AddRange(await productQuery
                                 .Where(x => x.Name.Contains(searchWorld))
                                 .Select(p => new ProductIndexPageViewModel
@@ -234,10 +229,9 @@ public class ProductsController : ControllerBase
                                     Url = p.Url
                                 })
                                 .ToListAsync(cancellationToken));
-                        }
                         break;
                     case "articlecodecustomer":
-                        var searchProducts = new List<string>() { search[1].Trim() };
+                        var searchProducts = new List<string> { search[1].Trim() };
                         foreach (var searchProduct in searchProducts)
                         {
                             var productsIds = _priceRepository.GetProductIdWithsArticleCodeCustomer(searchProduct);
@@ -257,12 +251,10 @@ public class ProductsController : ControllerBase
                                 })
                                 .ToListAsync(cancellationToken));
                         }
+
                         break;
                 }
-
-            }
             else
-            {
                 productIndexPageViewModel = await productQuery
                     .Select(p => new ProductIndexPageViewModel
                     {
@@ -277,18 +269,17 @@ public class ProductsController : ControllerBase
                         Url = p.Url
                     })
                     .ToListAsync(cancellationToken);
-            }
 
             productIndexPageViewModel = productIndexPageViewModel.DistinctBy(x => x.Id).ToList();
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-            {
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, productListFilteredViewModel.isWithoutBill, productListFilteredViewModel.isCheckExist, cancellationToken);
-            }
+                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(
+                    productIndexPageViewModel, productListFilteredViewModel.isWithoutBill,
+                    productListFilteredViewModel.isCheckExist, cancellationToken);
 
             if (productListFilteredViewModel.EndPrice > 0)
-            {
-                productIndexPageViewModel = productIndexPageViewModel.Where(x => x.Prices.Max(p => p.Amount) >= productListFilteredViewModel.StartPrice && x.Prices.Max(p => p.Amount) <= productListFilteredViewModel.EndPrice).ToList();
-            }
+                productIndexPageViewModel = productIndexPageViewModel.Where(x =>
+                    x.Prices.Max(p => p.Amount) >= productListFilteredViewModel.StartPrice &&
+                    x.Prices.Max(p => p.Amount) <= productListFilteredViewModel.EndPrice).ToList();
 
             if (productListFilteredViewModel.isCheckExist != null)
             {
@@ -296,7 +287,6 @@ public class ProductsController : ControllerBase
             }
 
             if (search == null || (search != null && !search[0].ToLower().Equals("name")))
-            {
                 switch (productListFilteredViewModel.ProductSort)
                 {
                     case ProductSort.New:
@@ -317,12 +307,12 @@ public class ProductsController : ControllerBase
                         break;
                     case ProductSort.LowToHighPrice:
                         productIndexPageViewModel = productIndexPageViewModel.OrderBy(x =>
-                        {
-                            var prices = x.Prices.FindAll(p => p.Exist > 0);
-                            if (prices.Count == 0)
-                                return 0;
-                            return prices.Min(p => p.Amount);
-                        })
+                            {
+                                var prices = x.Prices.FindAll(p => p.Exist > 0);
+                                if (prices.Count == 0)
+                                    return 0;
+                                return prices.Min(p => p.Amount);
+                            })
                             .ToList();
                         break;
                     case ProductSort.Bestsellers:
@@ -330,9 +320,9 @@ public class ProductsController : ControllerBase
                             .ToList();
                         break;
                 }
-            }
 
-            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
+            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
+                .ToList();
 
             var entity = PagedList<ProductIndexPageViewModel>.ToPagedList(productIndexPageViewModel,
                 productListFilteredViewModel.PaginationParameters.PageNumber,
@@ -350,14 +340,14 @@ public class ProductsController : ControllerBase
             };
 
             if (productListFilteredViewModel.UserId != null && productListFilteredViewModel.UserId != 0)
-            {
                 foreach (var item in entity)
                 {
                     var price = item.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague);
-                    var wishLists = await _wishListRepository.Where(x => x.UserId == productListFilteredViewModel.UserId && x.PriceId == price.Id, cancellationToken);
+                    var wishLists = await _wishListRepository.Where(
+                        x => x.UserId == productListFilteredViewModel.UserId && x.PriceId == price.Id,
+                        cancellationToken);
                     item.FirstPriceWichlist = wishLists.Any();
                 }
-            }
 
 
             return Ok(new ApiResult
@@ -369,41 +359,47 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message); return Ok(new ApiResult { PaginationDetails = new PaginationDetails(), Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            _logger.LogCritical(e, e.Message);
+            return Ok(new ApiResult
+            {
+                PaginationDetails = new PaginationDetails(), Code = ResultCode.DatabaseError,
+                Messages = new List<string> { "اشکال در سمت سرور" }
+            });
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProducts(bool isWithoutBill, bool? isCheckExist, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllProducts(bool isWithoutBill, bool? isCheckExist,
+        CancellationToken cancellationToken)
     {
         try
         {
             var productQuery = _productRepository.GetAllProducts();
             var productIndexPageViewModel = new List<ShopPageViewModel>();
             productIndexPageViewModel.AddRange(await productQuery
-                           .Select(p => new ShopPageViewModel
-                           {
-                               Prices = p.Prices!,
-                               Alt = p.Images!.First().Alt,
-                               Brand = p.Brand!.Name,
-                               Name = p.Name,
-                               Description = p.Description,
-                               Id = p.Id,
-                               ImagePath = $"{p.Images!.First().Path}/{p.Images!.First().Name}",
-                               Stars = p.Star,
-                               Url = p.Url,
-                               TagsId = p.Tags.Select(x => x.Id).ToList(),
-                               CategoriesId = p.ProductCategories.Select(x => x.Id).ToList(),
-                               BrandId = p.BrandId
-
-                           })
-                           .ToListAsync(cancellationToken));
+                .Select(p => new ShopPageViewModel
+                {
+                    Prices = p.Prices!,
+                    Alt = p.Images!.First().Alt,
+                    Brand = p.Brand!.Name,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Id = p.Id,
+                    ImagePath = $"{p.Images!.First().Path}/{p.Images!.First().Name}",
+                    Stars = p.Star,
+                    Url = p.Url,
+                    TagsId = p.Tags.Select(x => x.Id).ToList(),
+                    CategoriesId = p.ProductCategories.Select(x => x.Id).ToList(),
+                    BrandId = p.BrandId
+                })
+                .ToListAsync(cancellationToken));
 
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-            {
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill, isCheckExist, cancellationToken);
-            }
-            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
+                productIndexPageViewModel =
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                        isCheckExist, cancellationToken);
+            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
+                .ToList();
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -412,7 +408,12 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message); return Ok(new ApiResult { PaginationDetails = new PaginationDetails(), Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            _logger.LogCritical(e, e.Message);
+            return Ok(new ApiResult
+            {
+                PaginationDetails = new PaginationDetails(), Code = ResultCode.DatabaseError,
+                Messages = new List<string> { "اشکال در سمت سرور" }
+            });
         }
     }
 
@@ -423,7 +424,8 @@ public class ProductsController : ControllerBase
         {
             var products = await _productRepository.TopNew(count, 0, null, cancellationToken);
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                products = await _articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true, cancellationToken);
+                products = await _articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
+                    cancellationToken);
 
             products = products.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
 
@@ -437,7 +439,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -449,10 +451,12 @@ public class ProductsController : ControllerBase
             var products = await _productRepository.TopPrices(count, 0, null, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
-            productIndexPageViewModel.AddRange(products.Select(product => (ProductIndexPageViewModel)product));
+            productIndexPageViewModel.AddRange(products.Select(product => product));
 
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill, true, cancellationToken);
+                productIndexPageViewModel =
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                        true, cancellationToken);
             products = products.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
             return Ok(new ApiResult
             {
@@ -464,7 +468,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -478,8 +482,11 @@ public class ProductsController : ControllerBase
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => (ProductIndexPageViewModel)product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill, true, cancellationToken);
-            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
+                productIndexPageViewModel =
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                        true, cancellationToken);
+            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
+                .ToList();
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -490,22 +497,26 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> TopRelatives(int productId, int count, bool isWithoutBill, CancellationToken cancellationToken)
+    public async Task<IActionResult> TopRelatives(int productId, int count, bool isWithoutBill,
+        CancellationToken cancellationToken)
     {
         try
         {
             var products = await _productRepository.TopRelatives(productId, count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
-            productIndexPageViewModel.AddRange(products.Select(product => (ProductIndexPageViewModel)product));
+            productIndexPageViewModel.AddRange(products.Select(product => product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill, true, cancellationToken);
-            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
+                productIndexPageViewModel =
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                        true, cancellationToken);
+            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
+                .ToList();
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -516,7 +527,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -528,10 +539,13 @@ public class ProductsController : ControllerBase
             var products = await _productRepository.TopSells(count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
-            productIndexPageViewModel.AddRange(products.Select(product => (ProductIndexPageViewModel)product));
+            productIndexPageViewModel.AddRange(products.Select(product => product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill, true, cancellationToken);
-            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
+                productIndexPageViewModel =
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                        true, cancellationToken);
+            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
+                .ToList();
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -542,7 +556,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -554,8 +568,11 @@ public class ProductsController : ControllerBase
             var productIndexPageViewModel = await _productRepository.TopStars(count, 0, null, cancellationToken);
 
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill, true, cancellationToken);
-            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
+                productIndexPageViewModel =
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                        true, cancellationToken);
+            productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
+                .ToList();
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -566,7 +583,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -585,21 +602,24 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpGet]
-    public async Task<ActionResult<ProductViewModel>> GetByProductUrl(string productUrl, int userId, bool isWithoutBill, bool? isCheckExist, CancellationToken cancellationToken)
+    public async Task<ActionResult<ProductViewModel>> GetByProductUrl(string productUrl, int userId, bool isWithoutBill,
+        bool? isCheckExist, CancellationToken cancellationToken)
     {
         try
         {
             var product = await _productRepository.GetByUrl(productUrl, cancellationToken);
-            if (product == null) return Ok(new ApiResult
-            {
-                Code = ResultCode.NotFound
-            });
-            if (product.Prices.Any(p => p.ArticleCode != null)) product = await AddPriceAndExistFromHoloo(product, isWithoutBill, isCheckExist, cancellationToken);
+            if (product == null)
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.NotFound
+                });
+            if (product.Prices.Any(p => p.ArticleCode != null))
+                product = await AddPriceAndExistFromHoloo(product, isWithoutBill, isCheckExist, cancellationToken);
 
             var wish = await _wishListRepository.GetByProductUser(product.Id, userId, cancellationToken);
             var result = new ProductViewModel
@@ -632,7 +652,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -660,13 +680,13 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetByIdViewModel(int id, bool isColleague, bool? isCheckExist, bool isWithoutBill,
-      CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -703,17 +723,19 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> ProductsWithIdsForCompare(List<int> productIdList, CancellationToken cancellationToken)
+    public async Task<IActionResult> ProductsWithIdsForCompare(List<int> productIdList,
+        CancellationToken cancellationToken)
     {
         try
         {
             var resultFormRepository = _productRepository.GetProductListWithAttribute(productIdList);
-            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true, false, cancellationToken);
+            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
+                false, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -730,18 +752,20 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProductsWithCategoriesForCompare(int categoryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetProductsWithCategoriesForCompare(int categoryId,
+        CancellationToken cancellationToken)
     {
         try
         {
-            List<int> ProductsIds = _productRepository.GetProductsIdWithCategories(categoryId);
+            var ProductsIds = _productRepository.GetProductsIdWithCategories(categoryId);
             var resultFormRepository = _productRepository.GetProductListWithAttribute(ProductsIds);
-            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true, false, cancellationToken);
+            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
+                false, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -758,7 +782,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -769,7 +793,8 @@ public class ProductsController : ControllerBase
         try
         {
             var result = await _productRepository.GetProductList(productIdList, cancellationToken);
-            result = await _articleRepository.AddPriceAndExistFromHolooList(result, isWithoutBill, true, cancellationToken);
+            result = await _articleRepository.AddPriceAndExistFromHolooList(result, isWithoutBill, true,
+                cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -786,7 +811,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -829,7 +854,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -873,7 +898,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -893,7 +918,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -912,7 +937,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -938,7 +963,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -981,7 +1006,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -1111,25 +1136,26 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTops(string includeProperties, bool isWithoutBill, int? userid, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetTops(string includeProperties, bool isWithoutBill, int? userid,
+        CancellationToken cancellationToken)
     {
         try
         {
-            List<ProductIndexPageViewModel> selectedProducts = new List<ProductIndexPageViewModel>();
+            var selectedProducts = new List<ProductIndexPageViewModel>();
 
-            string[] parameters = includeProperties.Split(",");
+            var parameters = includeProperties.Split(",");
             foreach (var param in parameters)
             {
-                List<ProductIndexPageViewModel> products = new List<ProductIndexPageViewModel>();
+                var products = new List<ProductIndexPageViewModel>();
                 var resultCount = param.Split(":");
-                int count = System.Convert.ToInt32(resultCount[1]);
-                int start = 0;
-                int countFilled = 0;
+                var count = Convert.ToInt32(resultCount[1]);
+                var start = 0;
+                var countFilled = 0;
                 switch (resultCount[0])
                 {
                     case "TopNew":
@@ -1140,10 +1166,9 @@ public class ProductsController : ControllerBase
                             products = await _productRepository.TopNew(count, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                            {
-                                products = await _articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
+                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
+                                    isWithoutBill, true,
                                     cancellationToken);
-                            }
                             countFilled = selectedProducts.Count(x =>
                                 x.TopCategory != null && x.TopCategory.Equals(resultCount[0]));
                             selectedProducts.AddRange(products.Take(count - countFilled).OrderByDescending(x => x.Id));
@@ -1151,6 +1176,7 @@ public class ProductsController : ControllerBase
                                 x.TopCategory != null && x.TopCategory.Equals(resultCount[0]));
                             start += count * 2;
                         }
+
                         break;
 
                     case "TopPrices":
@@ -1159,12 +1185,11 @@ public class ProductsController : ControllerBase
                         while (countFilled < count)
                         {
                             products = await _productRepository.TopPrices(count * 2, start, resultCount[0],
-                            cancellationToken);
+                                cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                            {
-                                products = await _articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
+                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
+                                    isWithoutBill, true,
                                     cancellationToken);
-                            }
                             countFilled = selectedProducts.Count(x =>
                                 x.TopCategory != null && x.TopCategory.Equals(resultCount[0]));
                             selectedProducts.AddRange(products.Take(count - countFilled));
@@ -1172,6 +1197,7 @@ public class ProductsController : ControllerBase
                                 x.TopCategory != null && x.TopCategory.Equals(resultCount[0]));
                             start += count * 2;
                         }
+
                         break;
 
                     case "TopChip":
@@ -1195,10 +1221,9 @@ public class ProductsController : ControllerBase
                             products = await _productRepository.TopStars(count * 2, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                            {
-                                products = await _articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
+                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
+                                    isWithoutBill, true,
                                     cancellationToken);
-                            }
 
                             countFilled = selectedProducts.Count(x =>
                                 x.TopCategory != null && x.TopCategory.Equals(resultCount[0]));
@@ -1211,15 +1236,15 @@ public class ProductsController : ControllerBase
                         break;
                 }
             }
+
             if (userid != 0)
-            {
                 foreach (var item in selectedProducts)
                 {
                     var price = item.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague);
-                    var wishlists = await _wishListRepository.Where(x => x.UserId == userid && x.PriceId == price.Id, cancellationToken);
+                    var wishlists = await _wishListRepository.Where(x => x.UserId == userid && x.PriceId == price.Id,
+                        cancellationToken);
                     item.FirstPriceWichlist = wishlists.Any();
                 }
-            }
 
             return Ok(new ApiResult
             {
@@ -1231,8 +1256,7 @@ public class ProductsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
-
 }

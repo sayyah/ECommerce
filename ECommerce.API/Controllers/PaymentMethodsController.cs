@@ -1,9 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.HolooEntity;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using ECommerce.Domain.Entities.HolooEntity;
 
 namespace ECommerce.API.Controllers;
 
@@ -52,7 +47,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -77,7 +72,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -104,7 +99,7 @@ public class PaymentMethodsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"شماره حساب تکراری است"}
+                    Messages = new List<string> { "شماره حساب تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -116,7 +111,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -132,7 +127,7 @@ public class PaymentMethodsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"شماره حساب تکراری است"}
+                    Messages = new List<string> { "شماره حساب تکراری است" }
                 });
             if (repetitive != null) _paymentMethodRepository.Detach(repetitive);
             await _paymentMethodRepository.UpdateAsync(paymentMethod, cancellationToken);
@@ -144,7 +139,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -163,7 +158,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -181,7 +176,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -207,7 +202,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -230,7 +225,7 @@ public class PaymentMethodsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
-                    Messages = new List<string> {"افزودن اتوماتیک به مشکل برخورد کرد"}
+                    Messages = new List<string> { "افزودن اتوماتیک به مشکل برخورد کرد" }
                 });
 
             return Ok(new ApiResult
@@ -241,7 +236,7 @@ public class PaymentMethodsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 }

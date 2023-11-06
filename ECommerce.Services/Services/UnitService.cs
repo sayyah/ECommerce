@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class UnitService : EntityService<Unit>, IUnitService
 {
@@ -32,7 +28,7 @@ public class UnitService : EntityService<Unit>, IUnitService
 
         var result = _units.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Unit>> {Code = ServiceCode.Info, Message = "واحدی یافت نشد"};
+            return new ServiceResult<List<Unit>> { Code = ServiceCode.Info, Message = "واحدی یافت نشد" };
         return new ServiceResult<List<Unit>>
         {
             Code = ServiceCode.Success,
@@ -62,14 +58,13 @@ public class UnitService : EntityService<Unit>, IUnitService
         var result = await _http.DeleteAsync(Url, id);
         _units = null;
         if (result.Code == ResultCode.Success)
-        {    
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult> ConvertHolooUnits()

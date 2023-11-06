@@ -18,7 +18,7 @@ public static class EnumExtensions
 
         foreach (var value in Enum.GetValues(input.GetType()))
             if ((input as Enum).HasFlag(value as Enum))
-                yield return (T) value;
+                yield return (T)value;
     }
 
     public static string ToDisplay(this Enum value, DisplayProperty property = DisplayProperty.Name)
@@ -44,7 +44,7 @@ public static class EnumExtensions
         foreach (var field in fields)
         {
             var orderAtt = field.GetCustomAttributes(typeof(OrderAttribute), false).SingleOrDefault() as OrderAttribute;
-            if (orderAtt != null) orderedValues.Add(new Tuple<int, T>(orderAtt.Order, (T) field.GetValue(null)));
+            if (orderAtt != null) orderedValues.Add(new Tuple<int, T>(orderAtt.Order, (T)field.GetValue(null)));
         }
 
         return orderedValues.OrderBy(x => x.Item1).Select(x => x.Item2).ToList();
@@ -73,7 +73,7 @@ public static class EnumExtensions
             if (orderAtt != null && displayNameAtt != null && valueAtt != null)
             {
                 var fieldinfo = new EnumField
-                    {Order = orderAtt.Order, Name = displayNameAtt.Name, Value = valueAtt.Value};
+                    { Order = orderAtt.Order, Name = displayNameAtt.Name, Value = valueAtt.Value };
 
                 items.Add(fieldinfo);
             }

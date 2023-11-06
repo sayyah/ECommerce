@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Services.Services;
 
@@ -28,7 +25,7 @@ public class ImageService : EntityService<Image>, IImageService
 
         var extension = Path.GetExtension(file.FileName).ToLower();
 
-        string[] allowExtensions = { ".webp"};
+        string[] allowExtensions = { ".webp" };
 
         if (!allowExtensions.Contains(extension.ToLower()))
             return new ServiceResult<List<string>>

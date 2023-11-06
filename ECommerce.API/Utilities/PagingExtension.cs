@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.ViewModel;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Utilities;
 
@@ -22,7 +20,7 @@ public class PagedList<T> : List<T>
         TotalCount = count;
         PageSize = pageSize;
         CurrentPage = pageNumber;
-        TotalPages = (int) Math.Ceiling(count / (double) pageSize);
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
         AddRange(items);
     }
 

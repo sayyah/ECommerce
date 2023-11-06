@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -47,7 +41,7 @@ public class DepartmentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -72,10 +66,10 @@ public class DepartmentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<Department>> GetAll(CancellationToken cancellationToken)
     {
@@ -120,7 +114,7 @@ public class DepartmentsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"عنوان دپارتمان تکراری است"}
+                    Messages = new List<string> { "عنوان دپارتمان تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -132,7 +126,7 @@ public class DepartmentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -147,7 +141,7 @@ public class DepartmentsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام دپارتمان تکراری است"}
+                    Messages = new List<string> { "نام دپارتمان تکراری است" }
                 });
             if (repetitiveDepartment != null) _departmentRepository.Detach(repetitiveDepartment);
             await _departmentRepository.UpdateAsync(department, cancellationToken);
@@ -159,7 +153,7 @@ public class DepartmentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -178,7 +172,7 @@ public class DepartmentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Brands.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.Brands.PaginationDetails.CurrentPage - 1) * Model.Brands.PaginationDetails.PageSize;
 }
@@ -73,7 +73,7 @@
                             <td>@brand.Url</td>
                             <td >
                                 <div class="shortened">
-                                        <h2>@Html.Raw(@brand.Description)</h2>
+                                    <h2>@Html.Raw(brand.Description)</h2>
                                 </div>
                             </td>
                             <td>

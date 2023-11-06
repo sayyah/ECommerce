@@ -1,15 +1,12 @@
-﻿using Ecommerce.Entities;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Employees;
 
 public class CreateModel : PageModel
 {
-    private readonly IEmployeeService _employeeService;
     private readonly IDepartmentService _departmentService;
+    private readonly IEmployeeService _employeeService;
 
     public CreateModel(IEmployeeService employeeService, IDepartmentService departmentService)
     {
@@ -38,7 +35,7 @@ public class CreateModel : PageModel
             var result = await _employeeService.Add(Employee);
             if (result.Code == 0)
                 return RedirectToPage("/Employees/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

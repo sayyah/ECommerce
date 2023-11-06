@@ -1,10 +1,11 @@
 ﻿@page "/UserProfile"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Pages.UserProfile
+@model UserProfile
 @{
 }
 <style>
 
+    
 </style>
 <!-- BREADCRUMBS SETCTION START -->
 <div class="breadcrumbs-section plr-200 mb-80">
@@ -50,183 +51,182 @@
     Model.Message = null;
     Model.Code = null;
 }
-    <!-- LOGIN SECTION START -->
-    <div class="login-section mb-80">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a>اطلاعات شخصی من</a>
-                            </h4>
-                        </div>
-                        <div class="panel-collapse " role="tabpanel">
-                            <div class="panel-body">
-                                <div class="contact-address box-shadow">
-                                    <h6>@Model.UserInformation.FirstName @Model.UserInformation.LastName</h6>
-                                    <h5>@Model.UserInformation.Mobile</h5>
+<!-- LOGIN SECTION START -->
+<div class="login-section mb-80">
+<div class="container">
+<div class="row">
+<div class="col-md-3">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a>اطلاعات شخصی من</a>
+            </h4>
+        </div>
+        <div class="panel-collapse " role="tabpanel">
+            <div class="panel-body">
+                <div class="contact-address box-shadow">
+                    <h6>@Model.UserInformation.FirstName @Model.UserInformation.LastName</h6>
+                    <h5>@Model.UserInformation.Mobile</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-9">
+<div class="my-account-content" id="accordion2">
+<!-- My Order info -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion2" href="#My_order_info">تاریخچه سفارشات</a>
+        </h4>
+    </div>
+    <div id="My_order_info" class="panel-collapse" role="tabpanel">
+        <div class="panel-body" style="padding: 15px">
+            <!-- our order -->
+            @foreach (var purchaseOrder in Model.PurchaseOrders)
+            {
+                <div class="pro contact-address box-shadow" style="text-align: right">
+                    <a href="#detailfactor-@purchaseOrder.Id" data-toggle="tab">
+                        <h6 class="blog-section-title border-left mb-30">
+                            جزییات فاکتور
+                            <i style="background: none; color: black; font-size: 20px; margin-bottom: 0" class="zmdi zmdi-arrow-back"></i>
+
+                        </h6>
+                    </a>
+                    <ul class="breadcrumb-list" style="padding: 0">
+                        <li>
+                            @purchaseOrder.CreationDate
+                        </li>
+                        <li>کدسفارش:@purchaseOrder.Id</li>
+                        @if (purchaseOrder.IsPaied)
+                        {
+                            <li>وضعیت پرداخت : پرداخت شده</li>
+                        }
+                        else
+                        {
+                            <li>وضعیت پرداخت : پرداخت نشده</li>
+                        }
+                        <li>مبلغ:@purchaseOrder.Amount.ToString("###,###,###,###") تومان</li>
+                        <li>تخفیف:@purchaseOrder.Discount.ToString("###,###,###,###") تومان</li>
+
+                    </ul><hr>
+                    <div style="text-align: left">
+                        <a href="#"><i></i>مشاهده فاکتور</a>
+                    </div>
+                </div>
+                <div class="tab-content" style="margin-top: 10px">
+                    <div role="tabpanel" class="tab-pane" id="detailfactor-@purchaseOrder.Id">
+                        <div class="contact-address box-shadow" style="text-align: right">
+                            <hr>
+                            <ul class="breadcrumb-list" style="padding: 0">
+                                <li>
+                                    نام تحویل گیرنده
+                                    @purchaseOrder.SendInformation.RecipientName
+                                </li>
+                                <li>
+                                    شماره موبایل
+                                    @purchaseOrder.SendInformation.Mobile
+                                </li>
+                                <br>
+                                <li>
+                                    آدرس
+                                    @purchaseOrder.SendInformation.Address
+                                </li>
+                            </ul><hr>
+                            @foreach (var purchaseOrderDetail in purchaseOrder.PurchaseOrderDetails)
+                            {
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img style="width: 80px" src="@purchaseOrderDetail.Product.Images!.First().Path/@purchaseOrderDetail.Product.Images!.First().Name" alt="@purchaseOrderDetail.Product.Images!.First().Alt">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <a asp-page="Product" asp-route-productUrl="@purchaseOrderDetail.Product.Url">@purchaseOrderDetail.Product.Name</a>
+                                        <br/>
+                                    </div>
+
                                 </div>
-                            </div>
+                            }
+
                         </div>
                     </div>
                 </div>
-                <div class="col-md-9">
-                    <div class="my-account-content" id="accordion2">
-                        <!-- My Order info -->
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion2" href="#My_order_info">تاریخچه سفارشات</a>
-                                </h4>
-                            </div>
-                            <div id="My_order_info" class="panel-collapse" role="tabpanel">
-                                <div class="panel-body" style="padding: 15px">
-                                    <!-- our order -->
-                                    @foreach (var purchaseOrder in Model.PurchaseOrders)
-                                    {
-                                        <div class="pro contact-address box-shadow" style="text-align: right">
-                                            <a href="#detailfactor-@purchaseOrder.Id" data-toggle="tab">
-                                                <h6 class="blog-section-title border-left mb-30">
-                                                    جزییات فاکتور
-                                                    <i style="font-size: 20px; background: none; color: black; margin-bottom: 0" class="zmdi zmdi-arrow-back"></i>
+            }
+        </div>
+    </div>
+</div>
 
-                                                </h6>
-                                            </a>
-                                            <ul class="breadcrumb-list" style="padding: 0">
-                                                <li>
-                                                    @purchaseOrder.CreationDate
-                                                </li>
-                                                <li>کدسفارش:@purchaseOrder.Id</li>
-                                                @if (purchaseOrder.IsPaied)
-                                                {
-                                                    <li>وضعیت پرداخت : پرداخت شده</li>
-                                                }
-                                                else
-                                                {
-                                                    <li>وضعیت پرداخت : پرداخت نشده</li>
-                                                }
-                                                <li>مبلغ:@purchaseOrder.Amount.ToString("###,###,###,###") تومان</li>
-                                                <li>تخفیف:@purchaseOrder.Discount.ToString("###,###,###,###") تومان</li>
+<!-- My password -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion2" href="#my_shipping">تغییر پسورد من</a>
+        </h4>
+    </div>
+    <div id="my_shipping" class="panel-collapse collapse" role="tabpanel">
+        <div class="panel-body">
+            <div class="new-customers p-30">
+                <input type="password" id="OldPass" placeholder="رمز عبور قدیمی" dir="ltr">
+                <input type="password" id="NewPass" placeholder="رمز عبور جدید" dir="ltr">
+                <input type="password" id="NewConPass" placeholder="تکرار رمز عبور جدید" dir="ltr">
+                <div class="row">
 
-                                            </ul><hr>
-                                            <div style="text-align: left">
-                                                <a href="#"><i></i>مشاهده فاکتور</a>
-                                            </div>
-                                        </div>
-                                        <div class="tab-content" style="margin-top:10px">
-                                            <div role="tabpanel" class="tab-pane" id="detailfactor-@purchaseOrder.Id">
-                                                <div class="contact-address box-shadow" style="text-align:right">
-                                                    <hr>
-                                                    <ul class="breadcrumb-list" style="padding: 0">
-                                                        <li>
-                                                            نام تحویل گیرنده
-                                                            @purchaseOrder.SendInformation.RecipientName
-                                                        </li>
-                                                        <li>
-                                                            شماره موبایل
-                                                            @purchaseOrder.SendInformation.Mobile
-                                                        </li>
-                                                        <br>
-                                                        <li>
-                                                            آدرس
-                                                            @purchaseOrder.SendInformation.Address
-                                                        </li>
-                                                    </ul><hr>
-                                                    @foreach (var purchaseOrderDetail in purchaseOrder.PurchaseOrderDetails)
-                                                    {
+                    <div class="col-md-6">
+                        <button class="submit-btn-1 mt-20 btn-hover-1 f-right" onclick="ChangePassword()">تغییر پسورد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                                        <div class="row">
-                                                            <div class="col-md-2">
-                                                                <img style="width: 80px" src="@purchaseOrderDetail.Product.Images!.First().Path/@purchaseOrderDetail.Product.Images!.First().Name" alt="@purchaseOrderDetail.Product.Images!.First().Alt">
-                                                            </div>
-                                                            <div class="col-md-8">
-                                                                <a asp-page="Product" asp-route-productUrl="@purchaseOrderDetail.Product.Url">@purchaseOrderDetail.Product.Name</a>
-                                                                <br />
-                                                            </div>
+<!-- My user details -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion2" href="#billing_address">اطلاعات شخصی من</a>
+        </h4>
+    </div>
+    <div id="billing_address" class="panel-collapse collapse" role="tabpanel">
+        <div class="panel-body">
+            <form method="post" asp-page-handler="Edit">
+                <div class="billing-details p-30">
+                    <input asp-for="@Model.UserInformation" hidden="hidden"/>
+                    <input asp-for="@Model.UserInformation.FirstName" type="text" placeholder="نام شما ...">
+                    <input asp-for="@Model.UserInformation.LastName" type="text" placeholder="نام خانوادگی">
+                    <input asp-for="@Model.UserInformation.Email" type="text" placeholder="... آدرس ایمیل" dir="ltr">
+                    <input asp-for="@Model.UserInformation.CompanyName" type="text" placeholder="نام شرکت ...">
+                    <input asp-for="@Model.UserInformation.Mobile" type="text" placeholder="... شماره موبایل" dir="ltr">
+                    <input asp-for="@Model.UserInformation.NationalCode" type="text" placeholder="... کد ملی" dir="ltr">
 
-                                                        </div>
-                                                    }
+                    <select asp-for="@Model.UserInformation.StateId" class="custom-select" id="state" onchange="setCities();">
+                        @foreach (var state in Model.StateList.ReturnData)
+                        {
+                            <option value="@state.Id">@state.Name</option>
+                        }
+                    </select>
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
+                    <select asp-for="@Model.UserInformation.CityId" class="custom-select" id="city">
+                        @foreach (var city in Model.CityList.ReturnData)
+                        {
+                            <option value="@city.Id">@city.Name</option>
+                        }
+                    </select>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <button class="submit-btn-1 mt-20 btn-hover-1 f-right" type="submit">ویرایش</button>
                         </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                        <!-- My password -->
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion2" href="#my_shipping">تغییر پسورد من</a>
-                                </h4>
-                            </div>
-                            <div id="my_shipping" class="panel-collapse collapse" role="tabpanel">
-                                <div class="panel-body">
-                                    <div class="new-customers p-30">
-                                        <input type="password" id="OldPass" placeholder="رمز عبور قدیمی" dir="ltr">
-                                        <input type="password" id="NewPass" placeholder="رمز عبور جدید" dir="ltr">
-                                        <input type="password" id="NewConPass" placeholder="تکرار رمز عبور جدید" dir="ltr">
-                                        <div class="row">
-
-                                            <div class="col-md-6">
-                                                <button class="submit-btn-1 mt-20 btn-hover-1 f-right" onclick="ChangePassword()">تغییر پسورد</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- My user details -->
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion2" href="#billing_address">اطلاعات شخصی من</a>
-                                </h4>
-                            </div>
-                            <div id="billing_address" class="panel-collapse collapse" role="tabpanel">
-                                <div class="panel-body">
-                                    <form method="post" asp-page-handler="Edit">
-                                        <div class="billing-details p-30">
-                                            <input asp-for="@Model.UserInformation" hidden="hidden"/>
-                                            <input asp-for="@Model.UserInformation.FirstName" type="text" placeholder="نام شما ...">
-                                            <input asp-for="@Model.UserInformation.LastName" type="text" placeholder="نام خانوادگی">
-                                            <input asp-for="@Model.UserInformation.Email" type="text" placeholder="... آدرس ایمیل" dir="ltr">
-                                            <input asp-for="@Model.UserInformation.CompanyName" type="text" placeholder="نام شرکت ...">
-                                            <input asp-for="@Model.UserInformation.Mobile" type="text" placeholder="... شماره موبایل" dir="ltr">
-                                            <input asp-for="@Model.UserInformation.NationalCode" type="text" placeholder="... کد ملی" dir="ltr">
-
-                                            <select asp-for="@Model.UserInformation.StateId" class="custom-select" id="state" onchange="setCities();">
-                                                @foreach (var state in Model.StateList.ReturnData)
-                                                {
-                                                    <option value="@state.Id">@state.Name</option>
-                                                }
-                                            </select>
-
-                                            <select asp-for="@Model.UserInformation.CityId" class="custom-select" id="city">
-                                                @foreach (var city in Model.CityList.ReturnData)
-                                                {
-                                                    <option value="@city.Id">@city.Name</option>
-                                                }
-                                            </select>
-
-                                            <div class="row">
-
-                                                <div class="col-md-6">
-                                                    <button class="submit-btn-1 mt-20 btn-hover-1 f-right" type="submit">ویرایش</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- تیکت Method -->
-                        @*<div class="panel panel-default">
+<!-- تیکت Method -->
+@*<div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion2" href="#My_payment_method">ارسال تیکت</a>
@@ -326,12 +326,12 @@
                                 </div>
                             </div>
                         </div>*@
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- LOGIN SECTION END -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- LOGIN SECTION END -->
 </div>
 
 

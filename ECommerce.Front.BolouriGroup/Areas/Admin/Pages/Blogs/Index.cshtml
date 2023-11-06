@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Blogs.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.Blogs.PaginationDetails.CurrentPage - 1) * Model.Blogs.PaginationDetails.PageSize;
 }
@@ -71,7 +71,7 @@
                             <td>@blog.Title</td>
                             <td >
                                 <div class="shortened">
-                                        <h2>@Html.Raw(@blog.Text)</h2>
+                                    <h2>@Html.Raw(blog.Text)</h2>
                                 </div>
                             </td>
                             <td>

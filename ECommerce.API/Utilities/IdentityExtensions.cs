@@ -27,7 +27,7 @@ public static class IdentityExtensions
     {
         var userId = identity?.GetUserId();
         return userId.HasValue()
-            ? (T) Convert.ChangeType(userId, typeof(T), CultureInfo.InvariantCulture)
+            ? (T)Convert.ChangeType(userId, typeof(T), CultureInfo.InvariantCulture)
             : default;
     }
 

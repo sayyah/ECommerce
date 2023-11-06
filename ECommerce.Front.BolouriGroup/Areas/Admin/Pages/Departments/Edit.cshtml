@@ -1,5 +1,5 @@
 ﻿@page "/Admin/EditDepartment/{handler?}"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Departments.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -45,8 +45,8 @@
                             <input asp-for="@Model.Department.Location" class="form-control form-control-solid"/>
                         </div>
                         <div class="form-group">
-                            <input asp-for="@Model.Department.CreatedDate" type="datetime" hidden="hidden" />
-                            <input asp-for="@Model.Department.CreatorUserId" type="number" hidden="hidden" />                            
+                            <input asp-for="@Model.Department.CreatedDate" type="datetime" hidden="hidden"/>
+                            <input asp-for="@Model.Department.CreatorUserId" type="number" hidden="hidden"/>
                         </div>
                     </div>
                     <div class="card-footer">

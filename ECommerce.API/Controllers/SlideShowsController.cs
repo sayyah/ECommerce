@@ -1,21 +1,15 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class SlideShowsController : ControllerBase
 {
-    private readonly ILogger<SlideShowsController> _logger;
     private readonly IHolooArticleRepository _articleRepository;
+    private readonly ILogger<SlideShowsController> _logger;
     private readonly ISlideShowRepository _slideShowRepository;
 
-    public SlideShowsController(ISlideShowRepository slideShowRepository, IHolooArticleRepository articleRepository, ILogger<SlideShowsController> logger)
+    public SlideShowsController(ISlideShowRepository slideShowRepository, IHolooArticleRepository articleRepository,
+        ILogger<SlideShowsController> logger)
     {
         _slideShowRepository = slideShowRepository;
         _articleRepository = articleRepository;
@@ -77,7 +71,7 @@ public class SlideShowsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -103,7 +97,7 @@ public class SlideShowsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -123,9 +117,10 @@ public class SlideShowsController : ControllerBase
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "عنوان اسلاید شو تکراری است" }
                 });
-            if(slideShow.ProductId!= null)
+            if (slideShow.ProductId != null)
             {
-                var repetitiveProduct = _slideShowRepository.IsRepetitiveProduct(0, slideShow.ProductId, slideShow.CategoryId, cancellationToken);
+                var repetitiveProduct = _slideShowRepository.IsRepetitiveProduct(0, slideShow.ProductId,
+                    slideShow.CategoryId, cancellationToken);
                 if (repetitiveProduct)
                     return Ok(new ApiResult
                     {
@@ -133,6 +128,7 @@ public class SlideShowsController : ControllerBase
                         Messages = new List<string> { "این کالا قبلا برای یک اسلاید شو دیگر انتخاب شده" }
                     });
             }
+
             await _slideShowRepository.AddAsync(slideShow, cancellationToken);
             return Ok(new ApiResult
             {
@@ -143,7 +139,7 @@ public class SlideShowsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -184,7 +180,7 @@ public class SlideShowsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -204,7 +200,7 @@ public class SlideShowsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products.DetailModel
+@model DetailModel
 @{
 }
 <div class="container">
@@ -56,15 +56,15 @@
                         </div>*@
                         <div class="form-group">
                             <label>توضیحات</label>
-	                        <label class="form-control form-control-solid" style="overflow-y: scroll; height: 100px;">
-		                        @Model.Product.Description
-	                        </label>
+                            <label class="form-control form-control-solid" style="height: 100px; overflow-y: scroll;">
+                                @Model.Product.Description
+                            </label>
                         </div>
                         <div class="form-group">
-	                        <label>نقد و بررسی</label>
-	                        <label class="form-control form-control-solid" style="overflow-y: scroll; height: 100px;">
-		                        @Html.Raw(Model.Product.Review)
-	                        </label>
+                            <label>نقد و بررسی</label>
+                            <label class="form-control form-control-solid" style="height: 100px; overflow-y: scroll;">
+                                @Html.Raw(Model.Product.Review)
+                            </label>
                         </div>
                         <div class="form-group">
                             <label>حداقل سفارش</label>
@@ -103,7 +103,7 @@
                             <label>برند</label>
                             <label class="form-control form-control-solid">@Model.Product.Brand?.Name</label>
                         </div>
-                      @*  <div class="form-group">
+                        @*  <div class="form-group">
                             <label>تخفیف</label>
                             <label class="form-control form-control-solid">@Model.Product.Discount?.Name</label>
                         </div>*@

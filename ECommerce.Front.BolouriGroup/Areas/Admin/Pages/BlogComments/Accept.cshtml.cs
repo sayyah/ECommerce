@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogComments;
 
@@ -9,11 +6,11 @@ public class AcceptModel : PageModel
 {
     private readonly IBlogCommentService _blogCommentService;
     private readonly IBlogService _blogService;
+
     public AcceptModel(IBlogCommentService blogCommentService, IBlogService blogService)
     {
         _blogCommentService = blogCommentService;
         _blogService = blogService;
-
     }
 
     [BindProperty] public BlogComment BlogComment { get; set; }
@@ -27,10 +24,11 @@ public class AcceptModel : PageModel
         Code = code;
         var BlogCommentResult = await _blogCommentService.GetById(id);
         BlogComment = BlogCommentResult.ReturnData;
-        int _blogId = BlogComment.BlogId ?? default(int);
+        var _blogId = BlogComment.BlogId ?? default(int);
         var ProductResult = await _blogService.GetById(_blogId);
         Blog = ProductResult.ReturnData;
     }
+
     public async Task<IActionResult> OnPost()
     {
         try
@@ -46,12 +44,12 @@ public class AcceptModel : PageModel
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
             return RedirectToPage("/BlogComments/Accept",
-                        new { id = BlogComment.Id, area = "Admin", message = $"پیغام خطا:{Message}", code = Code });
+                new { id = BlogComment.Id, area = "Admin", message = $"پیغام خطا:{Message}", code = Code });
         }
         catch
         {
             return RedirectToPage("/BlogComments/Accept",
-                        new { id = BlogComment.Id, area = "Admin", message = "پیغام خطای غیر منتظره", code = "Error" });
+                new { id = BlogComment.Id, area = "Admin", message = "پیغام خطای غیر منتظره", code = "Error" });
         }
     }
 }

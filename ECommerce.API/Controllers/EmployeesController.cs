@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -15,7 +9,7 @@ public class EmployeesController : ControllerBase
     private readonly ILogger<EmployeesController> _logger;
 
     public EmployeesController(IEmployeeRepository employeeRepository, ILogger<EmployeesController> logger,
-                                IHolooArticleRepository articleRepository)
+        IHolooArticleRepository articleRepository)
     {
         _employeeRepository = employeeRepository;
         _logger = logger;
@@ -52,7 +46,7 @@ public class EmployeesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -78,7 +72,7 @@ public class EmployeesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -101,7 +95,7 @@ public class EmployeesController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام کارمند تکراری است"}
+                    Messages = new List<string> { "نام کارمند تکراری است" }
                 });
 
 
@@ -115,7 +109,7 @@ public class EmployeesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -135,7 +129,7 @@ public class EmployeesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -155,7 +149,7 @@ public class EmployeesController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Contacts.AnswerModel
+@model AnswerModel
 
 @if (Model.Message != null)
 {
@@ -32,30 +32,30 @@
                 </div>
                 <!--begin::Form-->
                 <form class="form" method="post" asp-page-handler="OnPost">
-                    <input hidden="hidden" asp-for="@Model.Contact.Id" />
+                    <input hidden="hidden" asp-for="@Model.Contact.Id"/>
                     <div class="card-body">
 
                         <div class="form-group">
                             <label>نام فرستنده</label>
-                            <input value="@Model.Contact.Name" name="Contact.Name" hidden="hidden" />
+                            <input value="@Model.Contact.Name" name="Contact.Name" hidden="hidden"/>
                             <label class="form-control form-control-solid">@Model.Contact.Name</label>
                         </div>
                         <div class="form-group">
                             <label>ایمیل فرستنده</label>
-                            <input value="@Model.Contact.Email" name="Contact.Email" hidden="hidden" />
+                            <input value="@Model.Contact.Email" name="Contact.Email" hidden="hidden"/>
                             <label class="form-control form-control-solid">@Model.Contact.Email</label>
                         </div>
                         <div class="form-group">
                             <label>موضوع</label>
-                            <input value="@Model.Contact.Subject" name="Contact.Subject" hidden="hidden" />
+                            <input value="@Model.Contact.Subject" name="Contact.Subject" hidden="hidden"/>
                             <label class="form-control form-control-solid">@Model.Contact.Subject</label>
                         </div>
                         <div class="form-group">
                             <label>متن پیام</label>
-                            <label class="form-control form-control-solid" style="overflow-y: scroll; height: 100px;">
+                            <label class="form-control form-control-solid" style="height: 100px; overflow-y: scroll;">
                                 @Html.Raw(Model.Contact.Message)
                             </label>
-                            <input value="@Model.Contact.Message" name="Contact.Message" hidden="hidden" />
+                            <input value="@Model.Contact.Message" name="Contact.Message" hidden="hidden"/>
                         </div>
                         <div class="form-group">
                             <label>پاسخ</label>
@@ -80,7 +80,7 @@
 </div>
 
 @section Scripts
-    {
+{
     <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">

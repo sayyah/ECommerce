@@ -3,8 +3,8 @@ using Moq;
 using NUnit.Framework;
 using ECommerce.API.Controllers;
 using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
+using ECommerce.Entities;
+using ECommerce.Entities.Helper;
 using Microsoft.Extensions.Logging;
 
 namespace EcommerceTestProject

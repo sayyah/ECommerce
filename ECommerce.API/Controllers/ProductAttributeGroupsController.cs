@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -48,7 +42,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -66,7 +60,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -93,7 +87,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -118,7 +112,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -142,7 +136,7 @@ public class ProductAttributeGroupsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام خصوصیت تکراری است"}
+                    Messages = new List<string> { "نام خصوصیت تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -154,7 +148,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -182,7 +176,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -199,7 +193,7 @@ public class ProductAttributeGroupsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام خصوصیت تکراری است"}
+                    Messages = new List<string> { "نام خصوصیت تکراری است" }
                 });
             if (repetitive != null) _productAttributeGroupRepository.Detach(repetitive);
             await _productAttributeGroupRepository.UpdateAsync(productAttributeGroup, cancellationToken);
@@ -211,7 +205,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -230,7 +224,7 @@ public class ProductAttributeGroupsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 }

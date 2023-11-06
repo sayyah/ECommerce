@@ -35,10 +35,10 @@
                             <div class="wow rotateInDownLeft" data-wow-duration="2s" data-wow-delay="0.5s">
                                 @{
                                     decimal? discountAmount = 0;
-                                    decimal? discountPrice = slide.Price;
-                                    var priceSlide = slide.Product.Prices.FirstOrDefault(x => x.Amount == @slide.Price);
+                                    var discountPrice = slide.Price;
+                                    var priceSlide = slide.Product.Prices.FirstOrDefault(x => x.Amount == slide.Price);
                                 }
-                                @if (@priceSlide.DiscountId > 1)
+                                @if (priceSlide.DiscountId > 1)
                                 {
                                     if (Model.Discount.Amount > 0)
                                     {
@@ -52,7 +52,9 @@
                                 }
                                 @if (discountAmount > 0)
                                 {
-                                    <h5 class="slider2-title-1"><span class="slider2-title-1">بهترین قیمت : @slide.Price?.ToString("###,###,###,###") تومان</span></h5>
+                                    <h5 class="slider2-title-1">
+                                        <span class="slider2-title-1">بهترین قیمت : @slide.Price?.ToString("###,###,###,###") تومان</span>
+                                    </h5>
                                 }
                                 <h5 class="slider2-title-1">قیمت با تخفیف : @discountPrice?.ToString("###,###,###,###") تومان</h5>
 
@@ -90,312 +92,318 @@
 <!-- END SLIDER AREA -->
 <section id="page-content" class="page-wrapper">
 
-    <!-- BANNER-SECTION START -->
-    @if (Model.ExpensiveProducts.Count > 0)
-    {
-        <div class="banner-section ptb-60">
-            <div class="container">
-                <div class="row">
-                    <!-- banner-item start -->
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="banner-item banner-2">
-                            <div class="banner-img">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[0].Url">
-                                    <img style="float: right" src="@Model.ExpensiveProducts[0].ImagePath" alt="@Model.ExpensiveProducts[0].Alt" />
-                                </a>
-                            </div>
-                            <h3 class="banner-title-2 vmsNowrap" style="padding-right: 5px;font-size: 15px">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[0].Url">@Model.ExpensiveProducts[0].Name</a>
-                            </h3>
-                            @{
-                                var priceOne = Model.ExpensiveProducts[0].Prices.OrderByDescending(p => p.Amount).First();
-                                decimal? amountOne = priceOne.Amount;
-                                decimal? discountOne = 0;
-                                if (priceOne.Discount != null)
-                                    if (priceOne.Discount.Amount > 0)
-                                    {
-                                        discountOne = (decimal)priceOne.Discount.Amount;
-                                    }
-                                    else if (priceOne.Discount.Percent > 0)
-                                    {
-                                        discountOne = amountOne * (decimal)priceOne.Discount.Percent / 100;
-                                    }
-                                decimal? discountOneAmount = amountOne - discountOne;
-                            }
-                            @if (discountOne > 0)
-                            {
-                                <div class="s-price-box">
-                                    <h3 class="pro-price"> <span class="old-price">@amountOne?.ToString("N0") تومان</span></h3>
-                                </div>
-                            }
-                            else
-                            {
-                                <h3 class="pro-price">@discountOneAmount?.ToString("N0") تومان</h3>
-                            }
-                            <div class="banner-button">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[0].Url">هم اکنون بخرید <i class="zmdi zmdi-long-arrow-left"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- banner-item end -->
-                    <!-- banner-item start -->
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="banner-item banner-2">
-                            <div class="banner-img">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[1].Url">
-                                    <img style="float: right" src="@Model.ExpensiveProducts[1].ImagePath" alt="@Model.ExpensiveProducts[1].Alt" />
-                                </a>
-                            </div>
-                            <h3 class="banner-title-2 vmsNowrap" style="padding-right: 5px;font-size: 15px">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[1].Url">@Model.ExpensiveProducts[1].Name</a>
-                            </h3>
-                            @{
-                                var priceTwo = Model.ExpensiveProducts[1].Prices.OrderByDescending(p => p.Amount).First();
-                                decimal? amountTwo = priceTwo.Amount;
-                                decimal? discountTwo = 0;
-                                if (priceTwo.Discount != null)
-                                    if (priceTwo.Discount.Amount > 0)
-                                    {
-                                        discountTwo = (decimal)priceTwo.Discount.Amount;
-                                    }
-                                    else if (priceTwo.Discount.Percent > 0)
-                                    {
-                                        discountTwo = amountTwo * (decimal)priceTwo.Discount.Percent / 100;
-                                    }
-                                decimal? discountTwoAmount = amountTwo - discountTwo;
-                            }
-                            @if (discountTwo > 0)
-                            {
-                                <div class="s-price-box">
-                                  <h3 class="pro-price"><span class="old-price">@amountTwo?.ToString("N0") تومان</span></h3>
-                              </div>
-                            }
-                            else
-                            {
-                                <h3 class="pro-price">@discountTwoAmount?.ToString("N0") تومان</h3>
-                            }
-                            <div class="banner-button">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[1].Url">هم اکنون بخرید <i class="zmdi zmdi-long-arrow-left"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- banner-item end -->
-                    <!-- banner-item start -->
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="banner-item banner-2">
-                            <div class="banner-img">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[2].Url">
-                                    <img style="float: right" src="@Model.ExpensiveProducts[2].ImagePath" alt="@Model.ExpensiveProducts[2].Alt" />
-                                </a>
-                            </div>
-                            <h3 class="banner-title-2 vmsNowrap" style="padding-right: 5px;font-size: 15px">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[2].Url">@Model.ExpensiveProducts[2].Name</a>
-                            </h3>
-                            @{
-                                var priceThree = Model.ExpensiveProducts[2].Prices.OrderByDescending(p => p.Amount).First();
-                                decimal? amountThree = priceThree.Amount;
-                                decimal? discountTree = 0;
-                                if (priceThree.Discount != null)
-                                    if (priceThree.Discount.Amount > 0)
-                                    {
-                                        discountTree = (decimal)priceThree.Discount.Amount;
-                                    }
-                                    else if (priceThree.Discount.Percent > 0)
-                                    {
-                                        discountTree = amountThree * (decimal)priceThree.Discount.Percent / 100;
-                                    }
-                                decimal? discountTreeAmount = amountThree - discountTree;
-                            }
-                            @if (discountTree > 0)
-                            {
-                                <div class="s-price-box">
-                                    <h3 class="pro-price"><span class="old-price">@amountThree?.ToString("N0") تومان</span></h3>
-                                </div>
-                            }
-                            else
-                            {
-                                <h3 class="pro-price">@discountTreeAmount?.ToString("N0") تومان</h3>
-                            }
-                            <div class="banner-button">
-                                <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[2].Url">هم اکنون بخرید <i class="zmdi zmdi-long-arrow-left"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- banner-item end -->
-                </div>
-            </div>
-        </div>
-    }
-    <!-- BANNER-SECTION END -->
-    <!-- FEATURED PRODUCT SECTION START -->
-    <div class="featured-product-section section-bg-tb pt-80 pb-55">
+<!-- BANNER-SECTION START -->
+@if (Model.ExpensiveProducts.Count > 0)
+{
+    <div class="banner-section ptb-60">
         <div class="container">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="section-title text-left mb-20">
-                        <h2>کالای جدید</h2>
-                        <h6>کالای جدید اضافه شده به فروشگاه ما</h6>
-                    </div>
-                </div>
-            </div>
-            <div class="featured-product">
-                <div class="row active-featured-product slick-arrow-2">
-                    @foreach (var newProduct in Model.NewProducts)
-                    {
-                        <partial name="Components/_productCard" model="newProduct" />
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- FEATURED PRODUCT SECTION END -->
-    <!-- UP COMMING PRODUCT SECTION START -->
-    @if (Model.Discount.Prices != null)
-    {
-        var productWithDiscount = Model.Discount.Prices.OrderByDescending(x => x.Amount).First().Product;
-        var price = Model.Discount.Prices.OrderByDescending(x => x.Amount).First();
-
-        <div class="up-comming-product-section ptb-60">
-            <div class="container">
-                <div class="row">
-                    <!-- up-comming-pro -->
-                    <div class="col-md-8 col-sm-12 col-xs-12">
-                        <div class="up-comming-pro gray-bg up-comming-pro-2 clearfix">
-                            <div class="up-comming-pro-img f-left">
-                                <a href="#">
-                                    <img src="@productWithDiscount.Images.First().Path/@productWithDiscount.Images.First().Name" alt="@productWithDiscount.Images.First().Alt">
-                                </a>
-                            </div>
-                            <div class="up-comming-pro-info f-left">
-                                <h3>
-                                    <a asp-page="Product" asp-route-productUrl="@productWithDiscount.Url">
-                                        @productWithDiscount.Name
-                                    </a>
-                                </h3>
-                                <h4>قیمت اصلی: <s> @price.Amount.ToString("###,###,###,###") تومان </s> </h4>
-                                @{
-                                    var Amount = price.Amount;
-                                    decimal discountAmount = 0;
-                                    if (Model.Discount.Amount > 0)
-                                    {
-                                        discountAmount = (decimal)Model.Discount.Amount;
-                                    }
-                                    else if (Model.Discount.Percent > 0)
-                                    {
-                                        discountAmount = price.Amount * (decimal)Model.Discount.Percent / 100;
-                                    }
-                                    Amount -= discountAmount;
+                <!-- banner-item start -->
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="banner-item banner-2">
+                        <div class="banner-img">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[0].Url">
+                                <img style="float: right" src="@Model.ExpensiveProducts[0].ImagePath" alt="@Model.ExpensiveProducts[0].Alt"/>
+                            </a>
+                        </div>
+                        <h3 class="banner-title-2 vmsNowrap" style="font-size: 15px; padding-right: 5px;">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[0].Url">@Model.ExpensiveProducts[0].Name</a>
+                        </h3>
+                        @{
+                            var priceOne = Model.ExpensiveProducts[0].Prices.OrderByDescending(p => p.Amount).First();
+                            decimal? amountOne = priceOne.Amount;
+                            decimal? discountOne = 0;
+                            if (priceOne.Discount != null)
+                                if (priceOne.Discount.Amount > 0)
+                                {
+                                    discountOne = (decimal)priceOne.Discount.Amount;
                                 }
-                                <h3>قیمت با تخفیف:   @Amount.ToString("###,###,###,###") تومان  </h3>
-                                <p>@Html.Raw(productWithDiscount.Description)</p>
-                                <div class="up-comming-time-2 clearfix">
-                                    <div data-countdown="@Model.Discount.EndDate"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 hidden-sm col-xs-12">
-                        <div class="banner-item banner-1">
-                            <div class="ribbon-price">
-                                <span>
-                                    @Amount.ToString("###,###,###,###")
-                                </span>
-                            </div>
-                            <div class="banner-img">
-                                <a href="#">
-                                    <img src="@productWithDiscount.Images.Last().Path/@productWithDiscount.Images.Last().Name" alt="@productWithDiscount.Images.Last().Alt">
-                                </a>
-                            </div>
-                            <div class="banner-info">
-                                <h3>
-                                    <a asp-page="Product" asp-route-productUrl="@productWithDiscount.Url">
-                                        @productWithDiscount.Name
-                                    </a>
+                                else if (priceOne.Discount.Percent > 0)
+                                {
+                                    discountOne = amountOne * (decimal)priceOne.Discount.Percent / 100;
+                                }
+                            var discountOneAmount = amountOne - discountOne;
+                        }
+                        @if (discountOne > 0)
+                        {
+                            <div class="s-price-box">
+                                <h3 class="pro-price">
+                                    <span class="old-price">@amountOne?.ToString("N0") تومان</span>
                                 </h3>
-
                             </div>
+                        }
+                        else
+                        {
+                            <h3 class="pro-price">@discountOneAmount?.ToString("N0") تومان</h3>
+                        }
+                        <div class="banner-button">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[0].Url">هم اکنون بخرید <i class="zmdi zmdi-long-arrow-left"></i></a>
                         </div>
                     </div>
+                </div>
+                <!-- banner-item end -->
+                <!-- banner-item start -->
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="banner-item banner-2">
+                        <div class="banner-img">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[1].Url">
+                                <img style="float: right" src="@Model.ExpensiveProducts[1].ImagePath" alt="@Model.ExpensiveProducts[1].Alt"/>
+                            </a>
+                        </div>
+                        <h3 class="banner-title-2 vmsNowrap" style="font-size: 15px; padding-right: 5px;">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[1].Url">@Model.ExpensiveProducts[1].Name</a>
+                        </h3>
+                        @{
+                            var priceTwo = Model.ExpensiveProducts[1].Prices.OrderByDescending(p => p.Amount).First();
+                            decimal? amountTwo = priceTwo.Amount;
+                            decimal? discountTwo = 0;
+                            if (priceTwo.Discount != null)
+                                if (priceTwo.Discount.Amount > 0)
+                                {
+                                    discountTwo = (decimal)priceTwo.Discount.Amount;
+                                }
+                                else if (priceTwo.Discount.Percent > 0)
+                                {
+                                    discountTwo = amountTwo * (decimal)priceTwo.Discount.Percent / 100;
+                                }
+                            var discountTwoAmount = amountTwo - discountTwo;
+                        }
+                        @if (discountTwo > 0)
+                        {
+                            <div class="s-price-box">
+                                <h3 class="pro-price">
+                                    <span class="old-price">@amountTwo?.ToString("N0") تومان</span>
+                                </h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3 class="pro-price">@discountTwoAmount?.ToString("N0") تومان</h3>
+                        }
+                        <div class="banner-button">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[1].Url">هم اکنون بخرید <i class="zmdi zmdi-long-arrow-left"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- banner-item end -->
+                <!-- banner-item start -->
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="banner-item banner-2">
+                        <div class="banner-img">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[2].Url">
+                                <img style="float: right" src="@Model.ExpensiveProducts[2].ImagePath" alt="@Model.ExpensiveProducts[2].Alt"/>
+                            </a>
+                        </div>
+                        <h3 class="banner-title-2 vmsNowrap" style="font-size: 15px; padding-right: 5px;">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[2].Url">@Model.ExpensiveProducts[2].Name</a>
+                        </h3>
+                        @{
+                            var priceThree = Model.ExpensiveProducts[2].Prices.OrderByDescending(p => p.Amount).First();
+                            decimal? amountThree = priceThree.Amount;
+                            decimal? discountTree = 0;
+                            if (priceThree.Discount != null)
+                                if (priceThree.Discount.Amount > 0)
+                                {
+                                    discountTree = (decimal)priceThree.Discount.Amount;
+                                }
+                                else if (priceThree.Discount.Percent > 0)
+                                {
+                                    discountTree = amountThree * (decimal)priceThree.Discount.Percent / 100;
+                                }
+                            var discountTreeAmount = amountThree - discountTree;
+                        }
+                        @if (discountTree > 0)
+                        {
+                            <div class="s-price-box">
+                                <h3 class="pro-price">
+                                    <span class="old-price">@amountThree?.ToString("N0") تومان</span>
+                                </h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3 class="pro-price">@discountTreeAmount?.ToString("N0") تومان</h3>
+                        }
+                        <div class="banner-button">
+                            <a asp-page="Product" asp-route-productUrl="@Model.ExpensiveProducts[2].Url">هم اکنون بخرید <i class="zmdi zmdi-long-arrow-left"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- banner-item end -->
+            </div>
+        </div>
+    </div>
+}
+<!-- BANNER-SECTION END -->
+<!-- FEATURED PRODUCT SECTION START -->
+<div class="featured-product-section section-bg-tb pt-80 pb-55">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-title text-left mb-20">
+                    <h2>کالای جدید</h2>
+                    <h6>کالای جدید اضافه شده به فروشگاه ما</h6>
                 </div>
             </div>
         </div>
-    }
+        <div class="featured-product">
+            <div class="row active-featured-product slick-arrow-2">
+                @foreach (var newProduct in Model.NewProducts)
+                {
+                    <partial name="Components/_productCard" model="newProduct"/>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FEATURED PRODUCT SECTION END -->
+<!-- UP COMMING PRODUCT SECTION START -->
+@if (Model.Discount.Prices != null)
+{
+    var productWithDiscount = Model.Discount.Prices.OrderByDescending(x => x.Amount).First().Product;
+    var price = Model.Discount.Prices.OrderByDescending(x => x.Amount).First();
 
-    <!-- UP COMMING PRODUCT SECTION END -->
-    <!-- PRODUCT TAB SECTION START -->
-    <div class="product-tab-section section-bg-tb pt-80 pb-55">
+    <div class="up-comming-product-section ptb-60">
         <div class="container">
             <div class="row">
-                <div class="col-md-6 col-sm-12 col-xs-12">
-                    <div class="section-title text-left mb-40">
-                        <h2>لیست محصولات</h2>
+                <!-- up-comming-pro -->
+                <div class="col-md-8 col-sm-12 col-xs-12">
+                    <div class="up-comming-pro gray-bg up-comming-pro-2 clearfix">
+                        <div class="up-comming-pro-img f-left">
+                            <a href="#">
+                                <img src="@productWithDiscount.Images.First().Path/@productWithDiscount.Images.First().Name" alt="@productWithDiscount.Images.First().Alt">
+                            </a>
+                        </div>
+                        <div class="up-comming-pro-info f-left">
+                            <h3>
+                                <a asp-page="Product" asp-route-productUrl="@productWithDiscount.Url">
+                                    @productWithDiscount.Name
+                                </a>
+                            </h3>
+                            <h4>قیمت اصلی: <s> @price.Amount.ToString("###,###,###,###") تومان </s> </h4>
+                            @{
+                                var Amount = price.Amount;
+                                decimal discountAmount = 0;
+                                if (Model.Discount.Amount > 0)
+                                {
+                                    discountAmount = (decimal)Model.Discount.Amount;
+                                }
+                                else if (Model.Discount.Percent > 0)
+                                {
+                                    discountAmount = price.Amount * (decimal)Model.Discount.Percent / 100;
+                                }
+                                Amount -= discountAmount;
+                            }
+                            <h3>قیمت با تخفیف: @Amount.ToString("###,###,###,###") تومان </h3>
+                            <p>@Html.Raw(productWithDiscount.Description)</p>
+                            <div class="up-comming-time-2 clearfix">
+                                <div data-countdown="@Model.Discount.EndDate"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-12 col-xs-12">
-                    <div class="pro-tab-menu pro-tab-menu-2 text-right">
-                        <!-- Nav tabs -->
-                        <ul class="">
-                            @if (Model.StarProducts.Count > 0)
-                            {
-                                <li class="active">
-                                    <a href="#popular-product" data-toggle="tab">محصولات محبوب </a>
-                                </li>
-                            }
-                            @if (Model.NewTop8Products.Count > 0)
-                            {
-                                <li>
-                                    <a href="#new-arrival" data-toggle="tab">کالای جدید</a>
-                                </li>
-                            }
-                            @if (Model.SellProducts.Count > 0)
-                            {
-                                <li>
-                                    <a href="#best-seller" data-toggle="tab">پرفروشترین ها</a>
-                                </li>
-                            }
-                            @*<li><a href="#special-offer" data-toggle="tab">پیشنهاد ویژه</a></li>*@
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="product-tab">
-                <!-- Tab panes -->
-                <div class="tab-content">
-                    <!-- popular-product start -->
-                    <div class="tab-pane active" id="popular-product">
-                        <div class="row">
-                            @foreach (var starProduct in Model.StarProducts)
-                            {
-                                <partial name="Components/_productCard" model="starProduct" />
-                            }
+                <div class="col-md-4 hidden-sm col-xs-12">
+                    <div class="banner-item banner-1">
+                        <div class="ribbon-price">
+                            <span>
+                                @Amount.ToString("###,###,###,###")
+                            </span>
                         </div>
-                    </div>
-                    <!-- popular-product end -->
-                    <!-- new-arrival start -->
-                    <div class="tab-pane" id="new-arrival">
-                        <div class="row">
-                            @foreach (var newTop8Products in Model.NewTop8Products)
-                            {
-                                <partial name="Components/_productCard" model="newTop8Products" />
-                            }
+                        <div class="banner-img">
+                            <a href="#">
+                                <img src="@productWithDiscount.Images.Last().Path/@productWithDiscount.Images.Last().Name" alt="@productWithDiscount.Images.Last().Alt">
+                            </a>
                         </div>
-                    </div>
-                    <!-- new-arrival end -->
-                    <!-- best-seller start -->
-                    <div class="tab-pane" id="best-seller">
-                        <div class="row">
-                            @foreach (var sellProducts in Model.SellProducts)
-                            {
-                                <partial name="Components/_productCard" model="sellProducts" />
-                            }
-                        </div>
-                    </div>
-                    <!-- best-seller end -->
+                        <div class="banner-info">
+                            <h3>
+                                <a asp-page="Product" asp-route-productUrl="@productWithDiscount.Url">
+                                    @productWithDiscount.Name
+                                </a>
+                            </h3>
 
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- PRODUCT TAB SECTION END -->
+}
+
+<!-- UP COMMING PRODUCT SECTION END -->
+<!-- PRODUCT TAB SECTION START -->
+<div class="product-tab-section section-bg-tb pt-80 pb-55">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="section-title text-left mb-40">
+                    <h2>لیست محصولات</h2>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="pro-tab-menu pro-tab-menu-2 text-right">
+                    <!-- Nav tabs -->
+                    <ul class="">
+                        @if (Model.StarProducts.Count > 0)
+                        {
+                            <li class="active">
+                                <a href="#popular-product" data-toggle="tab">محصولات محبوب </a>
+                            </li>
+                        }
+                        @if (Model.NewTop8Products.Count > 0)
+                        {
+                            <li>
+                                <a href="#new-arrival" data-toggle="tab">کالای جدید</a>
+                            </li>
+                        }
+                        @if (Model.SellProducts.Count > 0)
+                        {
+                            <li>
+                                <a href="#best-seller" data-toggle="tab">پرفروشترین ها</a>
+                            </li>
+                        }
+                        @*<li><a href="#special-offer" data-toggle="tab">پیشنهاد ویژه</a></li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="product-tab">
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!-- popular-product start -->
+                <div class="tab-pane active" id="popular-product">
+                    <div class="row">
+                        @foreach (var starProduct in Model.StarProducts)
+                        {
+                            <partial name="Components/_productCard" model="starProduct"/>
+                        }
+                    </div>
+                </div>
+                <!-- popular-product end -->
+                <!-- new-arrival start -->
+                <div class="tab-pane" id="new-arrival">
+                    <div class="row">
+                        @foreach (var newTop8Products in Model.NewTop8Products)
+                        {
+                            <partial name="Components/_productCard" model="newTop8Products"/>
+                        }
+                    </div>
+                </div>
+                <!-- new-arrival end -->
+                <!-- best-seller start -->
+                <div class="tab-pane" id="best-seller">
+                    <div class="row">
+                        @foreach (var sellProducts in Model.SellProducts)
+                        {
+                            <partial name="Components/_productCard" model="sellProducts"/>
+                        }
+                    </div>
+                </div>
+                <!-- best-seller end -->
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- PRODUCT TAB SECTION END -->
 
 </section>

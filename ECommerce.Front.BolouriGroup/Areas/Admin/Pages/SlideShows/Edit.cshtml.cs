@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.SlideShows;
 
@@ -23,6 +19,7 @@ public class EditModel : PageModel
     [BindProperty] public SlideShowViewModel SlideShow { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
+
     public async Task OnGet(int id)
     {
         var result = await _slideShowService.GetById(id);
@@ -40,6 +37,7 @@ public class EditModel : PageModel
                 ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
                 return Page();
             }
+
             SlideShow.ImagePath = $"/{fileName[0]}/{fileName[1]}/{fileName[2]}";
         }
 
@@ -58,7 +56,7 @@ public class EditModel : PageModel
             Code = result.Code.ToString();
             if (result.Code == 0)
                 return RedirectToPage("/SlideShows/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
@@ -66,5 +64,4 @@ public class EditModel : PageModel
 
         return Page();
     }
-
 }

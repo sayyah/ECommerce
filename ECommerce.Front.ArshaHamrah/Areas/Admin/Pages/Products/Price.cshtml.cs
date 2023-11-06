@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.HolooEntity;
+﻿using ECommerce.Entities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,18 +12,19 @@ public class PriceModel : PageModel
 {
     private readonly IColorService _colorService;
     private readonly ICurrencyService _currencyService;
+    private readonly IDiscountService _discountService;
     private readonly IHolooArticleService _holooArticleService;
     private readonly IHolooMGroupService _holooMGroupService;
     private readonly IHolooSGroupService _holooSGroupService;
     private readonly IPriceService _priceService;
     private readonly ISizeService _sizeService;
     private readonly IUnitService _unitService;
-    private readonly IDiscountService _discountService;
 
 
     public PriceModel(IPriceService priceService, IUnitService unitService, ISizeService sizeService,
         IColorService colorService, ICurrencyService currencyService, IHolooMGroupService holooMGroupService,
-        IHolooSGroupService holooSGroupService, IHolooArticleService holooArticleService , IDiscountService discountService)
+        IHolooSGroupService holooSGroupService, IHolooArticleService holooArticleService,
+        IDiscountService discountService)
     {
         _priceService = priceService;
         _unitService = unitService;
@@ -90,7 +89,7 @@ public class PriceModel : PageModel
         var result = await _priceService.Delete(id);
         if (result.Code == 0)
             return RedirectToPage("/Products/Price",
-                new {area = "Admin", id = productId, message = result.Message, code = result.Code.ToString()});
+                new { area = "Admin", id = productId, message = result.Message, code = result.Code.ToString() });
         Message = result.Message;
         Code = result.Code.ToString();
         await Initial(productId);
@@ -123,7 +122,6 @@ public class PriceModel : PageModel
     private async Task Initial(int productId, string search = "", int pageNumber = 1, int pageSize = 10,
         string message = null, string code = null)
     {
-
         var discounts = (await _discountService.Load()).ReturnData;
         Discounts = new SelectList(discounts, nameof(Discount.Id), nameof(Discount.Name));
 
@@ -143,9 +141,9 @@ public class PriceModel : PageModel
         var result = await _priceService.Load(productId.ToString(), pageNumber, pageSize);
         if (result.Code == ServiceCode.Success) Prices = result;
 
-        HolooMGroups.Add(new HolooMGroup {M_groupname = "انتخاب گروه اصلی"});
+        HolooMGroups.Add(new HolooMGroup { M_groupname = "انتخاب گروه اصلی" });
         HolooMGroups.AddRange((await _holooMGroupService.Load()).ReturnData);
-        HolooSGroups.Add(new HolooSGroup {S_groupname = "ابتدا گروه اصلی را انتخاب کنید"});
-        HolooArticle.Add(new Product {Name = "ابتدا گروه فرعی را انتخاب کنید"});
+        HolooSGroups.Add(new HolooSGroup { S_groupname = "ابتدا گروه اصلی را انتخاب کنید" });
+        HolooArticle.Add(new Product { Name = "ابتدا گروه فرعی را انتخاب کنید" });
     }
 }

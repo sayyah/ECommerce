@@ -1,18 +1,22 @@
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Ecommerce.Entities.ViewModel;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
 public class UserProfileModel : PageModel
 {
-    private readonly IUserService _userService;
+    private readonly ICityService _cityService;
     private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly IStateService _stateService;
-    private readonly ICityService _cityService;
+    private readonly IUserService _userService;
+
+    public UserProfileModel(ICityService cityService, IStateService stateService, IUserService userService,
+        IPurchaseOrderService purchaseOrderService)
+    {
+        _stateService = stateService;
+        _userService = userService;
+        _purchaseOrderService = purchaseOrderService;
+        _cityService = cityService;
+    }
 
 
     [BindProperty] public User UserInformation { get; set; }
@@ -22,25 +26,16 @@ public class UserProfileModel : PageModel
     public string Message { get; set; }
     public string Code { get; set; }
 
-    public UserProfileModel(ICityService cityService, IStateService stateService, IUserService userService, IPurchaseOrderService purchaseOrderService)
-    {
-        _stateService = stateService;
-        _userService = userService;
-        _purchaseOrderService = purchaseOrderService;
-        _cityService = cityService;
-    }
     public async Task OnGet()
     {
         await Initial();
     }
+
     public async Task<IActionResult> OnPostEdit()
     {
         var resultUser = await _userService.GetUser();
         var editUser = new User();
-        if (resultUser.Code == ServiceCode.Success)
-        {
-            editUser = resultUser.ReturnData;
-        }
+        if (resultUser.Code == ServiceCode.Success) editUser = resultUser.ReturnData;
 
         editUser.CityId = UserInformation.CityId;
         editUser.StateId = UserInformation.StateId;
@@ -66,22 +61,16 @@ public class UserProfileModel : PageModel
     private async Task Initial()
     {
         var resultUser = await _userService.GetUser();
-        if (resultUser.Code == ServiceCode.Success)
-        {
-            UserInformation = resultUser.ReturnData;
-        }
+        if (resultUser.Code == ServiceCode.Success) UserInformation = resultUser.ReturnData;
         var resultPurchaseOrder = await _purchaseOrderService.PurchaseList(UserInformation.Id);
-        if (resultPurchaseOrder.Code == ServiceCode.Success)
-        {
-            PurchaseOrders = resultPurchaseOrder.ReturnData;
-        }
+        if (resultPurchaseOrder.Code == ServiceCode.Success) PurchaseOrders = resultPurchaseOrder.ReturnData;
         StateList = await _stateService.Load();
         var cityServiceResponse = await _cityService.LoadAllCity();
         CityList = cityServiceResponse.ReturnData;
     }
+
     public IActionResult OnGetFactorPrint(long orderId)
     {
-        return RedirectToPage("InvoiceReportPrint", new { orderId = orderId });
+        return RedirectToPage("InvoiceReportPrint", new { orderId });
     }
-
 }

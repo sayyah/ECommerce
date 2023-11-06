@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -48,7 +42,7 @@ public class CurrenciesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -73,7 +67,7 @@ public class CurrenciesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -99,7 +93,7 @@ public class CurrenciesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -113,14 +107,14 @@ public class CurrenciesController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"ارز پیشفرض قابل تغییر نیست"}
+                    Messages = new List<string> { "ارز پیشفرض قابل تغییر نیست" }
                 });
             var repetitiveCurrency = await _currencyRepository.GetByName(currency.Name, cancellationToken);
             if (repetitiveCurrency != null && repetitiveCurrency.Id != currency.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام ارز تکراری است"}
+                    Messages = new List<string> { "نام ارز تکراری است" }
                 });
             if (repetitiveCurrency != null) _currencyRepository.Detach(repetitiveCurrency);
             await _currencyRepository.UpdateAsync(currency, cancellationToken);
@@ -132,7 +126,7 @@ public class CurrenciesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -146,7 +140,7 @@ public class CurrenciesController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"ارز پیشفرض قابل حذف نیست"}
+                    Messages = new List<string> { "ارز پیشفرض قابل حذف نیست" }
                 });
             await _currencyRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
@@ -157,7 +151,7 @@ public class CurrenciesController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 }

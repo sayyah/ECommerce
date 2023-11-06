@@ -12,7 +12,9 @@
                             <h6>شماره پیگیری <span>@Model.Description</span></h6>
                             <h6>تاریخ سفارش <span>@Model.PurchaseOrder.CreationDate.ToFa("f") </span></h6>
                             <h6>مبلغ کل <span>@Model.PurchaseOrder.Amount تومان</span></h6>
-                            <h6><span> روش پرداخت</span><span>درگاه بانکی</span></h6>
+                            <h6>
+                                <span> روش پرداخت</span><span>درگاه بانکی</span>
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -75,13 +77,13 @@
                 <div class="table-scroll">
                     <table class="table-list">
                         <thead>
-                            <tr>
-                                <th scope="col">ردیف</th>
-                                <th scope="col">نام</th>
-                                <th scope="col">قیمت</th>
-                                <th scope="col">تعداد</th>
-                                <th scope="col">جمع</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">ردیف</th>
+                            <th scope="col">نام</th>
+                            <th scope="col">قیمت</th>
+                            <th scope="col">تعداد</th>
+                            <th scope="col">جمع</th>
+                        </tr>
                         </thead>
                         <tbody>
                         @{

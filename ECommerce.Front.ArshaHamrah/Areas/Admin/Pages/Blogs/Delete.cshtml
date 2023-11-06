@@ -1,6 +1,6 @@
 ﻿@page "/Admin/DeleteBlog"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Blogs.DeleteModel
+@model DeleteModel
 @{
 }
 @if (Model.Message != null)
@@ -36,9 +36,8 @@
                 <form class="form" method="post" asp-page-handler="OnPost">
                     <input hidden="hidden" name="id" asp-for="@Model.Blog.Id"/>
                     <div class="card-body">
-                     
-                   
-                      
+
+
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary mr-2">حذف</button>

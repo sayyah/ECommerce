@@ -1,6 +1,6 @@
 ﻿@page "/Admin/EditSupplier/{handler?}"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Suppliers.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -89,7 +89,7 @@
 
 @section Scripts
 {
-<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

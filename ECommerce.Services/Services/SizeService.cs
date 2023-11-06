@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class SizeService : EntityService<Size>, ISizeService
 {
@@ -33,7 +29,7 @@ public class SizeService : EntityService<Size>, ISizeService
 
         var result = _sizes.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Size>> {Code = ServiceCode.Info, Message = "سایزی یافت نشد"};
+            return new ServiceResult<List<Size>> { Code = ServiceCode.Info, Message = "سایزی یافت نشد" };
         return new ServiceResult<List<Size>>
         {
             Code = ServiceCode.Success,
@@ -70,8 +66,10 @@ public class SizeService : EntityService<Size>, ISizeService
                 Message = "با موفقیت حذف شد"
             };
         }
+
         _sizes = null;
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Size>> GetById(int id)

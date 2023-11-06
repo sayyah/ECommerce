@@ -1,64 +1,63 @@
-﻿using Ecommerce.Entities;
-using ECommerce.API.Interface;
-using ECommerce.API.Repository;
+﻿using ECommerce.Domain.Entities;
+using ECommerce.Domain.Interfaces;
+using ECommerce.Infrastructure.Repository;
 using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
-namespace ECommerce.Repository.UnitTests.Colors
+namespace ECommerce.Repository.UnitTests.Colors;
+
+public class ColorTests : BaseTests
 {
-    public class ColorTests : BaseTests
+    private readonly IColorRepository _colorRepository;
+
+    public ColorTests()
     {
-        private readonly IColorRepository _colorRepository;
+        _colorRepository = new ColorRepository(DbContext);
+    }
 
-        public ColorTests()
+    [Fact]
+    public async Task AddAsync_AddNewEntity_ReturnsSameEntity()
+    {
+        //Arrange
+        var id = 2;
+        var name = Guid.NewGuid().ToString();
+        var colorCode = Guid.NewGuid().ToString();
+        var color = new Color
         {
-            _colorRepository = new ColorRepository(DbContext);
-        }
+            Id = id,
+            Name = name,
+            ColorCode = colorCode
+        };
 
-        [Fact]
-        public async Task AddAsync_AddNewEntity_ReturnsSameEntity()
+        //Act
+        var newColor = await _colorRepository.AddAsync(color, CancellationToken);
+
+        //Assert
+        Assert.Equal(id, newColor.Id);
+        Assert.Equal(name, newColor.Name);
+        Assert.Equal(colorCode, newColor.ColorCode);
+    }
+
+    [Fact]
+    public async Task GetAll_CountAllEntities_ReturnsTwoEntities()
+    {
+        //Arrange
+        var id = 3;
+        var name = Guid.NewGuid().ToString();
+        var colorCode = Guid.NewGuid().ToString();
+        var color = new Color
         {
-            //Arrange
-            int id = 2;
-            string name = Guid.NewGuid().ToString();
-            string colorCode = Guid.NewGuid().ToString();
-            Color color = new Color
-            {
-                Id = id,
-                Name = name,
-                ColorCode = colorCode
-            };
+            Id = id,
+            Name = name,
+            ColorCode = colorCode
+        };
+        await DbContext.Colors.AddAsync(color, CancellationToken);
+        await DbContext.SaveChangesAsync(CancellationToken);
 
-            //Act
-            Color newColor = await _colorRepository.AddAsync(color, CancellationToken);
+        //Act
+        var newColor = await _colorRepository.GetAll(CancellationToken);
 
-            //Assert
-            Assert.Equal(id, newColor.Id);
-            Assert.Equal(name, newColor.Name);
-            Assert.Equal(colorCode, newColor.ColorCode);
-        }
-
-        [Fact]
-        public async Task GetAll_CountAllEntities_ReturnsTwoEntities()
-        {
-            //Arrange
-            int id = 3;
-            string name = Guid.NewGuid().ToString();
-            string colorCode = Guid.NewGuid().ToString();
-            Color color = new Color
-            {
-                Id = id,
-                Name = name,
-                ColorCode = colorCode
-            };
-            await DbContext.Colors.AddAsync(color, CancellationToken);
-            await DbContext.SaveChangesAsync(CancellationToken);
-
-            //Act
-            var newColor =await _colorRepository.GetAll(CancellationToken);
-
-            //Assert
-            Assert.Equal(2, newColor.Count());
-        }
+        //Assert
+        Assert.Equal(2, newColor.Count());
     }
 }

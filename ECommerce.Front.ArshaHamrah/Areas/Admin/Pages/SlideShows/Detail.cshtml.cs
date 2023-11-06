@@ -1,4 +1,4 @@
-using Ecommerce.Entities.ViewModel;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +28,6 @@ public class DetailModel : PageModel
         }
 
         return RedirectToPage("/SlideShows/Index",
-            new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+            new { area = "Admin", message = result.Message, code = result.Code.ToString() });
     }
 }

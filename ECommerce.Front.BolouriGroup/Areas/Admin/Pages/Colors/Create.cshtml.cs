@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Colors;
 
@@ -31,7 +28,7 @@ public class CreateModel : PageModel
             var result = await _colorService.Add(Color);
             if (result.Code == 0)
                 return RedirectToPage("/Colors/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

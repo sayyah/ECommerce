@@ -1,13 +1,11 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Users;
 
 public class DeleteModel : PageModel
 {
     private readonly IUserService _userService;
+
     public DeleteModel(IUserService userService)
     {
         _userService = userService;
@@ -25,6 +23,7 @@ public class DeleteModel : PageModel
             User = result.ReturnData;
             return Page();
         }
+
         return RedirectToPage("/Users/Index",
             new { area = "Admin", message = result.Message, code = result.Code.ToString() });
     }
@@ -37,6 +36,7 @@ public class DeleteModel : PageModel
             return RedirectToPage("/Users/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }
+
         return Page();
     }
 }

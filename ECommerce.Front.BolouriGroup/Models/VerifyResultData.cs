@@ -1,14 +1,13 @@
-﻿namespace ECommerce.Front.BolouriGroup.Models
+﻿namespace ECommerce.Front.BolouriGroup.Models;
+
+public class VerifyResultData
 {
-    public class VerifyResultData
-    {
-        public bool Succeed { get; set; }
-        public string ResCode { get; set; }
-        public string Description { get; set; }
-        public string Amount { get; set; }
-        public int SumPrice { get; set; }
-        public string RetrivalRefNo { get; set; }
-        public string SystemTraceNo { get; set; }
-        public string OrderId { get; set; }
-    }
+    public bool Succeed { get; set; }
+    public string ResCode { get; set; }
+    public string Description { get; set; }
+    public string Amount { get; set; }
+    public int SumPrice { get; set; }
+    public string RetrivalRefNo { get; set; }
+    public string SystemTraceNo { get; set; }
+    public string OrderId { get; set; }
 }

@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -15,7 +9,7 @@ public class DiscountsController : ControllerBase
     private readonly ILogger<DiscountsController> _logger;
 
     public DiscountsController(IDiscountRepository discountRepository, ILogger<DiscountsController> logger,
-                                IHolooArticleRepository articleRepository)
+        IHolooArticleRepository articleRepository)
     {
         _discountRepository = discountRepository;
         _logger = logger;
@@ -53,7 +47,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -80,7 +74,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -124,15 +118,16 @@ public class DiscountsController : ControllerBase
                     Code = ResultCode.NotFound
                 });
             foreach (var productPrices in result.Prices)
-                if (productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی && productPrices.ArticleCode != null)
+                if (productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی &&
+                    productPrices.ArticleCode != null)
                 {
-
                     var article = await _articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer,
-                         productPrices.SellNumber!.Value);
+                        productPrices.SellNumber!.Value);
 
                     productPrices.Amount = article.price / 10;
                     productPrices.Exist = (double)article.exist;
                 }
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -143,7 +138,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -171,7 +166,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -181,7 +176,7 @@ public class DiscountsController : ControllerBase
     {
         try
         {
-            var result =  _discountRepository.Active(id);
+            var result = _discountRepository.Active(id);
 
             return Ok(new ApiResult
             {
@@ -193,7 +188,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -215,7 +210,7 @@ public class DiscountsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"نام تخفیف تکراری است"}
+                    Messages = new List<string> { "نام تخفیف تکراری است" }
                 });
 
             var repetitiveCode = await _discountRepository.GetByCode(discount.Code, cancellationToken);
@@ -223,7 +218,7 @@ public class DiscountsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {"کد تخفیف تکراری است"}
+                    Messages = new List<string> { "کد تخفیف تکراری است" }
                 });
 
             return Ok(new ApiResult
@@ -236,7 +231,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -272,7 +267,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -292,7 +287,7 @@ public class DiscountsController : ControllerBase
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

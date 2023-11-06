@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Application.ViewModels;
 using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Services.Services;
@@ -20,13 +18,15 @@ public class CompareService : ICompareService
     public ServiceResult Remove(HttpContext context, int productId)
     {
         _cookieService.Remove(context, new CookieData($"{_key}-{productId}", productId));
-        return new ServiceResult {Code = ServiceCode.Success, Message = "کالا از لیست مقایسه حذف شد"};
+        return new ServiceResult { Code = ServiceCode.Success, Message = "کالا از لیست مقایسه حذف شد" };
     }
+
     public async Task<ServiceResult<List<ProductCompareViewModel>>> CompareList(List<int> productIdList)
     {
-        var result =await _productService.ProductsWithIdsForCompare(productIdList);
+        var result = await _productService.ProductsWithIdsForCompare(productIdList);
         return result;
     }
+
     public async Task<ServiceResult<List<ProductCompareViewModel>>> GetProductsByCategories(int categoryId)
     {
         var result = await _productService.ProductsWithCategoriesForCompare(categoryId);

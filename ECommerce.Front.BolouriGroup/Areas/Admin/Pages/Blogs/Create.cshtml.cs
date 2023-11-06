@@ -1,25 +1,21 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Blogs;
 
 public class CreateModel : PageModel
 {
+    private readonly IBlogAuthorService _blogAuthorService;
+    private readonly IBlogCategoryService _blogCategoryService;
     private readonly IBlogService _blogService;
     private readonly IHostEnvironment _environment;
     private readonly IImageService _imageService;
-    private readonly ITagService _tagService;
     private readonly IKeywordService _keywordService;
-    private readonly IBlogAuthorService _blogAuthorService;
-    private readonly IBlogCategoryService _blogCategoryService;
+    private readonly ITagService _tagService;
 
     public CreateModel(IBlogService blogService, IImageService imageService, ITagService tagService,
-        IKeywordService keywordService, IHostEnvironment environment, IBlogAuthorService blogAuthorService, IBlogCategoryService blogCategoryService)
+        IKeywordService keywordService, IHostEnvironment environment, IBlogAuthorService blogAuthorService,
+        IBlogCategoryService blogCategoryService)
     {
         _blogService = blogService;
         _imageService = imageService;
@@ -64,54 +60,52 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
+        if (Blog.BlogCategoryId == 0)
+        {
+            Message = "لطفا دسته بندی را انتخاب کنید";
+            Code = ServiceCode.Error.ToString();
+            await Initial();
+            return Page();
+        }
 
-		if (Blog.BlogCategoryId == 0)
-		{
-			Message = "لطفا دسته بندی را انتخاب کنید";
-			Code = ServiceCode.Error.ToString();
-			await Initial();
-			return Page();
-		}
-
-		if (Upload == null)
+        if (Upload == null)
         {
             Message = "لطفا عکس را انتخاب کنید";
             Code = ServiceCode.Error.ToString();
-			await Initial();
-			return Page();
+            await Initial();
+            return Page();
         }
 
-		if (Upload.FileName.Split('.').Last().ToLower() != "webp")
-		{
-			ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
-			await Initial();
-			return Page();
-		}
+        if (Upload.FileName.Split('.').Last().ToLower() != "webp")
+        {
+            ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
+            await Initial();
+            return Page();
+        }
 
 
-		if (ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var result = await _blogService.Add(Blog);
             if (result.Code == 0)
             {
-				var resultImage = await _imageService.Add(Upload, result.ReturnData.Id, "Images/Blogs",
+                var resultImage = await _imageService.Add(Upload, result.ReturnData.Id, "Images/Blogs",
                     _environment.ContentRootPath);
-				
-				if (resultImage.Code == 0)
-                {
+
+                if (resultImage.Code == 0)
                     return RedirectToPage("/Blogs/Index",
                         new { area = "Admin", message = result.Message, code = result.Code.ToString() });
-                }
-				Message = result.Message;
+                Message = result.Message;
                 Code = result.Code.ToString();
                 ModelState.AddModelError("", result.Message);
             }
             else
-			{
-				Message = result.Message;
-				Code = result.Code.ToString();
-			}
-		}
+            {
+                Message = result.Message;
+                Code = result.Code.ToString();
+            }
+        }
+
         await Initial();
         return Page();
     }

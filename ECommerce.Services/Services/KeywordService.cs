@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class KeywordService : EntityService<Keyword>, IKeywordService
 {
@@ -55,7 +51,7 @@ public class KeywordService : EntityService<Keyword>, IKeywordService
 
         var result = _keywords.Where(x => x.KeywordText.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Keyword>> {Code = ServiceCode.Info, Message = "کلمه کلیدی یافت نشد"};
+            return new ServiceResult<List<Keyword>> { Code = ServiceCode.Info, Message = "کلمه کلیدی یافت نشد" };
         return new ServiceResult<List<Keyword>>
         {
             Code = ServiceCode.Success,
@@ -92,8 +88,10 @@ public class KeywordService : EntityService<Keyword>, IKeywordService
                 Message = "با موفقیت حذف شد"
             };
         }
+
         _keywords = null;
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<Keyword>>> GetKeywordsByProductId(int productId)

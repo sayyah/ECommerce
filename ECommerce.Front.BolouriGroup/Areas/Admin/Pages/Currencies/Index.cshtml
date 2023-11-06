@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Currencies.IndexModel
+@model IndexModel
 @{
     var i = 1;
 }
@@ -17,16 +17,16 @@
             switch (Model.Code)
             {
                 case "Error":
-                    <div class="alert alert-danger"> @Model.Message </div>
+                                <div class="alert alert-danger"> @Model.Message </div>
                     break;
                 case "Warning":
-                    <div class="alert alert-warning"> @Model.Message </div>
+                                <div class="alert alert-warning"> @Model.Message </div>
                     break;
                 case "Info":
-                    <div class="alert alert-info"> @Model.Message </div>
+                                <div class="alert alert-info"> @Model.Message </div>
                     break;
                 default:
-                    <div class="alert alert-success"> @Model.Message </div>
+                                <div class="alert alert-success"> @Model.Message </div>
                     break;
             }
 
@@ -41,9 +41,9 @@
                 <div class="form-actions no-color">
                     <p>
                         جستجو بر اساس نام:
-                        <input type="text" name="search" value="@Model.Currencies.PaginationDetails.Search" />
-                        <input type="text" hidden="hidden" name="pageIndex" value="1" />
-                        <input type="submit" value="بجو" class="btn btn-primary" /> |
+                        <input type="text" name="search" value="@Model.Currencies.PaginationDetails.Search"/>
+                        <input type="text" hidden="hidden" name="pageIndex" value="1"/>
+                        <input type="submit" value="بجو" class="btn btn-primary"/> |
                         تعداد رکورد ها در صفحه :
                         <a asp-page="/Currencies/Index" asp-route-pageSize="10">10</a> -
                         <a asp-page="/Currencies/Index" asp-route-pageSize="20">20</a> -
@@ -53,19 +53,19 @@
                     </p>
                 </div>
             </form>
-            <div class="example-preview table-responsive
+            <div class="example-preview table-responsive">
                 <table class="table table-bordered mb-6">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">نام</th>
-                        <th scope="col">قیمت</th>
-                        <th scope="col">عملیات</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">نام</th>
+                    <th scope="col">قیمت</th>
+                    <th scope="col">عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
                         @foreach (var currency in Model.Currencies.ReturnData)
-                    {
+                        {
                         <tr>
                             <th scope="row">@(i++)</th>
                             <td>@currency.Name</td>
@@ -76,10 +76,10 @@
                                 <a asp-page="Detail" asp-route-id="@currency.Id" class="label label-inline label-light-warning font-weight-bold">جزئیات</a>
                             </td>
                         </tr>
-                    }
-                    </tbody>
+                        }
+                </tbody>
                 </table>
-                <partial name="_Pagination" model="@Model.Currencies.PaginationDetails" />
+                <partial name="_Pagination" model="@Model.Currencies.PaginationDetails"/>
 
             </div>
 

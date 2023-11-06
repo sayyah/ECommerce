@@ -1,6 +1,6 @@
 ﻿@page "/Admin/BlogAuthor/{handler?}"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.BlogAuthorModel
+@model BlogAuthorModel
 @{
     ViewData["Title"] = "نویسنده";
 }
@@ -106,7 +106,7 @@
 
 @section Scripts
 {
-<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

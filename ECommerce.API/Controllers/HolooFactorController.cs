@@ -1,10 +1,4 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -54,14 +48,14 @@ public class HolooFactorController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Error,
-                Messages = new List<string> {"مشکل در ثبت فاکتور"}
+                Messages = new List<string> { "مشکل در ثبت فاکتور" }
             });
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                {Code = ResultCode.DatabaseError, Messages = new List<string> {"اشکال در سمت سرور"}});
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

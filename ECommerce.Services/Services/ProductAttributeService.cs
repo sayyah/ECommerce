@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class ProductAttributeService : EntityService<ProductAttribute>, IProductAttributeService
 {
@@ -45,14 +41,13 @@ public class ProductAttributeService : EntityService<ProductAttribute>, IProduct
         //return Return(result);
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<ProductAttribute>>> GetAllAttributeWithGroupId(int attributeGroupsId,

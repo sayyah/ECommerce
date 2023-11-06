@@ -1,16 +1,17 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Pages.InvoiceReportPrintModel
+@using PersianDate.Standard
+@model InvoiceReportPrintModel
 @{
     Layout = null;
 }
-<link href="~/css/site.min.css" rel="stylesheet" onload="this.media='all'" />
+<link href="~/css/site.min.css" rel="stylesheet" onload="this.media='all'"/>
 <script src="~/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.min.js"></script>
-<link href="~/css/invoicereport.css" rel="stylesheet" />
+<link href="~/css/invoicereport.css" rel="stylesheet"/>
 <a class="btn btn-block btn-info" id="PrintJs">چاپ فاکتور</a>
 
 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
 
 <div class="page-content container">
     <div class="page-header text-blue-d2">
@@ -40,7 +41,9 @@
                             <div class="my-1">
                                 شهر, @Model.PurchaseOrder.SendInformation.City.Name
                             </div>
-                            <div class="my-1"><i class="fa fa-phone fa-flip-horizontal text-secondary"></i> <b class="text-600">@Model.PurchaseOrder.SendInformation.Mobile</b></div>
+                            <div class="my-1">
+                                <i class="fa fa-phone fa-flip-horizontal text-secondary"></i> <b class="text-600">@Model.PurchaseOrder.SendInformation.Mobile</b>
+                            </div>
                             <div class="my-1">
                                 آدرس, @Model.PurchaseOrder.SendInformation.Address
                             </div>
@@ -49,15 +52,23 @@
                     <!-- /.col -->
 
                     <div class="text-95 col-sm-6 align-self-start d-sm-flex justify-content-end">
-                        <hr class="d-sm-none" />
+                        <hr class="d-sm-none"/>
                         <div class="text-grey-m2">
-                            <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">مبلغ:</span> @Model.PurchaseOrder.Amount.ToString("N0")</div>
+                            <div class="my-2">
+                                <i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">مبلغ:</span> @Model.PurchaseOrder.Amount.ToString("N0")
+                            </div>
 
-                            <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">تاریخ:</span> @Model.PurchaseOrder.CreationDate.ToFa("f")</div>
+                            <div class="my-2">
+                                <i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">تاریخ:</span> @Model.PurchaseOrder.CreationDate.ToFa("f")
+                            </div>
 
-                            <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">روش پرداخت:</span> <span class="badge badge-warning badge-pill px-25">درگاه بانکی</span></div>
+                            <div class="my-2">
+                                <i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">روش پرداخت:</span> <span class="badge badge-warning badge-pill px-25">درگاه بانکی</span>
+                            </div>
 
-                            <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">کد پستی:</span>@Model.PurchaseOrder.SendInformation.PostalCode</div>
+                            <div class="my-2">
+                                <i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">کد پستی:</span>@Model.PurchaseOrder.SendInformation.PostalCode
+                            </div>
                         </div>
                     </div>
                     <!-- /.col -->
@@ -110,7 +121,7 @@
                         </div>
                         @if (Model.PurchaseOrder.DiscountId != null)
                         {
-                            decimal amountAfterDiscount = Model.PurchaseOrder.Amount - (decimal)Model.PurchaseOrder.DiscountAmount;
+                            var amountAfterDiscount = Model.PurchaseOrder.Amount - Model.PurchaseOrder.DiscountAmount;
                             <div class="col-12 col-sm-5 text-grey text-90 order-first order-sm-last">
 
                                 <div class="row my-2 align-items-center bgc-primary-l3 p-2">
@@ -126,7 +137,7 @@
 
                     </div>
 
-                    <hr />
+                    <hr/>
                 </div>
             </div>
         </div>

@@ -1,19 +1,13 @@
-﻿using ECommerce.API.Interface;
-using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ECommerce.API.Controllers;
+﻿namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 [Authorize(Roles = "Client,Admin,SuperAdmin")]
 public class WishListsController : ControllerBase
 {
+    private readonly IHolooArticleRepository _articleRepository;
     private readonly ILogger<WishListsController> _logger;
     private readonly IWishListRepository _wishListRepository;
-    private readonly IHolooArticleRepository _articleRepository;
 
     public WishListsController(
         IWishListRepository wishListRepository,
@@ -36,14 +30,13 @@ public class WishListsController : ControllerBase
             var holooArticle = await _articleRepository.GetHolooArticles(aCodeCs, cancellationToken);
             foreach (var wishListViewModel in result)
             {
-                
                 var holooPrices = await _articleRepository.AddPrice(
-                    new List<Price>{ wishListViewModel.Price },
+                    new List<Price> { wishListViewModel.Price },
                     holooArticle,
                     false,
                     cancellationToken);
             }
-          
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -53,7 +46,7 @@ public class WishListsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -74,7 +67,7 @@ public class WishListsController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
-                    Messages = new List<string> {repetitiveWishList.Id.ToString()}
+                    Messages = new List<string> { repetitiveWishList.Id.ToString() }
                 });
 
             return Ok(new ApiResult
@@ -86,7 +79,7 @@ public class WishListsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
@@ -105,32 +98,31 @@ public class WishListsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult {Code = ResultCode.DatabaseError});
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPut]
-    public async Task<IActionResult> Invert(WishList wishList , CancellationToken cancellationToken)
+    public async Task<IActionResult> Invert(WishList wishList, CancellationToken cancellationToken)
     {
-        
         try
         {
-            var result = await _wishListRepository.Where(x => x.UserId == wishList.UserId && x.PriceId == wishList.PriceId, cancellationToken);
+            var result =
+                await _wishListRepository.Where(x => x.UserId == wishList.UserId && x.PriceId == wishList.PriceId,
+                    cancellationToken);
             if (result != null && result.ToList().Count == 0)
-            {
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Success,
                     ReturnData = await _wishListRepository.AddAsync(wishList, cancellationToken),
-                    Messages = new List<string> { "به لیست علاقه مندی ها اضافه شد"}
+                    Messages = new List<string> { "به لیست علاقه مندی ها اضافه شد" }
                 });
-            }
             await _wishListRepository.DeleteAsync(result.FirstOrDefault().Id, cancellationToken);
             return Ok(new ApiResult
-                {
-                    Code = ResultCode.Success,
-                    Messages = new List<string> { "از لیست علاقه مندی ها حذف شد"}
-                });
+            {
+                Code = ResultCode.Success,
+                Messages = new List<string> { "از لیست علاقه مندی ها حذف شد" }
+            });
         }
         catch (Exception e)
         {
