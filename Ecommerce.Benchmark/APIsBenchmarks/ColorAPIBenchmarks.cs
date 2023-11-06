@@ -1,23 +1,18 @@
 ﻿using BenchmarkDotNet.Attributes;
 using ECommerce.Benchmark.RestAPIs;
 
-namespace ECommerce.Benchmark.APIsBenchmarks
+namespace ECommerce.Benchmark.APIsBenchmarks;
+
+[HtmlExporter]
+public class ColorApiBenchmarks
 {
-    [HtmlExporter]
-    public class ColorApiBenchmarks
+    private readonly ColorsController _colorsController = new();
+
+    [Params(100, 200)] public int IterationCount;
+
+    [Benchmark]
+    public async Task RestGetSmallPayloadAsync()
     {
-        [Params(100, 200)]
-        public int IterationCount;
-
-        private readonly ColorsController _colorsController = new ColorsController();
-
-        [Benchmark]
-        public async Task RestGetSmallPayloadAsync()
-        {
-            for (int i = 0; i < IterationCount; i++)
-            {
-                await _colorsController.GetAllAsync();
-            }
-        }
+        for (var i = 0; i < IterationCount; i++) await _colorsController.GetAllAsync();
     }
 }

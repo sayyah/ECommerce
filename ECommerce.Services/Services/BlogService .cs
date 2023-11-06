@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.Services;
 
@@ -50,7 +47,7 @@ public class BlogService : EntityService<Blog>, IBlogService
 
         var result = _blogs.Where(x => x.Title.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Blog>> {Code = ServiceCode.Info, Message = "برندی یافت نشد"};
+            return new ServiceResult<List<Blog>> { Code = ServiceCode.Info, Message = "برندی یافت نشد" };
         return new ServiceResult<List<Blog>>
         {
             Code = ServiceCode.Success,
@@ -75,7 +72,7 @@ public class BlogService : EntityService<Blog>, IBlogService
 
     public async Task<ServiceResult> Edit(BlogViewModel blogViewModel)
     {
-        var result =await _http.PutAsync<BlogViewModel>(Url, blogViewModel);
+        var result = await _http.PutAsync(Url, blogViewModel);
         _blogs = null;
         return Return(result);
     }
@@ -95,8 +92,10 @@ public class BlogService : EntityService<Blog>, IBlogService
                 Message = "با موفقیت حذف شد"
             };
         }
+
         _blogs = null;
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<BlogViewModel>> GetById(int id)
@@ -106,21 +105,21 @@ public class BlogService : EntityService<Blog>, IBlogService
     }
 
     public async Task<ServiceResult<List<BlogViewModel>>> TopBlogs(string CategoryId = null, string search = "",
-    int pageNumber = 0, int pageSize = 3, int blogSort = 1 )
+        int pageNumber = 0, int pageSize = 3, int blogSort = 1)
     {
         var command = "Get?" +
                       $"PaginationParameters.PageNumber={pageNumber}&" +
                       $"PaginationParameters.PageSize={pageSize}&";
         if (!string.IsNullOrEmpty(search)) command += $"PaginationParameters.Search={search}&";
         if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
-   
+
         command += $"BlogSort={blogSort}";
         var result = await _http.GetAsync<List<BlogViewModel>>(Url, command);
         return Return(result);
     }
 
     public async Task<ServiceResult<List<BlogViewModel>>> TopBlogsByTagText(string CategoryId = "", string TagText = "",
-    int pageNumber = 0, int pageSize = 3, int blogSort = 1)
+        int pageNumber = 0, int pageSize = 3, int blogSort = 1)
     {
         var command = "GetByTagText?" +
                       $"PaginationParameters.PageNumber={pageNumber}&" +
@@ -137,7 +136,5 @@ public class BlogService : EntityService<Blog>, IBlogService
     {
         var result = await _http.GetAsync<BlogDetailsViewModel>(Url, $"GetByUrl?blogUrl={blogUrl}");
         return Return(result);
-
     }
-
 }

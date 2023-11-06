@@ -1,4 +1,4 @@
-﻿using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

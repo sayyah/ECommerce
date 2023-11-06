@@ -1,9 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products;
@@ -104,16 +99,14 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        foreach(var upload in Uploads)
-        {
+        foreach (var upload in Uploads)
             if (upload.FileName.Split('.').Last().ToLower() != "webp")
             {
                 ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
                 await Initial();
                 return Page();
             }
-        }
-      
+
         if (ModelState.IsValid)
         {
             var result = await _productService.Add(Product);
@@ -134,7 +127,7 @@ public class CreateModel : PageModel
                 }
 
                 return RedirectToPage("/Products/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             }
 
             Message = result.Message;

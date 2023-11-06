@@ -1,5 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
+﻿using ECommerce.Entities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,7 +50,7 @@ public class CreateModel : PageModel
             var result = await _brandService.Add(Brand);
             if (result.Code == 0)
                 return RedirectToPage("/Brands/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

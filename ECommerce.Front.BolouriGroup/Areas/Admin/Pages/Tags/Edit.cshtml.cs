@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Tags;
 
@@ -33,6 +30,7 @@ public class EditModel : PageModel
             Code = "Error";
             return Page();
         }
+
         if (ModelState.IsValid)
         {
             var result = await _tagService.Edit(Tag);
@@ -40,7 +38,7 @@ public class EditModel : PageModel
             Code = result.Code.ToString();
             if (result.Code == 0)
                 return RedirectToPage("/Tags/Index",
-                    new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);

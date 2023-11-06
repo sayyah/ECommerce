@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class PaymentMethodService : EntityService<PaymentMethod>, IPaymentMethodService
 
@@ -34,7 +30,7 @@ public class PaymentMethodService : EntityService<PaymentMethod>, IPaymentMethod
 
         var result = _paymentMethods.Where(x => x.AccountNumber.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<PaymentMethod>> {Code = ServiceCode.Info, Message = "شماره حسابی یافت نشد"};
+            return new ServiceResult<List<PaymentMethod>> { Code = ServiceCode.Info, Message = "شماره حسابی یافت نشد" };
         return new ServiceResult<List<PaymentMethod>>
         {
             Code = ServiceCode.Success,
@@ -71,8 +67,10 @@ public class PaymentMethodService : EntityService<PaymentMethod>, IPaymentMethod
                 Message = "با موفقیت حذف شد"
             };
         }
+
         _paymentMethods = null;
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<PaymentMethod>> GetById(int id)

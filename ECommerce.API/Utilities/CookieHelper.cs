@@ -28,10 +28,7 @@ public static class CookieHelper
     public static T GetCookie<T>(this HttpContext context, string key)
     {
         context.Request.Cookies.TryGetValue(key, out var value);
-        if (value == null)
-        {
-            return default;
-        }
+        if (value == null) return default;
 
         //var val = System.Text.Json.JsonSerializer.Deserialize<T>(value);
         var val = JsonConvert.DeserializeObject<T>(value);

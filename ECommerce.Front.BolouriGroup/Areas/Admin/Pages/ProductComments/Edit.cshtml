@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductComments.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -35,11 +35,11 @@
                 <form class="form" method="post" asp-page-handler="OnPost">
                     <input hidden="hidden" asp-for="@Model.ProductComment.Id"/>
                     <input hidden="hidden" asp-for="@Model.ProductComment.IsAccepted"/>
-                    <input hidden="hidden" asp-for="@Model.ProductComment.IsAnswered"/> 
+                    <input hidden="hidden" asp-for="@Model.ProductComment.IsAnswered"/>
                     <input hidden="hidden" asp-for="@Model.ProductComment.Email"/>
                     <input hidden="hidden" asp-for="@Model.ProductComment.UserId"/>
                     <input hidden="hidden" asp-for="@Model.ProductComment.AnswerId"/>
-                    <input hidden="hidden" asp-for="@Model.ProductComment.ProductId"/>  
+                    <input hidden="hidden" asp-for="@Model.ProductComment.ProductId"/>
                     <input hidden="hidden" asp-for="@Model.ProductComment.EmployeeId"/>
                     <input hidden="hidden" asp-for="@Model.ProductComment.CreatorUserId"/>
                     <div class="card-body">
@@ -54,37 +54,37 @@
                             <span asp-validation-for="@Model.ProductComment.Text" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
-                            <label>پاسخ ادمین</label>                           
+                            <label>پاسخ ادمین</label>
                             <input asp-for="@Model.ProductComment.Answer.Text" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.ProductComment.Answer.Text" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>کالا</label>
                             <input asp-for="@Model.ProductComment.Product.Name?" disabled="disabled" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.ProductComment.Product.Name?" class="mt-5" style="color: red; margin-top: 10px"></span>
-                        </div>                      
+                        </div>
                         <div class="form-group">
                             <label>تاریخ</label>
                             <input asp-for="@Model.ProductComment.DateTime" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.ProductComment.DateTime" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
-                            
-                      <div class="form-group">
+
+                        <div class="form-group">
                             <label>تصویر کالا</label>
-                             <ul class="details-preview">                          
+                            <ul class="details-preview">
                                 @foreach (var image in Model.ProductComment.Product?.Images)
                                 {
-                                <img style="width: 25%" src="~/@($"{image.Path}/{image.Name}")" alt="@image.Alt">   
-                                }                               
+                                    <img style="width: 25%" src="~/@($"{image.Path}/{image.Name}")" alt="@image.Alt">
+                                }
                             </ul>
                         </div>
                         <div class="form-group">
-                            <input asp-for="@Model.ProductComment.CreatedDate" type="datetime" hidden="hidden" />
-                            <input asp-for="@Model.ProductComment.CreatorUserId" type="number" hidden="hidden" />                            
+                            <input asp-for="@Model.ProductComment.CreatedDate" type="datetime" hidden="hidden"/>
+                            <input asp-for="@Model.ProductComment.CreatorUserId" type="number" hidden="hidden"/>
                         </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary mr-2">ویرایش</button>
-                        <a class="btn btn-secondary" asp-Page="/ProductComments/index" asp-area="Admin">لغو</a>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary mr-2">ویرایش</button>
+                            <a class="btn btn-secondary" asp-Page="/ProductComments/index" asp-area="Admin">لغو</a>
                         </div>
                     </div>
                 </form>

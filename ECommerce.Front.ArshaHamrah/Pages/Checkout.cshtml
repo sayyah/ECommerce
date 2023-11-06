@@ -1,6 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Pages.CheckoutModel
+@model CheckoutModel
 @{
     ViewData["Title"] = "پرداخت";
     decimal sum = 0;
@@ -122,7 +122,7 @@
                                 <div class="payment-content">
                                     <p>درگاه پرداخت بانک مورد نظر خود را انتخاب کنید</p>
                                     <div class="row">
-                                       @* <input type="radio" id="zarinpal" name="Portal" value="zarinpal">
+                                        @* <input type="radio" id="zarinpal" name="Portal" value="zarinpal">
                                         <label for="zarinpal">
                                             <img src="img/payment/zarinpal.png" alt="">
                                         </label>*@
@@ -143,8 +143,9 @@
     </div>
 </div>
 <!-- checkout end -->
+
 @section Scripts
-    {
+{
     <script>
         function setCities() {
             var stateId = $('#state').val();

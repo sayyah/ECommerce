@@ -1,5 +1,5 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,15 +9,8 @@ namespace ECommerce.Front.ArshaHamrah.Pages;
 
 public class PaymentSuccessfulModel : PageModel
 {
-    private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly ICartService _cartService;
-
-    public string Refid { get; set; }
-    [TempData] public string Message { get; set; }
-
-    [TempData] public string Code { get; set; }
-    public PurchaseOrder PurchaseOrder { get; set; }
-    public List<PurchaseOrderViewModel> CartList { get; set; }
+    private readonly IPurchaseOrderService _purchaseOrderService;
 
 
     public PaymentSuccessfulModel(IPurchaseOrderService purchaseOrderService, ICartService cartService)
@@ -26,6 +19,13 @@ public class PaymentSuccessfulModel : PageModel
         _cartService = cartService;
     }
 
+    public string Refid { get; set; }
+    [TempData] public string Message { get; set; }
+
+    [TempData] public string Code { get; set; }
+    public PurchaseOrder PurchaseOrder { get; set; }
+    public List<PurchaseOrderViewModel> CartList { get; set; }
+
     public async Task<ActionResult> OnGet(string factor, string status, string authority)
     {
         if (string.IsNullOrEmpty(status) == false && string.IsNullOrEmpty(authority) == false &&
@@ -33,7 +33,7 @@ public class PaymentSuccessfulModel : PageModel
         {
             var resultOrder = await _purchaseOrderService.GetByUserId();
             PurchaseOrder = resultOrder.ReturnData;
-            var amount =Convert.ToInt32(PurchaseOrder.Amount);
+            var amount = Convert.ToInt32(PurchaseOrder.Amount);
             var statusInt = await new Payment(amount).Verification(authority);
             switch (statusInt.Status)
             {
@@ -41,7 +41,7 @@ public class PaymentSuccessfulModel : PageModel
                     Message = "اطلاعات ارسال شده ناقص است.";
                     break;
                 case -2:
-                    Message = "مشکل نامشخص در درگاه پرداخت با کد " + statusInt.Status.ToString();
+                    Message = "مشکل نامشخص در درگاه پرداخت با کد " + statusInt.Status;
                     break;
                 case -11:
                     Message = "درخواست مورد نظر یافت نشد.";
@@ -57,7 +57,7 @@ public class PaymentSuccessfulModel : PageModel
                     //Success
 
                     Refid = statusInt.RefId.ToString();
-                    PurchaseOrder.Transaction = new();
+                    PurchaseOrder.Transaction = new Transaction();
                     PurchaseOrder.Transaction.RefId = Refid;
                     PurchaseOrder.Transaction.Amount = amount;
                     var result = await _purchaseOrderService.Pay(PurchaseOrder);
@@ -68,7 +68,7 @@ public class PaymentSuccessfulModel : PageModel
                     return Page();
             }
         }
+
         return RedirectToPage("Error", new { message = "مشکل در درگاه پرداخت" });
     }
-     
 }

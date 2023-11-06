@@ -1,6 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.IServices;
 
@@ -13,10 +11,12 @@ public interface IBlogService : IEntityService<Blog>
     Task<ServiceResult> Edit(BlogViewModel blogViewModel);
     Task<ServiceResult> Delete(int id);
     Task<ServiceResult<BlogViewModel>> GetById(int id);
-    Task<ServiceResult<List<BlogViewModel>>> TopBlogs(string CategoryId = "", string search = "",
-    int pageNumber = 0, int pageSize = 10, int blogSort = 1);
-    Task<ServiceResult<List<BlogViewModel>>> TopBlogsByTagText(string CategoryId = "", string TagText = "",
-    int pageNumber = 0, int pageSize = 10, int blogSort = 1);
-    Task<ServiceResult<BlogDetailsViewModel>> GetByUrl(string blogUrl);
 
+    Task<ServiceResult<List<BlogViewModel>>> TopBlogs(string CategoryId = "", string search = "",
+        int pageNumber = 0, int pageSize = 10, int blogSort = 1);
+
+    Task<ServiceResult<List<BlogViewModel>>> TopBlogsByTagText(string CategoryId = "", string TagText = "",
+        int pageNumber = 0, int pageSize = 10, int blogSort = 1);
+
+    Task<ServiceResult<BlogDetailsViewModel>> GetByUrl(string blogUrl);
 }

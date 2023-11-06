@@ -1,5 +1,5 @@
 ﻿@page "/Admin/BlogCategory/{handler?}"
-@model ArshaHamrah.Areas.Admin.Pages.BlogCategoryModel
+@model BlogCategoryModel
 @{
     ViewData["Title"] = "دسته بندی وبلاگ";
 }
@@ -80,7 +80,7 @@
 
 @section Scripts
 {
-	<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

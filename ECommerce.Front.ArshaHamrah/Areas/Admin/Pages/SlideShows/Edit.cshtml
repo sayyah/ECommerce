@@ -1,6 +1,6 @@
 ﻿@page "/Admin/EditSlideShow/{handler?}"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.SlideShows.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -74,7 +74,7 @@
 @section Scripts
 {
     <script src="/Admin/js/bootstrap-touchspin.js"></script>
-<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

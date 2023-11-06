@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogComments.EditModel
+@model EditModel
 @{
 }
 @if (Model.Message != null)
@@ -33,13 +33,13 @@
                 </div>
                 <!--begin::Form-->
                 <form class="form" method="post" asp-page-handler="OnPost">
-                     <input hidden="hidden" asp-for="@Model.BlogComment.Id"/>
+                    <input hidden="hidden" asp-for="@Model.BlogComment.Id"/>
                     <input hidden="hidden" asp-for="@Model.BlogComment.IsAccepted"/>
                     <input hidden="hidden" asp-for="@Model.BlogComment.IsAnswered"/>
                     <input hidden="hidden" asp-for="@Model.BlogComment.Email"/>
                     <input hidden="hidden" asp-for="@Model.BlogComment.UserId"/>
                     <input hidden="hidden" asp-for="@Model.BlogComment.AnswerId"/>
-                    <input hidden="hidden" asp-for="@Model.BlogComment.BlogId"/> 
+                    <input hidden="hidden" asp-for="@Model.BlogComment.BlogId"/>
                     <input hidden="hidden" asp-for="@Model.BlogComment.EmployeeId"/>
                     <div class="card-body">
                         <div class="form-group">
@@ -53,30 +53,30 @@
                             <span asp-validation-for="@Model.BlogComment.Text" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
-                            <label>پاسخ ادمین</label>                           
+                            <label>پاسخ ادمین</label>
                             <input asp-for="@Model.BlogComment.Answer.Text" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.BlogComment.Answer.Text" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>کالا</label>
                             <input asp-for="@Model.BlogComment.Blog.Title?" disabled="disabled" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.BlogComment.Blog.Title?" class="mt-5" style="color: red; margin-top: 10px"></span>
-                        </div>                      
+                        </div>
                         <div class="form-group">
                             <label>تاریخ</label>
                             <input asp-for="@Model.BlogComment.DateTime" class="form-control form-control-solid"/>
                             <span asp-validation-for="@Model.BlogComment.DateTime" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
-                          
-                      <div class="form-group">
+
+                        <div class="form-group">
                             <label>تصویر کالا</label>
-                             <ul class="details-preview">                                                         
-                                <img style="width: 25%" src="~/@($"{Model.BlogComment.Blog.Image.Path}/{Model.BlogComment.Blog.Image.Name}")" alt="@Model.BlogComment.Blog.Image.Alt">   
+                            <ul class="details-preview">
+                                <img style="width: 25%" src="~/@($"{Model.BlogComment.Blog.Image.Path}/{Model.BlogComment.Blog.Image.Name}")" alt="@Model.BlogComment.Blog.Image.Alt">
                             </ul>
-                        </div>                   
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary mr-2">ویرایش</button>
-                        <a class="btn btn-secondary" asp-Page="/BlogComments/index" asp-area="Admin">لغو</a>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary mr-2">ویرایش</button>
+                            <a class="btn btn-secondary" asp-Page="/BlogComments/index" asp-area="Admin">لغو</a>
                         </div>
                     </div>
                 </form>

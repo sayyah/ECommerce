@@ -1,4 +1,3 @@
-using Ecommerce.Entities.Helper;
 using ECommerce.Services.IServices;
 using ECommerce.Services.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -34,10 +33,7 @@ builder.Services.Configure<KestrelServerOptions>(options => { options.AllowSynch
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.WithOrigins("https://widget-react.raychat.io").AllowAnyMethod();
-        });
+        policy => { policy.WithOrigins("https://widget-react.raychat.io").AllowAnyMethod(); });
 });
 //If using IIS:
 builder.Services.Configure<IISServerOptions>(options => { options.AllowSynchronousIO = true; });
@@ -49,7 +45,7 @@ builder.Services.Configure<IISServerOptions>(options => { options.AllowSynchrono
 //    //options.AppendTrailingSlash = true;
 //});
 
-builder.Services.AddTransient(_ => new HttpClient {BaseAddress = new Uri(_frontSetting.BaseAddress)});
+builder.Services.AddTransient(_ => new HttpClient { BaseAddress = new Uri(_frontSetting.BaseAddress) });
 builder.Services.AddHttpContextAccessor();
 
 #region DI

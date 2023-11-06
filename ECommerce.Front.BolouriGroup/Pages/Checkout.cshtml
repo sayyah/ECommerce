@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Pages.CheckoutModel
+@model CheckoutModel
 @{
     ViewData["Title"] = "فروشگاه اینترنتی بلوری";
 }
@@ -44,7 +44,7 @@
                     <div class="account-card">
                         <div class="account-title">
                             <h4>نشانی تحویل</h4>
-                            <p style="font-size:14px">لطفا آدرس خود را انتخاب کنید</p>
+                            <p style="font-size: 14px">لطفا آدرس خود را انتخاب کنید</p>
                         </div>
                         @if (Model.SendInformationList.Any())
                         {
@@ -70,7 +70,7 @@
 
                             <input type="text" class="form-control" asp-for="SendInformation.RecipientName" placeholder="نام تحویل گیرنده ...">
                             <span asp-validation-for="SendInformation.RecipientName" class="mt-5" style="color: red; margin-top: 10px"></span>
-                            <br />
+                            <br/>
                             <input type="text" class="form-control" asp-for="SendInformation.Mobile" placeholder="... شماره همراه" dir="ltr">
                             <span asp-validation-for="SendInformation.Mobile" class="mt-5" style="color: red; margin-top: 10px"></span>
                             <input type="text" class="form-control" asp-for="SendInformation.PostalCode" placeholder="... کد پستی" dir="ltr" style="margin-top: 10px">
@@ -81,14 +81,14 @@
                                     <option value="@state.Id">@state.Name</option>
                                 }
                             </select>
-                            <br />
+                            <br/>
                             <select asp-for="SendInformation.CityId" class="custom-select form-control" id="city">
                                 @foreach (var city in Model.CityList)
                                 {
                                     <option stateId="@city.StateId" value="@city.Id">@city.Name</option>
                                 }
                             </select>
-                            <br />
+                            <br/>
                             <textarea asp-for="SendInformation.Address" class="custom-textarea form-control" placeholder="آدرس شما ..."></textarea>
                             <span asp-validation-for="SendInformation.Address" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
@@ -110,7 +110,7 @@
                                     <img src="/img/payment/sadad.webp" alt="سداد" loading="lazy">
                                 </div>
                             </div>
-                           @*  <div class="row">
+                            @*  <div class="row">
                                 <input type="radio" id="zarinpal" checked="checked" name="Portal" width="100" value="zarinpal">
                                 <div class="payment active">
                                     <h3>زرین پال</h3>
@@ -129,8 +129,8 @@
                                 </li>
                             </ul>
 
-                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control" id="discountCode" />
-                            <br />
+                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control" id="discountCode"/>
+                            <br/>
                             <div class="row">
                                 <button type="button" onclick="CalculateDiscount()" class="btn btn-inline col-md-6"> اعمال کد تخفیف</button>
                                 <button type="button" onclick="RemoveDiscount()" class="btn btn-warning col-md-6"> حذف تخفیف</button>
@@ -152,8 +152,9 @@
         </form>
     </div>
 </section>
+
 @section Scripts
-    {
+{
     <script>
         function fillAddress(id) {
             var arrayOfArrays = @Html.Raw(Json.Serialize(Model.SendInformationList));

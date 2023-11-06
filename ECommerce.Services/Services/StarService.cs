@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class StarService : EntityService<ProductUserRank>, IStarService
 {
@@ -30,11 +26,12 @@ public class StarService : EntityService<ProductUserRank>, IStarService
     public async Task<ServiceResult> SaveStars(int productId, int starNumber)
     {
         var currentUser = _cookieService.GetCurrentUser();
-        if (currentUser.Id == 0) return new ServiceResult
-        {
-            Message = "برای امتیاز دادن ابتدا لاگین کنید",
-            Code = ServiceCode.Error
-        };
+        if (currentUser.Id == 0)
+            return new ServiceResult
+            {
+                Message = "برای امتیاز دادن ابتدا لاگین کنید",
+                Code = ServiceCode.Error
+            };
         var productUserRank = new ProductUserRank
         {
             ProductId = productId,
@@ -45,10 +42,10 @@ public class StarService : EntityService<ProductUserRank>, IStarService
         return new ServiceResult
         {
             Message = result.Code == 0
-            ? "امتیاز شما با موفقیت ذخیره شد"
-            : (result.Messages != null && result.Messages.Any())
-            ? result.Messages.First()
-            : "متاسفانه امتیاز شما ذخیره نشده. به پشتیبانی سایت اطلاع دهید",
+                ? "امتیاز شما با موفقیت ذخیره شد"
+                : result.Messages != null && result.Messages.Any()
+                    ? result.Messages.First()
+                    : "متاسفانه امتیاز شما ذخیره نشده. به پشتیبانی سایت اطلاع دهید",
             Code = result.Code == 0 ? ServiceCode.Success : ServiceCode.Error
         };
     }

@@ -1,8 +1,8 @@
 ﻿@page "{handler?}"
-@using Ecommerce.Entities.Helper
-@using Ecommerce.Entities
+@using ECommerce.Entities
+@using ECommerce.Entities.Helper
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.Products.PriceModel
+@model PriceModel
 @{
     var i = 1 + (Model.Prices.PaginationDetails.CurrentPage - 1) * Model.Prices.PaginationDetails.PageSize;
 }
@@ -245,7 +245,7 @@
                     }
                 </select>
                 <input type="text" id="searchNameId" name="search" placeholder="جستجو کالا براساس نام . . ." title="نام مورد نظر را وارد کنید" class="form-control form-control-solid" onkeyup="filterOnName()">
-               
+
                 <select id="articleId" class="col-md-12 js-example-basic-single  form-control">
                     @foreach (var mGroup in Model.HolooArticle)
                     {
@@ -254,7 +254,7 @@
                 </select>
                 <br/>
                 <input type="text" id="searchCodeId" name="search" placeholder="جستجوری کالا براساس کد . . ." title="کد مورد نظر را وارد کنید" class="form-control form-control-solid">
-                <button type="button"  class="btn btn-secondary col-md-12"  onclick="filterOnCode()">جستجو براساس کد</button>
+                <button type="button" class="btn btn-secondary col-md-12" onclick="filterOnCode()">جستجو براساس کد</button>
                 <div id="articleDescriptionId"></div>
             </div>
             <div class="modal-footer">

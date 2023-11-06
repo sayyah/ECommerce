@@ -1,5 +1,5 @@
 ﻿@page "/Admin/CreateBlogAuther"
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogAuthors.CreateModel
+@model CreateModel
 @{
     ViewData["Title"] = "اضافه کردن نویسنده وبلاگ";
 }
@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-group">
                             <label>نام انگلیسی</label>
-                            <input asp-for="@Model.BlogAuthor.EnglishName" class="form-control form-control-solid"   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 48 && event.charCode <= 57)"/>
+                            <input asp-for="@Model.BlogAuthor.EnglishName" class="form-control form-control-solid" onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 48 && event.charCode <= 57)"/>
                             <span asp-validation-for="@Model.BlogAuthor.EnglishName" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
@@ -53,7 +53,7 @@
                         <div class="form-group">
                             <label>تصویر نویسنده</label>
                             <div class="custom-file">
-                                <input asp-for="@Model.Upload" type="file" class="custom-file-input" id="customFile" accept=".webp" />
+                                <input asp-for="@Model.Upload" type="file" class="custom-file-input" id="customFile" accept=".webp"/>
                                 <label class="custom-file-label" for="customFile">انتخاب فایل</label>
                                 @Html.ValidationMessage("IvalidFileExtention")
                             </div>
@@ -72,7 +72,7 @@
 
 @section Scripts
 {
-<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

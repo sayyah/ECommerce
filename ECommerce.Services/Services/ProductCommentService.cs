@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class ProductCommentService : EntityService<ProductComment>, IProductCommentService
 {
@@ -30,14 +26,13 @@ public class ProductCommentService : EntityService<ProductComment>, IProductComm
         //return Return(result);
         var result = await _http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
-        {            
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult> Edit(ProductComment productComment)
@@ -46,31 +41,30 @@ public class ProductCommentService : EntityService<ProductComment>, IProductComm
         //_productAttributes = null;
         return Return(result);
     }
+
     public async Task<ServiceResult> Accept(ProductComment productComment)
     {
         var result = await Update(Url, productComment);
-        if (result.Code == ResultCode.Success && productComment.IsAccepted == true)
-        {
+        if (result.Code == ResultCode.Success && productComment.IsAccepted)
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت تایید شد"
             };
-        }
         if (result.Code == ResultCode.Success && productComment.IsAccepted == false)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "وضعیت پیام به عدم تایید تغییر یافت"
             };
-        }
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<ProductComment>>> GetAllAccesptedComments(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<ProductComment>>> GetAllAccesptedComments(string search = "",
+        int pageNumber = 0, int pageSize = 10)
     {
-        var result = await ReadList(Url, $"GetAllAccesptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
+        var result = await ReadList(Url,
+            $"GetAllAccesptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
 
@@ -80,11 +74,11 @@ public class ProductCommentService : EntityService<ProductComment>, IProductComm
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<ProductComment>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<ProductComment>>> Load(string search = "", int pageNumber = 0,
+        int pageSize = 10)
     {
         var result = await ReadList(Url, $"Get?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
-
 }
 

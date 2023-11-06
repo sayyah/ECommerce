@@ -1,6 +1,6 @@
 ﻿@page "/Admin/CreateSlideShow"
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArshaHamrah.Areas.Admin.Pages.SlideShows.CreateModel
+@model CreateModel
 @{
     ViewData["Title"] = "اضافه کردن اسلاید شو";
 }
@@ -33,14 +33,14 @@
                         ایجاد اسلاید شو جدید
                     </h3>
                 </div>
-                  <form asp-page-handler="OnGet">
-                <div class="form-actions no-color">
-                    <p>
-                        جستجو بر اساس نام:
-                        <input type="text" id="searchId" name="search" value="@Model.Products.PaginationDetails.Search"/>
-                        <input type="button" id="searchBtn" value="بجو" class="btn btn-primary"/>
-                    </p>
-                </div>
+                <form asp-page-handler="OnGet">
+                    <div class="form-actions no-color">
+                        <p>
+                            جستجو بر اساس نام:
+                            <input type="text" id="searchId" name="search" value="@Model.Products.PaginationDetails.Search"/>
+                            <input type="button" id="searchBtn" value="بجو" class="btn btn-primary"/>
+                        </p>
+                    </div>
                 </form>
                 <!--begin::Form-->
                 <form class="form" method="post" asp-page-handler="OnPost" enctype="multipart/form-data">
@@ -90,7 +90,7 @@
 @section Scripts
 {
     <script src="/Admin/js/bootstrap-touchspin.js"></script>
-<script src="~/Admin/js/ckeditor/ckeditor.js"></script>
+    <script src="~/Admin/js/ckeditor/ckeditor.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {

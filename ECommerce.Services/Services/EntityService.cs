@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class EntityService<T> : IEntityService<T>
 {
@@ -56,15 +53,6 @@ public class EntityService<T> : IEntityService<T>
         return response;
     }
 
-    public async Task<ApiResult<object>> CreateWithoutToken(string url, T entity)
-    {
-        var response = await _http.PostAsyncWithoutToken<T>(url, entity);
-        response.Messages = response.Code > 0
-            ? new List<string> { response.GetBody() }
-            : new List<string> { "با موفقیت ذخیره شد" };
-        return response;
-    }
-
     public async Task<ApiResult> UpdateWithReturnId(string url, T entity)
     {
         var response = await _http.PutAsync(url, entity);
@@ -86,6 +74,7 @@ public class EntityService<T> : IEntityService<T>
             : new List<string> { "با موفقیت ویرایش شد" };
         return response;
     }
+
     public async Task<ApiResult> Update(string url, T entity, string apiName)
     {
         var response = await _http.PutAsync(url, entity, apiName);
@@ -95,14 +84,12 @@ public class EntityService<T> : IEntityService<T>
         }
         else
         {
-            if (response.Messages?.Count() == 0)
-            {
-                response.Messages = new List<string> { "با موفقیت ویرایش شد" };
-            }
+            if (response.Messages?.Count() == 0) response.Messages = new List<string> { "با موفقیت ویرایش شد" };
         }
 
         return response;
     }
+
     public async Task<ApiResult> Delete(string url, int entityId)
     {
         var response = await _http.DeleteAsync(url, entityId);
@@ -161,5 +148,14 @@ public class EntityService<T> : IEntityService<T>
             Code = ServiceCode.Error,
             Message = result.GetBody()
         };
+    }
+
+    public async Task<ApiResult<object>> CreateWithoutToken(string url, T entity)
+    {
+        var response = await _http.PostAsyncWithoutToken(url, entity);
+        response.Messages = response.Code > 0
+            ? new List<string> { response.GetBody() }
+            : new List<string> { "با موفقیت ذخیره شد" };
+        return response;
     }
 }

@@ -1,21 +1,23 @@
-﻿using Ecommerce.Entities;
+﻿using System.Security.Cryptography;
+using System.Text;
 using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Security.Cryptography;
-using System.Text;
 using PersianDate.Standard;
 using ZarinpalSandbox;
-using Ecommerce.Entities.Helper;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-
 public class InvoiceModel : PageModel
 {
-    private readonly IUserService _userService;
     private readonly IPurchaseOrderService _purchaseOrderService;
+    private readonly IUserService _userService;
+
+    public InvoiceModel(IPurchaseOrderService purchaseOrderService, IUserService userService)
+    {
+        _purchaseOrderService = purchaseOrderService;
+        _userService = userService;
+    }
+
     [BindProperty] public long OrderId { get; set; }
     public string Refid { get; set; }
     public string SystemTraceNo { get; set; }
@@ -23,12 +25,6 @@ public class InvoiceModel : PageModel
 
     [TempData] public string Code { get; set; }
     public PurchaseOrder PurchaseOrder { get; set; }
-
-    public InvoiceModel(IPurchaseOrderService purchaseOrderService, IUserService userService)
-    {
-        _purchaseOrderService = purchaseOrderService;
-        _userService = userService;
-    }
 
     public async Task<ActionResult> OnGet(PurchaseResult result)
     {
@@ -60,6 +56,7 @@ public class InvoiceModel : PageModel
             {
                 PurchaseOrder.DiscountAmount = 0;
             }
+
             var statusInt = await new Payment(amount).Verification(authority);
             switch (statusInt.Status)
             {
@@ -67,7 +64,7 @@ public class InvoiceModel : PageModel
                     Message = "اطلاعات ارسال شده ناقص است.";
                     break;
                 case -2:
-                    Message = "مشکل نامشخص در درگاه پرداخت با کد " + statusInt.Status.ToString();
+                    Message = "مشکل نامشخص در درگاه پرداخت با کد " + statusInt.Status;
                     break;
                 case -11:
                     Message = "درخواست مورد نظر یافت نشد.";
@@ -84,7 +81,7 @@ public class InvoiceModel : PageModel
                     Refid = statusInt.RefId.ToString();
                     OrderId = PurchaseOrder.OrderId;
                     PurchaseOrder.PaymentDate = DateTime.Now;
-                    PurchaseOrder.Transaction = new()
+                    PurchaseOrder.Transaction = new Transaction
                     {
                         RefId = Refid,
                         Amount = amount,
@@ -99,13 +96,16 @@ public class InvoiceModel : PageModel
                     }
                     else if (result.Code == ServiceCode.Success)
                     {
-                        await _userService.SendInvocieSms(result.Message ?? "", "09111307006", DateTime.Now.ToString("MM/dd/yyyy"));
+                        await _userService.SendInvocieSms(result.Message ?? "", "09111307006",
+                            DateTime.Now.ToString("MM/dd/yyyy"));
                         Code = result.Code.ToString();
                         Message = "سفارش شما با موفقیت ثبت شد";
                     }
+
                     return Page();
             }
         }
+
         return RedirectToPage("Error", new { message = "مشکل در درگاه پرداخت" });
     }
 
@@ -115,7 +115,8 @@ public class InvoiceModel : PageModel
         var symmetric = SymmetricAlgorithm.Create("TripleDes");
         symmetric.Mode = CipherMode.ECB;
         symmetric.Padding = PaddingMode.PKCS7;
-        var merchantKey = "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz";//"8v8AEee8YfZX+wwc1TzfShRgH3O9WOho";// "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz";
+        var merchantKey =
+            "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz"; //"8v8AEee8YfZX+wwc1TzfShRgH3O9WOho";// "CSlQf8zTne2YH3mnrbwAnKx3rl9ckHKz";
         var encryptor = symmetric.CreateEncryptor(Convert.FromBase64String(merchantKey), new byte[8]);
 
         var signedData = Convert.ToBase64String(encryptor.TransformFinalBlock(dataBytes, 0, dataBytes.Length));
@@ -146,11 +147,11 @@ public class InvoiceModel : PageModel
         {
             PurchaseOrder.DiscountAmount = 0;
         }
+
         var ipgUri = "https://sadad.shaparak.ir/api/v0/Advice/Verify";
 
         var res = CallApi<VerifyResultData>(ipgUri, data);
         if (res != null && res.Result != null)
-        {
             if (res.Result.ResCode == "0")
             {
                 OrderId = PurchaseOrder.OrderId;
@@ -158,7 +159,7 @@ public class InvoiceModel : PageModel
                 res.Result.Succeed = true;
                 SystemTraceNo = res.Result.SystemTraceNo;
                 PurchaseOrder.PaymentDate = DateTime.Now;
-                PurchaseOrder.Transaction = new()
+                PurchaseOrder.Transaction = new Transaction
                 {
                     RefId = res.Result.RetrivalRefNo,
                     Amount = amount,
@@ -180,16 +181,17 @@ public class InvoiceModel : PageModel
                     Code = resulPay.Code.ToString();
                     Message = "سفارش شما با موفقیت ثبت شد";
                 }
+
                 Refid = res.Result.RetrivalRefNo;
                 return Page();
             }
-        }
+
         return RedirectToPage("Error", new { message = "مشکل در درگاه پرداخت " + res.Result.Description });
     }
 
     public IActionResult OnGetFactorPrint(long orderId)
     {
-        return RedirectToPage("InvoiceReportPrint", new { orderId = orderId });
+        return RedirectToPage("InvoiceReportPrint", new { orderId });
     }
 
     public static async Task<T> CallApi<T>(string apiUrl, object value)
@@ -197,11 +199,8 @@ public class InvoiceModel : PageModel
         using var client = new HttpClient();
         client.BaseAddress = new Uri(apiUrl);
         client.DefaultRequestHeaders.Accept.Clear();
-        HttpResponseMessage response = await client.PostAsJsonAsync(apiUrl, value);
-        if (response.IsSuccessStatusCode)
-        {
-            return await response.Content.ReadFromJsonAsync<T>();
-        }
-        return default(T);
+        var response = await client.PostAsJsonAsync(apiUrl, value);
+        if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
+        return default;
     }
 }

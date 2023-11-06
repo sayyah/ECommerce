@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
@@ -20,7 +18,7 @@ public class ErrorModel : PageModel
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-    public void OnGet(string message="")
+    public void OnGet(string message = "")
     {
         Message = message;
         RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;

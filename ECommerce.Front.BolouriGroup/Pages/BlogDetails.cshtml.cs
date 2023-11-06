@@ -1,20 +1,16 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Front.BolouriGroup.Models;
+﻿using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
 public class BlogDetailsModel : PageModel
 {
-    private readonly IBlogService _blogService;
     private readonly IBlogCategoryService _blogCategoryService;
     private readonly IBlogCommentService _blogCommentService;
-    private readonly IUserService _userService;
+    private readonly IBlogService _blogService;
     private readonly ITagService _tagService;
+    private readonly IUserService _userService;
+
     public BlogDetailsModel(IBlogService blogService, IBlogCategoryService blogCategoryService,
         IBlogCommentService blogCommentService, IUserService userService, ITagService tagService)
     {
@@ -42,9 +38,10 @@ public class BlogDetailsModel : PageModel
         var blogCategory = await _blogCategoryService.GetById(Blog.BlogCategoryId);
         BlogCategory = blogCategory.ReturnData;
 
-        BlogComments = await _blogCommentService.GetAllAccesptedComments(search: Convert.ToString(Blog.Id), pageNumber, pageSize);
+        BlogComments =
+            await _blogCommentService.GetAllAccesptedComments(Convert.ToString(Blog.Id), pageNumber, pageSize);
 
-        Blogs = await _blogService.TopBlogs(null, null, 1, 3, 1);
+        Blogs = await _blogService.TopBlogs(null, null, 1, 3);
         Categories = await _blogCategoryService.GetAll();
 
         Tags = await _tagService.GetAllBlogTags();
@@ -57,7 +54,6 @@ public class BlogDetailsModel : PageModel
 
     public async Task<IActionResult> OnGetComment(string blogUrl, string name, string email, string text)
     {
-        
         VerifyResultData resultData = new();
         if (string.IsNullOrEmpty(name))
         {
@@ -65,18 +61,21 @@ public class BlogDetailsModel : PageModel
             resultData.Succeed = false;
             return new JsonResult(resultData);
         }
+
         if (string.IsNullOrEmpty(email))
         {
             resultData.Description = "لطفا ایمیل خود را برای ثبت نظر وارد کنید";
             resultData.Succeed = false;
             return new JsonResult(resultData);
         }
+
         if (string.IsNullOrEmpty(text))
         {
             resultData.Description = "لطفا نظر خود را برای ثبت نظر وارد کنید";
             resultData.Succeed = false;
             return new JsonResult(resultData);
         }
+
         BlogComment blogComment = new()
         {
             Email = email,
@@ -87,10 +86,7 @@ public class BlogDetailsModel : PageModel
         };
 
         var user = await _userService.GetUser();
-        if (user.Code == 0)
-        {
-            blogComment.UserId = user.ReturnData.Id;
-        }
+        if (user.Code == 0) blogComment.UserId = user.ReturnData.Id;
 
         var resultProduct = await _blogService.GetByUrl(blogUrl);
         if (resultProduct.Code > 0) return new JsonResult(resultData);
@@ -109,6 +105,7 @@ public class BlogDetailsModel : PageModel
             resultData.Description = "ثبت نظر با مشکل مواجه شد. لطفا مجددا تست کنید";
             resultData.Succeed = false;
         }
+
         return new JsonResult(resultData);
     }
 }

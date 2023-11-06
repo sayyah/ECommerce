@@ -1,8 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using ECommerce.Services.IServices;
-
-namespace ECommerce.Services.Services;
+﻿namespace ECommerce.Services.Services;
 
 public class StoreService : EntityService<Store>, IStoreService
 {
@@ -50,7 +46,7 @@ public class StoreService : EntityService<Store>, IStoreService
 
         var result = _stores.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Store>> {Code = ServiceCode.Info, Message = "انبار یافت نشد"};
+            return new ServiceResult<List<Store>> { Code = ServiceCode.Info, Message = "انبار یافت نشد" };
         return new ServiceResult<List<Store>>
         {
             Code = ServiceCode.Success,
@@ -80,14 +76,13 @@ public class StoreService : EntityService<Store>, IStoreService
         var result = await _http.DeleteAsync(Url, id);
         _stores = null;
         if (result.Code == ResultCode.Success)
-        {   
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Store>> GetById(int id)

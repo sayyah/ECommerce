@@ -47,22 +47,29 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
         <a class="samples" href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-enterMode">
             <code>enterMode</code>
         </a>
-        and <a class="samples" href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-shiftEnterMode">
+        and
+        <a class="samples" href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-shiftEnterMode">
             <code>shiftEnterMode</code>
         </a>
         parameters, respectively.
         You can choose from the following options:
     </p>
     <ul class="samples">
-        <li><strong>
-            <code>ENTER_P</code>
-        </strong> &ndash; new <code>&lt;p&gt;</code> paragraphs are created;</li>
-        <li><strong>
-            <code>ENTER_BR</code>
-        </strong> &ndash; lines are broken with <code>&lt;br&gt;</code> elements;</li>
-        <li><strong>
-            <code>ENTER_DIV</code>
-        </strong> &ndash; new <code>&lt;div&gt;</code> blocks are created.</li>
+        <li>
+            <strong>
+                <code>ENTER_P</code>
+            </strong> &ndash; new <code>&lt;p&gt;</code> paragraphs are created;
+        </li>
+        <li>
+            <strong>
+                <code>ENTER_BR</code>
+            </strong> &ndash; lines are broken with <code>&lt;br&gt;</code> elements;
+        </li>
+        <li>
+            <strong>
+                <code>ENTER_DIV</code>
+            </strong> &ndash; new <code>&lt;div&gt;</code> blocks are created.
+        </li>
     </ul>
     <p>
         The sample code below shows how to configure CKEditor to create a <code>&lt;div&gt;</code> block when <em>Enter</em> key is pressed.
@@ -72,7 +79,8 @@ CKEDITOR.replace( '<em>textarea_id</em>', {
 	<strong>enterMode: CKEDITOR.ENTER_DIV</strong>
 });</pre>
     <p>
-        Note that <code>
+        Note that
+        <code>
             <em>textarea_id</em>
         </code> in the code above is the <code>id</code> attribute of
         the <code>&lt;textarea&gt;</code> element to be replaced.

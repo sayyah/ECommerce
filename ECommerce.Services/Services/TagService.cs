@@ -1,7 +1,4 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.Helper;
-using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.Services;
 
@@ -57,7 +54,8 @@ public class TagService : EntityService<Tag>, ITagService
         }
 
         var result = _tags.Where(x => x.TagText.Contains(filter)).ToList();
-        if (result.Count == 0) return new ServiceResult<List<Tag>> {Code = ServiceCode.Info, Message = "تگی یافت نشد"};
+        if (result.Count == 0)
+            return new ServiceResult<List<Tag>> { Code = ServiceCode.Info, Message = "تگی یافت نشد" };
         return new ServiceResult<List<Tag>>
         {
             Code = ServiceCode.Success,
@@ -87,14 +85,13 @@ public class TagService : EntityService<Tag>, ITagService
         var result = await _http.DeleteAsync(Url, id);
         _tags = null;
         if (result.Code == ResultCode.Success)
-        {
             return new ServiceResult
             {
                 Code = ServiceCode.Success,
                 Message = "با موفقیت حذف شد"
             };
-        }
-        return new ServiceResult { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        return new ServiceResult
+            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<TagProductId>>> GetTagsByProductId(int productId)
@@ -108,6 +105,7 @@ public class TagService : EntityService<Tag>, ITagService
         var result = await _http.GetAsync<Tag>(Url, $"GetById?id={id}");
         return Return(result);
     }
+
     public async Task<ServiceResult<Tag>> GetByTagText(string TagText)
     {
         var result = await _http.GetAsync<Tag>(Url, $"GetByTagText={TagText}");

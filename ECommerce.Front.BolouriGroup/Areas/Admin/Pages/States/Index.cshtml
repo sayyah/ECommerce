@@ -1,5 +1,5 @@
 ﻿@page
-@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.States.IndexModel
+@model IndexModel
 @{
     var i = 1 + (Model.States.PaginationDetails.CurrentPage - 1) * Model.States.PaginationDetails.PageSize;
 }
@@ -41,7 +41,7 @@
                 <div class="form-actions no-color">
                     <p>
                         جستجو بر اساس نام:
-                        <input type="text" name="search" value="@Model.States.PaginationDetails.Search" />
+                        <input type="text" name="search" value="@Model.States.PaginationDetails.Search"/>
                         <input type="text" hidden="hidden" name="pageIndex" value="1"/>
                         <input type="submit" value="بجو" class="btn btn-primary"/> |
                         تعداد رکورد ها در صفحه :
@@ -63,21 +63,21 @@
                     </tr>
                     </thead>
                     <tbody>
-                        @foreach (var state in Model.States.ReturnData)
+                    @foreach (var state in Model.States.ReturnData)
                     {
                         <tr>
                             <th scope="row">@(i++)</th>
-                                <td>@state.Name</td>
+                            <td>@state.Name</td>
                             <td>
-                                    <a asp-page="Edit" asp-route-id="@state.Id" class="label label-inline label-light-success font-weight-bold">ویرایش</a>
-                                    <a asp-page="Delete" asp-route-id="@state.Id" class="label label-inline label-light-danger font-weight-bold">حذف</a>
-                                    <a asp-page="Detail" asp-route-id="@state.Id" class="label label-inline label-light-warning font-weight-bold">جزئیات</a>
+                                <a asp-page="Edit" asp-route-id="@state.Id" class="label label-inline label-light-success font-weight-bold">ویرایش</a>
+                                <a asp-page="Delete" asp-route-id="@state.Id" class="label label-inline label-light-danger font-weight-bold">حذف</a>
+                                <a asp-page="Detail" asp-route-id="@state.Id" class="label label-inline label-light-warning font-weight-bold">جزئیات</a>
                             </td>
                         </tr>
                     }
                     </tbody>
                 </table>
-                <partial name="_Pagination" model="@Model.States.PaginationDetails" />
+                <partial name="_Pagination" model="@Model.States.PaginationDetails"/>
 
             </div>
 

@@ -1,7 +1,4 @@
-using Ecommerce.Entities;
 using ECommerce.Services.IServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Cities;
@@ -25,7 +22,7 @@ public class DetailModel : PageModel
     {
         var result = await _cityService.GetById(id);
         var stateCity = (await _stateService.GetAll()).ReturnData;
-       
+
         if (result.Code == 0)
         {
             City = result.ReturnData;
@@ -34,6 +31,6 @@ public class DetailModel : PageModel
         }
 
         return RedirectToPage("/Cities/Index",
-            new {area = "Admin", message = result.Message, code = result.Code.ToString()});
+            new { area = "Admin", message = result.Message, code = result.Code.ToString() });
     }
 }

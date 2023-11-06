@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ECommerce.Front.ArshaHamrah.Pages
+namespace ECommerce.Front.ArshaHamrah.Pages;
+
+public class RedirectToMellatModel : PageModel
 {
-    public class RedirectToMellatModel : PageModel
+    public string RefId { get; set; }
+
+    public void OnGet(string refId)
     {
-        public string RefId { get; set; }
-        public void OnGet(string refId)
-        {
-            RefId = refId;
-        }
+        RefId = refId;
     }
 }

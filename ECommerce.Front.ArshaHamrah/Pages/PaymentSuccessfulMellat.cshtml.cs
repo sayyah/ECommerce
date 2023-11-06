@@ -1,18 +1,24 @@
-﻿using Ecommerce.Entities;
-using Ecommerce.Entities.ViewModel;
+﻿using ECommerce.Entities;
+using ECommerce.Entities.ViewModel;
 using ECommerce.Front.ArshaHamrah.Utilities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using ServiceReferenceMellat;
+using ECommerce.Front.ArshaHamrah.Connected Services.ServiceReferenceMellat;
 
 namespace ECommerce.Front.ArshaHamrah.Pages;
 
-
 public class PaymentSuccessfulMellatModel : PageModel
 {
-    private readonly IPurchaseOrderService _purchaseOrderService;
     private readonly ICartService _cartService;
+    private readonly IPurchaseOrderService _purchaseOrderService;
+
+
+    public PaymentSuccessfulMellatModel(IPurchaseOrderService purchaseOrderService, ICartService cartService)
+    {
+        _purchaseOrderService = purchaseOrderService;
+        _cartService = cartService;
+    }
 
     public string Refid { get; set; }
     public string Message { get; set; }
@@ -22,16 +28,10 @@ public class PaymentSuccessfulMellatModel : PageModel
     public PurchaseOrder PurchaseOrder { get; set; }
     public List<PurchaseOrderViewModel> CartList { get; set; }
 
-
-    public PaymentSuccessfulMellatModel(IPurchaseOrderService purchaseOrderService, ICartService cartService)
-    {
-        _purchaseOrderService = purchaseOrderService;
-        _cartService = cartService;
-    }
-
     //string RefId, string ResCode, long SaleOrderId,long SaleReferenceId, string PanCardHolder, string CreditCardSaleResponseDetail,long FinalAmount
 
-    public async Task<ActionResult> OnGet(string RefId, string ResCode, long SaleOrderId, long SaleReferenceId, string PanCardHolder, string CreditCardSaleResponseDetail, long FinalAmount)
+    public async Task<ActionResult> OnGet(string RefId, string ResCode, long SaleOrderId, long SaleReferenceId,
+        string PanCardHolder, string CreditCardSaleResponseDetail, long FinalAmount)
     {
         if (string.IsNullOrEmpty(SaleOrderId.ToString()))
         {
@@ -40,13 +40,11 @@ public class PaymentSuccessfulMellatModel : PageModel
             {
                 Message = MellatErrorCode.GetMessage(ResCode);
                 SaleReference = "**************";
-
             }
             else
             {
                 Message = "رسید قابل قبول نیست";
                 SaleReference = "**************";
-
             }
         }
         else
@@ -72,14 +70,15 @@ public class PaymentSuccessfulMellatModel : PageModel
 
                 var resultVerify = resultBody.Body.@return;
                 if (!string.IsNullOrEmpty(resultVerify))
-                {
                     if (resultVerify == "0")
                     {
-                        var IQresult = await paymentMellat.bpInquiryRequestAsync(terminalId, userName, password, SaleOrderId, SaleOrderId, SaleReferenceId);
+                        var IQresult = await paymentMellat.bpInquiryRequestAsync(terminalId, userName, password,
+                            SaleOrderId, SaleOrderId, SaleReferenceId);
                         var resultIQresult = IQresult.Body.@return;
                         if (resultIQresult == "0")
                         {
-                            var Sresult = await paymentMellat.bpSettleRequestAsync(terminalId, userName, password, SaleOrderId, SaleOrderId, SaleReferenceId);
+                            var Sresult = await paymentMellat.bpSettleRequestAsync(terminalId, userName, password,
+                                SaleOrderId, SaleOrderId, SaleReferenceId);
 
                             if (Sresult != null)
                             {
@@ -92,18 +91,17 @@ public class PaymentSuccessfulMellatModel : PageModel
                                     Message = result.Message;
                                     Code = result.Code.ToString();
                                     CartList = (await _cartService.CartListFromServer()).ReturnData;
-
                                 }
 
                                 return Page();
                             }
                         }
-                        PurchaseOrder.Transaction = new();
 
+                        PurchaseOrder.Transaction = new Transaction();
                     }
-                }
             }
         }
+
         return RedirectToPage("Error", new { message = "مشکل در درگاه پرداخت" });
     }
 }
