@@ -170,8 +170,9 @@ public class ProductIndexPageViewModel : BaseProductPageViewModel
             Brand = brandName,
             Alt = imageAlt,
             Stars = x.ProductUserRanks.Count > 0 ? x.ProductUserRanks.Sum(s => s.Stars) / x.ProductUserRanks.Count : 0,
-            MaxOrder = Convert.ToUInt16(x.MaxOrder)
-        };
+            MaxOrder = Convert.ToUInt16(x.MaxOrder),
+            Categories = x.ProductCategories.ToList(),
+        };       
     }
 }
 
@@ -185,6 +186,9 @@ public class ProductModalViewModel
     public string Alt { get; set; }
     public string Url { get; set; }
     public double Exist { get; set; }
+    public string? DiscountAmount { get; set; }
+    public string? DiscountPercent { get; set; }
+    public string? PayableAmount { get; set; }
 }
 
 public class ProductCompareViewModel : BaseProductPageViewModel
@@ -268,6 +272,7 @@ public class ShopPageViewModel : BaseProductPageViewModel
             Description = x.Description,
             Review = x.Review,
             Prices = x.Prices,
+            Categories = x.ProductCategories.ToList(),
             ImagePath = $"{imagePath}/{imageName}",
             Url = x.Url,
             Brand = brandName,
@@ -294,4 +299,5 @@ public class BaseProductPageViewModel
     public string? TopCategory { get; set; }
     public decimal? MaxPrice { get; set; }
     public bool? FirstPriceWichlist { get; set; }
+    public List<Category> Categories { get; set; }
 }
