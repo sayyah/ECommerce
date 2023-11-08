@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class SupplierService : EntityService<Supplier>, ISupplierService
+public class SupplierService : EntityService<Supplier, Supplier, Supplier>, ISupplierService
 {
     private const string Url = "api/Suppliers";
     private readonly IHttpService _http;

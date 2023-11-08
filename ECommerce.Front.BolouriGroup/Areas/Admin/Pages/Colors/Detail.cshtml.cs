@@ -11,7 +11,7 @@ public class DetailModel : PageModel
         _colorService = colorService;
     }
 
-    public Color Color { get; set; }
+    public ColorReadDto Color { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {

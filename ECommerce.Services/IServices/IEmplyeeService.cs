@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IEmployeeService : IEntityService<Employee>
+public interface IEmployeeService : IEntityService<Employee, Employee, Employee>
 {
     Task<ServiceResult<List<Employee>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult<List<Employee>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10);

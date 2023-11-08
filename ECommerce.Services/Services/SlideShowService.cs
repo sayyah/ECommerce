@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowService
+public class SlideShowService : EntityService<SlideShowViewModel, SlideShowViewModel, SlideShowViewModel>, ISlideShowService
 {
     private const string Url = "api/SlideShows";
     private readonly IHttpService _http;

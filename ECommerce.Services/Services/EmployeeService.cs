@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class EmployeeService : EntityService<Employee>, IEmployeeService
+public class EmployeeService : EntityService<Employee, Employee, Employee>, IEmployeeService
 {
     private const string Url = "api/Employees";
     private readonly IHttpService _http;

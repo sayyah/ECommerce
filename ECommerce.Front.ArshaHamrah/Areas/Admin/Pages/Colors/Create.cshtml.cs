@@ -1,4 +1,5 @@
-﻿using ECommerce.Entities;
+﻿using ECommerce.DataTransferObjects.Color;
+using Ecommerce.Entities;
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ public class CreateModel : PageModel
         _colorService = colorService;
     }
 
-    [BindProperty] public Color Color { get; set; }
+    [BindProperty] public ColorCreateDto Color { get; set; }
 
     [TempData] public string Message { get; set; }
 

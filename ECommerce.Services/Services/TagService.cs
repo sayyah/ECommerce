@@ -2,14 +2,14 @@
 
 namespace ECommerce.Services.Services;
 
-public class TagService : EntityService<Tag>, ITagService
+public class TagService : EntityService<Tag, Tag, Tag>, ITagService
 {
     private const string Url = "api/Tags";
     private readonly IHttpService _http;
-    private readonly IEntityService<TagProductId> _tagViewModelEntityService;
+    private readonly IEntityService<TagProductId, TagProductId, TagProductId> _tagViewModelEntityService;
     private List<Tag> _tags;
 
-    public TagService(IHttpService http, IEntityService<TagProductId> tagViewModelEntityService) : base(http)
+    public TagService(IHttpService http, IEntityService<TagProductId, TagProductId, TagProductId> tagViewModelEntityService) : base(http)
     {
         _tagViewModelEntityService = tagViewModelEntityService;
         _http = http;

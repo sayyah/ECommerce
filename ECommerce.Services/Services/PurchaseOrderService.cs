@@ -1,12 +1,12 @@
 ﻿using ECommerce.Application.ViewModels;
 
-namespace ECommerce.Services.Services;
-
-public class PurchaseOrderService : EntityService<PurchaseOrder>, IPurchaseOrderService
+namespace ECommerce.Services.Services
 {
-    private const string Url = "api/PurchaseOrders";
-    private readonly ICookieService _cookieService;
-    private readonly IHttpService _http;
+    public class PurchaseOrderService : EntityService<PurchaseOrder, PurchaseOrder, PurchaseOrder>, IPurchaseOrderService
+    {
+        private const string Url = "api/PurchaseOrders";
+        private readonly ICookieService _cookieService;
+        private readonly IHttpService _http;
 
     public PurchaseOrderService(IHttpService http, ICookieService cookieService) : base(http)
     {

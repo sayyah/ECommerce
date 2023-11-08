@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class KeywordService : EntityService<Keyword>, IKeywordService
+public class KeywordService : EntityService<Keyword, Keyword, Keyword>, IKeywordService
 {
     private const string Url = "api/Keywords";
     private readonly IHttpService _http;

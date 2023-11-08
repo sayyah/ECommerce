@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class TransactionService : EntityService<Transaction>, ITransactionService
+public class TransactionService : EntityService<Transaction, Transaction, Transaction>, ITransactionService
 {
     private const string Url = "api/Transactions";
     private readonly IHttpService _http;

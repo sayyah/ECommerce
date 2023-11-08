@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class DepartmentService : EntityService<Department>, IDepartmentService
+public class DepartmentService : EntityService<Department, Department, Department>, IDepartmentService
 {
     private const string Url = "api/Departments";
     private readonly IHttpService _http;

@@ -11,14 +11,17 @@ public class EditModel : PageModel
         _colorService = colorService;
     }
 
-    [BindProperty] public Color Color { get; set; }
+    [BindProperty] public ColorUpdateDto Color { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _colorService.GetById(id);
-        Color = result.ReturnData;
+        var colorReadDto = await _colorService.GetById(id);
+        var config = new MapperConfiguration(cfg => cfg.CreateMap<ColorReadDto, ColorUpdateDto>());
+        var _mapper = config.CreateMapper();
+        var result = _mapper.Map(colorReadDto, Color);
+        Color = result;
     }
 
     public async Task<IActionResult> OnPost()

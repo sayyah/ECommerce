@@ -16,7 +16,8 @@ public class EditModel : PageModel
         _colorService = colorService;
     }
 
-    [BindProperty] public Color Color { get; set; }
+    [BindProperty] public ColorReadDto Color { get; set; }
+    [BindProperty] public ColorUpdateDto ColorUpdate { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
@@ -30,7 +31,15 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _colorService.Edit(Color);
+            //Mapper
+            ColorUpdate = new ColorUpdateDto
+            {
+                Id = Color.Id,
+                Name = Color.Name,
+                ColorCode = Color.ColorCode
+            };
+
+            var result = await _colorService.Edit(ColorUpdate);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

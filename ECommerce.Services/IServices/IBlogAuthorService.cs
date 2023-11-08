@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IBlogAuthorService : IEntityService<BlogAuthor>
+public interface IBlogAuthorService : IEntityService<BlogAuthor, BlogAuthor, BlogAuthor>
 {
     Task<ServiceResult<List<BlogAuthor>>> GetAll();
     Task<ServiceResult<List<BlogAuthor>>> Filtering(string filter);

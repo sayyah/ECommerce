@@ -11,7 +11,7 @@ public class CreateModel : PageModel
         _colorService = colorService;
     }
 
-    [BindProperty] public Color Color { get; set; }
+    [BindProperty] public ColorCreateDto Color { get; set; }
 
     [TempData] public string Message { get; set; }
 

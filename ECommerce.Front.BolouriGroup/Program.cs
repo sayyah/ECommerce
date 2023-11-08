@@ -69,7 +69,7 @@ builder.Services.Configure<SmsIrSettings>(builder.Configuration.GetSection("SmsI
 
 #region DI
 
-builder.Services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
+builder.Services.AddScoped(typeof(IEntityService<,,>), typeof(EntityService<,,>));
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IBlogCommentService, BlogCommentService>();
 builder.Services.AddScoped<IBlogService, BlogService>();

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ContactService : EntityService<Contact>, IContactService
+public class ContactService : EntityService<Contact, Contact, Contact>, IContactService
 {
     private const string Url = "api/Contacts";
     private readonly IHttpService _http;

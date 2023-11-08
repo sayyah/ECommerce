@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface ITransactionService : IEntityService<Transaction>
+public interface ITransactionService : IEntityService<Transaction, Transaction, Transaction>
 {
     Task<ServiceResult<List<Transaction>>> GetAll();
 

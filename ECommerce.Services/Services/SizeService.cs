@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class SizeService : EntityService<Size>, ISizeService
+public class SizeService : EntityService<Size, Size, Size>, ISizeService
 {
     private const string Url = "api/Sizes";
     private readonly IHttpService _http;

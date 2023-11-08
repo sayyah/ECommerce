@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IMessageService : IEntityService<Message>
+public interface IMessageService : IEntityService<Message, Message, Message>
 {
     Task<ServiceResult<List<Message>>> Filtering(string filter);
     Task<ServiceResult<List<Message>>> Load();

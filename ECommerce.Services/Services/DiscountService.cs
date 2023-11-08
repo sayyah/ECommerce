@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class DiscountService : EntityService<Discount>, IDiscountService
+public class DiscountService : EntityService<Discount, Discount, Discount>, IDiscountService
 {
     private const string Url = "api/Discounts";
     private readonly IHttpService _http;
