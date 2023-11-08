@@ -1,16 +1,21 @@
-﻿using Ecommerce.Entities.ViewModel;
+﻿using Ecommerce.Entities;
+using Ecommerce.Entities.ViewModel;
 using ECommerce.Services.IServices;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Discounts;
 
-public class CreateModel : PageModel
+public class CreateCouponModel : PageModel
 {
     private readonly IDiscountService _discountService;
     private readonly IProductService _productService;
     private readonly IPriceService _priceService;
     private readonly ICategoryService _categoryService;    
 
-    public CreateModel(IDiscountService discountService, IProductService productService, IPriceService priceService
+    public CreateCouponModel(IDiscountService discountService, IProductService productService, IPriceService priceService
         ,ICategoryService categoryService)
     {
         _discountService = discountService;
@@ -22,15 +27,12 @@ public class CreateModel : PageModel
     [BindProperty] public bool WithPrice { get; set; }
     [BindProperty] public DiscountViewModel Discount { get; set; }
 
-    [BindProperty] public List<CategoryParentViewModel> CategoryParentViewModel { get; set; }
-
     [TempData] public string Message { get; set; }
 
     [TempData] public string Code { get; set; }
 
     public async Task OnGet()
     {
-        CategoryParentViewModel = (await _categoryService.GetParents()).ReturnData;
     }
 
     public async Task<IActionResult> OnPost()
@@ -39,10 +41,9 @@ public class CreateModel : PageModel
         if (!WithPrice && !Discount.Percent.HasValue) ModelState.AddModelError(string.Empty, "درصد نباید خالی باشد.");
         if (!Discount.StartDate.HasValue) ModelState.AddModelError(string.Empty, "تاریخ شروع نباید خالی باشد.");
         if (!Discount.EndDate.HasValue) ModelState.AddModelError(string.Empty, "تاریخ پایان نباید خالی باشد.");
-        if (Discount.StartDate > Discount.EndDate)
-            ModelState.AddModelError(string.Empty, "تاریخ پایان نباید قبل از تاریخ شروع باشد.");
-        if (Discount.MinOrder > Discount.MaxOrder)
-            ModelState.AddModelError(string.Empty, "حداقل تعداد سفارش باید کم تر از حداکثر آن باشد.");
+        if (Discount.StartDate > Discount.EndDate) ModelState.AddModelError(string.Empty, "تاریخ پایان نباید قبل از تاریخ شروع باشد.");
+        if (Discount.MinOrder > Discount.MaxOrder) ModelState.AddModelError(string.Empty, "حداقل تعداد سفارش باید کم تر از حداکثر آن باشد.");
+
         if (ModelState.IsValid)
         {
             if (WithPrice) Discount.Percent = null;
@@ -55,9 +56,6 @@ public class CreateModel : PageModel
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
         }
-        
-        CategoryParentViewModel = (await _categoryService.GetParents()).ReturnData;
-        if (Discount.CategoriesId==null) Discount.CategoriesId?.Clear();
 
         return Page();
     }
