@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using ECommerce.Application.PersianTranslations.Identity;
 using ECommerce.Infrastructure.DataContext.DataContext;
 using ECommerce.Infrastructure.Repository;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 
-var config = new ConfigurationBuilder()
+new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", false)
     .Build();
 
@@ -61,6 +62,16 @@ builder.Services.AddDbContext<SunflowerECommerceDbContext>(option =>
 builder.Services.AddDbContext<HolooDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString"))
         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+// Add Hangfire services.
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("SunflowerECommerce")));
+
+// Add the processing server as IHostedService
+builder.Services.AddHangfireServer();
 
 builder.Services.AddSwaggerGen(swagger =>
 {
@@ -121,15 +132,15 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = siteSetting.IdentitySetting.Audience,
-        ValidIssuer = siteSetting.IdentitySetting.Issuer,
+        ValidAudience = siteSetting.IdentitySetting?.Audience,
+        ValidIssuer = siteSetting.IdentitySetting?.Issuer,
         IssuerSigningKey =
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(siteSetting.IdentitySetting.IdentitySecretKey))
     };
 });
 
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSingleton<IConfiguration>(x => builder.Configuration);
+builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
 
 #region DI
 
@@ -200,7 +211,6 @@ var app = builder.Build();
 //    app.UseSwaggerUI();
 //}
 
-
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseDeveloperExceptionPage();
@@ -227,6 +237,11 @@ using (var scope = app.Services.CreateScope())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+app.UseHangfireDashboard("/SunFlowerHangFire", new DashboardOptions
+{
+    IsReadOnlyFunc = _ => false
+});
 
 app.UseRouting();
 
