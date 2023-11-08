@@ -388,6 +388,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> Get([FromQuery] UserFilterdParameters userFilterdParameters,
         CancellationToken cancellationToken)
     {
