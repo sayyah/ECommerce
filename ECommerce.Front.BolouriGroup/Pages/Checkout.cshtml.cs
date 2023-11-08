@@ -15,6 +15,22 @@ public class CheckoutModel : PageModel
     private readonly ISendInformationService _sendInformationService;
     private readonly IStateService _stateService;
 
+
+    [BindProperty] public List<State> StateList { get; set; }
+    [BindProperty] public List<City> CityList { get; set; }
+    [BindProperty] public SendInformation SendInformation { get; set; }
+
+    [BindProperty] public List<SendInformation> SendInformationList { get; set; }
+
+    [TempData] public string Message { get; set; }
+
+    [TempData] public string Code { get; set; }
+
+    public int SumPrice { get; set; }
+    public ServiceResult<Discount> DiscountResult { get; set; }
+    public decimal? DiscountAmount { get; set; } = 0;
+
+
     public CheckoutModel(
         ICartService cartService,
         ICityService cityService,
@@ -30,20 +46,6 @@ public class CheckoutModel : PageModel
         _cartService = cartService;
         _discountService = discountService;
     }
-
-
-    [BindProperty] public List<State> StateList { get; set; }
-    [BindProperty] public List<City> CityList { get; set; }
-    [BindProperty] public SendInformation SendInformation { get; set; }
-
-    [BindProperty] public List<SendInformation> SendInformationList { get; set; }
-
-    [TempData] public string Message { get; set; }
-
-    [TempData] public string Code { get; set; }
-
-    public int SumPrice { get; set; }
-    public ServiceResult<Discount> DiscountResult { get; set; }
 
     public async Task OnGet(string message, string code)
     {
@@ -68,6 +70,50 @@ public class CheckoutModel : PageModel
         var cart = resultCart.ReturnData;
         var tempSumPrice = cart.Sum(x => x.SumPrice);
         SumPrice = Convert.ToInt32(tempSumPrice);
+
+        var _currentDiscountAmount = 0;
+        foreach (var item in cart)
+        {
+            int? categoryDiscountAmount = 0;
+            double? categoryDiscountPercent = 0;
+            _currentDiscountAmount = _currentDiscountAmount + (item.DiscountAmount * item.Quantity);             
+            if (item.ProductCategories != null)
+                foreach (var category in item.ProductCategories)
+                {
+                    if (category.Discount != null && category.Discount.IsActive)
+                    {
+                        categoryDiscountAmount = category.Discount.Amount;
+                        categoryDiscountPercent = category.Discount.Percent;
+                    }
+                }
+            decimal? discount = 0;
+            if (item.Price.Discount != null)
+                if (item.Price.Discount.Amount > 0)
+                {
+                    discount = item.Price.Discount.Amount;
+                }
+                else if (item.Price.Discount.Percent > 0)
+                {
+                    discount = item.PriceAmount * (decimal)item.Price.Discount.Percent / 100;
+                }
+            if (discount == 0)
+                if (categoryDiscountAmount > 0)
+                {
+                    discount = (decimal)categoryDiscountAmount;
+                }
+                else if (categoryDiscountPercent > 0)
+                {
+                    discount = item.PriceAmount * (decimal)categoryDiscountPercent / 100;
+                }
+
+            DiscountAmount = DiscountAmount +  (discount * item.Quantity);
+        }
+
+        if (_currentDiscountAmount != DiscountAmount)
+        {
+            // پیاده سازی مربوط به اصلاح سبد purchaseOrder
+            //}
+        }
     }
 
     public async Task<JsonResult> OnGetSendInformationLoad(int id)
@@ -81,8 +127,8 @@ public class CheckoutModel : PageModel
     public async Task<JsonResult> OnGetDiscount(string discountCode)
     {
         await Initial();
-        var sumPriceResult = await DiscountCalculate(discountCode, SumPrice);
-
+        var sumPriceResult = await DiscountCalculate(discountCode, SumPrice - (int)DiscountAmount! );
+       
         return new JsonResult(sumPriceResult);
     }
 
@@ -198,8 +244,8 @@ public class CheckoutModel : PageModel
         var cart = resultCart.ReturnData;
         var tempSumPrice = cart.Sum(x => x.SumPrice);
 
-        var discountResult = await DiscountCalculate(discountCode, Convert.ToInt32(tempSumPrice));
-        SumPrice = discountResult.SumPrice;
+        var discountResult = await DiscountCalculate(discountCode, Convert.ToInt32(tempSumPrice - (int)DiscountAmount!));
+        SumPrice= discountResult.SumPrice;
         if (SumPrice >= 50000000)
         {
             Message = "مبلغ سفارش نمی تواند بیشتر از 50 میلیون تومان باشد";
@@ -216,7 +262,7 @@ public class CheckoutModel : PageModel
             (DiscountResult.ReturnData.EndDate?.Date >= DateTime.Now.Date || DiscountResult.ReturnData.EndDate == null))
         {
             purchaseOrder.DiscountId = DiscountResult.ReturnData.Id;
-            purchaseOrder.DiscountAmount = (int)tempSumPrice - SumPrice;
+            purchaseOrder.DiscountAmount = ((int)tempSumPrice - (int)DiscountAmount!) - SumPrice;
         }
 
         if (resultSendInformation == 0)

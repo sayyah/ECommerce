@@ -25,6 +25,7 @@ public class InvoiceModel : PageModel
 
     [TempData] public string Code { get; set; }
     public PurchaseOrder PurchaseOrder { get; set; }
+    public int OrderDetailsDiscount = 0;
 
     public async Task<ActionResult> OnGet(PurchaseResult result)
     {
@@ -39,6 +40,14 @@ public class InvoiceModel : PageModel
             var resultOrder = await _purchaseOrderService.GetByUserId();
             PurchaseOrder = resultOrder.ReturnData;
             var amount = Convert.ToInt32(PurchaseOrder.Amount);
+
+            foreach (var item in PurchaseOrder.PurchaseOrderDetails!)
+            {
+                OrderDetailsDiscount = OrderDetailsDiscount +
+                                       ((int)item.DiscountAmount! * item.Quantity);
+            }
+            amount = amount - OrderDetailsDiscount!;
+
             if (PurchaseOrder.DiscountId != null && PurchaseOrder.Discount != null)
             {
                 if (PurchaseOrder.Discount.Amount != null && PurchaseOrder.Discount.Amount > 0)
