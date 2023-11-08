@@ -1,4 +1,6 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using Ecommerce.Entities.ViewModel;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -194,7 +196,7 @@ public class DiscountsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Discount discount, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(DiscountViewModel discount, CancellationToken cancellationToken)
     {
         try
         {
@@ -224,7 +226,7 @@ public class DiscountsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _discountRepository.AddAsync(discount, cancellationToken)
+                ReturnData = await _discountRepository.AddWithRelations(discount, cancellationToken)
             });
         }
         catch (Exception e)
