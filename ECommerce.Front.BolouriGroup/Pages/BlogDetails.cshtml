@@ -2,6 +2,7 @@
 @model ECommerce.Front.BolouriGroup.Pages.BlogDetailsModel
 @{
     ViewData["Title"] = "جزئیات وبلاگ مجموعه بلوری";
+    ViewData["description"] = "جزئیات وبلاگ مجموعه بلوری";
 }
 <section class="inner-section single-banner">
     <div class="container">
@@ -202,6 +203,32 @@
                     swal(response);
                 }
             });
+        }
+    </script>
+
+    <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+                "@@type": "BlogPosting",
+                 "@@id": "https://boloorico.com/blog/%D8%AA%D8%AC%D9%87%DB%8C%D8%B2%D8%A7%D8%AA-%D8%A2%D8%B4%D9%BE%D8%B2%DB%8C-%D8%A8%D9%84%D9%88%D8%B1%DB%8C",
+                 "headline": "Boloori Cooking And Catering Equipment Blog",
+                 "name": "Boloori Cooking And Catering Equipment Blog",
+                 "datePublished": "2019-11-10",
+                       "author": {
+            "@@type": "Person",
+            "name": "boloorico",
+        },
+             "publisher": {
+        "@@type": "Organization",
+        "@@id": "https://boloorico.com",
+        "name": "Boloori",
+                    "logo": {
+                "@@type": "ImageObject",
+                "@@id": "https://boloorico.com/img/BlueLogo.webp",
+                "url": "https://boloorico.com/img/BlueLogo.webp",
+                "width": "auto",
+                "height": "40"
+            }
         }
     </script>
 }

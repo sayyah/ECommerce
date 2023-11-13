@@ -2,6 +2,7 @@
 @model ECommerce.Front.BolouriGroup.Pages.ShopModel
 @{
     ViewData["Title"] = "لیست محصولات مجموعه بلوری";
+    ViewData["description"] = "لیست محصولات مجموعه بلوری";
     @if (string.IsNullOrEmpty(Model.CategoryBannerImagePath))
     {
         Model.CategoryBannerImagePath = "/img/single-banner.webp";

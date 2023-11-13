@@ -1,7 +1,8 @@
 ﻿@page "/invoice"
 @model ECommerce.Front.BolouriGroup.Pages.InvoiceModel
 @{
-    ViewData["Title"] = "فروشگاه اینترنتی بلوری";
+    ViewData["Title"] = "فاکتور فروشگاه اینترنتی بلوری";
+    ViewData["description"] = "فاکتور فروشگاه اینترنتی بلوری";
     decimal amountAfterDiscount = Model.PurchaseOrder.Amount - (decimal)Model.PurchaseOrder.DiscountAmount;
 }
 
