@@ -2,8 +2,9 @@
 @using PersianDate.Standard
 @model InvoiceModel
 @{
-    ViewData["Title"] = "فروشگاه اینترنتی بلوری";
-    var amountAfterDiscount = Model.PurchaseOrder.Amount - Model.PurchaseOrder.DiscountAmount;
+    ViewData["Title"] = "فاکتور فروشگاه اینترنتی بلوری";
+    ViewData["description"] = "فاکتور فروشگاه اینترنتی بلوری";
+    decimal amountAfterDiscount = Model.PurchaseOrder.Amount - (decimal)Model.PurchaseOrder.DiscountAmount;
 }
 
 @* <a class="btn btn-block btn-info" asp-page-handler="FactorPrint" asp-route-orderId="@Model.OrderId">چاپ فاکتور</a> *@
