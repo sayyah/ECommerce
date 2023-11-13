@@ -3,27 +3,16 @@
 @using PersianDate.Standard
 @model ProductdetailsModel
 @{
-<<<<<<< HEAD
     ViewData["Title"] = "مشخصات و قیمت و خرید " + @Model.Product.Name;
     var description = @Html.Raw(Model.Product.Description).ToString();
     ViewData["description"] = description;
-=======
->>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     ViewData["Title"] = "مشخصات و قیمت و خرید " + Model.Product.Name;
     var priceId = Model.WishListPriceId == null ? Model.Product.Prices.OrderBy(x => x.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0)?.Id : Model.WishListPriceId;
     var imageTemp = Model.Product.Images.FirstOrDefault();
     var imagePath = $"{Model.siteUrl}/{imageTemp.Path}/{imageTemp.Name}?x-oss-process=image/resize,m_lfit,h_350,w_350/quality,q_60";
-<<<<<<< HEAD
 }
 
 @section Head{
-=======
-    var description = Html.Raw(Model.Product.Description).ToString();
-}
-
-@section Head{
-    <meta name="description" content="@description"/>
->>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     <meta property="og:title" content="@Model.Product.Name"/>
     <meta property="og:image" content="@imagePath"/>
     <meta property="og:locale" content="@imagePath"/>

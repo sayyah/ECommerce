@@ -111,15 +111,11 @@ public class LoginModel : PageModel
 
     public async Task<JsonResult> OnPostUserLoginSubmit(string username, string password)
     {
-<<<<<<< HEAD
         if (DateTime.Now.Date > DateTime.Parse("2024-01-15"))
         {
             return new JsonResult("Error");
         }
         LoginViewModel _loginViewModel = new() {Username = username, Password = password};        
-=======
-        LoginViewModel _loginViewModel = new() { Username = username, Password = password };
->>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
         ServiceResult<LoginViewModel?> result = await _userService.Login(_loginViewModel);
         return new JsonResult(result);
     }
