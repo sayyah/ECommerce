@@ -4,6 +4,7 @@
 @model ProductdetailsModel
 @{
 <<<<<<< HEAD
+<<<<<<< HEAD
     ViewData["Title"] = "مشخصات و قیمت و خرید " + @Model.Product.Name;
     var description = @Html.Raw(Model.Product.Description).ToString();
     ViewData["description"] = description;
@@ -11,12 +12,18 @@
     var imageTemp = Model.Product.Images.FirstOrDefault();
     string imagePath = $"{@Model.siteUrl}/{imageTemp.Path}/{imageTemp.Name}?x-oss-process=image/resize,m_lfit,h_350,w_350/quality,q_60";
 =======
+=======
+    ViewData["Title"] = "مشخصات و قیمت و خرید " + @Model.Product.Name;
+    var description = @Html.Raw(Model.Product.Description).ToString();
+    ViewData["description"] = description;
+>>>>>>> 2de9cb11 (close #583 seo)
     ViewData["Title"] = "مشخصات و قیمت و خرید " + Model.Product.Name;
     var priceId = Model.WishListPriceId == null ? Model.Product.Prices.OrderBy(x => x.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0)?.Id : Model.WishListPriceId;
     var imageTemp = Model.Product.Images.FirstOrDefault();
 <<<<<<< HEAD
 <<<<<<< HEAD
     var imagePath = $"{Model.siteUrl}/{imageTemp.Path}/{imageTemp.Name}?x-oss-process=image/resize,m_lfit,h_350,w_350/quality,q_60";
+<<<<<<< HEAD
     var description = Html.Raw(Model.Product.Description).ToString();
 >>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
 =======
@@ -56,6 +63,11 @@
     <meta property="twitter:image" content="@imagePath" />
 =======
     <meta name="description" content="@description"/>
+=======
+}
+
+@section Head{
+>>>>>>> 2de9cb11 (close #583 seo)
     <meta property="og:title" content="@Model.Product.Name"/>
     <meta property="og:image" content="@imagePath"/>
     <meta property="og:locale" content="@imagePath"/>

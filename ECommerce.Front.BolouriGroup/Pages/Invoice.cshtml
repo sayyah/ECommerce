@@ -3,6 +3,7 @@
 @model InvoiceModel
 @{
 <<<<<<< HEAD
+<<<<<<< HEAD
     ViewData["Title"] = "فاکتور فروشگاه اینترنتی بلوری";
     ViewData["description"] = "فاکتور فروشگاه اینترنتی بلوری";
     decimal amountAfterDiscount = Model.PurchaseOrder.Amount - (decimal)Model.PurchaseOrder.DiscountAmount;
@@ -18,6 +19,11 @@
 =======
     var amountAfterDiscount = Model.PurchaseOrder.Amount - Model.PurchaseOrder.DiscountAmount;
 >>>>>>> c9291bed (Revert "Fixes #262 Discount")
+=======
+    ViewData["Title"] = "فاکتور فروشگاه اینترنتی بلوری";
+    ViewData["description"] = "فاکتور فروشگاه اینترنتی بلوری";
+    decimal amountAfterDiscount = Model.PurchaseOrder.Amount - (decimal)Model.PurchaseOrder.DiscountAmount;
+>>>>>>> 2de9cb11 (close #583 seo)
 }
 
 @* <a class="btn btn-block btn-info" asp-page-handler="FactorPrint" asp-route-orderId="@Model.OrderId">چاپ فاکتور</a> *@
