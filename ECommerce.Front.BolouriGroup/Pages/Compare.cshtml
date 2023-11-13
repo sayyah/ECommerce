@@ -2,6 +2,7 @@
 @model CompareModel
 @{
     ViewData["Title"] = "مقایسه کنید";
+    ViewData["description"] = "مقایسه کنید";
     var singlePrice = Model.CompareProduct.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
 }
 <section class="inner-section single-banner">
