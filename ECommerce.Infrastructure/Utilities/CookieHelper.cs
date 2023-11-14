@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Infrastructure.DataContext.Utilities;
 
@@ -17,8 +17,8 @@ public static class CookieHelper
             else
                 option.Expires = DateTime.Now.AddMinutes(timeDifference).AddDays(30);
 
-            //var val = JsonSerializer.Serialize(value);
-            var val = JsonConvert.SerializeObject(value);
+            var val = JsonSerializer.Serialize(value);
+            // var val = JsonConvert.SerializeObject(value);
             context.Response.Cookies.Append(key, val, option);
         }
         catch
@@ -31,8 +31,8 @@ public static class CookieHelper
         context.Request.Cookies.TryGetValue(key, out var value);
         if (value == null) return default;
 
-        //var val = System.Text.Json.JsonSerializer.Deserialize<T>(value);
-        var val = JsonConvert.DeserializeObject<T>(value);
+        var val = JsonSerializer.Deserialize<T>(value);
+        // var val = JsonConvert.DeserializeObject<T>(value);
         return val;
     }
 
