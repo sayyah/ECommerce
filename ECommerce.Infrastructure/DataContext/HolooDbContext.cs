@@ -40,6 +40,7 @@ public class HolooDbContext : DbContext
         modelBuilder.Entity<HolooCustomer>()
             .HasKey(c => new { c.C_Code });
         modelBuilder.Entity<HolooSarfasl>()
+            .ToTable(tb => tb.HasTrigger("trUpdateParent"))
             .HasKey(c => new { c.ID });
         modelBuilder.Entity<HolooFBail>()
             .HasKey(c => new { c.Fac_Code, c.Fac_Type });
