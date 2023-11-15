@@ -29,6 +29,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
 		<ProjectReference Include="..\ECommerce.Services\ECommerce.Services.csproj" />
+		<ProjectReference Include="..\ECommerce.Front.Admin\ECommerce.Front.Admin.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<UpToDateCheckInput Remove="Pages\Components\CategoriesMenu\Default.cshtml" />
