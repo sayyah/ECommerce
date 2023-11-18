@@ -1,8 +1,8 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
 using ECommerce.Domain.Entities;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using AutoFixture;
 
 namespace ECommerce.Repository.UnitTests.Products;
 

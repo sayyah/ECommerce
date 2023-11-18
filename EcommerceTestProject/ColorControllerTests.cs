@@ -15,13 +15,16 @@ namespace EcommerceTestProject
         private ColorsController _controller;
         private Mock<IColorRepository> _repository;
         private Mock<ILogger<ColorsController>> _logger;
+        private Mock<IColorDtoMapper> _mapper;
+
 
         [SetUp]
         public void Setup()
         {
             _repository = new Mock<IColorRepository>();
             _logger = new Mock<ILogger<ColorsController>>();
-            _controller = new ColorsController(_repository.Object, _logger.Object);
+            _mapper = new Mock<IColorDtoMapper>();
+            _controller = new ColorsController(_repository.Object, _logger.Object, _mapper.Object);
         }
 
         [Test]

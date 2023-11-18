@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ECommerce.Domain.Entities.Helper;
+﻿using ECommerce.Domain.Entities.Helper;
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommerce.Domain.Entities;
 

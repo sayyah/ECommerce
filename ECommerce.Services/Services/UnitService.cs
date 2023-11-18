@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class UnitService(IHttpService http) : EntityService<Unit>(http), IUnitService
+public class UnitService(IHttpService http) : EntityService<Unit, Unit, Unit>(http), IUnitService
 {
     private const string Url = "api/Units";
     private List<Unit> _units;
@@ -58,7 +58,7 @@ public class UnitService(IHttpService http) : EntityService<Unit>(http), IUnitSe
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult> ConvertHolooUnits()

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IContactService : IEntityService<Contact>
+public interface IContactService : IEntityService<Contact, Contact, Contact>
 {
     Task<ServiceResult<List<Contact>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult> Add(Contact contact);

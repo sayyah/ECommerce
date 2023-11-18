@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class BlogCategoryService(IHttpService http) : EntityService<BlogCategory>(http), IBlogCategoryService
+public class BlogCategoryService(IHttpService http) : EntityService<BlogCategory, BlogCategory, BlogCategory>(http), IBlogCategoryService
 {
     private const string Url = "api/BlogCategories";
 
@@ -53,7 +53,7 @@ public class BlogCategoryService(IHttpService http) : EntityService<BlogCategory
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<BlogCategory>> GetById(int id)

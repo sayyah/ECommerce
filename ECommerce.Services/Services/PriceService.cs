@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class PriceService(IHttpService http) : EntityService<Price>(http), IPriceService
+public class PriceService(IHttpService http) : EntityService<Price, Price, Price>(http), IPriceService
 {
     private const string Url = "api/Prices";
 

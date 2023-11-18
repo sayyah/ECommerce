@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class StarService(IHttpService http, ICookieService cookieService) : EntityService<ProductUserRank>(http),
+public class StarService(IHttpService http, ICookieService cookieService) : EntityService<ProductUserRank, ProductUserRank, ProductUserRank>(http),
     IStarService
 {
     private const string Url = "api/Stars";

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 namespace ECommerce.Services.Services;
 
 public class UserService(IHttpService http, ICookieService cookieService, IOptions<SmsIrSettings> options)
-    : EntityService<User>(http), IUserService
+    : EntityService<User, User, User>(http), IUserService
 {
     private const string Url = "api/Users";
     private readonly SmsIrSettings _smsSettings = options.Value;
@@ -208,7 +208,7 @@ public class UserService(IHttpService http, ICookieService cookieService, IOptio
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult> Edit(User user)

@@ -1,7 +1,6 @@
 using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Blogs;
@@ -14,7 +13,7 @@ public partial class BlogTests
         // Act
         async Task Action()
         {
-            _blogRepository.DeleteRange([ null! ]);
+            _blogRepository.DeleteRange([null!]);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 

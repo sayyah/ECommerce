@@ -29,9 +29,11 @@
 		<PackageReference Include="RazorEngineCore" Version="2023.11.2" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
-		<ProjectReference Include="..\ECommerce.Services\ECommerce.Services.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ECommerce.Application.DataTransferObjectMappers\ECommerce.Application.DataTransferObjectMappers.csproj" />
+    <ProjectReference Include="..\ECommerce.Application.DataTransferObjects\ECommerce.Application.DataTransferObjects.csproj" />
+    <ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\ECommerce.Services\ECommerce.Services.csproj" />
+  </ItemGroup>
 
 </Project>

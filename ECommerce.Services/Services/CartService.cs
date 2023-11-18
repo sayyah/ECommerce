@@ -5,10 +5,9 @@ namespace ECommerce.Services.Services;
 
 public class CartService(IHttpService http, ICookieService cookieService, IProductService productService,
         IPriceService priceService)
-    : EntityService<PurchaseOrderViewModel>(http), ICartService
+        : EntityService<PurchaseOrderViewModel, PurchaseOrderViewModel, PurchaseOrderViewModel>(http), ICartService
 {
     private const string Url = "api/PurchaseOrders";
-    private readonly IHttpService _http = http;
     private readonly string _key = "Cart";
     private readonly IPriceService _priceService = priceService;
 

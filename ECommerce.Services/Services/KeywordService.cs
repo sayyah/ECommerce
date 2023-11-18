@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class KeywordService(IHttpService http) : EntityService<Keyword>(http), IKeywordService
+public class KeywordService(IHttpService http) : EntityService<Keyword, Keyword, Keyword>(http), IKeywordService
 {
     private const string Url = "api/Keywords";
     private List<Keyword> _keywords;
@@ -85,7 +85,7 @@ public class KeywordService(IHttpService http) : EntityService<Keyword>(http), I
 
         _keywords = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<Keyword>>> GetKeywordsByProductId(int productId)

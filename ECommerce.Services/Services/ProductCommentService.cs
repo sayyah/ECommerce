@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ProductCommentService(IHttpService http) : EntityService<ProductComment>(http), IProductCommentService
+public class ProductCommentService(IHttpService http) : EntityService<ProductComment, ProductComment, ProductComment>(http), IProductCommentService
 {
     private const string Url = "api/ProductComments";
 
@@ -26,7 +26,7 @@ public class ProductCommentService(IHttpService http) : EntityService<ProductCom
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult> Edit(ProductComment productComment)

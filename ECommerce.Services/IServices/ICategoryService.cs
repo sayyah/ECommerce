@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface ICategoryService : IEntityService<Category>
+public interface ICategoryService : IEntityService<Category, Category, Category>
 {
     Task<ServiceResult<CategoryViewModel>> GetByUrl(string url);
     Task<ServiceResult<List<Category>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

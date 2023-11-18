@@ -16,7 +16,7 @@ public interface IUserRepository : IRepositoryBase<User>
     Task<List<UserRole>> GetApplicationRoles(CancellationToken cancellationToken);
     void AddLoginHistory(int userId, string token, string ipAddress, DateTime expirationDate);
 
-   void SetConfirmCodeByUsername(string username, int confirmCode, DateTime codeConfirmExpireDate);
+    void SetConfirmCodeByUsername(string username, int confirmCode, DateTime codeConfirmExpireDate);
 
     Task<int?> GetSecondsLeftConfirmCodeExpire(string username, CancellationToken cancellationToken);
 }

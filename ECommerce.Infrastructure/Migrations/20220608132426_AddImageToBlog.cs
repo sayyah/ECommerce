@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -65,7 +64,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                 unique: true,
                 filter: "[BlogId] IS NOT NULL");
 
-            
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

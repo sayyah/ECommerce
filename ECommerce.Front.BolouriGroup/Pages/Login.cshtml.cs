@@ -108,7 +108,7 @@ public class LoginModel(IUserService userService) : PageModel
         {
             return new JsonResult("Error");
         }
-        LoginViewModel _loginViewModel = new() {Username = username, Password = password};        
+        LoginViewModel _loginViewModel = new() { Username = username, Password = password };
         ServiceResult<LoginViewModel?> result = await userService.Login(_loginViewModel);
         return new JsonResult(result);
     }

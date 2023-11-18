@@ -73,7 +73,7 @@ public static class EnumExtensions
             if (orderAtt != null && displayNameAtt != null && valueAtt != null)
             {
                 var fieldinfo = new EnumField
-                    { Order = orderAtt.Order, Name = displayNameAtt.Name, Value = valueAtt.Value };
+                { Order = orderAtt.Order, Name = displayNameAtt.Name, Value = valueAtt.Value };
 
                 items.Add(fieldinfo);
             }

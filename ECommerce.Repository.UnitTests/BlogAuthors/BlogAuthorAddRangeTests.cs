@@ -56,7 +56,7 @@ public partial class BlogAuthorTests
         // Act
         async Task Action()
         {
-            _blogAuthorRepository.AddRange([ null! ]);
+            _blogAuthorRepository.AddRange([null!]);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 

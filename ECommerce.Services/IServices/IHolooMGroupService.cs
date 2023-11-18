@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface IHolooMGroupService : IEntityService<HolooMGroup>
+public interface IHolooMGroupService : IEntityService<HolooMGroup, HolooMGroup, HolooMGroup>
 {
     Task<ApiResult<List<HolooMGroup>>> Load();
 }

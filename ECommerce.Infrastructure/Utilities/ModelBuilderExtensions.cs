@@ -1,10 +1,10 @@
-﻿using System.Reflection;
-using ECommerce.Domain.Entities;
+﻿using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Pluralize.NET.Core;
+using System.Reflection;
 
 namespace ECommerce.Infrastructure.DataContext.Utilities;
 
@@ -112,13 +112,13 @@ public static class ModelBuilderExtensions
             .Where(c => c.IsClass && !c.IsAbstract && c.IsPublic);
 
         foreach (var type in types)
-        foreach (var iface in type.GetInterfaces())
-            if (iface.IsConstructedGenericType &&
-                iface.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>))
-            {
-                var applyConcreteMethod = applyGenericMethod.MakeGenericMethod(iface.GenericTypeArguments[0]);
-                applyConcreteMethod.Invoke(modelBuilder, new[] { Activator.CreateInstance(type) });
-            }
+            foreach (var iface in type.GetInterfaces())
+                if (iface.IsConstructedGenericType &&
+                    iface.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>))
+                {
+                    var applyConcreteMethod = applyGenericMethod.MakeGenericMethod(iface.GenericTypeArguments[0]);
+                    applyConcreteMethod.Invoke(modelBuilder, new[] { Activator.CreateInstance(type) });
+                }
     }
 
     /// <summary>
@@ -146,11 +146,11 @@ public static class ModelBuilderExtensions
         IDataProtectionProvider dataProtectionProvider, IConfiguration configRoot)
     {
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        foreach (var property in entityType.GetProperties())
-        {
-            var attributes = property.PropertyInfo.GetCustomAttributes(typeof(ProtectedAttribute), false);
-            if (attributes.Any())
-                property.SetValueConverter(new ProtectedConverter(dataProtectionProvider, configRoot));
-        }
+            foreach (var property in entityType.GetProperties())
+            {
+                var attributes = property.PropertyInfo.GetCustomAttributes(typeof(ProtectedAttribute), false);
+                if (attributes.Any())
+                    property.SetValueConverter(new ProtectedConverter(dataProtectionProvider, configRoot));
+            }
     }
 }

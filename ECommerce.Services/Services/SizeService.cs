@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class SizeService(IHttpService http) : EntityService<Size>(http), ISizeService
+public class SizeService(IHttpService http) : EntityService<Size, Size, Size>(http), ISizeService
 {
     private const string Url = "api/Sizes";
     private List<Size> _sizes;
@@ -63,7 +63,7 @@ public class SizeService(IHttpService http) : EntityService<Size>(http), ISizeSe
 
         _sizes = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Size>> GetById(int id)

@@ -21,7 +21,7 @@ public class UnitOfWork(SunflowerECommerceDbContext context, HolooDbContext holo
 
         var repositoryType = typeof(TRepository);
         var repositoryInstance = repositoryType.GetConstructors()[0].GetParameters().Length > 1 ?
-            Activator.CreateInstance(repositoryType, context, holooContext):
+            Activator.CreateInstance(repositoryType, context, holooContext) :
         Activator.CreateInstance(repositoryType, context);
         if (repositoryInstance != null) _repositories.Add(type, repositoryInstance);
 
@@ -49,7 +49,7 @@ public class UnitOfWork(SunflowerECommerceDbContext context, HolooDbContext holo
         await context.SaveChangesAsync(cancellationToken);
         if (isHolooChange)
         {
-           await holooContext.SaveChangesAsync(cancellationToken);
+            await holooContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

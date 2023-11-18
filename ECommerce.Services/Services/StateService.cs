@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class StateService(IHttpService http) : EntityService<State>(http), IStateService
+public class StateService(IHttpService http) : EntityService<State, State, State>(http), IStateService
 {
     private const string Url = "api/States";
     private List<State> _states;
@@ -76,7 +76,7 @@ public class StateService(IHttpService http) : EntityService<State>(http), IStat
 
         _states = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<State>> GetById(int id)

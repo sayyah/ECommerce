@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IPaymentMethodService : IEntityService<PaymentMethod>
+public interface IPaymentMethodService : IEntityService<PaymentMethod, PaymentMethod, PaymentMethod>
 {
     Task<ServiceResult<List<PaymentMethod>>> Filtering(string filter);
     Task<ServiceResult<List<PaymentMethod>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

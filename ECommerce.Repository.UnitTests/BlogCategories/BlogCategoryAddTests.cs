@@ -14,9 +14,9 @@ public partial class BlogCategoryTests
         BlogCategory blogCategory = Fixture
             .Build<BlogCategory>()
             .With(p => p.Name, () => null!)
-            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.BlogCategories, () => [])
             .With(p => p.Parent, () => null!)
-            .With(p => p.Blogs, () => [ ])
+            .With(p => p.Blogs, () => [])
             .Create();
 
         // Act
@@ -53,7 +53,7 @@ public partial class BlogCategoryTests
             .With(p => p.BlogCategories, () => null)
             .With(p => p.Parent, () => null)
             .With(p => p.ParentId, () => null)
-            .With(p => p.Blogs, () => [ ])
+            .With(p => p.Blogs, () => [])
             .Create();
 
         // Act

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface IHolooUnitService : IEntityService<HolooUnit>
+public interface IHolooUnitService : IEntityService<HolooUnit, HolooUnit, HolooUnit>
 {
     Task<ServiceResult<List<HolooUnit>>> Load();
 }

@@ -5,7 +5,7 @@ namespace ECommerce.Services.Services;
 
 public class ProductService(IHttpService http, ITagService tagService, IImageService imageService,
         IKeywordService keywordService, ICategoryService categoryService, ICookieService cookieService)
-    : EntityService<ProductViewModel>(http), IProductService
+    : EntityService<ProductViewModel, ProductViewModel, ProductViewModel>(http), IProductService
 {
     private const string Url = "api/Products";
 
@@ -113,7 +113,7 @@ public class ProductService(IHttpService http, ITagService tagService, IImageSer
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<ProductIndexPageViewModel>>> Search(string search = "", int pageNumber = 0,

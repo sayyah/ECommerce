@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class DiscountService(IHttpService http) : EntityService<Discount>(http), IDiscountService
+public class DiscountService(IHttpService http) : EntityService<Discount, Discount, Discount>(http), IDiscountService
 {
     private const string Url = "api/Discounts";
 
@@ -35,7 +35,7 @@ public class DiscountService(IHttpService http) : EntityService<Discount>(http),
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Discount>> GetById(int id)

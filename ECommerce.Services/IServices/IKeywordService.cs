@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IKeywordService : IEntityService<Keyword>
+public interface IKeywordService : IEntityService<Keyword, Keyword, Keyword>
 {
     Task<ServiceResult<List<Keyword>>> GetKeywordsByProductId(int productId);
     Task<ServiceResult<List<Keyword>>> GetAll();

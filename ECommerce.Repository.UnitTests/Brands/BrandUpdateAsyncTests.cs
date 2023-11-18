@@ -25,7 +25,7 @@ public class BrandUpdateAsyncTests : BrandBaseTests
         await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        Assert.Equal(newName, DbContext.Brands.FirstOrDefault(x=>x.Id == 2)!.Name );
+        Assert.Equal(newName, DbContext.Brands.FirstOrDefault(x => x.Id == 2)!.Name);
     }
 
     [Fact]
@@ -36,6 +36,6 @@ public class BrandUpdateAsyncTests : BrandBaseTests
 
         // Assert
         Assert.Throws<ArgumentNullException>(Action);
-       
+
     }
 }

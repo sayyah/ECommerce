@@ -1,8 +1,8 @@
-﻿using System.Linq.Expressions;
-using ECommerce.Domain.Entities.Helper;
+﻿using ECommerce.Domain.Entities.Helper;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
+using System.Linq.Expressions;
 
 namespace ECommerce.Infrastructure.DataContext.Utilities;
 

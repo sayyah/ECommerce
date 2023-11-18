@@ -1,5 +1,5 @@
-﻿using System.Net;
-using ECommerce.Domain.Entities.Helper;
+﻿using ECommerce.Domain.Entities.Helper;
+using System.Net;
 
 namespace ECommerce.Domain.Exceptions;
 

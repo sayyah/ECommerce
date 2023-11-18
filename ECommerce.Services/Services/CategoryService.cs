@@ -2,8 +2,8 @@
 
 namespace ECommerce.Services.Services;
 
-public class CategoryService(IHttpService http, IEntityService<CategoryViewModel> categoryViewModelEntityService)
-    : EntityService<Category>(http), ICategoryService
+public class CategoryService(IHttpService http, IEntityService<CategoryViewModel, CategoryViewModel, CategoryViewModel> categoryViewModelEntityService)
+    : EntityService<Category, Category, Category>(http), ICategoryService
 {
     private const string Url = "api/Categories";
 
@@ -96,7 +96,7 @@ public class CategoryService(IHttpService http, IEntityService<CategoryViewModel
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<CategoryViewModel>>> GetCategoriesByProductId(int productId)

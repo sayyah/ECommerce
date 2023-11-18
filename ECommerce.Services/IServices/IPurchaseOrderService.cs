@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface IPurchaseOrderService : IEntityService<PurchaseOrder>
+public interface IPurchaseOrderService : IEntityService<PurchaseOrder, PurchaseOrder, PurchaseOrder>
 {
     Task<ServiceResult> Pay(PurchaseOrder purchaseOrder);
     Task<ServiceResult> Add(PurchaseOrder purchaseOrder);

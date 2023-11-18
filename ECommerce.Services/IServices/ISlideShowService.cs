@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface ISlideShowService : IEntityService<SlideShowViewModel>
+public interface ISlideShowService : IEntityService<SlideShowViewModel, SlideShowViewModel, SlideShowViewModel>
 {
     Task<ServiceResult<List<SlideShowViewModel>>> Filtering(string filter);
     Task<ServiceResult<List<SlideShowViewModel>>> Load(int pageNumber = 1, int pageSize = 10);

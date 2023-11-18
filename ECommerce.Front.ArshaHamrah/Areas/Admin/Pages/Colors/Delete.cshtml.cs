@@ -16,7 +16,7 @@ public class DeleteModel : PageModel
         _colorService = colorService;
     }
 
-    public Color Color { get; set; }
+    public ColorReadDto Color { get; set; }
     [TempData] public string Message { get; set; }
 
     [TempData] public string Code { get; set; }

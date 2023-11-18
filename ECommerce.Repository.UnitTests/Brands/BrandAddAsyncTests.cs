@@ -50,10 +50,10 @@ public class BrandAddAsyncTests : BrandBaseTests
     {
         // Act
         async Task Action() => await BrandRepository.AddAsync(null!, CancellationToken);
-       
+
 
         // Assert
         await Assert.ThrowsAsync<ArgumentNullException>(Action);
-        
+
     }
 }

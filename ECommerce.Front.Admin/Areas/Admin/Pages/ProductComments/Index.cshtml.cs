@@ -35,4 +35,4 @@ public class IndexModel(IProductCommentService productCommentService) : PageMode
         return RedirectToPage("/index", new { message = result.Message, code = result.Code.ToString() });
     }
 }
- 
+

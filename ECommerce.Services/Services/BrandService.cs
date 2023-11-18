@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BrandService(IHttpService http) : EntityService<Brand>(http), IBrandService
+public class BrandService(IHttpService http) : EntityService<Brand, Brand, Brand>(http), IBrandService
 {
     private const string Url = "api/Brands";
 
@@ -59,7 +59,7 @@ public class BrandService(IHttpService http) : EntityService<Brand>(http), IBran
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Brand>> GetById(int id)

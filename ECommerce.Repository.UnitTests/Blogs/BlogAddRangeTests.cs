@@ -126,7 +126,7 @@ public partial class BlogTests
         // Act
         async Task Action()
         {
-            _blogRepository.AddRange([ null! ]);
+            _blogRepository.AddRange([null!]);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 

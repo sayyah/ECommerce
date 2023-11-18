@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface ICityService : IEntityService<City>
+public interface ICityService : IEntityService<City, City, City>
 {
     Task<ServiceResult<List<City>>> Filtering(string filter, int id);
     Task<ServiceResult<List<City>>> Load(int id);

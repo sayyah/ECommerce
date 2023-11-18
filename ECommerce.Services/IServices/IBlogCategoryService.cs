@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface IBlogCategoryService : IEntityService<BlogCategory>
+public interface IBlogCategoryService : IEntityService<BlogCategory, BlogCategory, BlogCategory>
 {
     Task<ServiceResult<List<BlogCategory>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult<Dictionary<int, string>>> LoadDictionary();

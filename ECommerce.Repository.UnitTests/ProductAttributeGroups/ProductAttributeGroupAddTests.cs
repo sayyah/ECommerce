@@ -2,12 +2,11 @@
 using ECommerce.Domain.Interfaces;
 using ECommerce.Infrastructure.Repository;
 using ECommerce.Repository.UnitTests.Base;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.ProductAttributeGroups
 {
-    public class ProductAttributeGrooupAddTests :BaseTests
+    public class ProductAttributeGrooupAddTests : BaseTests
     {
         private readonly IProductAttributeGroupRepository _productAttributeGroupRepository;
         public ProductAttributeGrooupAddTests()

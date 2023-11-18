@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using ECommerce.Infrastructure.DataContext;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using ECommerce.Infrastructure.DataContext;
-using Microsoft.Data.Sqlite;
 
 namespace ECommerce.Repository.UnitTests.Base;
 

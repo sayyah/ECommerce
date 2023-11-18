@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -33,7 +32,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                 type: "int",
                 nullable: true);
 
-       
+
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_PurchaseOrderId",
                 table: "Transactions",
@@ -73,10 +72,10 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                 type: "int",
                 nullable: true);
 
-          migrationBuilder.CreateIndex(
-                name: "IX_PurchaseOrders_TransactionId",
-                table: "PurchaseOrders",
-                column: "TransactionId");
+            migrationBuilder.CreateIndex(
+                  name: "IX_PurchaseOrders_TransactionId",
+                  table: "PurchaseOrders",
+                  column: "TransactionId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_PurchaseOrders_Transactions_TransactionId",

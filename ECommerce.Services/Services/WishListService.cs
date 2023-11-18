@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class WishListService(IHttpService http, ICookieService cookieService) : EntityService<WishList>(http),
+public class WishListService(IHttpService http, ICookieService cookieService) : EntityService<WishList, WishList, WishList>(http),
     IWishListService
 {
     private const string Url = "api/WishLists";

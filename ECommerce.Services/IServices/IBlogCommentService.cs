@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IBlogCommentService : IEntityService<BlogComment>
+public interface IBlogCommentService : IEntityService<BlogComment, BlogComment, BlogComment>
 {
     Task<ServiceResult<List<BlogComment>>> Filtering(string filter);
     Task<ServiceResult<List<BlogComment>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

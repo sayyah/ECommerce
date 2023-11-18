@@ -89,6 +89,6 @@ namespace ECommerce.Repository.UnitTests.ProductAttributeValues
             Assert.Equal(expectedProductAttributeValue[0].Value, actualProductAttributeValue[0].Value);
             Assert.Equal(expectedProductAttributeValue[1].Value, actualProductAttributeValue[1].Value);
             Assert.Equal(expectedProductAttributeValue[2].Value, actualProductAttributeValue[2].Value);
-        }      
+        }
     }
 }

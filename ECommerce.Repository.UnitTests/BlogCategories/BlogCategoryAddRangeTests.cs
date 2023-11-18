@@ -41,7 +41,7 @@ public partial class BlogCategoryTests
         // Act
         async Task Actual()
         {
-            _blogCategoryRepository.AddRange([ null! ]);
+            _blogCategoryRepository.AddRange([null!]);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -68,35 +68,35 @@ public partial class BlogCategoryTests
     {
         BlogCategory root = Fixture
             .Build<BlogCategory>()
-            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.BlogCategories, () => [])
             .With(p => p.Parent, () => null)
             .With(p => p.ParentId, () => null)
-            .With(p => p.Blogs, () => [ ])
+            .With(p => p.Blogs, () => [])
             .Create();
         BlogCategory child1 = Fixture
             .Build<BlogCategory>()
-            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.BlogCategories, () => [])
             .With(p => p.Parent, () => root)
             .With(p => p.ParentId, () => root.Id)
-            .With(p => p.Blogs, () => [ ])
+            .With(p => p.Blogs, () => [])
             .Create();
         BlogCategory child2 = Fixture
             .Build<BlogCategory>()
-            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.BlogCategories, () => [])
             .With(p => p.Parent, () => root)
             .With(p => p.ParentId, () => root.Id)
-            .With(p => p.Blogs, () => [ ])
+            .With(p => p.Blogs, () => [])
             .Create();
         root.BlogCategories!.Add(child1);
         root.BlogCategories.Add(child2);
-        List<BlogCategory> expected =  [ root, child1, child2 ];
+        List<BlogCategory> expected = [root, child1, child2];
 
         // Act
         _blogCategoryRepository.AddRange(expected);
         await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        List<BlogCategory> actual =  [ .. DbContext.BlogCategories ];
+        List<BlogCategory> actual = [.. DbContext.BlogCategories];
         actual.Should().BeEquivalentTo(expected);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class EmployeeService(IHttpService http) : EntityService<Employee>(http), IEmployeeService
+public class EmployeeService(IHttpService http) : EntityService<Employee, Employee, Employee>(http), IEmployeeService
 {
     private const string Url = "api/Employees";
 
@@ -59,7 +59,7 @@ public class EmployeeService(IHttpService http) : EntityService<Employee>(http),
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Employee>> GetById(int id)
