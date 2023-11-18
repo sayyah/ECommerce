@@ -15,7 +15,7 @@ public class HolooCustomerRepository(HolooDbContext context) : HolooRepository<H
 
     public async Task<string> AddWithoutSave(HolooCustomer customer, CancellationToken cancellationToken)
     {
-        await context.Customer.AddAsync(customer, cancellationToken);     
+        await context.Customer.AddAsync(customer, cancellationToken);
         return customer.C_Code;
     }
 

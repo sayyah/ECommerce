@@ -105,7 +105,7 @@ namespace ECommerce.Repository.UnitTests.ProductAttributes
             //Assert
             Assert.Equal(expectedCount, actualProductAttributeCount);
         }
-       
+
         //[Fact]
         //public void Add_AddNewEntity_ThrowsException()
         //{

@@ -54,8 +54,8 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
         //    product.AttributeValues.Add(productAttribute.FirstOrDefault());
         //}
 
-       var newProduct = await context.Products.AddAsync(product, cancellationToken);
-       return newProduct.Entity;
+        var newProduct = await context.Products.AddAsync(product, cancellationToken);
+        return newProduct.Entity;
     }
 
     public async Task<Product?> EditWithRelations(ProductViewModel productViewModel,

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class SlideShowService(IHttpService http) : EntityService<SlideShowViewModel>(http), ISlideShowService
+public class SlideShowService(IHttpService http) : EntityService<SlideShowViewModel, SlideShowViewModel, SlideShowViewModel>(http), ISlideShowService
 {
     private const string Url = "api/SlideShows";
     private List<SlideShowViewModel> _slideShows;
@@ -26,7 +26,7 @@ public class SlideShowService(IHttpService http) : EntityService<SlideShowViewMo
         var result = _slideShows.OrderBy(x => x.DisplayOrder).Take(top).ToList();
         if (result.Count == 0)
             return new ServiceResult<List<SlideShowViewModel>>
-                { Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد" };
+            { Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد" };
         return new ServiceResult<List<SlideShowViewModel>>
         {
             Code = ServiceCode.Success,
@@ -46,7 +46,7 @@ public class SlideShowService(IHttpService http) : EntityService<SlideShowViewMo
         var result = _slideShows.Where(x => x.Title.Contains(filter)).ToList();
         if (result.Count == 0)
             return new ServiceResult<List<SlideShowViewModel>>
-                { Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد" };
+            { Code = ServiceCode.Info, Message = "اسلایدشویی یافت نشد" };
         return new ServiceResult<List<SlideShowViewModel>>
         {
             Code = ServiceCode.Success,
@@ -82,7 +82,7 @@ public class SlideShowService(IHttpService http) : EntityService<SlideShowViewMo
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<SlideShowViewModel>> GetById(int id)

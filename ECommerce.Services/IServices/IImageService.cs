@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface IImageService : IEntityService<Image>
+public interface IImageService : IEntityService<Image, Image, Image>
 {
     Task<ServiceResult> Add(IFormFile file, int entityId, string path, string contentRootPath);
     Task<ServiceResult> Edit(IFormFile file, Image image, string path, string contentRootPath);

@@ -1,4 +1,6 @@
-using ECommerce.API;
+using System.Text;
+using System.Text.Json.Serialization;
+using ECommerce.Infrastructure.DataTransferObjectMappers;
 using ECommerce.Application.PersianTranslations.Identity;
 using ECommerce.Infrastructure.DataContext;
 using Hangfire;
@@ -10,9 +12,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
-using System.Reflection;
-using System.Text;
-using System.Text.Json.Serialization;
+using ECommerce.Application.DataTransferObjectMappers;
 
 DotNetEnv.Env.TraversePath().Load("../.env");
 
@@ -185,8 +185,54 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
 
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
-builder.Services.AddRepositories(Assembly.GetExecutingAssembly());
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IHolooCompanyRepository, HolooCompanyRepository>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
+builder.Services.AddScoped<IKeywordRepository, KeywordRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
+builder.Services.AddScoped<IPriceRepository, PriceRepository>();
+builder.Services.AddScoped<IProductAttributeGroupRepository, ProductAttributeGroupRepository>();
+builder.Services.AddScoped<IProductAttributeRepository, ProductAttributeRepository>();
+builder.Services.AddScoped<IProductAttributeValueRepository, ProductAttributeValueRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductCommentRepository, ProductCommentRepository>();
+builder.Services.AddScoped<IProductUserRankRepository, ProductUserRankRepository>();
+builder.Services.AddScoped<IPurchaseOrderDetailRepository, PurchaseOrderDetailRepository>();
+builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
+builder.Services.AddScoped<ISendInformationRepository, SendInformationRepository>();
+builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
+builder.Services.AddScoped<ISizeRepository, SizeRepository>();
+builder.Services.AddScoped<ISlideShowRepository, SlideShowRepository>();
+builder.Services.AddScoped<IStateRepository, StateRepository>();
+builder.Services.AddScoped<IStoreRepository, StoreRepository>();
+builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IUnitRepository, UnitRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IWishListRepository, WishListRepository>();
 
+builder.Services.AddScoped(typeof(IHolooRepository<>), typeof(HolooRepository<>));
+builder.Services.AddScoped<IHolooAccountNumberRepository, HolooAccountNumberRepository>();
+builder.Services.AddScoped<IHolooUnitRepository, HolooUnitRepository>();
+builder.Services.AddScoped<IHolooArticleRepository, HolooArticleRepository>();
+builder.Services.AddScoped<IHolooMGroupRepository, HolooMGroupRepository>();
+builder.Services.AddScoped<IHolooSGroupRepository, HolooSGroupRepository>();
+builder.Services.AddScoped<IHolooSanadRepository, HolooSanadRepository>();
+builder.Services.AddScoped<IHolooSanadListRepository, HolooSanadListRepository>();
+builder.Services.AddScoped<IHolooABailRepository, HolooABailRepository>();
+builder.Services.AddScoped<IHolooFBailRepository, HolooFBailRepository>();
+builder.Services.AddScoped<IHolooCustomerRepository, HolooCustomerRepository>();
+builder.Services.AddScoped<IHolooSarfaslRepository, HolooSarfaslRepository>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped(typeof(IEntityDtoMapper<,>), typeof(EntityDtoMapper<,>));
+builder.Services.AddScoped<IColorDtoMapper,  ColorDtoMapper>();
+
+ 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

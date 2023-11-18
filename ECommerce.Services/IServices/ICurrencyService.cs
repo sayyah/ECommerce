@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface ICurrencyService : IEntityService<Currency>
+public interface ICurrencyService : IEntityService<Currency, Currency, Currency>
 {
     Task<ServiceResult<List<Currency>>> Filtering(string filter);
     Task<ServiceResult<List<Currency>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

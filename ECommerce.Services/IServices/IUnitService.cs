@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IUnitService : IEntityService<Unit>
+public interface IUnitService : IEntityService<Unit, Unit, Unit>
 {
     Task<ServiceResult<List<Unit>>> Filtering(string filter);
     Task<ServiceResult<List<Unit>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

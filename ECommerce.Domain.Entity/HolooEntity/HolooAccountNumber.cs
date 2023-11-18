@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooAccountNumber: BaseHolooEntity
+public class HolooAccountNumber : BaseHolooEntity
 {
     public string C_Code { get; set; }
 

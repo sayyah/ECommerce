@@ -57,7 +57,7 @@ public class ShopModel(ICategoryService categoryService, IProductService product
         Products = await productService.TopProducts(categoryId, searchExpression, pageNumber, pageSize, productSort,
             maxprice, minprice, IsCheckExist, true, tagText);
 
-        if (Products.Code == 0 && Products.PaginationDetails!= null)
+        if (Products.Code == 0 && Products.PaginationDetails != null)
         {
             var brandResult = await brandService.LoadDictionary();
             if (brandResult.Code == ServiceCode.Success) Brands = brandResult.ReturnData;

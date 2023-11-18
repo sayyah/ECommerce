@@ -55,7 +55,7 @@ public class ProductdetailsModel(IProductService productService, IStarService st
     public async Task<IActionResult> OnGet(string productUrl, int pageNumber = 1, int pageSize = 10)
     {
         await Initial(productUrl, pageNumber, pageSize);
-        if(Product == null)
+        if (Product == null)
         {
             return RedirectToPage("Error");
         }

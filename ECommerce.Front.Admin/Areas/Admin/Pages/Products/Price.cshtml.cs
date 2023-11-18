@@ -44,7 +44,10 @@ public class PriceModel(IPriceService priceService, IUnitService unitService, IS
                 return RedirectToPage("/Products/Price",
                     new
                     {
-                        area = "Admin", id = Price.ProductId, message = result.Message, code = result.Code.ToString()
+                        area = "Admin",
+                        id = Price.ProductId,
+                        message = result.Message,
+                        code = result.Code.ToString()
                     });
             Message = result.Message;
             Code = result.Code.ToString();

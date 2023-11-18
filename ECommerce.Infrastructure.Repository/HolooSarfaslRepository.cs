@@ -31,7 +31,7 @@ public class HolooSarfaslRepository(HolooDbContext context) : HolooRepository<Ho
             Selected = false
         };
 
-         context.Sarfasl.Add(sarfasl);
+        context.Sarfasl.Add(sarfasl);
         return newMoeinCode;
     }
 }

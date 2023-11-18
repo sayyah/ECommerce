@@ -1,17 +1,25 @@
+using ECommerce.Application.DataTransferObjects.Color;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class DeleteModel(IColorService colorService) : PageModel
+public class DeleteModel : PageModel
 {
-    public Color Color { get; set; }
+    private readonly IColorService _colorService;
+
+    public DeleteModel(IColorService colorService)
+    {
+        _colorService = colorService;
+    }
+
+    public ColorReadDto Color { get; set; }
     [TempData] public string Message { get; set; }
 
     [TempData] public string Code { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await colorService.GetById(id);
+        var result = await _colorService.GetById(id);
         if (result.Code == 0)
         {
             Color = result.ReturnData;
@@ -26,7 +34,7 @@ public class DeleteModel(IColorService colorService) : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await colorService.Delete(id);
+            var result = await _colorService.Delete(id);
             return RedirectToPage("/Colors/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

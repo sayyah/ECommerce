@@ -18,7 +18,8 @@ public class EditModel(IEmployeeService employeeService, IDepartmentService depa
         await Init();
     }
 
-    private async Task Init() {
+    private async Task Init()
+    {
         var departments = (await departmentService.GetAll()).ReturnData;
         Departments = new SelectList(departments, nameof(Department.Id), nameof(Department.Title));
     }

@@ -9,6 +9,6 @@ public class BrandBaseTests : BaseTests
     public readonly IBrandRepository BrandRepository;
     public BrandBaseTests()
     {
-        BrandRepository = new BrandRepository(DbContext);        
+        BrandRepository = new BrandRepository(DbContext);
     }
-}  
+}

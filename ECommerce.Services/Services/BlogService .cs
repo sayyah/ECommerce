@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogService
+public class BlogService(IHttpService http) : EntityService<Blog, Blog, Blog>(http), IBlogService
 {
     private const string Url = "api/Blogs";
     private List<Blog> _blogs;
@@ -89,7 +89,7 @@ public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogSe
 
         _blogs = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<BlogViewModel>> GetById(int id)

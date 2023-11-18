@@ -1,24 +1,32 @@
-﻿using ECommerce.Services.IServices;
+﻿
+using ECommerce.Application.DataTransferObjects.Color;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class EditModel(IColorService colorService) : PageModel
+public class EditModel : PageModel
 {
-    [BindProperty] public Color Color { get; set; }
+    private readonly IColorService _colorService;
+
+    public EditModel(IColorService colorService)
+    {
+        _colorService = colorService;
+    }
+
+    [BindProperty] public ColorReadDto? Color { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await colorService.GetById(id);
-        Color = result.ReturnData;
+        Color = (await _colorService.GetById(id)).ReturnData;
     }
 
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnPost(ColorUpdateDto Color)
     {
         if (ModelState.IsValid)
         {
-            var result = await colorService.Edit(Color);
+            var result = await _colorService.Edit(Color);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class HolooAccountNumberService(IHttpService http) : EntityService<HolooAccountNumber>(http),
+public class HolooAccountNumberService(IHttpService http) : EntityService<HolooAccountNumber, HolooAccountNumber, HolooAccountNumber>(http),
     IHolooAccountNumberService
 {
     private const string Url = "api/PaymentMethods/HolooAccount";

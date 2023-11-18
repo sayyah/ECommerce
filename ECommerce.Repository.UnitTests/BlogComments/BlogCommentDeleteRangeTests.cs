@@ -13,7 +13,7 @@ public partial class BlogCommentTests
         // Act
         async Task Action()
         {
-            _blogCommentRepository.DeleteRange([ null! ]);
+            _blogCommentRepository.DeleteRange([null!]);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 

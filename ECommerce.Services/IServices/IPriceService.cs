@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IPriceService : IEntityService<Price>
+public interface IPriceService : IEntityService<Price, Price, Price>
 {
     Task<ServiceResult<List<Price>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult> Add(Price price);

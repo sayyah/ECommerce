@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class DepartmentService(IHttpService http) : EntityService<Department>(http), IDepartmentService
+public class DepartmentService(IHttpService http) : EntityService<Department, Department, Department>(http), IDepartmentService
 {
     private const string Url = "api/Departments";
     private List<Department> _departments;
@@ -68,7 +68,7 @@ public class DepartmentService(IHttpService http) : EntityService<Department>(ht
 
         _departments = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Department>> GetById(int id)

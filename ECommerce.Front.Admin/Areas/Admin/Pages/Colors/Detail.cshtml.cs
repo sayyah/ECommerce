@@ -1,14 +1,22 @@
+using ECommerce.Application.DataTransferObjects.Color;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class DetailModel(IColorService colorService) : PageModel
+public class DetailModel : PageModel
 {
-    public Color Color { get; set; }
+    private readonly IColorService _colorService;
+
+    public DetailModel(IColorService colorService)
+    {
+        _colorService = colorService;
+    }
+
+    public ColorReadDto Color { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await colorService.GetById(id);
+        var result = await _colorService.GetById(id);
         if (result.Code == 0)
         {
             Color = result.ReturnData;

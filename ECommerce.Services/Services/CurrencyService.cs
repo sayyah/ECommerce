@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class CurrencyService(IHttpService http) : EntityService<Currency>(http), ICurrencyService
+public class CurrencyService(IHttpService http) : EntityService<Currency, Currency, Currency>(http), ICurrencyService
 {
     private const string Url = "api/Currencies";
     private List<Currency> _currencies;
@@ -63,7 +63,7 @@ public class CurrencyService(IHttpService http) : EntityService<Currency>(http),
 
         _currencies = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Currency>> GetById(int id)

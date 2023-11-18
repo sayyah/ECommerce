@@ -17,6 +17,7 @@ public class IndexModel(ISlideShowService slideShowService, IProductService prod
 
     public async Task OnGetAsync()
     {
+        var results = await wishListService.Load();
         //var productTops = (await _productService.GetTops("TopNew:8,TopPrices:4,TopStars:10")).ReturnData;
         var productTops = (await productService.GetTops("TopPrices:4,TopNew:10")).ReturnData;
         foreach (var top in productTops)

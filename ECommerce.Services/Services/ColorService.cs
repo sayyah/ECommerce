@@ -1,54 +1,63 @@
-﻿namespace ECommerce.Services.Services;
+﻿using ECommerce.Application.DataTransferObjects.Color;
 
-public class ColorService(IHttpService http) : EntityService<Color>(http), IColorService
+namespace ECommerce.Services.Services;
+
+public class ColorService(IHttpService http) : EntityService<ColorReadDto, ColorCreateDto, ColorUpdateDto>(http), IColorService
 {
     private const string Url = "api/Colors";
     private List<Color> _colors;
 
-    public async Task<ServiceResult<List<Color>>> Load()
+    public async Task<ServiceResult<List<ColorReadDto>>> Load()
     {
-        var result = await ReadList(Url, "GetAll");
+        var result = await http.GetAsync<List<ColorReadDto>>(Url, "GetAll");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<Color>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<ColorReadDto>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10)
     {
-        var result = await ReadList(Url,
-            $"GetAllWithPagination?PageNumber={pageNumber}&Search={search}&PageSize={pageSize}");
+        var api = $"GetAllWithPagination?PaginationParameters.PageNumber={pageNumber}&PaginationParameters.Search={search}&PaginationParameters.PageSize={pageSize}";
+        var result = await http.GetAsync<List<ColorReadDto>>(Url, api);
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<Color>>> Filtering(string filter)
+    public async Task<ServiceResult<List<ColorReadDto>>> Filtering(string filter)
     {
-        if (_colors == null)
-        {
-            var colors = await Load();
-            if (colors.Code > 0) return colors;
-            _colors = colors.ReturnData;
-        }
+        var colors = await Load();
+        if (colors.Code > 0) return colors;
 
-        var result = _colors.Where(x => x.Name.Contains(filter)).ToList();
+        var result = colors.ReturnData.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Color>> { Code = ServiceCode.Info, Message = "رنگ یافت نشد" };
-        return new ServiceResult<List<Color>>
+            return new ServiceResult<List<ColorReadDto>> { Code = ServiceCode.Info, Message = "رنگ یافت نشد" };
+        return new ServiceResult<List<ColorReadDto>>
         {
             Code = ServiceCode.Success,
             ReturnData = result
         };
     }
 
-    public async Task<ServiceResult> Add(Color color)
+    public async Task<ServiceResult<ColorReadDto>> Add(ColorCreateDto color)
     {
-        var result = await Create(Url, color);
-        _colors = null;
-        return Return(result);
+        var response = await http.PostAsync<ColorCreateDto, ColorReadDto>(Url, color);
+        if (response == null)
+            return new ServiceResult<ColorReadDto>
+            {
+                Code = ServiceCode.Error,
+                Message = "سرور سایت در دسترس نیست. لطفا با پشتیبان سایت تماس بگیرید"
+            };
+        response.Messages = response.Code > 0
+            ? new List<string> { response.GetBody() }
+            : new List<string> { "با موفقیت ذخیره شد" };
+
+        return Return(response);
     }
 
-    public async Task<ServiceResult> Edit(Color color)
+    public async Task<ServiceResult> Edit(ColorUpdateDto color)
     {
-        var result = await Update(Url, color);
-        _colors = null;
-        return Return(result);
+        var response = await http.PutAsync<ColorUpdateDto>(Url, color);
+        response.Messages = response.Code > 0
+            ? new List<string> { response.GetBody() }
+            : new List<string> { "با موفقیت ویرایش شد" };
+        return Return(response);
     }
 
     public async Task<ServiceResult> Delete(int id)
@@ -64,12 +73,12 @@ public class ColorService(IHttpService http) : EntityService<Color>(http), IColo
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
-    public async Task<ServiceResult<Color>> GetById(int id)
+    public async Task<ServiceResult<ColorReadDto>> GetById(int id)
     {
-        var result = await http.GetAsync<Color>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ColorReadDto>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

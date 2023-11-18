@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface IBlogService : IEntityService<Blog>
+public interface IBlogService : IEntityService<Blog, Blog, Blog>
 {
     Task<ServiceResult<List<Blog>>> Filtering(string filter);
     Task<ServiceResult<List<Blog>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

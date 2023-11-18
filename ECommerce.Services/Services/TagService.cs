@@ -2,8 +2,8 @@
 
 namespace ECommerce.Services.Services;
 
-public class TagService(IHttpService http, IEntityService<TagProductId> tagViewModelEntityService)
-    : EntityService<Tag>(http), ITagService
+public class TagService(IHttpService http, IEntityService<TagProductId, TagProductId, TagProductId> tagViewModelEntityService)
+    : EntityService<Tag, Tag, Tag>(http), ITagService
 {
     private const string Url = "api/Tags";
     private List<Tag> _tags;
@@ -84,7 +84,7 @@ public class TagService(IHttpService http, IEntityService<TagProductId> tagViewM
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<TagProductId>>> GetTagsByProductId(int productId)

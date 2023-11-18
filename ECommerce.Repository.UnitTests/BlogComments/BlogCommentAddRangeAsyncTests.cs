@@ -42,7 +42,7 @@ public partial class BlogCommentTests
         // Act
         async Task Action()
         {
-            _blogCommentRepository.AddRange([ null! ]);
+            _blogCommentRepository.AddRange([null!]);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(http), IBlogCommentService
+public class BlogCommentService(IHttpService http) : EntityService<BlogComment, BlogComment, BlogComment>(http), IBlogCommentService
 {
     private const string Url = "api/BlogComments";
     private List<BlogComment> _blogComments;
@@ -109,7 +109,7 @@ public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(
 
         _blogComments = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<BlogComment>> GetById(int id)

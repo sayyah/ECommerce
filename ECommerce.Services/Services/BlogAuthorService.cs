@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BlogAuthorService(IHttpService http) : EntityService<BlogAuthor>(http), IBlogAuthorService
+public class BlogAuthorService(IHttpService http) : EntityService<BlogAuthor, BlogAuthor, BlogAuthor>(http), IBlogAuthorService
 {
     private const string Url = "api/BlogAuthors";
     private List<BlogAuthor> _blogAuthors;
@@ -79,7 +79,7 @@ public class BlogAuthorService(IHttpService http) : EntityService<BlogAuthor>(ht
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<BlogAuthor>> GetById(int id)

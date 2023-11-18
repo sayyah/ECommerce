@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ContactService(IHttpService http) : EntityService<Contact>(http), IContactService
+public class ContactService(IHttpService http) : EntityService<Contact, Contact, Contact>(http), IContactService
 {
     private const string Url = "api/Contacts";
 
@@ -35,7 +35,7 @@ public class ContactService(IHttpService http) : EntityService<Contact>(http), I
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Contact>> GetById(int id)

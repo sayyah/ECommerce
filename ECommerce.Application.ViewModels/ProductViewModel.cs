@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ECommerce.Domain.Entities;
+﻿using ECommerce.Domain.Entities;
 using ECommerce.Domain.Entities.Helper;
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommerce.Application.ViewModels;
 

@@ -45,12 +45,23 @@
 		<PackageReference Include="Serilog.Sinks.MSSqlServer" Version="6.5.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\ECommerce.API.DataTransferring\ECommerce.API.DataTransferring.csproj" />
-		<ProjectReference Include="..\ECommerce.Application.PersianTranslations\ECommerce.Application.PersianTranslations.csproj" />
-		<ProjectReference Include="..\ECommerce.Application.Services\ECommerce.Application.Services.csproj" />
-		<ProjectReference Include="..\ECommerce.Domain.Exception\ECommerce.Domain.Exceptions.csproj" />
-		<ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
-		<ProjectReference Include="..\ECommerce.Infrastructure.Repository\ECommerce.Infrastructure.Repository.csproj" />
-		<ProjectReference Include="..\ECommerce.Infrastructure\ECommerce.Infrastructure.DataContext.csproj" />
+	  <ProjectReference Include="..\ECommerce.Application.DataTransferObjectMappers\ECommerce.Application.DataTransferObjectMappers.csproj" />
+	  <ProjectReference Include="..\ECommerce.Application.DataTransferObjects\ECommerce.Application.DataTransferObjects.csproj" />
+	  <ProjectReference Include="..\ECommerce.Application.PersianTranslations\ECommerce.Application.PersianTranslations.csproj" />
+	  <ProjectReference Include="..\ECommerce.Application.Services\ECommerce.Application.Services.csproj" />
+	  <ProjectReference Include="..\ECommerce.Domain.Exception\ECommerce.Domain.Exceptions.csproj" />
+	  <ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
+	  <ProjectReference Include="..\ECommerce.Infrastructure.DataTransferObjectMappers\ECommerce.Infrastructure.DataTransferObjectMappers.csproj" />
+	  <ProjectReference Include="..\ECommerce.Infrastructure.Repository\ECommerce.Infrastructure.Repository.csproj" />
+	  <ProjectReference Include="..\ECommerce.Infrastructure\ECommerce.Infrastructure.DataContext.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="ECommerce.DataTransferObjects">
+	    <HintPath>..\ECommerce.DataTransferObjects\obj\Debug\net8.0\ref\ECommerce.DataTransferObjects.dll</HintPath>
+	  </Reference>
+	  <Reference Include="ECommerce.DataTransferObjectsMapper">
+	    <HintPath>..\ECommerce.DataTransferObjectsMapper\obj\Debug\net8.0\ref\ECommerce.DataTransferObjectsMapper.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>

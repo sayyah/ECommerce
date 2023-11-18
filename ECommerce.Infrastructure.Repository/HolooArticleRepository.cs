@@ -208,8 +208,8 @@ public class HolooArticleRepository(HolooDbContext context)
                     List<string> a_code = new List<string>();
                     foreach (var item in article)
                     {
-                        
-                            a_code.Add(item.A_Code);
+
+                        a_code.Add(item.A_Code);
                     }
                     if (productPrices.ArticleCode != null)
                     {
@@ -235,7 +235,7 @@ public class HolooArticleRepository(HolooDbContext context)
     private double GetWithACode(int userCode, string aCode, CancellationToken cancellationToken)
     {
         return (from d in context.ABAILPRE.Where(c => c.A_Code == aCode)
-            join dr in context.FBAILPRE.Where(c => c.UserCode == userCode) on d.Fac_Code equals dr.Fac_Code
-            select d.First_Article).Sum();
+                join dr in context.FBAILPRE.Where(c => c.UserCode == userCode) on d.Fac_Code equals dr.Fac_Code
+                select d.First_Article).Sum();
     }
 }

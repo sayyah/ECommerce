@@ -1,6 +1,6 @@
 ﻿using ECommerce.Domain.Entities;
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ECommerce.Domain.Interfaces;
 
@@ -20,7 +20,7 @@ public interface IRepositoryBase<TEntity> where TEntity : class, IBaseEntity<int
         CancellationToken cancellationToken);
 
     void Add(TEntity entity);
-    Task<TEntity> AddAsync(TEntity entity,CancellationToken cancellationToken);
+    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken);
     void AddRange(IEnumerable<TEntity> entities);
 
     void Update(TEntity entity);

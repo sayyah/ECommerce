@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class PaymentMethodService(IHttpService http) : EntityService<PaymentMethod>(http), IPaymentMethodService
+public class PaymentMethodService(IHttpService http) : EntityService<PaymentMethod, PaymentMethod, PaymentMethod>(http), IPaymentMethodService
 
 {
     private const string Url = "api/PaymentMethods";
@@ -64,7 +64,7 @@ public class PaymentMethodService(IHttpService http) : EntityService<PaymentMeth
 
         _paymentMethods = null;
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<PaymentMethod>> GetById(int id)

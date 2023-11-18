@@ -1,9 +1,10 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class CityService(IHttpService http) : EntityService<City>(http), ICityService
+public class CityService(IHttpService http) : EntityService<City, City, City>(http), ICityService
 {
     private const string Url = "api/Cities";
     private List<City> _cities;
+
 
     public async Task<ServiceResult<List<City>>> LoadAllCity()
     {
@@ -72,7 +73,7 @@ public class CityService(IHttpService http) : EntityService<City>(http), ICitySe
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<City>> GetByStateId(int id)

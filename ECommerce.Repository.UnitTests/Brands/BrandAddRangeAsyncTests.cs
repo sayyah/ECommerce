@@ -15,7 +15,7 @@ public class BrandAddRangeAsyncTests : BrandBaseTests
              new Brand() { Name = Guid.NewGuid().ToString(), Url = Guid.NewGuid().ToString() },
              new Brand() { Name = Guid.NewGuid().ToString(), Url = Guid.NewGuid().ToString() }
         };
-       
+
         // Act
         BrandRepository.AddRange(brands);
         await UnitOfWork.SaveAsync(CancellationToken);
@@ -32,6 +32,6 @@ public class BrandAddRangeAsyncTests : BrandBaseTests
 
         // Assert
         Assert.Throws<ArgumentNullException>(Action);
-      
+
     }
 }

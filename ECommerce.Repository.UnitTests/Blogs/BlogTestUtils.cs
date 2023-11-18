@@ -22,7 +22,7 @@ public partial class BlogTests : BaseTests
                 .With(p => p.BlogCategories, () => null)
                 .With(p => p.Parent, () => null)
                 .With(p => p.ParentId, () => null)
-                .With(p => p.Blogs, () => [ ])
+                .With(p => p.Blogs, () => [])
                 .Create();
             var blogAuthor = Fixture.Build<BlogAuthor>().Without(p => p.Blogs).Create();
             var image = Fixture

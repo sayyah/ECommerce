@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class ImageService(IHttpService http, HttpClient http1) : EntityService<Image>(http), IImageService
+public class ImageService(IHttpService http, HttpClient http1) : EntityService<Image, Image, Image>(http), IImageService
 {
     private const string Url = "api/Images";
     private readonly HttpClient _http = http1;

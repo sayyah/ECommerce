@@ -13,7 +13,7 @@ public partial class BlogTests
         // Act
         async Task Action()
         {
-            _blogRepository.UpdateRange([ null! ]);
+            _blogRepository.UpdateRange([null!]);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 

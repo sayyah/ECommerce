@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ProductAttributeService(IHttpService http) : EntityService<ProductAttribute>(http),
+public class ProductAttributeService(IHttpService http) : EntityService<ProductAttribute, ProductAttribute, ProductAttribute>(http),
     IProductAttributeService
 {
     private const string Url = "api/ProductAttributes";
@@ -42,7 +42,7 @@ public class ProductAttributeService(IHttpService http) : EntityService<ProductA
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<List<ProductAttribute>>> GetAllAttributeWithGroupId(int attributeGroupsId,

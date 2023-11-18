@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface ISizeService : IEntityService<Size>
+public interface ISizeService : IEntityService<Size, Size, Size>
 {
     Task<ServiceResult<List<Size>>> Filtering(string filter);
     Task<ServiceResult<List<Size>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

@@ -37,7 +37,7 @@ namespace ECommerce.Repository.UnitTests.ProductAttributeGroups
             Assert.Null(actualProductAttributeValue);
         }
 
-        
+
 
         [Fact]
         public async Task DeleteRange_DeleteEntities_ReturnZeroCount()
@@ -73,6 +73,6 @@ namespace ECommerce.Repository.UnitTests.ProductAttributeGroups
             //Assert
             int actualCount = DbContext.ProductAttributeGroups.Count();
             Assert.Equal(expectedCount, actualCount);
-        } 
+        }
     }
 }

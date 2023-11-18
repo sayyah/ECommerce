@@ -33,7 +33,7 @@ namespace ECommerce.Repository.UnitTests.ProductAttributes
             DbContext.ChangeTracker.Clear();
 
             //Act
-            var actualProductAttribute = await _productAttributeRepository.GetByIdAsync( CancellationToken , id);
+            var actualProductAttribute = await _productAttributeRepository.GetByIdAsync(CancellationToken, id);
 
             //Assert
             Assert.Equal(expectedProductAttribute.Id, actualProductAttribute.Id);
@@ -114,7 +114,7 @@ namespace ECommerce.Repository.UnitTests.ProductAttributes
             DbContext.ChangeTracker.Clear();
 
             //Act
-            var actualProductAttribute =  _productAttributeRepository.GetByTitle(title, CancellationToken);
+            var actualProductAttribute = _productAttributeRepository.GetByTitle(title, CancellationToken);
 
             //Assert
             Assert.Equal(id, actualProductAttribute.Id);

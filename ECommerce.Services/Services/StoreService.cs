@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class StoreService(IHttpService http) : EntityService<Store>(http), IStoreService
+public class StoreService(IHttpService http) : EntityService<Store, Store, Store>(http), IStoreService
 {
     private const string Url = "api/Store";
     private List<Store> _stores;
@@ -76,7 +76,7 @@ public class StoreService(IHttpService http) : EntityService<Store>(http), IStor
                 Message = "با موفقیت حذف شد"
             };
         return new ServiceResult
-            { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
+        { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
     public async Task<ServiceResult<Store>> GetById(int id)

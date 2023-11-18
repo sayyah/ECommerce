@@ -1,4 +1,3 @@
-using ECommerce.Domain.Entities;
 using ECommerce.Domain.Interfaces;
 using ECommerce.Infrastructure.Repository;
 using ECommerce.Repository.UnitTests.Base;

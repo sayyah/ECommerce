@@ -11,7 +11,7 @@ public class UserAddAsyncTests : UserBaseTests
         // Arrange
         const int expectedCount = 2;
         var name = Guid.NewGuid().ToString();
-        var mobile ="09119876543";
+        var mobile = "09119876543";
         User user = new()
         {
             UserName = name,
