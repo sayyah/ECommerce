@@ -1,4 +1,6 @@
-﻿using ECommerce.Services.IServices;
+﻿
+using ECommerce.Application.DataTransferObjects.Color;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Colors;
 
@@ -11,17 +13,16 @@ public class EditModel : PageModel
         _colorService = colorService;
     }
 
-    [BindProperty] public Color Color { get; set; }
+    [BindProperty] public ColorReadDto? Color { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _colorService.GetById(id);
-        Color = result.ReturnData;
+        Color = (await _colorService.GetById(id)).ReturnData;         
     }
 
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnPost(ColorUpdateDto Color)
     {
         if (ModelState.IsValid)
         {

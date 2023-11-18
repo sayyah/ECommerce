@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class MessageService : EntityService<Message>, IMessageService
+public class MessageService : EntityService<Message, Message, Message>, IMessageService
 {
     private const string Url = "api/Messages";
     private readonly ICookieService _cookieService;

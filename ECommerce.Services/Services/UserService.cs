@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace ECommerce.Services.Services;
 
-public class UserService : EntityService<User>, IUserService
+public class UserService : EntityService<User, User, User>, IUserService
 {
     private const string Url = "api/Users";
     private readonly ICookieService _cookieService;

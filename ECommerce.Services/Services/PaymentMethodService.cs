@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class PaymentMethodService : EntityService<PaymentMethod>, IPaymentMethodService
+public class PaymentMethodService : EntityService<PaymentMethod, PaymentMethod, PaymentMethod>, IPaymentMethodService
 
 {
     private const string Url = "api/PaymentMethods";

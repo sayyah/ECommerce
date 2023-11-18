@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Services.Services;
 
-public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
+public class CartService : EntityService<PurchaseOrderViewModel, PurchaseOrderViewModel, PurchaseOrderViewModel>, ICartService
 {
     private const string Url = "api/PurchaseOrders";
     private readonly ICookieService _cookieService;

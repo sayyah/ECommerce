@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace ECommerce.Services.Services;
 
-public class ProductService : EntityService<ProductViewModel>, IProductService
+public class ProductService : EntityService<ProductViewModel, ProductViewModel, ProductViewModel>, IProductService
 {
     private const string Url = "api/Products";
     private readonly ICategoryService _categoryService;

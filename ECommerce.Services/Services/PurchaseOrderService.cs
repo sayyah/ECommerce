@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class PurchaseOrderService : EntityService<PurchaseOrder>, IPurchaseOrderService
+public class PurchaseOrderService : EntityService<PurchaseOrder, PurchaseOrder, PurchaseOrder>, IPurchaseOrderService
 {
     private const string Url = "api/PurchaseOrders";
     private readonly ICookieService _cookieService;

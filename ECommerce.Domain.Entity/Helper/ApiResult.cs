@@ -31,7 +31,7 @@ public class ServiceResult<T> : ActionResult
     public PaginationDetails? PaginationDetails { get; set; }
     public ServiceCode Code { get; set; }
     public string? Message { get; set; }
-    public T ReturnData { get; set; }
+    public T? ReturnData { get; set; }
 }
 
 public class ApiResult : ActionResult
@@ -40,7 +40,7 @@ public class ApiResult : ActionResult
     public string? StackTrace { get; set; }
     public PaginationDetails? PaginationDetails { get; set; }
     public ResultCode Code { get; set; }
-    public IEnumerable<string>? Messages { get; set; }
+    public IEnumerable<string?>? Messages { get; set; }
     public object? ReturnData { get; set; }
 
     public string? GetBody()
@@ -55,8 +55,8 @@ public class ApiResult<T>
     public string? StackTrace { get; set; }
     public PaginationDetails? PaginationDetails { get; set; }
     public ResultCode Code { get; set; }
-    public IEnumerable<string>? Messages { get; set; }
-    public T ReturnData { get; set; }
+    public IEnumerable<string?>? Messages { get; set; }
+    public T? ReturnData { get; set; }
 
     public string? GetBody()
     {

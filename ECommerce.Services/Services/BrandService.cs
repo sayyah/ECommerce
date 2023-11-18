@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BrandService : EntityService<Brand>, IBrandService
+public class BrandService : EntityService<Brand, Brand, Brand>, IBrandService
 {
     private const string Url = "api/Brands";
     private readonly IHttpService _http;

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IProductAttributeService : IEntityService<ProductAttribute>
+public interface IProductAttributeService : IEntityService<ProductAttribute, ProductAttribute, ProductAttribute>
 {
     Task<ServiceResult<List<ProductAttribute>>> Load(int productId = 0, int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult> Add(ProductAttribute productAttribute);

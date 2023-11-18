@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface ISupplierService : IEntityService<Supplier>
+public interface ISupplierService : IEntityService<Supplier, Supplier, Supplier>
 {
     Task<ServiceResult<List<Supplier>>> Filtering(string filter);
     Task<ServiceResult<List<Supplier>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class BlogCategoryService : EntityService<BlogCategory>, IBlogCategoryService
+public class BlogCategoryService : EntityService<BlogCategory, BlogCategory, BlogCategory>, IBlogCategoryService
 {
     private const string Url = "api/BlogCategories";
     private readonly IHttpService _http;

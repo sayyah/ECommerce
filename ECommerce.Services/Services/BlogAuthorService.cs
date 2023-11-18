@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BlogAuthorService : EntityService<BlogAuthor>, IBlogAuthorService
+public class BlogAuthorService : EntityService<BlogAuthor, BlogAuthor, BlogAuthor>, IBlogAuthorService
 {
     private const string Url = "api/BlogAuthors";
     private readonly IHttpService _http;

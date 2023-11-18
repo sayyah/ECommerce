@@ -1,3 +1,4 @@
+using ECommerce.Application.DataTransferObjects.Color;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Colors;
@@ -11,7 +12,7 @@ public class IndexModel : PageModel
         _colorService = colorService;
     }
 
-    public ServiceResult<List<Color>> Colors { get; set; }
+    public ServiceResult<List<ColorReadDto>> Colors { get; set; }
 
     [TempData] public string Message { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class EntityService<T> : IEntityService<T>
+public class EntityService<TRead, TCreate, TUpdate> : IEntityService<TRead, TCreate, TUpdate>
 {
     private readonly IHttpService _http;
 
@@ -9,56 +9,59 @@ public class EntityService<T> : IEntityService<T>
         _http = http;
     }
 
-    public async Task<ApiResult<List<T>>> ReadList(string url)
+    public async Task<ApiResult<List<TRead>>> ReadList(string url)
     {
-        return await _http.GetAsync<List<T>>(url);
+        return await _http.GetAsync<List<TRead>>(url);
     }
 
-    public async Task<ApiResult<List<T>>> ReadList(string url, string api)
+    public async Task<ApiResult<List<TRead>>> ReadList(string url, string api)
     {
-        return await _http.GetAsync<List<T>>(url, api);
+        return await _http.GetAsync<List<TRead>>(url, api);
     }
 
-    public async Task<ApiResult<T>> Read(string url)
+    public async Task<ApiResult<TRead>> Read(string url)
     {
-        return await _http.GetAsync<T>(url);
+        return await _http.GetAsync<TRead>(url);
     }
 
-    public async Task<ApiResult<T>> Read(string url, string api)
+    public async Task<ApiResult<TRead>> Read(string url, string api)
     {
-        return await _http.GetAsync<T>(url, api);
+        return await _http.GetAsync<TRead>(url, api);
     }
 
-    public async Task<ApiResult<object>> Create(string url, T entity)
+    public async Task<ApiResult<object>> Create(string url, TCreate entity)
     {
-        var response = await _http.PostAsync(url, entity);
-        if (response == null)
-            return new ApiResult<object>
-            {
-                Code = ResultCode.ServerDontResponse,
-                Messages = new List<string> { "سرور سایت در دسترس نیست. لطفا با پشتیبان سایت تماس بگیرید" }
-            };
+        ApiResult<object> response = await _http.PostAsync(url, entity);
         response.Messages = response.Code > 0
-            ? new List<string> { response.GetBody() }
-            : new List<string> { "با موفقیت ذخیره شد" };
+            ? new List<string?> { response.GetBody() }
+            : new List<string?> { "با موفقیت ذخیره شد" };
         return response;
     }
 
-    public async Task<ApiResult<TResponse>> Create<TResponse>(string url, T entity)
+    public async Task<ApiResult<TResponse>> Create<TResponse>(string url, TCreate entity)
     {
-        var response = await _http.PostAsync<T, TResponse>(url, entity);
+        var response = await _http.PostAsync<TCreate, TResponse>(url, entity);
         response.Messages = response.Code > 0
-            ? new List<string> { response.GetBody() }
-            : new List<string> { "با موفقیت ذخیره شد" };
+            ? new List<string?> { response.GetBody() }
+            : new List<string?> { "با موفقیت ذخیره شد" };
         return response;
     }
 
-    public async Task<ApiResult> UpdateWithReturnId(string url, T entity)
+    public async Task<ApiResult<object>> CreateWithoutToken(string url, TCreate entity)
+    {
+        var response = await _http.PostAsyncWithoutToken<TCreate>(url, entity);
+        response.Messages = response.Code > 0
+            ? new List<string?> { response.GetBody() }
+            : new List<string?> { "با موفقیت ذخیره شد" };
+        return response;
+    }
+
+    public async Task<ApiResult> UpdateWithReturnId(string url, TUpdate entity)
     {
         var response = await _http.PutAsync(url, entity);
         var messages = response.Code > 0
-            ? new List<string> { response.GetBody() }
-            : new List<string> { "با موفقیت ویرایش شد" };
+            ? new List<string?> { response.GetBody() }
+            : new List<string?> { "با موفقیت ویرایش شد" };
         return new ApiResult
         {
             Code = ResultCode.Success,
@@ -66,21 +69,20 @@ public class EntityService<T> : IEntityService<T>
         };
     }
 
-    public async Task<ApiResult> Update(string url, T entity)
+    public async Task<ApiResult> Update(string url, TUpdate entity)
     {
         var response = await _http.PutAsync(url, entity);
         response.Messages = response.Code > 0
-            ? new List<string> { response.GetBody() }
-            : new List<string> { "با موفقیت ویرایش شد" };
+            ? new List<string?> { response.GetBody() }
+            : new List<string?> { "با موفقیت ویرایش شد" };
         return response;
     }
-
-    public async Task<ApiResult> Update(string url, T entity, string apiName)
+    public async Task<ApiResult> Update(string url, TUpdate entity, string apiName)
     {
         var response = await _http.PutAsync(url, entity, apiName);
         if (response.Code > 0)
         {
-            response.Messages = new List<string> { response.GetBody() };
+            response.Messages = new List<string?> { response.GetBody() };
         }
         else
         {
@@ -94,8 +96,8 @@ public class EntityService<T> : IEntityService<T>
     {
         var response = await _http.DeleteAsync(url, entityId);
         response.Messages = response.Code > 0
-            ? new List<string> { response.GetBody() }
-            : new List<string> { "با موفقیت حذف شد" };
+            ? new List<string?> { response.GetBody() }
+            : new List<string?> { "با موفقیت حذف شد" };
         return response;
     }
 
@@ -113,8 +115,8 @@ public class EntityService<T> : IEntityService<T>
         return new ServiceResult<TResult>
         {
             Code = ServiceCode.Error,
-            Message = result?.GetBody(),
-            ReturnData = (TResult)typeOfTResult
+            Message = result.GetBody(),
+            ReturnData = (TResult?)typeOfTResult
         };
     }
 
@@ -148,14 +150,5 @@ public class EntityService<T> : IEntityService<T>
             Code = ServiceCode.Error,
             Message = result.GetBody()
         };
-    }
-
-    public async Task<ApiResult<object>> CreateWithoutToken(string url, T entity)
-    {
-        var response = await _http.PostAsyncWithoutToken(url, entity);
-        response.Messages = response.Code > 0
-            ? new List<string> { response.GetBody() }
-            : new List<string> { "با موفقیت ذخیره شد" };
-        return response;
     }
 }

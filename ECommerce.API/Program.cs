@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using ECommerce.Infrastructure.DataTransferObjectMappers;
 using ECommerce.Application.PersianTranslations.Identity;
 using ECommerce.Infrastructure.DataContext;
 using ECommerce.Infrastructure.Repository;
@@ -12,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
+using ECommerce.Application.DataTransferObjectMappers;
 
 DotNetEnv.Env.TraversePath().Load("../.env");
 
@@ -240,6 +242,9 @@ builder.Services.AddScoped<IHolooABailRepository, HolooABailRepository>();
 builder.Services.AddScoped<IHolooFBailRepository, HolooFBailRepository>();
 builder.Services.AddScoped<IHolooCustomerRepository, HolooCustomerRepository>();
 builder.Services.AddScoped<IHolooSarfaslRepository, HolooSarfaslRepository>();
+
+builder.Services.AddScoped(typeof(IEntityDtoMapper<,>), typeof(EntityDtoMapper<,>));
+builder.Services.AddScoped<IColorDtoMapper,  ColorDtoMapper>();
 
 #endregion
 

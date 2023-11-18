@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface IHolooSGroupService : IEntityService<HolooSGroup>
+public interface IHolooSGroupService : IEntityService<HolooSGroup, HolooSGroup, HolooSGroup>
 {
     Task<ServiceResult<List<HolooSGroup>>> Load(string mGroupCode);
 }

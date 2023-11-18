@@ -1,4 +1,7 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Application.DataTransferObjects.Color;
+using ECommerce.Infrastructure.DataTransferObjectMappers;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -6,11 +9,14 @@ public class ColorsController : ControllerBase
 {
     private readonly IColorRepository _colorRepository;
     private readonly ILogger<ColorsController> _logger;
+    private readonly IColorDtoMapper _colorMapper;
 
-    public ColorsController(IColorRepository colorGroupRepository, ILogger<ColorsController> logger)
+    public ColorsController(IColorRepository colorGroupRepository, ILogger<ColorsController> logger ,
+                            IColorDtoMapper colorMapper)
     {
         _colorRepository = colorGroupRepository;
         _logger = logger;
+        _colorMapper = colorMapper;
     }
 
     [HttpGet]
@@ -19,10 +25,12 @@ public class ColorsController : ControllerBase
         try
         {
             var colors = await _colorRepository.GetAll(cancellationToken);
+            IEnumerable<ColorReadDto> colorsRead = new List<ColorReadDto>();
+            colorsRead = _colorMapper.CreateMapper(colors, colorsRead);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = colors
+                ReturnData = colorsRead
             });
         }
         catch (Exception e)
@@ -34,28 +42,31 @@ public class ColorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllWithPagination([FromQuery] ColorsQueryDto query,
+                                                          CancellationToken cancellationToken)
     {
         try
         {
-            if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _colorRepository.Search(paginationParameters, cancellationToken);
+            if (string.IsNullOrEmpty(query.PaginationParameters.Search)) query.PaginationParameters.Search = "";
+            var pagedListColorEntity = await _colorRepository.Search(query.PaginationParameters, cancellationToken);
+            IEnumerable<ColorReadDto> colorReadDtoList = new List<ColorReadDto>();
+            colorReadDtoList = _colorMapper.CreateMapper(pagedListColorEntity.ToList(), colorReadDtoList);
+
             var paginationDetails = new PaginationDetails
             {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = paginationParameters.Search
+                TotalCount = pagedListColorEntity.TotalCount,
+                PageSize = pagedListColorEntity.PageSize,
+                CurrentPage = pagedListColorEntity.CurrentPage,
+                TotalPages = pagedListColorEntity.TotalPages,
+                HasNext = pagedListColorEntity.HasNext,
+                HasPrevious = pagedListColorEntity.HasPrevious,
+                Search = query.PaginationParameters.Search
             };
             return Ok(new ApiResult
             {
                 PaginationDetails = paginationDetails,
                 Code = ResultCode.Success,
-                ReturnData = entity
+                ReturnData = colorReadDtoList
             });
         }
         catch (Exception e)
@@ -67,12 +78,14 @@ public class ColorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<Color>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ColorReadDto>> GetById([FromQuery] ColorsQueryDto getColorsQueryDto, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _colorRepository.GetByIdAsync(cancellationToken, id);
-            if (result == null)
+            var result = await _colorRepository.GetByIdAsync(cancellationToken, getColorsQueryDto.Id);
+            ColorReadDto colorReadDto = new();
+            colorReadDto = _colorMapper.CreateMapper(result, colorReadDto);
+            if (colorReadDto == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
@@ -81,7 +94,7 @@ public class ColorsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = result
+                ReturnData = colorReadDto
             });
         }
         catch (Exception e)

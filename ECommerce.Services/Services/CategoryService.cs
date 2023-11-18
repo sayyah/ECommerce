@@ -2,14 +2,14 @@
 
 namespace ECommerce.Services.Services;
 
-public class CategoryService : EntityService<Category>, ICategoryService
+public class CategoryService : EntityService<Category, Category, Category>, ICategoryService
 {
     private const string Url = "api/Categories";
-    private readonly IEntityService<CategoryViewModel> _categoryViewModelEntityService;
+    private readonly IEntityService<CategoryViewModel, CategoryViewModel, CategoryViewModel> _categoryViewModelEntityService;
     private readonly IHttpService _http;
 
 
-    public CategoryService(IHttpService http, IEntityService<CategoryViewModel> categoryViewModelEntityService) :
+    public CategoryService(IHttpService http, IEntityService<CategoryViewModel, CategoryViewModel, CategoryViewModel> categoryViewModelEntityService) :
         base(http)
     {
         _http = http;

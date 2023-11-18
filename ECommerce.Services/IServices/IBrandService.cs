@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IBrandService : IEntityService<Brand>
+public interface IBrandService : IEntityService<Brand, Brand, Brand>
 {
     Task<ServiceResult<List<Brand>>> Load();
     Task<ServiceResult<List<Brand>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10);

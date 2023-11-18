@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ProductAttributeGroupService : EntityService<ProductAttributeGroup>, IProductAttributeGroupService
+public class ProductAttributeGroupService : EntityService<ProductAttributeGroup, ProductAttributeGroup, ProductAttributeGroup>, IProductAttributeGroupService
 {
     private const string Url = "api/ProductAttributeGroups";
     private readonly IHttpService _http;

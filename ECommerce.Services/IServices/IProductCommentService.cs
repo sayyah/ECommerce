@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.IServices;
 
-public interface IProductCommentService : IEntityService<ProductComment>
+public interface IProductCommentService : IEntityService<ProductComment, ProductComment, ProductComment>
 {
     Task<ServiceResult> Add(ProductComment productComment);
 

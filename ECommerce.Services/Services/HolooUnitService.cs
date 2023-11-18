@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class HolooUnitService : EntityService<HolooUnit>, IHolooUnitService
+public class HolooUnitService : EntityService<HolooUnit, HolooUnit, HolooUnit>, IHolooUnitService
 {
     private const string Url = "api/Units";
 

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.IServices;
 
-public interface ITagService : IEntityService<Tag>
+public interface ITagService : IEntityService<Tag, Tag, Tag>
 {
     Task<ServiceResult<List<Tag>>> GetAll();
     Task<ServiceResult<List<Tag>>> Filtering(string filter);

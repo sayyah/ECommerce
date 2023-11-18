@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class CityService : EntityService<City>, ICityService
+public class CityService : EntityService<City, City, City>, ICityService
 {
     private const string Url = "api/Cities";
     private readonly IHttpService _http;

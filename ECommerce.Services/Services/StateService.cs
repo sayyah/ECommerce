@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class StateService : EntityService<State>, IStateService
+public class StateService : EntityService<State, State, State>, IStateService
 {
     private const string Url = "api/States";
     private readonly IHttpService _http;

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Services.Services;
 
-public class BlogService : EntityService<Blog>, IBlogService
+public class BlogService : EntityService<Blog, Blog, Blog>, IBlogService
 {
     private const string Url = "api/Blogs";
     private readonly IHttpService _http;

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class SendInformationService : EntityService<SendInformation>, ISendInformationService
+public class SendInformationService : EntityService<SendInformation, SendInformation, SendInformation>, ISendInformationService
 {
     private const string Url = "api/SendInformation";
     private readonly ICookieService _cookieService;

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class CurrencyService : EntityService<Currency>, ICurrencyService
+public class CurrencyService : EntityService<Currency, Currency, Currency>, ICurrencyService
 {
     private const string Url = "api/Currencies";
     private readonly IHttpService _http;

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ProductCommentService : EntityService<ProductComment>, IProductCommentService
+public class ProductCommentService : EntityService<ProductComment, ProductComment, ProductComment>, IProductCommentService
 {
     private const string Url = "api/ProductComments";
     private readonly IHttpService _http;
