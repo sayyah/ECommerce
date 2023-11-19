@@ -641,6 +641,7 @@ public class ProductsController : ControllerBase
                 Supplier = product.Supplier,
                 Tags = product.Tags.ToList(),
                 Keywords = product.Keywords.ToList(),
+                Review = product.Review,
                 WishListPriceId = wish == null ? null : wish.PriceId
             };
 
