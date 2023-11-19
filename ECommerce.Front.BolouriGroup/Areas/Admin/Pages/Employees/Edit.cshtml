@@ -46,6 +46,11 @@
                             <span asp-validation-for="@Model.Employee.Title" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
+                            <label>دپارتمان</label>
+                            <select asp-for="@Model.Employee.DepartmentId" asp-items="@Model.Departments"
+                                style="height: 40px" class="form-control js-example-basic-multiple col-md-12"></select>
+                        </div>
+                        <div class="form-group">
                             <label>کمیسیون</label>
                             <input asp-for="@Model.Employee.Commission" class="form-control form-control-solid" rows="6"/>
                             <span asp-validation-for="@Model.Employee.Commission" class="mt-5" style="color: red; margin-top: 10px"></span>
