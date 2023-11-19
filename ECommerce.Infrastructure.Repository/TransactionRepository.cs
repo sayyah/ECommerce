@@ -1,5 +1,6 @@
 ﻿using ECommerce.Domain.Entities.Helper;
 using ECommerce.Domain.Interfaces.Utilities;
+using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 

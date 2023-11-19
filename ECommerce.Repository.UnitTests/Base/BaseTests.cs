@@ -1,4 +1,4 @@
-﻿using ECommerce.Infrastructure.DataContext.DataContext;
+﻿using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Repository.UnitTests.Base;
 
