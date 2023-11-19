@@ -1,6 +1,9 @@
 ﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration;
 @{
     var cartList = await Component.InvokeAsync("CartList");
+    var routeUrl = Url.RouteUrl(ViewContext.RouteData.Values);
+    var qsPath = ViewContext.HttpContext.Request.QueryString.Value;
+    var returnUrl = $"https://boloorico.com{routeUrl}{qsPath}";
 }
 
 <!DOCTYPE html>
@@ -14,13 +17,14 @@
 =======
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <meta name="description" content="Website for selling kitchen appliances and equipment">
+    <meta name="description" content="@ViewData["description"]">
     <meta name="google-site-verification" content="z3ydWsuK_iOyw9Qjy_D8cYh2K7UC1UP5szESjLB5mVg"/>
 >>>>>>> 94b9a029 (Fixed #565 ddd layers and dot net 8)
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
     <title>@Html.Raw(ViewData["Title"]) - Boloori</title>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
    
 =======
@@ -34,6 +38,9 @@
 
 
     <link rel="canonical" href="https://boloorico.com"/>
+=======
+    <link rel="canonical" href="@returnUrl" />
+>>>>>>> 092e0abd (close #590 canonical)
     <link rel="icon" href="~/img/favicon.webp"/>
     <link href="~/dist/styles.css" rel="stylesheet" onload="this.media='all'"/>
     <link rel="alternate" href="https://boloorico.com" hreflang="fa"/>
