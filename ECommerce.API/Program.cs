@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using ECommerce.Application.PersianTranslations.Identity;
-using ECommerce.Infrastructure.DataContext.DataContext;
+using ECommerce.Infrastructure.DataContext;
 using ECommerce.Infrastructure.Repository;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
