@@ -1,7 +1,7 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
 using Microsoft.EntityFrameworkCore;
 
-namespace ECommerce.Infrastructure.DataContext.DataContext;
+namespace ECommerce.Infrastructure.DataContext;
 
 public class HolooDbContext : DbContext
 {
