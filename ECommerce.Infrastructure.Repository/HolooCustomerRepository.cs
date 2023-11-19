@@ -19,15 +19,19 @@ public class HolooCustomerRepository : HolooRepository<HolooCustomer>, IHolooCus
         return ((Convert.ToInt32(customerCode) + 1).ToString("D5"), (Convert.ToInt32(customerCodeC) + 1).ToString());
     }
 
-    public async Task<string> Add(HolooCustomer customer, CancellationToken cancellationToken)
+    public async Task<string> AddWithoutSave(HolooCustomer customer, CancellationToken cancellationToken)
     {
-        await _context.Customer.AddAsync(customer, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.Customer.AddAsync(customer, cancellationToken);     
         return customer.C_Code;
     }
 
     public async Task<HolooCustomer> GetCustomerByCode(string customerCode)
     {
         return await _context.Customer.FirstAsync(x => x.C_Code == customerCode);
+    }
+
+    public async Task SaveAddedCustomer(CancellationToken cancellationToken)
+    {
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
