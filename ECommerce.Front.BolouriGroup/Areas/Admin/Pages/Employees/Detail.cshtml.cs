@@ -5,10 +5,12 @@ namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Employees;
 public class DetailModel : PageModel
 {
     private readonly IEmployeeService _employeeService;
+    private readonly IDepartmentService _departmentService;
 
-    public DetailModel(IEmployeeService employeeService)
+    public DetailModel(IEmployeeService employeeService, IDepartmentService departmentService)
     {
         _employeeService = employeeService;
+        _departmentService = departmentService;
     }
 
     public Employee Employee { get; set; }
@@ -19,6 +21,7 @@ public class DetailModel : PageModel
         if (result.Code == 0)
         {
             Employee = result.ReturnData;
+            Employee.Department = _departmentService.GetById((int)result.ReturnData.DepartmentId).Result.ReturnData;
             return Page();
         }
 

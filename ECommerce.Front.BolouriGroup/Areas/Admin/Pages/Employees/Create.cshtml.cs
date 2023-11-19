@@ -24,12 +24,17 @@ public class CreateModel : PageModel
 
     public async Task OnGet()
     {
+        await Init();
+    }
+
+    private async Task Init() {
         var departments = (await _departmentService.GetAll()).ReturnData;
         Departments = new SelectList(departments, nameof(Department.Id), nameof(Department.Title));
     }
 
     public async Task<IActionResult> OnPost()
     {
+        await Init();
         if (ModelState.IsValid)
         {
             var result = await _employeeService.Add(Employee);
