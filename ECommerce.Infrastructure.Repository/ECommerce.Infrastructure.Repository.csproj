@@ -12,7 +12,7 @@
 		<Using Include="ECommerce.Domain.Entities.Helper;" />
 		<Using Include="Microsoft.EntityFrameworkCore" />
 		<Using Include="ECommerce.Application.ViewModels" />
-		<Using Include="ECommerce.Infrastructure.DataContext.DataContext" />
+		<Using Include="ECommerce.Infrastructure.DataContext" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />

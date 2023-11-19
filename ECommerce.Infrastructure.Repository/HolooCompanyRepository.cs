@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Infrastructure.DataContext;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class HolooCompanyRepository : AsyncRepository<HolooCompany>, IHolooCompanyRepository
 {

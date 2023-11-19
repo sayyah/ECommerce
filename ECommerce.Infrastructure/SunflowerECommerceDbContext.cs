@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace ECommerce.Infrastructure.DataContext.DataContext;
+namespace ECommerce.Infrastructure.DataContext;
 
 public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int>
 {
