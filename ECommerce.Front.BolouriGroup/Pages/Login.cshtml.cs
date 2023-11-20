@@ -109,7 +109,7 @@ public class LoginModel : PageModel
         return sum + "";
     }
 
-    public async Task<JsonResult> OnGetUserLoginSubmit(string username, string password)
+    public async Task<JsonResult> OnPostUserLoginSubmit(string username, string password)
     {
         LoginViewModel _loginViewModel = new() { Username = username, Password = password };
         ServiceResult<LoginViewModel?> result = await _userService.Login(_loginViewModel);

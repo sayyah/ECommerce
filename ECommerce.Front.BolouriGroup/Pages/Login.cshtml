@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "فروشگاه اینترنتی بلوری";
 }
-
+@Html.AntiForgeryToken()
 @if (Model.Message != null)
 {
     switch (Model.Code)
@@ -228,9 +228,16 @@
             var pass = $("#userPassword").val();
             var encodedPass = encodeURIComponent(pass);
             $.ajax({
-                type: "Get",
-                url: "/Login?handler=UserLoginSubmit&username=" + mobile + "&password=" + encodedPass,
-                contentType: "application/json; charset=utf-8",
+                type: "POST",
+                url: "/Login?handler=UserLoginSubmit",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: {
+                    username: mobile,
+                    password: pass
+                },
                 dataType: "json",
                 success: function (result) {
                     if (result.code === 0) {
