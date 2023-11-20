@@ -7,9 +7,9 @@ namespace ECommerce.Domain.Interfaces;
 
 public interface IProductRepository : IAsyncRepository<Product>
 {
-    Task<Product> GetByName(string name, CancellationToken cancellationToken);
+    Task<Product?> GetByName(string name, CancellationToken cancellationToken);
 
-    Task<Product> GetByUrl(string url, CancellationToken cancellationToken);
+    Task<Product?> GetByUrl(string url, CancellationToken cancellationToken);
 
     Task<int> AddAll(IEnumerable<Product?> products, CancellationToken cancellationToken);
 

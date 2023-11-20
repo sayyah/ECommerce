@@ -69,9 +69,14 @@ public class ProductdetailsModel : PageModel
         siteUrl = string.Format("{0}//{1}", url[0], url[2]);
     }
 
-    public async Task OnGet(string productUrl, int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> OnGet(string productUrl, int pageNumber = 1, int pageSize = 10)
     {
         await Initial(productUrl, pageNumber, pageSize);
+        if(Product == null)
+        {
+            return RedirectToPage("Error");
+        }
+        return Page();
     }
 
     public async Task<IActionResult> OnGetComment(string productUrl, string name, string email, string text)
