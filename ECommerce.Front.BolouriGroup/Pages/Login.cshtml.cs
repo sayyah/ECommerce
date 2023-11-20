@@ -109,7 +109,7 @@ public class LoginModel : PageModel
         return sum + "";
     }
 
-    public async Task<JsonResult> OnGetUserLoginSubmit(string username, string password)
+    public async Task<JsonResult> OnPostUserLoginSubmit(string username, string password)
     {
 <<<<<<< HEAD
         if (DateTime.Now.Date > DateTime.Parse("2024-01-15"))
