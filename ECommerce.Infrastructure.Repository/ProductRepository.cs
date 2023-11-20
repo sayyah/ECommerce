@@ -14,14 +14,15 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         _holooDbContext = holooDbContext;
     }
 
-    public async Task<Product> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Product?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.Products.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Product> GetByUrl(string url, CancellationToken cancellationToken)
+    public async Task<Product?> GetByUrl(string url, CancellationToken cancellationToken)
     {
-        return await _context.Products.Where(x => x.Url == url)
+        return await _context.Products
+            .Where(x => x.Url == url && x.Prices!.Any())
             .Include(x => x.Brand)
             .Include(x => x.Keywords)
             .Include(t => t.Tags)
