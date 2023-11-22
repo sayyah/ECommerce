@@ -1,19 +1,7 @@
 ﻿@model ProductIndexPageViewModel
 
-@{   
+@{
     var singlePrice = Model.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
-    int? categoryDiscountAmount = 0;
-    double? categoryDiscountPercent = 0;
-    if (@Model.Categories != null)
-    @foreach(var category in @Model.Categories)
-    {
-        if (category.Discount != null && category.Discount.IsActive)
-        {
-            categoryDiscountAmount = category.Discount.Amount;
-            categoryDiscountPercent = category.Discount.Percent;
-        }
-    }
- 
 }
 <div class="col">
     <div class="product-card">
@@ -96,43 +84,33 @@
                             {
                                 discount = singlePrice.Amount * (decimal)singlePrice.Discount.Percent / 100;
                             }
-                        if (discount == 0 )
-                            if (categoryDiscountAmount > 0)
-                            {
-                                discount = (decimal)categoryDiscountAmount;
-                            }
-                            else if (categoryDiscountPercent > 0)
-                            {
-                                discount = singlePrice.Amount * (decimal)categoryDiscountPercent / 100;
-                            }
-
                         discountAmount = amount - discount;
-		            }
+                    }
 
-	            }
-	            @if (singlePrice == null)
-	            {
-		            <h6 class="feature-price">
-			            <span>ناموجود</span>
-		            </h6>
-	            }
-	            else
-	            {
-		            @if (discount > 0)
-		            {
-			            <div class="feature-price">
-				            <del>@amount?.ToString("###,###,###,###") </del>
-			            </div>                        
-		            }
-		            <h6 class="feature-price">
-			            <span>@discountAmount?.ToString("###,###,###,###") تومان</span>
-		            </h6>
-		        
-	            }
-                <a class="product-add" title="افزودن به سبد خرید" @if (singlePrice == null)
-                                                                  {
-                    <text>style="pointer-events: none ;color: gray" </text>
-                                                                  }
+                }
+                @if (singlePrice == null)
+                {
+                    <h6 class="feature-price">
+                        <span>ناموجود</span>
+                    </h6>
+                }
+                else
+                {
+                    @if (discount > 0)
+                    {
+                        <div class="feature-price">
+                            <del>@amount?.ToString("###,###,###,###") تومان</del>
+                        </div>
+                    }
+                    <h6 class="feature-price">
+                        <span>@discountAmount?.ToString("###,###,###,###") تومان</span>
+                    </h6>
+                }
+                <a class="product-add" title="افزودن به سبد خرید"
+                   @if (singlePrice == null)
+                   {
+                       <text>style="color: gray; pointer-events: none;" </text>
+                   }
                    href="javascript:void(0)" onclick="AddCart(@Model.Id,@singlePrice?.Id)">
                     <i class="far fa-shopping-cart"></i>
                 </a>
