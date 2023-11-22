@@ -84,13 +84,8 @@ public class PricesController : ControllerBase
     {
         try
         {
-            var prices = await _priceRepository.PriceOfProduct(id, cancellationToken);
-            foreach (var price in prices)
-            {
-                var HolooPrice = await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
-                price.Amount = HolooPrice.price;
-            }
-            if (prices == null)
+            var result = await _priceRepository.PriceOfProduct(id, cancellationToken);
+            if (result == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
@@ -99,7 +94,7 @@ public class PricesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = prices
+                ReturnData = result
             });
         }
         catch (Exception e)

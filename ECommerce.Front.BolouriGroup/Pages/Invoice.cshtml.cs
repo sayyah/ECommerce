@@ -24,7 +24,6 @@ public class InvoiceModel : PageModel
     public PurchaseOrder PurchaseOrder { get; set; }
     public string Refid { get; set; }
     public string SystemTraceNo { get; set; }
-    public int OrderDetailsDiscount { get; set; }
 
     public InvoiceModel(
         IPurchaseOrderService purchaseOrderService,
@@ -54,14 +53,6 @@ public class InvoiceModel : PageModel
             var resultOrder = await _purchaseOrderService.GetByUserId();
             PurchaseOrder = resultOrder.ReturnData;
             var amount = Convert.ToInt32(PurchaseOrder.Amount);
-
-            foreach (var item in PurchaseOrder.PurchaseOrderDetails!)
-            {
-                OrderDetailsDiscount = OrderDetailsDiscount +
-                                       ((int)item.DiscountAmount! * item.Quantity);
-            }
-            amount = amount - OrderDetailsDiscount!;
-
             if (PurchaseOrder.DiscountId != null && PurchaseOrder.Discount != null)
             {
                 if (PurchaseOrder.Discount.Amount != null && PurchaseOrder.Discount.Amount > 0)

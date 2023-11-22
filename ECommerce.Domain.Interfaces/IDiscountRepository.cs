@@ -1,5 +1,4 @@
-﻿using Ecommerce.Entities.ViewModel;
-using ECommerce.Application.ViewModels;
+﻿using ECommerce.Application.ViewModels;
 using ECommerce.Domain.Entities;
 using ECommerce.Domain.Entities.Helper;
 using ECommerce.Domain.Interfaces.Utilities;
@@ -18,6 +17,5 @@ public interface IDiscountRepository : IAsyncRepository<Discount>
 
     Task<DiscountWithTimeViewModel> GetWithTime(CancellationToken cancellationToken);
 
-    Task<Discount> AddWithRelations(DiscountViewModel discountViewModel, CancellationToken cancellationToken);
     bool Active(int id);
 }

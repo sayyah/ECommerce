@@ -27,13 +27,13 @@
             <div class="card card-custom">
                 <div class="card-header">
                     <h3 class="card-title">
-                        ایجاد تخفیف جدید بر اساس دسته بندی
+                        ایجاد تخفیف جدید
                     </h3>
                 </div>
                 @Html.ValidationSummary()
                 <!--begin::Form-->
-                <form class="form" method="post" asp-page-handler="OnPost" nctype="multipart/form-data">
-					<div class="card-body">
+                <form class="form" method="post" asp-page-handler="OnPost">
+                    <div class="card-body">
                         <div class="form-group">
                             <label>نام</label>
                             <input asp-for="Discount.Name" class="form-control form-control-solid"/>
@@ -56,14 +56,6 @@
                             <label>مبلغ</label>
                             <input asp-for="Discount.Amount" min="0" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
                         </div>
-                         <div class="form-group">
-                            <label>حداقل تعداد سفارش</label>
-                            <input asp-for="Discount.MinOrder" min="0" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
-                         </div>
-                         <div class="form-group">
-                            <label>حداکثر تعداد سفارش</label>
-                            <input asp-for="Discount.MaxOrder" min="0" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
-                         </div>                                           
                         <div class="form-group">
                             <label>تاریخ شروع</label>
                             <input id="startDate" name="Discount.StartDate" hidden="hidden"/>
@@ -80,22 +72,16 @@
                                 <span></span>
                                 فعال
                             </label>
-                        </div>                      
+                        </div>
                         <div class="form-group mt-4">
                             <label>کد تخفیف</label>
                             <input asp-for="Discount.Code" class="form-control form-control-solid"/>
                             <span asp-validation-for="Discount.Code" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
-                        <div class="form-group">
-                            <label>انتخاب دسته ها</label>
-                            <div class="checkbox-list">
-                                <partial name="_categoriesTree" model="Model.CategoryParentViewModel"/>
-                            </div>
-                        </div>                    
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary mr-2">ثبت</button>
-                            <a class="btn btn-secondary" asp-Page="/Discounts/index" asp-area="Admin">لغو</a>
-                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary mr-2">ثبت</button>
+                        <a class="btn btn-secondary" asp-Page="/Discounts/index" asp-area="Admin">لغو</a>
                     </div>
                 </form>
                 <!--end::Form-->
