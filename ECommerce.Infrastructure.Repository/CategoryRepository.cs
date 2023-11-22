@@ -64,7 +64,7 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
             productCategory = temp.First().ProductCategories.Select(x => x.Id).ToList();
         }
 
-        var allCategory = await _context.Categories.Where(x => x.IsActive).Include(x=>x.Discount).ToListAsync(cancellationToken);
+        var allCategory = await _context.Categories.Where(x => x.IsActive).ToListAsync(cancellationToken);
 
         var result = await Children(allCategory, productCategory, null);
         return result.OrderBy(x => x.DisplayOrder).ToList();
@@ -120,8 +120,7 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
                 Depth = parent.Depth,
                 Children = temp,
                 Checked = productCategory.Contains(parent.Id),
-                DisplayOrder = parent.DisplayOrder,
-                Discount = parent.Discount                
+                DisplayOrder = parent.DisplayOrder
             });
             temp = new List<CategoryParentViewModel>();
         }

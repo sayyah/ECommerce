@@ -8,5 +8,4 @@ public class CreatePurchaseCommand
     public ushort Quantity { get; set; }
     public bool IsColleague { get; set; }
     public int PriceId { get; set; }
-    public int? DiscountId {  get; set; }
 }

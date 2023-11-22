@@ -129,20 +129,9 @@
                                     <span>کل </span><span>@Model.SumPrice.ToString("N0")</span><span>تومان</span>
                                 </li>
                             </ul>
-                            @{
-                                if (Model.DiscountAmount > 0 )
-                                {
-                                  <text>
-                                  <ul>
-                                      <li>
-                                          <span>جمع تخفیف سبد کالا </span><span>@Model.DiscountAmount</span><span>تومان</span>
-                                      </li>
-                                  </ul>
-                                  </text>
-                                }
-                            }                               
-                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control" id="discountCode" />
-                            <br />
+
+                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control" id="discountCode"/>
+                            <br/>
                             <div class="row">
                                 <button type="button" onclick="CalculateDiscount()" class="btn btn-inline col-md-6"> اعمال کد تخفیف</button>
                                 <button type="button" onclick="RemoveDiscount()" class="btn btn-warning col-md-6"> حذف تخفیف</button>
@@ -150,10 +139,7 @@
 
                             <ul>
                                 <li>
-                                    <span> جمع </span><span>@( (Model.SumPrice - Model.DiscountAmount!) ) </span><span>تومان</span>
-                                </li>
-                                <li>
-                                    <span> قابل پرداخت  </span><span id="sumPrice">@( (Model.SumPrice - Model.DiscountAmount!) )</span><span>تومان</span>
+                                    <span>با تخفیف </span><span id="sumPrice">@Model.SumPrice.ToString("N0")</span><span>تومان</span>
                                 </li>
                             </ul>
 
