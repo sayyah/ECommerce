@@ -1,36 +1,25 @@
-﻿using Ecommerce.Entities.ViewModel;
-using ECommerce.Services.IServices;
+﻿using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Discounts;
 
 public class CreateModel : PageModel
 {
     private readonly IDiscountService _discountService;
-    private readonly IProductService _productService;
-    private readonly IPriceService _priceService;
-    private readonly ICategoryService _categoryService;    
 
-    public CreateModel(IDiscountService discountService, IProductService productService, IPriceService priceService
-        ,ICategoryService categoryService)
+    public CreateModel(IDiscountService discountService)
     {
         _discountService = discountService;
-        _productService = productService;
-        _priceService = priceService;
-        _categoryService = categoryService;
     }
 
+    [BindProperty] public Discount Discount { get; set; }
     [BindProperty] public bool WithPrice { get; set; }
-    [BindProperty] public DiscountViewModel Discount { get; set; }
-
-    [BindProperty] public List<CategoryParentViewModel> CategoryParentViewModel { get; set; }
 
     [TempData] public string Message { get; set; }
 
     [TempData] public string Code { get; set; }
 
-    public async Task OnGet()
+    public void OnGet()
     {
-        CategoryParentViewModel = (await _categoryService.GetParents()).ReturnData;
     }
 
     public async Task<IActionResult> OnPost()
@@ -55,9 +44,6 @@ public class CreateModel : PageModel
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
         }
-        
-        CategoryParentViewModel = (await _categoryService.GetParents()).ReturnData;
-        if (Discount.CategoriesId==null) Discount.CategoriesId?.Clear();
 
         return Page();
     }

@@ -76,146 +76,126 @@ $(".menu_hover").mouseover(function () {
 });
 
 function OpenProductModal(id) {
-    $.ajax({
-        type: "Get",
-        url: "/index?handler=QuickView&id=" + id,
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (result) {
-            if (result.code == 0) {
-                console.log(result.returnData);
-                var item =
-                    '<div class="row">' +
-                    '<div class="col-md-6 col-lg-6">' +
-                    '<div class="view-gallery">' +
-                    '<img style="width: 250px" src="' +
-                    result.returnData.imagePath +
-                    '" alt="' +
-                    result.returnData.alt +
-                    '">' +
-                    '<div class="view-list-group mt-4">' +
-                    '<label class="view-list-title">اشتراک گذاری:</label>' +
-                    '<ul class="view-share-list">' +
-                    '<li>' +
-                    '<a class="fab fa-pinterest" href="https://pin.it/4PLGQh2" title="پینترست"></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a href="https://www.linkedin.com/in/boloorico-%D8%AA%D8%AC%D9%87%DB%8C%D8%B2%D8%A7%D8%AA-%D8%B5%D9%86%D8%B9%D8%AA%DB%8C-%D8%A8%D9%84%D9%88%D8%B1%DB%8C-506aa6217/" class="fab fa-linkedin-in" title="لینکدین"></a>' +
-                    '</li>' +
-                    '<li>' +
-                    '<a href="https://www.instagram.com/boloorico/" class="fab fa-instagram" title="اینستاگرام"></a>' +
-                    '</li>' +
-                    '</ul>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="col-md-6 col-lg-6">' +
-                    '<div class="view-details">' +
-                    '<h3 class="view-name">' +
-                    '<a asp-area="" asp-page="/Productdetails">' +
-                    result.returnData.name +
-                    '</a>' +
-                    '</h3>' +
-                    '<div class="view-meta">' +
-                    '<p><a>مارک تجاری:</a>' +
-                    result.returnData.brand +
-                    '</p>' +
-                    '</div>';
-
-                if (result.returnData.discountAmount != null) {                  
-                   item = item + '<h4> <del>' +
-                        result.returnData.price +
-                        '</del>' +
-                        '</br> <h5>' +
-                        result.returnData.discountAmount +
-                        '</h5>' +
-                        '</h4>';
-                }
-                if (result.returnData.discountPercent != null) {
-                    item = item + '<h4> <del>' +
-                        result.returnData.price +
-                        '</del>' +
-                        '</br> <h5>' +
-                        result.returnData.discountPercent +
-                        '</h5>' +
-                        '</h4>';
-                }
-                item = item + '<h3>' +
-                              '<span>' +
-                              result.returnData.payableAmount +
-                              '</span>' +
-                              '</h3>' +
-                    '</div>'+                    
-
-                    '<div class="view-list-group">' +
-                    '<label class="view-list-title">در انبار:</label>' +
-                    ' <div id="exist">';
-                if (result.returnData.exist > 0) {
-                    item = item + '<div>در دسترس</div>';
-                } else {
-                    item = item + '<div>عدم موجودی</div>';
-                }
-                item = item + '</div>' +
-                    '</div>' +
-                    '<div class="view-list-group">' +
-                    '<label class="view-list-title">برچسب ها:</label>' +
-                    '<ul class="view-tag-list">' +
-                    '</ul>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="row">' +
-                    '<div class="col-md-10 col-md-offset-1">' +
-                    '<p class="view-desc">' +
-                    result.returnData.description +
-                    '</p>' +
-                    '</div>' +
-                    '</div>';
-                $('#modal_body').html(item);
-                $('#product-view').modal('show');
-            }
-        },
-        failure: function (response) {
-            alert(response);
+  $.ajax({
+    type: "Get",
+    url: "/index?handler=QuickView&id=" + id,
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (result) {
+      if (result.code == 0) {
+        console.log(result.returnData);
+        var item =
+          '<div class="row">' +
+          '<div class="col-md-6 col-lg-6">' +
+          '<div class="view-gallery">' +
+          '<img style="width: 250px" src="' +
+          result.returnData.imagePath +
+          '" alt="' +
+          result.returnData.alt +
+          '">' +
+          '<div class="view-list-group mt-4">' +
+          '<label class="view-list-title">اشتراک گذاری:</label>' +
+          '<ul class="view-share-list">' +
+          "<li>" +
+          '<a class="fab fa-pinterest" href="https://pin.it/4PLGQh2" title="پینترست"></a>' +
+          "</li>" +
+          "<li>" +
+          '<a href="https://www.linkedin.com/in/boloorico-%D8%AA%D8%AC%D9%87%DB%8C%D8%B2%D8%A7%D8%AA-%D8%B5%D9%86%D8%B9%D8%AA%DB%8C-%D8%A8%D9%84%D9%88%D8%B1%DB%8C-506aa6217/" class="fab fa-linkedin-in" title="لینکدین"></a>' +
+          "</li>" +
+          "<li>" +
+          '<a href="https://www.instagram.com/boloorico/" class="fab fa-instagram" title="اینستاگرام"></a>' +
+          "</li>" +
+          "</ul>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          '<div class="col-md-6 col-lg-6">' +
+          '<div class="view-details">' +
+          '<h3 class="view-name">' +
+          '<a asp-area="" asp-page="/Productdetails">' +
+          result.returnData.name +
+          "</a>" +
+          "</h3>" +
+          '<div class="view-meta">' +
+          "<p><a>مارک تجاری:</a>" +
+          result.returnData.brand +
+          "</p>" +
+          "</div>" +
+          '<h3 class="view-price">' +
+          "<span>" +
+          result.returnData.price +
+          "</span>" +
+          "</h3>" +
+          '<div class="view-list-group">' +
+          '<label class="view-list-title">در انبار:</label>' +
+          ' <div id="exist">';
+        if (result.returnData.exist > 0) {
+          item = item + "<div>در دسترس</div>";
+        } else {
+          item = item + "<div>عدم موجودی</div>";
         }
-    });
+        item =
+          item +
+          "</div>" +
+          "</div>" +
+          '<div class="view-list-group">' +
+          '<label class="view-list-title">برچسب ها:</label>' +
+          '<ul class="view-tag-list">' +
+          "</ul>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          '<div class="row">' +
+          '<div class="col-md-12" style="padding: 50px;">' +
+          '<p class="view-desc">' +
+          result.returnData.description +
+          "</p>" +
+          "</div>" +
+          "</div>";
+        $("#modal_body").html(item);
+        $("#product-view").modal("show");
+      }
+    },
+    failure: function (response) {
+      alert(response);
+    },
+  });
 }
 
 function createCartItem(product) {
-    return `<li class='cart-item' id='CartDrop-${product.id}'> 
-            <div class='cart-media'> 
-              <a href='/product/${product.url}'>
-                <img src='/${product.imagePath}' alt='${product.alt}'>
-              </a>
-              <button class='cart-delete' onclick='DeleteCart(${product.id},${product.productId},${product.priceId})'>
-                <i class='far fa-times'></i>
-              </button>
-            </div>
-            <div class='cart-info-group'>
-              <div class='cart-info'>
-                <h5><a href="/product/${product.url}">${product.name}</a></h5>
-                <h6> برند : ${product.brand}</h6> 
-                <h6> رنگ : ${product.colorName}</h6>
-                <h6> مبلغ تخفیف کالا : ${formatter.format(product.discountAmount)}</h6>
-                <p id='cart-item-price-amount-${product.id}'>${formatter.format(product.priceAmount)}</p>
-              </div>
-              <div class='cart-action-group'>
-                <div class='product-action'>
-                  <button class='action-minus' onclick='DecreaseCart(${product.productId},${product.priceId},${product.id})' title='مقدار منهای'>
-                    <i class='far fa-minus'></i>
-                  </button>
-                  <input class='action-input' title='تعداد' type='text' name='quantity' id='cart-item-quantity-${product.id}' value='${product.quantity}' disabled> 
-                  <button class='action-plus' onclick='AddCart(${product.productId},${product.priceId},${product.id})' title='مقدار به علاوه'>
-                    <i class='far fa-plus'></i>
-                  </button>
-                </div>
-                <h6 id='cart-item-sum-price-${product.id}'>${formatter.format(product.sumPrice - (product.discountAmount * product.quantity) )}</h6>
-                <h6>تومان</h6>
-                <input hidden='hidden' value='${product.sumPrice - (product.discountAmount * product.quantity)}' id='SumPrice-${product.id}'/>
-              </div>
-            </div>
-          </li>`;
+  return `<li class='cart-item' id='CartDrop-${product.id}'> 
+  <div class='cart-media'> 
+    <a href='/product/${product.url}'>
+      <img src='/${product.imagePath}' alt='${product.alt}'>
+    </a>
+    <button class='cart-delete' onclick='DeleteCart(${product.id},${product.productId},${product.priceId})'>
+      <i class='far fa-times'></i>
+    </button>
+  </div>
+  <div class='cart-info-group'>
+    <div class='cart-info'>
+      <h5><a href="/product/${product.url}">${product.name}</a></h5>
+      <h6> برند : ${product.brand}</h6> 
+      <h6> رنگ : ${product.colorName}</h6>
+      <p id='cart-item-price-amount-${product.id}'>${formatter.format(product.priceAmount)}</p>
+    </div>
+    <div class='cart-action-group'>
+      <div class='product-action'>
+        <button class='action-minus' onclick='DecreaseCart(${product.productId},${product.priceId},${product.id})' title='مقدار منهای'>
+          <i class='far fa-minus'></i>
+        </button>
+        <input class='action-input' title='تعداد' type='text' name='quantity' id='cart-item-quantity-${product.id}' value='${product.quantity}' disabled> 
+        <button class='action-plus' onclick='AddCart(${product.productId},${product.priceId},${product.id})' title='مقدار به علاوه'>
+          <i class='far fa-plus'></i>
+        </button>
+      </div>
+      <h6 id='cart-item-sum-price-${product.id}'>${formatter.format(product.sumPrice)}</h6>
+      <h6>تومان</h6>
+      <input hidden='hidden' value='${product.sumPrice}' id='SumPrice-${product.id}'/>
+    </div>
+  </div>
+</li>`;
 }
 
 const toggleCheckout = () => {
@@ -228,12 +208,12 @@ async function loadCart() {
   const data = await $.get("/index?handler=LoadCart");
   cartList = data.returnData;
 
-    let allPrice = 0;
-    const listToRender = cartList.map((product) => {
-        const item = createCartItem(product);
-        allPrice += product.sumPrice - (product.discountAmount * product.quantity);
-        return item;
-    });
+  let allPrice = 0;
+  const listToRender = cartList.map((product) => {
+    const item = createCartItem(product);
+    allPrice += product.sumPrice;
+    return item;
+  });
 
   $("#Cart-List").text("");
   $("#Cart-List").append(listToRender.join(""));
@@ -255,29 +235,28 @@ async function loadCart() {
  * @param {number} id
  * @param {"increment" | "decrement" | "newItem" | "remove"} action
  * @param {number} productId
- * @param {number} priceId
  */
-async function updateCartItem(id, action, productId, priceId) {
-    if (!id) {
-        const data = await $.get("/index?handler=LoadCart");
-        const newCartList = data.returnData;
-        const p = newCartList.filter((v1) => !cartList.some((v2) => v1.id === v2.id))[0];
-        if (p) {
-            cartList.push(p);
-            id = p.id;
-            action = "newItem";
-        } else {
-            action = "increment";
-            const prod = cartList.filter((v) => v.priceId === priceId)[0];
-            id = prod.id;
-        }
+async function updateCartItem(id, action, productId) {
+  if (!id) {
+    const data = await $.get("/index?handler=LoadCart");
+    const newCartList = data.returnData;
+    const p = newCartList.filter((v1) => !cartList.some((v2) => v1.id === v2.id))[0];
+    if (p) {
+      cartList.push(p);
+      id = p.id;
+      action = "newItem";
+    } else {
+      action = "increment";
+      const prod = cartList.filter((v) => v.productId === productId)[0];
+      id = prod.id;
     }
-    let index;
-    const product = cartList.filter((v, i) => {
-        const res = v.id === id;
-        if (res) index = i;
-        return res;
-    })[0];
+  }
+  let index;
+  const product = cartList.filter((v, i) => {
+    const res = v.id === id;
+    if (res) index = i;
+    return res;
+  })[0];
 
   const cartItem = $(`#CartDrop-${product.id}`);
 
@@ -300,7 +279,7 @@ async function updateCartItem(id, action, productId, priceId) {
     cartItem.replaceWith(createCartItem(product));
   }
 
-    const allPrice = cartList.reduce((prev, current) => prev + (current.sumPrice - (current.discountAmount * current.quantity)) , 0);
+  const allPrice = cartList.reduce((prev, current) => prev + current.sumPrice, 0);
 
   $("#Cart-Count").text(cartList.length);
   $("#Cart-Count1").text(cartList.length);
@@ -315,32 +294,32 @@ async function updateCartItem(id, action, productId, priceId) {
 }
 
 function AddCart(productId, priceId, id, showMessage = false) {
-    $(`#CartDrop-${id}`).append(`<div id='loading-${id}' class='loading-indicator'><progress class='pure-material-progress-circular'/></div>`);
-    $.ajax({
-        type: "Get",
-        url: "/index?handler=AddCart&id=" + productId + "&priceId=" + priceId,
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (result) {
-            $(`#loading-${id}`).remove();
-            if (showMessage) {
-                swal(result.message);
-            }
-            if ($("#Cart-List").text() === "") {
-                loadCart();
-            } else {
-                if (result.code === 2 || result.code === 0) {
-                    updateCartItem(id, "increment", productId, priceId);
-                } else {
-                    swal(result.message);
-                }
-            }
-        },
-        failure: function (response) {
-            $(`#loading-${id}`).remove();
-            swal(response);
-        },
-    });
+  $(`#CartDrop-${id}`).append(`<div id='loading-${id}' class='loading-indicator'><progress class='pure-material-progress-circular'/></div>`);
+  $.ajax({
+    type: "Get",
+    url: "/index?handler=AddCart&id=" + productId + "&priceId=" + priceId,
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (result) {
+      $(`#loading-${id}`).remove();
+      if (showMessage) {
+        swal(result.message);
+      }
+      if ($("#Cart-List").text() === "") {
+        loadCart();
+      } else {
+        if (result.code === 2 || result.code === 0) {
+          updateCartItem(id, "increment", productId);
+        } else {
+          swal(result.message);
+        }
+      }
+    },
+    failure: function (response) {
+      $(`#loading-${id}`).remove();
+      swal(response);
+    },
+  });
 }
 
 function DeleteCompare(id) {
