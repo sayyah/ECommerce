@@ -107,10 +107,6 @@ public class ProductTestUtils
         return new()
         {
             {
-                "null_test",
-                new() { { "null_object", null! } }
-            },
-            {
                 "required_fields",
                 new()
                 {

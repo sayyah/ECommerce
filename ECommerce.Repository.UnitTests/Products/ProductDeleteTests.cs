@@ -21,21 +21,11 @@ public class ProductDeleteTests : BaseTests
     [Fact(DisplayName = "Delete: Null product")]
     public void Delete_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Dictionary<string, Action> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, () => _productRepository.Delete(entry.Value));
-        }
+        void action() => _productRepository.Delete(null!);
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.Throws<ArgumentNullException>(action);
-        }
+        Assert.Throws<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "Delete: Delete product from repository")]

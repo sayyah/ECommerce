@@ -19,25 +19,19 @@ public class ProductDeleteRangeTests : BaseTests
         _testSets = ProductTestUtils.GetTestSets();
     }
 
-    [Fact(DisplayName = "DeleteRange: Null product")]
+    [Fact(DisplayName = "DeleteRange: Null Product")]
     public void DeleteRange_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        void actual() => _productRepository.DeleteRange(expected.Values);
+        void actual() => _productRepository.DeleteRange([ null! ]);
 
         // Assert
         Assert.Throws<NullReferenceException>(actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null input")]
-    public void DeleteRange_NullInput_ThrowsException()
+    [Fact(DisplayName = "DeleteRange: Null Argument")]
+    public void DeleteRange_NullArgument_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         void actual() => _productRepository.DeleteRange(null!);
 

@@ -22,9 +22,6 @@ public class ProductUpdateTests : BaseTests
     [Fact(DisplayName = "Update: Null input")]
     public void Update_NullInput_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         void actual() => _productRepository.Update(null!);
 

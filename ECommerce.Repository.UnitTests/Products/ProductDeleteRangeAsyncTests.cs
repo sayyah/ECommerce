@@ -19,25 +19,19 @@ public class ProductDeleteRangeAsyncTests : BaseTests
         _testSets = ProductTestUtils.GetTestSets();
     }
 
-    [Fact(DisplayName = "DeleteRangeAsync: Null product")]
+    [Fact(DisplayName = "DeleteRangeAsync: Null Product")]
     public void DeleteRangeAsync_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Task actual() => _productRepository.DeleteRangeAsync(expected.Values, CancellationToken);
+        Task actual() => _productRepository.DeleteRangeAsync([ null! ], CancellationToken);
 
         // Assert
         Assert.ThrowsAsync<NullReferenceException>(actual);
     }
 
-    [Fact(DisplayName = "DeleteRangeAsync: Null input")]
-    public void DeleteRangeAsync_NullInput_ThrowsException()
+    [Fact(DisplayName = "DeleteRangeAsync: Null Argument")]
+    public void DeleteRangeAsync_NullArgument_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         Task actual() => _productRepository.DeleteRangeAsync(null!, CancellationToken);
 

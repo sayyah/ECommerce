@@ -36,14 +36,21 @@ public class ProductAddRangeTests : BaseTests
     [Fact(DisplayName = "AddRange: Null product")]
     public void AddRange_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        void actual() => _productRepository.AddRange(expected.Values);
+        void actual() => _productRepository.AddRange([ null! ]);
 
         // Assert
         Assert.Throws<NullReferenceException>(actual);
+    }
+
+    [Fact(DisplayName = "AddRange: Null Argument")]
+    public void AddRange_NullArgument_ThrowsException()
+    {
+        // Act
+        void actual() => _productRepository.AddRange(null!);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "AddRange: Add products all together")]

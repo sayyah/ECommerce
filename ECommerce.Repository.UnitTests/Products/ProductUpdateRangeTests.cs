@@ -19,12 +19,19 @@ public class ProductUpdateRangeTests : BaseTests
         _testSets = ProductTestUtils.GetTestSets();
     }
 
-    [Fact(DisplayName = "UpdateRange: Null input")]
-    public void UpdateRange_NullInput_ThrowsException()
+    [Fact(DisplayName = "UpdateRange: Null Product")]
+    public void UpdateRange_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
+        // Act
+        void actual() => _productRepository.UpdateRange([ null! ]);
 
+        // Assert
+        Assert.Throws<NullReferenceException>(actual);
+    }
+
+    [Fact(DisplayName = "UpdateRange: Null Argument")]
+    public void UpdateRange_NullArgument_ThrowsException()
+    {
         // Act
         void actual() => _productRepository.UpdateRange(null!);
 

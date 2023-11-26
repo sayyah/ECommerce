@@ -35,11 +35,18 @@ public class ProductAddAllTests : BaseTests
     [Fact(DisplayName = "AddAll: Null product")]
     public void AddAll_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Task<int> actual() => _productRepository.AddAll(expected.Values, CancellationToken);
+        Task<int> actual() => _productRepository.AddAll([ null! ], CancellationToken);
+
+        // Assert
+        Assert.ThrowsAsync<NullReferenceException>(actual);
+    }
+
+    [Fact(DisplayName = "AddAll: Null Argument")]
+    public void AddAll_NullArgument_ThrowsException()
+    {
+        // Act
+        Task<int> actual() => _productRepository.AddAll(null!, CancellationToken);
 
         // Assert
         Assert.ThrowsAsync<ArgumentNullException>(actual);

@@ -79,29 +79,4 @@ public class ProductGetByNameTests : BaseTests
         // Assert
         actual.Values.Should().AllSatisfy(x => x.Should().BeNull());
     }
-
-    [Fact(DisplayName = "GetByName: Non existing url")]
-    public async void GetByUrl_GetAddedEntityByNonExistingUrl_ReturnsNull()
-    {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        foreach (var product in expected.Values)
-        {
-            DbContext.Products.Add(product);
-        }
-        DbContext.SaveChanges();
-
-        // Act
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                await _productRepository.GetByUrl(new Guid().ToString(), CancellationToken)
-            );
-        }
-
-        // Assert
-        actual.Values.Should().AllSatisfy(x => x.Should().BeNull());
-    }
 }

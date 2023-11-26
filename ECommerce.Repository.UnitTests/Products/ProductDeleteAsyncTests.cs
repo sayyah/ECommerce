@@ -21,24 +21,11 @@ public class ProductDeleteAsyncTests : BaseTests
     [Fact(DisplayName = "DeleteAsync: Null product")]
     public void DeleteAsync_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Dictionary<string, Func<Task>> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                () => _productRepository.DeleteAsync(entry.Value, CancellationToken)
-            );
-        }
+        Task action() => _productRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.ThrowsAsync<ArgumentNullException>(action);
-        }
+        Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete product from repository")]

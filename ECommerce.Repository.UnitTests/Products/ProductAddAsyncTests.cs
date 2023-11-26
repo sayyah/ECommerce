@@ -46,24 +46,11 @@ public class ProductAddAsyncTests : BaseTests
     [Fact(DisplayName = "AddAsync: Null product")]
     public void AddAsync_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Dictionary<string, Func<Task<Product>>> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                () => _productRepository.AddAsync(entry.Value, CancellationToken)
-            );
-        }
+        Task action() => _productRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.ThrowsAsync<ArgumentNullException>(action);
-        }
+        Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "AddAsync: Add product async")]

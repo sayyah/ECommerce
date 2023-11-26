@@ -36,11 +36,18 @@ public class ProductAddRangeAsyncTests : BaseTests
     [Fact(DisplayName = "AddRangeAsync: Null product")]
     public void AddRangeAsync_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Task actual() => _productRepository.AddRangeAsync(expected.Values, CancellationToken);
+        Task actual() => _productRepository.AddRangeAsync([ null! ], CancellationToken);
+
+        // Assert
+        Assert.ThrowsAsync<NullReferenceException>(actual);
+    }
+
+    [Fact(DisplayName = "AddRangeAsync: Null Argument")]
+    public void AddRangeAsync_NullArgument_ThrowsException()
+    {
+        // Act
+        Task actual() => _productRepository.AddRangeAsync(null!, CancellationToken);
 
         // Assert
         Assert.ThrowsAsync<ArgumentNullException>(actual);

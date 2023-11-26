@@ -19,12 +19,19 @@ public class ProductUpdateRangeAsyncTests : BaseTests
         _testSets = ProductTestUtils.GetTestSets();
     }
 
-    [Fact(DisplayName = "UpdateRangeAsync: Null input")]
-    public void UpdateRangeAsync_NullInput_ThrowsException()
+    [Fact(DisplayName = "UpdateRangeAsync: Null Product")]
+    public void UpdateRangeAsync_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
+        // Act
+        Task actual() => _productRepository.UpdateRangeAsync([ null! ], CancellationToken);
 
+        // Assert
+        Assert.ThrowsAsync<NullReferenceException>(actual);
+    }
+
+    [Fact(DisplayName = "UpdateRangeAsync: Null Argument")]
+    public void UpdateRangeAsync_NullArgument_ThrowsException()
+    {
         // Act
         Task actual() => _productRepository.UpdateRangeAsync(null!, CancellationToken);
 

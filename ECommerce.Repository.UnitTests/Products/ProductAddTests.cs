@@ -43,21 +43,11 @@ public class ProductAddTests : BaseTests
     [Fact(DisplayName = "Add: Null product")]
     public void Add_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Dictionary<string, Action> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, () => _productRepository.Add(entry.Value));
-        }
+        void action() => _productRepository.Add(null!);
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.Throws<ArgumentNullException>(action);
-        }
+        Assert.Throws<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "Add: Add product")]

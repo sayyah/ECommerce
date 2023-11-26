@@ -2,7 +2,6 @@
 using ECommerce.Domain.Interfaces;
 using ECommerce.Infrastructure.Repository;
 using ECommerce.Repository.UnitTests.Base;
-using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
@@ -22,9 +21,6 @@ public class ProductUpdateAsyncTests : BaseTests
     [Fact(DisplayName = "UpdateAsync: Null input")]
     public void UpdateAsync_NullInput_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         Task<Product> actual() => _productRepository.UpdateAsync(null!, CancellationToken);
 
