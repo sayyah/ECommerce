@@ -1,0 +1,819 @@
+﻿namespace ECommerce.Front.BolouriGroup.Pages
+{
+    public class amp
+    {
+    }
+}
+
+<!doctype html>
+<html ⚡ lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Product Browse Page</title>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <script async custom-element="amp-carousel" src="https://cdn.ampproject.org/v0/amp-carousel-0.1.js"></script>
+    <script async custom-element="amp-list" src="https://cdn.ampproject.org/v0/amp-list-0.1.js"></script>
+    <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
+    <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
+    <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
+    <script async custom-element="amp-fit-text" src="https://cdn.ampproject.org/v0/amp-fit-text-0.1.js"></script>
+    <script async custom-element="amp-sidebar" src="https://cdn.ampproject.org/v0/amp-sidebar-0.1.js"></script>
+    <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
+    <script async custom-element="amp-lightbox" src="https://cdn.ampproject.org/v0/amp-lightbox-0.1.js"></script>
+    <script async custom-element="amp-selector" src="https://cdn.ampproject.org/v0/amp-selector-0.1.js"></script>
+    <link rel="canonical" href="https://amp.dev/documentation/examples/e-commerce/product_browse_page/index.html">
+    <meta name="viewport" content="width=device-width">
+    <style amp-custom>
+        .menu-wrap {
+            display: flex;
+            align-items: center;
+        }
+
+            .menu-wrap > * {
+                margin: 0 10px;
+            }
+
+        :root {
+            --color-primary: #004fd8;
+            --color-secondary: #00399c;
+            --color-text-light: #fff;
+            --color-text-dark: #000;
+            --color-bg-light: #FAFAFC;
+            --color-bg-grey: rgba(0,0,0,0.8);
+            --space-1: .5rem; /* 8px */
+            --space-2: 1rem; /* 16px */
+            --space-3: 1.5rem; /* 24px */
+            --space-4: 2rem; /* 32px */
+            --box-shadow-1: 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 1px -1px rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+        }
+
+        article#preview {
+            background-color: var(--color-bg-light);
+        }
+
+        amp-carousel {
+            margin: 0
+        }
+
+        .header {
+            position: relative;
+            box-shadow: var(--box-shadow-1);
+            padding-top: 52px;
+            background-color: var(--color-secondary);
+        }
+
+            .header #sample-menu {
+                position: absolute;
+                top: 0;
+                left: 0;
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--color-text-light);
+                text-transform: uppercase;
+                padding: 13px;
+            }
+
+            .header #sample-logo {
+                position: absolute;
+                top: 0;
+                left: 36px;
+                font-size: 18px;
+                font-weight: 400;
+                color: var(--color-text-light);
+                text-transform: uppercase;
+                margin: 0 var(--space-2);
+                height: var(--space-4);
+                text-decoration: none;
+                line-height: 52px
+            }
+
+            .header form {
+                padding: 0
+            }
+
+            .header input::-webkit-search-decoration, .header input::-webkit-search-cancel-button {
+                display: none
+            }
+
+            .header input[type=submit] {
+                position: absolute;
+                top: 10px;
+                right: var(--space-1);
+                background-color: var(--color-primary);
+                background-position: center;
+                background-repeat: no-repeat;
+                background-image: -webkit-image-set(url(https://amp.dev/static/samples/img/ic_search_white_1x_web_24dp.png) 1x,url(https://amp.dev/static/samples/img/ic_search_white_2x_web_24dp.png) 2x);
+                border: 0;
+                height: var(--space-4);
+                width: 36px;
+                -webkit-appearance: none;
+                border-radius: 4px 0
+            }
+
+            .header input[type=search], .header input[type=text] {
+                position: absolute;
+                top: 10px;
+                right: var(--space-3);
+                background: var(--color-bg-light);
+                padding: 0 var(--space-1);
+                width: 20vw;
+                height: var(--space-4);
+                font-family: inherit;
+                font-size: 100%;
+                border: solid 0 var(--color-primary);
+                border-radius: 4px 0;
+                transition: all .9s ease
+            }
+
+                .header input[type=search]:focus, .header input[type=text]:focus {
+                    width: 80vw;
+                    max-width: 700px;
+                    background-color: var(--color-text-light);
+                    border-color: var(--color-primary);
+                    box-shadow: var(--box-shadow-1);
+                    outline: none
+                }
+
+            .header input:-moz-placeholder, .header input::-webkit-input-placeholder {
+                color: var(--color-bg-light);
+            }
+
+            .header input:focus + #sample-logo {
+                visibility: hidden;
+                opacity: 0;
+                transition: visibility 0 0.7s,opacity .7s ease
+            }
+
+            .header input + #sample-logo {
+                visibility: visible;
+                opacity: 1;
+                transition: opacity 1.5s ease
+            }
+
+        @media (min-width: 600px) {
+            .header input[type=search] {
+                width: 100px
+            }
+
+                .header input[type=search]:focus {
+                    width: 600px
+                }
+        }
+
+        .items, amp-list.items > div {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap
+        }
+
+        .item {
+            flex-grow: 1;
+            flex-shrink: 1
+        }
+
+        .tile {
+            background-color: var(--color-text-light);
+            width: 120px;
+            height: 200px;
+            display: block;
+            margin: var(--space-1);
+            -webkit-tap-highlight-color: var(--color-bg-light);
+            max-width: 200px
+        }
+
+        @media (max-width: 500px) {
+            .items .tile {
+                width: 150px;
+                height: 200px
+            }
+        }
+
+        .tile:active {
+            background-color: var(--color-bg-light);
+        }
+
+        .tile p {
+            margin: 0;
+            padding: 0 var(--space-1);
+            font-size: var(--space-2);
+            line-height: 20px
+        }
+
+        .tile .name {
+            margin-top: var(--space-1);
+        }
+
+        .tile .price {
+            margin-bottom: var(--space-1);
+        }
+
+        .tile .price, .tile .star {
+            color: var(--color-text-dark);
+        }
+
+        #hero-images {
+            object-fit: contain;
+        }
+
+            #hero-images .caption {
+                text-align: center;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: var(--space-3);
+                background: rgba(200,200,200,.5);
+                color: var(--color-text-light);
+                font-size: 36px;
+                max-height: 30%;
+                font-weight: 300;
+            }
+
+        .list-overflow {
+            width: 160px;
+            margin-top: 150px;
+        }
+
+        .refine {
+            display: none;
+        }
+
+        .filter-mobile {
+            display: none;
+        }
+
+        /* global style in order to bind global style in the iframe*/
+
+        html, body {
+            font-size: 16px;
+            font-family: 'Noto Sans', sans-serif;
+            color: #48525C;
+        }
+
+        p {
+            font-weight: 400;
+            color: #48525c;
+        }
+
+        a {
+            font-weight: bold;
+            text-decoration: none;
+            color: #005AF0;
+        }
+
+        label[for=sort] {
+            margin: 20px;
+        }
+
+        .ampstart-btn {
+            margin-bottom: 40px;
+        }
+
+        p.name + p.star {
+            color: gold;
+        }
+
+        @media (min-width: 600px) {
+            .refine {
+                display: inline;
+                float: left;
+                width: 20%;
+                box-shadow: var(--box-shadow-1);
+                padding: var(--space-2);
+            }
+
+            .content {
+                float: right;
+                width: 80%;
+            }
+
+            .grid {
+                display: flex;
+                justify-content: space-around;
+                flex-wrap: wrap;
+            }
+
+            .products {
+                display: inline-block;
+                margin: var(--space-2);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .filter-mobile {
+                display: inline;
+            }
+
+            .products {
+                display: block;
+                height: 100px;
+                padding: 0 var(--space-1) 0 0;
+            }
+
+                .products amp-img {
+                    line-height: var(--space-3);
+                    font-weight: 400;
+                    font-size: var(--space-3);
+                    vertical-align: middle;
+                    float: left;
+                    margin-right: var(--space-1);
+                }
+        }
+
+        #main-wrap {
+            overflow: hidden;
+        }
+
+        #info-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+            margin: var(--space-2)
+        }
+
+        .info {
+            width: 50%;
+            float: left;
+        }
+
+        amp-lightbox {
+            background: var(--color-text-light);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+
+        #info-wrap .ampstart-input {
+            width: 200px;
+        }
+
+        .autosuggest-container {
+            position: relative;
+        }
+
+        .autosuggest-box {
+            position: absolute;
+            width: 100%;
+            background-color: var(--color-text-light);
+            box-shadow: var(--box-shadow-1);
+        }
+
+        .recommendations, .bestsellers, .filter-section {
+            margin: var(--space-2);
+        }
+
+            .filter-section > div:first-of-type {
+                display: flex;
+                justify-content: space-between;
+                margin: 20px;
+            }
+    </style>
+    <style amp-boilerplate>
+        body {
+            -webkit-animation: -amp-start 8s steps(1,end) 0s 1 normal both;
+            -moz-animation: -amp-start 8s steps(1,end) 0s 1 normal both;
+            -ms-animation: -amp-start 8s steps(1,end) 0s 1 normal both;
+            animation: -amp-start 8s steps(1,end) 0s 1 normal both
+        }
+
+        @-webkit-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @-moz-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @-ms-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @-o-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+    </style>
+    <noscript>
+        <style amp-boilerplate>
+            body {
+                -webkit-animation: none;
+                -moz-animation: none;
+                -ms-animation: none;
+                animation: none
+            }
+        </style>
+    </noscript>
+</head>
+<body>
+    <amp-sidebar id="drawermenu" layout="nodisplay">
+        <a href="/documentation/examples/e-commerce/product_browse_page">Products</a>
+        <hr>
+        <a href="#">Fruit</a>
+        <a href="#">Vegetable</a>
+        <a href="#">More</a>
+    </amp-sidebar>
+    <div class="header">
+        <div class="menu-wrap">
+            <a id="sample-menu" on="tap:drawermenu.toggle">
+                <amp-img srcset="/static/samples/img/ic_menu_black_1x_web_24dp.png 1x, /static/samples/img/ic_menu_black_2x_web_24dp.png 2x" width="24" height="24" alt="navigation"></amp-img>
+            </a>
+            <input name="search" type="search" placeholder="Search" on="change:AMP.setState({
+            products: {
+            listSrc: '/documentation/examples/api/products?searchProduct='+ event.value +'&sort='+ products.sortChoiceValue +'&searchColor='+ products.searchColor +'&_=RANDOM',
+            searchProduct: event.value
+          }});
+            input-debounced:
+              AMP.setState({
+                autosuggest: {
+                  query: event.value,
+                  showDropdown: event.value
+                }
+              }),
+            autosuggest-list.show;
+            tap:
+              AMP.setState({
+                autosuggest: {
+                  query: autosuggest.query == null ? '' : autosuggest.query,
+                  showDropdown: 'true'
+                }
+              }),
+              autosuggest-list.show" [value]="autosuggest.query || ''" value>
+            <input type="submit" value>
+        </div>
+        <div class="suggest">
+            <div class="autosuggest-container" hidden [hidden]="!(autosuggest.showDropdown && autosuggest.query)">
+                <amp-list class="autosuggest-box" layout="fixed-height" height="120" src="/documentation/examples/api/products-autosuggest" [src]="autosuggest.query ?
+                  autosuggest.endpoint + autosuggest.query :
+                  autosuggest.emptyAndInitialTemplateJson" id="autosuggest-list" binding="refresh">
+                    <template type="amp-mustache">
+                        <amp-selector id="autosuggest-selector" keyboard-select-mode="focus" layout="container" on="
+                      select:
+                        AMP.setState({
+                          autosuggest: {
+                            query: event.targetOption,
+                            showDropdown: false
+                          },
+                          products: {
+                            listSrc: '/documentation/examples/api/products?searchProduct='+ event.targetOption +'&sort='+ products.sortChoiceValue +'&searchColor='+ products.searchColor +'&_=RANDOM',
+                            searchProduct: event.targetOption
+                          }
+                        }),
+                        autosuggest-list.hide">
+                            {{#results}}
+                            <div role="option" tabindex="0" on="tap:autosuggest-list.hide" option="{{.}}">{{.}}</div>
+                            {{/results}}
+                            {{^results}}
+                            <div class="{{#autosuggest.query}}empty{{/ autosuggest.query}}">
+                                {{#autosuggest.query}}Sorry! We couldn't find the product 😰{{/autosuggest.query}}
+                            </div>
+                            {{/results}}
+                        </amp-selector>
+                    </template>
+                </amp-list>
+            </div>
+        </div>
+    </div>
+    <amp-carousel id="hero-images" width="1024" height="480" layout="responsive" type="slides" autoplay>
+        <a href="#">
+            <amp-img src="naruto yellow.jpg" layout="fill" alt="product hero 1" attribution="visualhunt"></amp-img>
+
+            <amp-fit-text class="caption" width="300" height="200" layout="responsive" max-font-size="36">
+                naruto art
+            </amp-fit-text>
+        </a>
+        <a href="#">
+            <amp-img src="itachi black.jpg" layout="fill" alt="product hero 2" attribution="visualhunt"></amp-img>
+            <amp-fit-text class="caption" width="300" height="200" layout="responsive" max-font-size="36">
+                itachi art
+            </amp-fit-text>
+        </a>
+        <a href="#">
+            <amp-img src="itachi red.jpg" layout="fill" alt="product hero 3" attribution="visualhunt"></amp-img>
+            <amp-fit-text class="caption" width="300" height="200" layout="responsive" max-font-size="36">
+                itachi art
+            </amp-fit-text>
+        </a>
+        <a href="#">
+            <amp-img src="naruto orange.png" layout="fill" alt="product hero 3" attribution="visualhunt"></amp-img>
+            <amp-fit-text class="caption" width="300" height="200" layout="responsive" max-font-size="36">
+                naruto art
+            </amp-fit-text>
+        </a>
+    </amp-carousel>
+    <amp-state id="products">
+        <script type="application/json">
+            {
+                          "sortChoiceValue": "price-descendent",
+                          "searchProduct": "",
+                          "searchColor": "all",
+                          "listSrc": "/documentation/examples/api/products?sort=price-descendent&searchColor=all&_=RANDOM"
+                        }
+        </script>
+    </amp-state>
+    <div id="main-wrap">
+        <div class="refine">
+            <h3>محصولات</h3>
+            <h4>دسته بندی</h4>
+            <div>
+                <label>
+                    <input type="radio" id="تجهیزات کافی شاپ" name="category" value="تجهیزات کافی شاپ" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'تجهیزات کافی شاپ' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'تجهیزات کافی شاپ' : '') +'&_=RANDOM'
+              }
+              })"> تجهیزات کافی شاپ
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" id="ظروف و لوازم پذیرایی" name="category" value="ظروف و لوازم پذیرایی" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'ظروف و لوازم پذیرایی' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'ظروف و لوازم پذیرایی' : '') +'&_=RANDOM'
+              }
+              })"> ظروف و لوازم پذیرایی
+                </label>
+            </div>
+
+            <div>
+                <label>
+                    <input type="radio" id="تجهیزات آماده سازی" name="category" value="تجهیزات آماده سازی" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'تجهیزات آماده سازی' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'تجهیزات آماده سازی' : '') +'&_=RANDOM'
+              }
+              })"> تجهیزات آماده سازی
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" id="ابزار و لوازم / ظروف آشپزی" name="category" value="ابزار و لوازم / ظروف آشپزی" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'ابزار و لوازم / ظروف آشپزی' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'ابزار و لوازم / ظروف آشپزی' : '') +'&_=RANDOM'
+              }
+              })"> ابزار و لوازم / ظروف آشپزی
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" id="شستشو / نظافت" name="category" value="شستشو / نظافت" on="change:AMP.setState({
+             products: {
+             searchColor: event.checked == true ? 'شستشو / نظافت' : '',
+             listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'شستشو / نظافت' : '') +'&_=RANDOM'
+              }
+              })"> شستشو / نظافت
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" id="ملزومات استیل (میز-قفسه-رف)" name="category" value="ملزومات استیل" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'ملزومات استیل' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'ملزومات استیل' : '') +'&_=RANDOM'
+              }
+              })"> ملزومات استیل (میز-قفسه-رف)
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" id="لوازم و تجهیزات نگهداری" name="category" value="لوازم و تجهیزات نگهداری" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'لوازم و تجهیزات نگهداری' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'لوازم و تجهیزات نگهداری' : '') +'&_=RANDOM'
+              }
+              })"> لوازم و تجهیزات نگهداری
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" id="all" name="category" value="all" on="change:AMP.setState({
+             products: {
+             searchColor: event.checked == true ? 'all' : '',
+             listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'all' : '') +'&_=RANDOM'
+              }
+              })"> نمایش همه
+                </label>
+            </div>
+        </div>
+        <div class="content">
+            <div id="info-wrap">
+                <div>
+                    <label for="sort">نمایش بر اساس</label>
+                    <select id="sort" on="change:AMP.setState({
+              products: {
+              sortChoiceValue: event.value,
+              listSrc: '/documentation/examples/api/products?searchProduct='+products.searchProduct+'&sort='+event.value+'&searchColor='+products.searchColor+'&_=RANDOM'
+              }
+              })">
+                        <option value="price-descendent">
+                            گرانترین
+                        </option>
+                        <option value="price-ascendent">
+                            ارزانترین
+                        </option>
+                    </select>
+                </div>
+                <button class="filter-mobile" on="tap:filter-lightbox">
+                    Filter
+                </button>
+            </div>
+            <amp-list width="auto" height="600" layout="fixed-height" src="/documentation/examples/api/products?sort=price-descendent&searchColor=all&_=RANDOM'" [src]="products.listSrc" binding="no" class="grid" data-amp-replace="RANDOM">
+                <template type="amp-mustache">
+                    <a class="products" href="#">
+                        <amp-img width="150" height="100" alt="{{name}}" src="{{img}}"></amp-img>
+                        <p class="نام محصول">{{name}}</p>
+                        <p class="امتیاز">{{{stars}}}</p>
+                        <p class="قیمت">${{price}}</p>
+                    </a>
+                </template>
+            </amp-list>
+        </div>
+    </div>
+    <amp-lightbox id="filter-lightbox" layout="nodisplay">
+        <div class="filter-section">
+            <h3>Filter results</h3>
+            <h4>دسته بندی</h4>
+            <div>
+                <label>
+                    تجهیزات کافی شاپ <input type="radio" name="category" value="تجهیزات کافی شاپ" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'تجهیزات کافی شاپ' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'تجهیزات کافی شاپ' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+                <label>
+                    ظروف و لوازم پذیرایی <input type="radio" name="category" value="ظروف و لوازم پذیرایی" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'ظروف و لوازم پذیرایی' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'ظروف و لوازم پذیرایی' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+                <label>
+                    تجهیزات آماده سازی <input type="radio" name="catrgory" value="تجهیزات آماده سازی" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'تجهیزات آماده سازی' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'تجهیزات آماده سازی' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+                <label>
+                    ابزار و لوازم / ظروف آشپزی <input type="radio" name="category" value="ابزار و لوازم / ظروف آشپزی" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'ابزار و لوازم / ظروف آشپزی' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'ابزار و لوازم / ظروف آشپزی' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+                <label>
+                    شستشو / نظافت <input type="radio" name="category" value="شستشو و نظافت" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'شستشو و نظافت' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'شستشو و نظافت' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+                <label>
+                    ملزومات استیل (میز-قفسه-رف) <input type="radio" name="category" value="ملزومات استیل (میز-قفسه-رف)" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'ملزومات استیل (میز-قفسه-رف)' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'ملزومات استیل(میز-قفسه-رف)' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+                <label>
+                    لوازم و تجهیزات نگهداری <input type="radio" name="category" value="لوازم و تجهیزات نگهداری" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'لوازم و تجهیزات نگهداری' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'لوازم و تجهیزات نگهداری' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+                <label>
+                    نمایش همه <input type="radio" name="category" value="all" on="change:AMP.setState({
+              products: {
+              searchColor: event.checked == true ? 'all' : '',
+              listSrc: '/documentation/examples/api/products?searchProduct='+ products.searchProduct +'&sort='+ products.sortChoiceValue +'&searchColor='+ (event.checked == true ? 'all' : '') +'&_=RANDOM'
+              }
+              }), filter-lightbox.close">
+                </label>
+            </div>
+            <div>
+                <a on="tap:filter-lightbox.close" role="button" tabindex="0">
+                    Close
+                </a>
+            </div>
+        </div>
+    </amp-lightbox>
+    <div class="recommendations">
+        <h3>پیشنهادی</h3>
+        <amp-carousel width="auto" height="160" layout="fixed-height" type="carousel">
+            <a href="#" role="listitem">
+                <amp-img width="640" height="426" layout="responsive" alt="itachi" src="itachi black.jpg"></amp-img>
+                <p class="name">itachi</p>
+                <p class="star">★★★★★</p>
+                <p class="price">۵۰۰۰۰۰ریال</p>
+            </a>
+            <a href="#" role="listitem">
+                <amp-img width="640" height="426" layout="responsive" alt="itachi" src="itachi red.jpg"></amp-img>
+                <p class="name">itachi</p>
+                <p class="star">★★★★☆</p>
+                <p class="price">۵۰۰۰۰۰ریال</p>
+            </a>
+            <a href="#" role="listitem">
+                <amp-img width="640" height="426" layout="responsive" alt="naruto" src="naruto yellow.jpg"></amp-img>
+                <p class="name">naruto</p>
+                <p class="star">★★★☆☆</p>
+                <p class="price">۵۰۰۰۰۰ریال</p>
+            </a>
+            <a href="#" role="listitem">
+                <amp-img width="640" height="426" layout="responsive" alt="naturo" src="naruto orange.png"></amp-img>
+                <p class="name">naruto</p>
+                <p class="star">★★★★★</p>
+                <p class="price">۵۰۰۰۰۰ریال</p>
+            </a>
+        </amp-carousel>
+    </div>
+    <div class="bestsellers">
+        <h3>پرفروش ترین ها</h3>
+        <amp-list class="items" width="auto" height="160" layout="fixed-height" src="/static/samples/json/related_products.json" binding="no">
+            <template type="amp-mustache">
+                <a href="#">
+                    <amp-img width="640" height="426" layout="responsive" alt="{{name}}" src="{{img}}"></amp-img>
+                    <p class="name">{{name}}</p>
+                    <p class="star">{{{stars}}}</p>
+                    <p class="price">${{price}}</p>
+                </a>
+            </template>
+        </amp-list>
+    </div>
+    <amp-state id="autosuggest">
+        <script type="application/json">
+            {
+              "endpoint": "/documentation/examples/api/products-autosuggest?q=",
+              "emptyAndInitialTemplateJson": [{
+                "query": "",
+                "results": []
+              }],
+              "showDropdown":false,
+              "query":""
+            }
+        </script>
+    </amp-state>
+    <amp-analytics type="googleanalytics">
+        <script type="application/json">
+{
+                    "vars": {
+                        "account": "UA-80609902-1"
+                    },
+                    "triggers": {
+                        "default pageview": {
+                            "on": "visible",
+                            "request": "pageview",
+                            "vars": {
+                                "title": "{{title}}"
+                            }
+                        }
+                    }
+                }
+
+        </script>
+    </amp-analytics>
+</body>
+</html>
