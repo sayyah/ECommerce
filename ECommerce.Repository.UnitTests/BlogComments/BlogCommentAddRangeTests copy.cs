@@ -1,0 +1,112 @@
+using ECommerce.Domain.Entities;
+using ECommerce.Domain.Interfaces;
+using ECommerce.Infrastructure.Repository;
+using ECommerce.Repository.UnitTests.Base;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+
+namespace ECommerce.Repository.UnitTests.BlogComments;
+
+[Collection("BlogComments")]
+public class BlogCommentAddRangeTests : BaseTests
+{
+    private readonly IBlogCommentRepository _blogCommentRepository;
+
+    public BlogCommentAddRangeTests()
+    {
+        _blogCommentRepository = new BlogCommentRepository(DbContext);
+    }
+
+    [Fact(DisplayName = "AddRange: Null value for required Fields")]
+    public void AddRange_RequiredFields_ThrowsException()
+    {
+        // Arrange
+        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["required_fields"];
+
+        // Act
+        void actual() => _blogCommentRepository.AddRange(expected.Values);
+
+        // Assert
+        Assert.Throws<DbUpdateException>(actual);
+    }
+
+    [Fact(DisplayName = "AddRange: Null BlogComment")]
+    public void AddRange_NullBlogComment_ThrowsException()
+    {
+        // Act
+        void actual() => _blogCommentRepository.AddRange([ null! ]);
+
+        // Assert
+        Assert.Throws<NullReferenceException>(actual);
+    }
+
+    [Fact(DisplayName = "AddRange: Null argument")]
+    public void AddRange_NullArgument_ThrowsException()
+    {
+        // Act
+        void actual() => _blogCommentRepository.AddRange(null!);
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(actual);
+    }
+
+    [Fact(DisplayName = "AddRange: Add BlogComments all together")]
+    public void AddRange_AddEntities_EntityExistsInRepository()
+    {
+        // Arrange
+        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+
+        // Act
+        _blogCommentRepository.AddRange(expected.Values);
+
+        // Assert
+        Dictionary<string, BlogComment?> actual =  [ ];
+        foreach (KeyValuePair<string, BlogComment> entry in expected)
+        {
+            actual.Add(
+                entry.Key,
+                DbContext.BlogComments.FirstOrDefault(x => x.Id == entry.Value.Id)
+            );
+        }
+
+        actual.Values.Should().BeEquivalentTo(expected.Values);
+    }
+
+    [Fact(DisplayName = "AddRange: No save")]
+    public void AddRange_NoSave_EntityNotInRepository()
+    {
+        // Arrange
+        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+
+        // Act
+        _blogCommentRepository.AddRange(expected.Values, false);
+
+        // Assert
+        Dictionary<string, BlogComment?> actual =  [ ];
+        foreach (KeyValuePair<string, BlogComment> entry in expected)
+        {
+            actual.Add(
+                entry.Key,
+                DbContext.BlogComments.FirstOrDefault(x => x.Id == entry.Value.Id)
+            );
+        }
+
+        foreach (var item in actual.Values)
+        {
+            Assert.Null(item);
+        }
+
+        DbContext.SaveChanges();
+        actual.Clear();
+        foreach (KeyValuePair<string, BlogComment> entry in expected)
+        {
+            actual.Add(
+                entry.Key,
+                DbContext.BlogComments.FirstOrDefault(x => x.Id == entry.Value.Id)
+            );
+        }
+
+        actual.Values.Should().BeEquivalentTo(expected.Values);
+    }
+}
