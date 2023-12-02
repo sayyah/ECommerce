@@ -52,15 +52,15 @@ function AddWishList(id) {
   });
 }
 
-function setCities() {
-  var stateId = $("#state").val();
-  var flag = true;
+function setCities(event) {
+  const stateId = $("#state").val();
+  let shouldChangeSelected = !!event;
   $("#city option").each(function () {
     if ($(this).attr("stateId") == stateId) {
       $(this).show();
-      if (flag) {
+      if (shouldChangeSelected) {
         $("#city").val($(this).val());
-        flag = false;
+        shouldChangeSelected = false;
       }
     } else {
       $(this).hide();
@@ -605,21 +605,21 @@ const createSearchResultItem = (value, index) => {
 };
 
 const checkCartRemoved = () => {
-    const soldOuts = cartList.filter((val) => val.exist === 0);
-    if (soldOuts.length > 0) {
-        const names = soldOuts.map((val) => val.name);
-        const message = `موجودی کالاهای زیر به اتمام رسیده و از سبد خرید شما حذف گردید.\n\n${names.join("\n")}`;
-        const promises = soldOuts.map((v) =>
-            $.get({
-                url: `/index?handler=DeleteCart&id=${v.id}&productId=${v.productId}&priceId=${v.priceId}`,
-            })
-        );
-        Promise.all(promises);
-        swal(message);
-        soldOuts.forEach((val) => {
-            updateCartItem(val.id, "remove", val.productId);
-        });
-    }
+  const soldOuts = cartList.filter((val) => val.exist === 0);
+  if (soldOuts.length > 0) {
+    const names = soldOuts.map((val) => val.name);
+    const message = `موجودی کالاهای زیر به اتمام رسیده و از سبد خرید شما حذف گردید.\n\n${names.join("\n")}`;
+    const promises = soldOuts.map((v) =>
+      $.get({
+        url: `/index?handler=DeleteCart&id=${v.id}&productId=${v.productId}&priceId=${v.priceId}`,
+      })
+    );
+    Promise.all(promises);
+    swal(message);
+    soldOuts.forEach((val) => {
+      updateCartItem(val.id, "remove", val.productId);
+    });
+  }
 };
 
 $(() => {
