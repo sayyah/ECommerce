@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Services.Services;
+﻿using Ecommerce.Entities.ViewModel;
+
+namespace ECommerce.Services.Services;
 
 public class DiscountService(IHttpService http) : EntityService<Discount>(http), IDiscountService
 {
@@ -10,10 +12,9 @@ public class DiscountService(IHttpService http) : EntityService<Discount>(http),
         return Return(result);
     }
 
-
-    public async Task<ServiceResult> Add(Discount discount)
+    public async Task<ServiceResult<DiscountViewModel>> Add(DiscountViewModel discountViewModel)
     {
-        var result = await Create(Url, discount);
+        var result = await http.PostAsync<DiscountViewModel, DiscountViewModel>(Url, discountViewModel);
         return Return(result);
     }
 

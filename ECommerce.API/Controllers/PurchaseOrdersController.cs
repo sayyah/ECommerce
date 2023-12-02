@@ -406,7 +406,9 @@ public class PurchaseOrdersController(IPurchaseOrderRepository purchaseOrderRepo
                     ProductId = product.Id,
                     PriceId = price!.Id,
                     Quantity = createPurchaseCommand.Quantity,
-                    SumPrice = sumPrice
+                    SumPrice = sumPrice,
+                    DiscountAmount = createPurchaseCommand.DiscountAmount,
+                    DiscountId = createPurchaseCommand.DiscountId,
                 }, cancellationToken);
                 await purchaseOrderRepository.UpdateAsync(repetitivePurchaseOrder, cancellationToken);
 
@@ -422,7 +424,6 @@ public class PurchaseOrdersController(IPurchaseOrderRepository purchaseOrderRepo
                 Amount = sumPrice,
                 Status = 0,
                 UserId = createPurchaseCommand.UserId,
-                DiscountAmount = createPurchaseCommand.DiscountAmount
             }, cancellationToken);
             purchaseOrderDetail = await purchaseOrderDetailRepository.AddAsync(new PurchaseOrderDetail
             {
@@ -432,7 +433,8 @@ public class PurchaseOrdersController(IPurchaseOrderRepository purchaseOrderRepo
                 ProductId = product.Id,
                 PriceId = price!.Id,
                 Quantity = createPurchaseCommand.Quantity,
-                SumPrice = sumPrice
+                SumPrice = sumPrice,
+                DiscountAmount = createPurchaseCommand.DiscountAmount
             }, cancellationToken);
             purchaseOrder.PurchaseOrderDetails.Add(purchaseOrderDetail);
             return Ok(new ApiResult
@@ -523,25 +525,42 @@ public class PurchaseOrdersController(IPurchaseOrderRepository purchaseOrderRepo
                     Code = ResultCode.BadRequest
                 });
             if (string.IsNullOrEmpty(purchaseOrder.Description)) purchaseOrder.Description = "";
-            Discount? discount = null;
+            Discount? orderDiscount = null;
             if (purchaseOrder.DiscountId != null)
             {
-                discount = await discountRepository.GetByIdAsync(cancellationToken, purchaseOrder.DiscountId);
-                if (!discount.IsActive ||
-                    discount.StartDate?.Date > DateTime.Now.Date ||
-                    discount.EndDate?.Date < DateTime.Now.Date)
-                    discount = null;
+                orderDiscount = await discountRepository.GetByIdAsync(cancellationToken, purchaseOrder.DiscountId);
+                if (!orderDiscount.IsActive ||
+                    orderDiscount.StartDate?.Date > DateTime.Now.Date ||
+                    orderDiscount.EndDate?.Date < DateTime.Now.Date)
+                {
+                    orderDiscount = null;
+                }
             }
-
+           
             //purchaseOrder.PaymentDate = DateTime.Now;
             var resultUser = await userRepository.GetByIdAsync(cancellationToken, purchaseOrder.UserId);
             var cCode = resultUser.CustomerCode;
             var (fCode, fCodeC) = await holooFBailRepository.GetFactorCode(cancellationToken);
             var amount = Convert.ToDouble(purchaseOrder.Amount);
-            double? takhfif = null;
-            if (discount != null) takhfif = (amount - CalculateDiscount(discount, amount)) * 10;
+            double? takhfif = 0;
+            
+            var orderDetailsDiscount = 0;
+            foreach (var item in purchaseOrder.PurchaseOrderDetails!)
+            {
+                orderDetailsDiscount = orderDetailsDiscount + (int)item.DiscountAmount! * item.Quantity;
+            }
 
+            takhfif = orderDetailsDiscount;
+
+            if (orderDiscount != null)
+            {
+                var amountWithOrderDetailsDiscount = amount - orderDetailsDiscount;
+                takhfif = takhfif + (amountWithOrderDetailsDiscount - CalculateDiscount(orderDiscount, amountWithOrderDetailsDiscount));
+            }
+
+            takhfif = takhfif > 0 ? takhfif*10 : null;
             amount *= 10;
+
             var userCode = Convert.ToInt32(configuration.GetValue<string>("UserCode"));
             var fBail = await holooFBailRepository.Add(new HolooFBail
             {

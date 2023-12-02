@@ -74,8 +74,13 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
     {
         try
         {
-            var result = await priceRepository.PriceOfProduct(id, cancellationToken);
-            if (result == null)
+            var prices = await priceRepository.PriceOfProduct(id, cancellationToken);
+            foreach (var price in prices)
+            {
+                var HolooPrice = await holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
+                price.Amount = HolooPrice.price;
+            }
+            if (prices == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
@@ -84,7 +89,7 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = result
+                ReturnData = prices
             });
         }
         catch (Exception e)

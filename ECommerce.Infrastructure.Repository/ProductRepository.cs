@@ -20,6 +20,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
             .Include(x => x.Images)
             .Include(x => x.Prices).ThenInclude(x => x.Discount)
             .Include(x => x.Prices).ThenInclude(x => x.Color)
+            .Include(x=>x.ProductCategories).ThenInclude(x=>x.Discount)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -151,8 +152,9 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
             .Include(x => x.Brand)
             .Include(x => x.Images)
             .Include(x => x.ProductUserRanks)
-            .Include(x => x.Prices)
-            .ThenInclude(c => c.Color)
+            .Include(x => x.Prices).ThenInclude(d=>d.Discount)
+            .Include(x => x.Prices).ThenInclude(c => c.Color)
+            .Include(x=>x.ProductCategories).ThenInclude(d=>d.Discount)
             .ToListAsync(cancellationToken);
         productIndexPageViewModel.AddRange(products.Select(product => (ProductIndexPageViewModel)product));
         return productIndexPageViewModel;
@@ -276,7 +278,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
             products = tagsId.Aggregate(products,
                 (current, tagId) => current.Where(x => x.Tags.Any(t => t.Id == tagId)));
 
-        var result = products.Include(x => x.Prices).ThenInclude(y => y.Discount);
+        var result = products.Include(x => x.Prices).ThenInclude(y => y.Discount).Include(c=>c.ProductCategories).ThenInclude(d=>d.Discount);
         return result;
     }
 
@@ -328,9 +330,8 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
     public async Task<List<ProductIndexPageViewModel>> TopNew(int count, int start, string? topCategory,
         CancellationToken cancellationToken)
     {
-        var products = await context.Products.Where(x => x.Images!.Count > 0 && x.Prices!.Any())
-            .OrderByDescending(x => x.Id).Skip(start).Take(count)
-            .Include(x => x.Prices).ThenInclude(c => c.Discount)
+        var products = await context.Products.Where(x => x.Images!.Count > 0 && x.Prices!.Any()).OrderByDescending(x => x.Id).Skip(start).Take(count)
+            .Include(x => x.Prices).ThenInclude(c => c.Discount).Include(c=>c.ProductCategories).ThenInclude(d=>d.Discount)
             .Select(p => new ProductIndexPageViewModel
             {
                 Prices = p.Prices!,
@@ -342,6 +343,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
                 ImagePath = $"{p.Images!.First().Path}/{p.Images!.First().Name}",
                 Stars = p.Star,
                 Url = p.Url,
+                Categories = p.ProductCategories.ToList(),
                 TopCategory = topCategory
             })
             .ToListAsync(cancellationToken);
@@ -353,7 +355,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
         CancellationToken cancellationToken)
     {
         var products = await context.Prices.OrderByDescending(x => x.Amount)
-            .Where(x => x.Product.Images.Count > 0).Include(x => x.Discount)
+            .Where(x => x.Product.Images.Count > 0).Include(x => x.Discount).Include(p => p.Product).ThenInclude(c => c.ProductCategories).ThenInclude(d=>d.Discount)
             .Skip(start).Take(count)
             .Select(p => new ProductIndexPageViewModel
             {
@@ -366,6 +368,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
                 ImagePath = $"{p.Product.Images!.First().Path}/{p.Product.Images!.First().Name}",
                 Stars = p.Product.Star,
                 Url = p.Product.Url,
+                Categories = p.Product.ProductCategories.ToList(),
                 TopCategory = topCategory
             })
             .ToListAsync(cancellationToken);
@@ -456,8 +459,9 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
         CancellationToken cancellationToken)
     {
         var products = await context.ProductUserRanks.OrderByDescending(x => x.Stars)
-            .Where(x => x.Product!.Images!.Count > 0 && x.Product.Prices!.Any()).Include(x => x.Product)
-            .ThenInclude(x => x.Prices).ThenInclude(x => x.Discount)
+            .Where(x => x.Product!.Images!.Count > 0 && x.Product.Prices!.Any())
+            .Include(x => x.Product).ThenInclude(x => x.Prices).ThenInclude(x => x.Discount)
+            .Include(x => x.Product).ThenInclude(x => x.ProductCategories).ThenInclude(x => x.Discount)
             .Skip(start).Take(count)
             .Select(p => new ProductIndexPageViewModel
             {
@@ -470,6 +474,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
                 ImagePath = $"{p.Product.Images!.First().Path}/{p.Product.Images!.First().Name}",
                 Stars = p.Product.Star,
                 Url = p.Product.Url,
+                Categories = p.Product.ProductCategories.ToList(),
                 TopCategory = topCategory
             })
             .ToListAsync(cancellationToken);

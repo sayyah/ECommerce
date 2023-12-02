@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using Ecommerce.Entities.ViewModel;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class DiscountRepository(SunflowerECommerceDbContext context) : AsyncRepository<Discount>(context),
     IDiscountRepository
@@ -14,6 +16,19 @@ public class DiscountRepository(SunflowerECommerceDbContext context) : AsyncRepo
             .ThenInclude(y => y.Images).OrderByDescending(o => o.EndDate).FirstOrDefaultAsync(cancellationToken);
         if (result.Prices.Count() > 0) return result;
         return null;
+    }
+
+
+    public async Task<Discount> AddWithRelations(DiscountViewModel discountViewModel, CancellationToken cancellationToken)
+    {
+        Discount discount = discountViewModel;
+        discount.Categories = new List<Category>();
+        foreach (var id in discountViewModel.CategoriesId) discount.Categories.Add(await context.Categories.FindAsync(id));
+        discount.Prices = new List<Price>();
+        foreach (var id in discountViewModel.PricesId) discount.Prices.Add(await context.Prices.FindAsync(id));
+        await context.Discounts.AddAsync(discount, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+        return discount;
     }
 
     public async Task<Discount> GetByCode(string code, CancellationToken cancellationToken)

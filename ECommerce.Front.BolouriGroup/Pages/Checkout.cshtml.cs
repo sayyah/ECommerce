@@ -35,6 +35,8 @@ public class CheckoutModel(ICartService cartService,
     public string Code { get; set; }
     public int SumPrice { get; set; }
     public ServiceResult<Discount> DiscountResult { get; set; }
+    public decimal? DiscountAmount { get; set; } = 0;
+
 
     public async Task OnGet(string message, string code)
     {
@@ -59,6 +61,45 @@ public class CheckoutModel(ICartService cartService,
         var cart = resultCart.ReturnData;
         var tempSumPrice = cart.Sum(x => x.SumPrice);
         SumPrice = Convert.ToInt32(tempSumPrice);
+
+        var _currentDiscountAmount = 0;
+        foreach (var item in cart)
+        {
+            int? categoryDiscountAmount = 0;
+            double? categoryDiscountPercent = 0;
+            _currentDiscountAmount = _currentDiscountAmount + (item.DiscountAmount * item.Quantity);             
+            if (item.ProductCategories != null)
+                foreach (var category in item.ProductCategories)
+                {
+                    if (category.Discount != null && category.Discount.IsActive)
+                    {
+                        categoryDiscountAmount = category.Discount.Amount;
+                        categoryDiscountPercent = category.Discount.Percent;
+                    }
+                }
+            decimal? discount = 0;
+            if (item.Price.Discount != null)
+                if (item.Price.Discount.Amount > 0)
+                {
+                    discount = item.Price.Discount.Amount;
+                }
+                else if (item.Price.Discount.Percent > 0)
+                {
+                    discount = item.PriceAmount * (decimal)item.Price.Discount.Percent / 100;
+                }
+            if (discount == 0)
+                if (categoryDiscountAmount > 0)
+                {
+                    discount = (decimal)categoryDiscountAmount;
+                }
+                else if (categoryDiscountPercent > 0)
+                {
+                    discount = item.PriceAmount * (decimal)categoryDiscountPercent / 100;
+                }
+
+            discount = discount > item.PriceAmount ? item.PriceAmount : discount;
+            DiscountAmount = DiscountAmount +  (discount * item.Quantity);
+        }
     }
 
     public async Task<JsonResult> OnGetSendInformationLoad(int id)
@@ -73,8 +114,8 @@ public class CheckoutModel(ICartService cartService,
     public async Task<JsonResult> OnGetDiscount(string discountCode)
     {
         await Initial();
-        var sumPriceResult = await DiscountCalculate(discountCode, SumPrice);
-
+        var sumPriceResult = await DiscountCalculate(discountCode, SumPrice - (int)DiscountAmount! );
+       
         return new JsonResult(sumPriceResult);
     }
 
@@ -205,12 +246,13 @@ public class CheckoutModel(ICartService cartService,
 
         var cart = resultCart.ReturnData;
         var tempSumPrice = cart.Sum(x => x.SumPrice);
+        SumPrice = Convert.ToInt32(tempSumPrice);
 
-        var discountResult = await DiscountCalculate(discountCode, Convert.ToInt32(tempSumPrice));
-        SumPrice = discountResult.SumPrice;
-        if (SumPrice >= 50000000)
+        var discountResult = await DiscountCalculate(discountCode, Convert.ToInt32(tempSumPrice - (int)DiscountAmount!));        
+        int SumPriceToPay = discountResult.SumPrice;
+        if (SumPriceToPay >= 50000000 || SumPriceToPay==0)
         {
-            Message = "مبلغ سفارش نمی تواند بیشتر از 50 میلیون تومان باشد";
+            Message = "مبلغ سفارش نمی تواند صفر یا بیشتر از 50 میلیون تومان باشد";
             Code = "Error";
             return Page();
         }
@@ -233,7 +275,7 @@ public class CheckoutModel(ICartService cartService,
         )
         {
             purchaseOrder.DiscountId = DiscountResult.ReturnData.Id;
-            purchaseOrder.DiscountAmount = (int)tempSumPrice - SumPrice;
+            purchaseOrder.DiscountAmount = ((int)tempSumPrice - (int)DiscountAmount!) - SumPriceToPay;
         }
 
         if (resultSendInformation == 0)
@@ -247,7 +289,7 @@ public class CheckoutModel(ICartService cartService,
                 //    purchaseOrder.OrderGuid = Guid.NewGuid();
                 //    byte[] gb1 = purchaseOrder.OrderGuid.ToByteArray();
                 //    purchaseOrder.OrderId = BitConverter.ToInt64(gb1, 0);
-                //    var paymentZarinpal = await new Payment(SumPrice).PaymentRequest(description, url + returnAction + "?Factor=" + purchaseOrder.Id);
+                //    var paymentZarinpal = await new Payment(SumPriceToPay).PaymentRequest(description, url + returnAction + "?Factor=" + purchaseOrder.Id);
                 //    if (paymentZarinpal.Status == 100)
                 //    {
                 //        await purchaseOrderService.Edit(purchaseOrder);
@@ -255,7 +297,7 @@ public class CheckoutModel(ICartService cartService,
                 //    }
                 //    return RedirectToPage("Error");
                 case "sadad":
-                    SumPrice *= 10;
+                    SumPriceToPay *= 10;
                     purchaseOrder.OrderGuid = Guid.NewGuid();
                     var gb = purchaseOrder.OrderGuid.ToByteArray();
                     purchaseOrder.OrderId = BitConverter.ToInt64(gb, 0);
@@ -272,7 +314,7 @@ public class CheckoutModel(ICartService cartService,
                     );
                     var dataBytes = Encoding
                         .UTF8
-                        .GetBytes($"{terminalId};{purchaseOrder.OrderId};{SumPrice}");
+                        .GetBytes($"{terminalId};{purchaseOrder.OrderId};{SumPriceToPay}");
                     var symmetric = SymmetricAlgorithm.Create("TripleDes");
                     symmetric.Mode = CipherMode.ECB;
                     symmetric.Padding = PaddingMode.PKCS7;
@@ -289,7 +331,7 @@ public class CheckoutModel(ICartService cartService,
                     {
                         MerchantId = merchantId,
                         TerminalId = terminalId,
-                        Amount = SumPrice,
+                        Amount = SumPriceToPay,
                         purchaseOrder.OrderId,
                         LocalDateTime = DateTime.Now,
                         ReturnUrl = url + returnAction,

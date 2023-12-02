@@ -1,4 +1,6 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using Ecommerce.Entities.ViewModel;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -184,7 +186,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Discount discount, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(DiscountViewModel discount, CancellationToken cancellationToken)
     {
         try
         {
@@ -214,7 +216,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await discountRepository.AddAsync(discount, cancellationToken)
+                ReturnData = await discountRepository.AddWithRelations(discount, cancellationToken)
             });
         }
         catch (Exception e)

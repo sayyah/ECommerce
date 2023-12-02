@@ -121,8 +121,7 @@
                         </div>
                         <div class="account-content">
                             <div class="row">
-                                <input type="radio" id="sadad" checked="checked" name="Portal" width="100"
-                                    value="sadad">
+                                <input type="radio" id="sadad" checked="checked" name="Portal" width="100" value="sadad">
                                 <div class="payment active">
                                     <img src="/img/payment/sadad.webp" alt="سداد" loading="lazy">
                                 </div>
@@ -146,9 +145,25 @@
                                     <span>کل </span><span>@Model.SumPrice.ToString("N0")</span><span>تومان</span>
                                 </li>
                             </ul>
-
-                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control"
-                                id="discountCode" />
+                            @{
+                                if (Model.DiscountAmount > 0 )
+                                {
+                                  <text>
+                                  <ul>
+                                      <li>
+                                          <span>جمع تخفیف سبد کالا </span>
+                                          @{
+                                              int discountAmount = (int)@Model.DiscountAmount;
+                                          }
+                                          <span>
+                                            @discountAmount.ToString("N0")
+                                          </span><span>تومان</span>
+                                      </li>
+                                  </ul>
+                                    </text>
+                                }
+                            }                               
+                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control" id="discountCode" />
                             <br />
                             <div class="row">
                                 <button type="button" onclick="CalculateDiscount()" class="btn btn-inline col-md-6">
@@ -159,8 +174,19 @@
 
                             <ul>
                                 <li>
-                                    <span>با تخفیف </span><span
-                                        id="sumPrice">@Model.SumPrice.ToString("N0")</span><span>تومان</span>
+                                    @{
+                                        var sumPrice = (int)(Model.SumPrice - Model.DiscountAmount!);
+                                        if (sumPrice < 0) sumPrice = 0;
+                                    }
+
+                                <span> جمع </span><span> @sumPrice.ToString("N0") </span><span>تومان</span>
+                                </li>
+                                @{
+                                    var sumPriceToPay = (int)(Model.SumPrice - Model.DiscountAmount!);
+                                    if (sumPriceToPay < 0) sumPriceToPay = 0;
+                                }
+                                <li>
+                                    <span> قابل پرداخت  </span><span id="sumPrice">@sumPriceToPay.ToString("N0")</span><span>تومان</span>
                                 </li>
                             </ul>
 

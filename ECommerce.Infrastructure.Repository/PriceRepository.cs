@@ -23,8 +23,7 @@ public class PriceRepository(SunflowerECommerceDbContext context) : AsyncReposit
 
     public async Task<IEnumerable<Price>> PriceOfProduct(int id, CancellationToken cancellationToken)
     {
-        return await context.Prices.AsNoTracking().Where(x => x.ProductId == id).Include(x => x.Currency)
-            .Include(c => c.Color)
+        return await context.Prices.AsNoTracking().Where(x => x.ProductId == id).Include(x => x.Currency).Include(c=>c.Color).Include(x=>x.Product)
             .ToListAsync(cancellationToken);
     }
 

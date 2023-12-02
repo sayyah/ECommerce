@@ -1,5 +1,5 @@
-﻿@page "/Admin/CreateDiscount"
-@model CreateModel
+﻿@page "/Admin/CreateCouponDiscount"
+@model ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Discounts.CreateCouponModel
 @if (Model.Message != null)
 {
     switch (Model.Code)
@@ -20,14 +20,14 @@
 
     Model.Message = null;
 }
-<link href="~/_content/ECommerce.Front.Admin/Admin/css/persian-datepicker.css" rel="stylesheet"/>
+<link href="~/Admin/css/persian-datepicker.css" rel="stylesheet"/>
 <div class="container">
     <div class="row">
         <div class="col-lg-12 col-xxl-12 order-1 order-xxl-2 ">
             <div class="card card-custom">
                 <div class="card-header">
                     <h3 class="card-title">
-                        ایجاد تخفیف جدید بر اساس دسته بندی
+                         ایجاد تخفیف جدید بر اساس کوپن
                     </h3>
                 </div>
                 @Html.ValidationSummary()
@@ -55,24 +55,16 @@
                         <div id="choose-true" style="@(!Model.WithPrice ? "display: none;" : "")" class="form-group ch-ei">
                             <label>مبلغ</label>
                             <input asp-for="Discount.Amount" min="0" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
-                        </div>
-                         <div class="form-group">
-                            <label>حداقل تعداد سفارش</label>
-                            <input asp-for="Discount.MinOrder" min="0" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
-                         </div>
-                         <div class="form-group">
-                            <label>حداکثر تعداد سفارش</label>
-                            <input asp-for="Discount.MaxOrder" min="0" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
-                         </div>                                           
+                        </div>                                                     
                         <div class="form-group">
                             <label>تاریخ شروع</label>
-                            <input id="startDate" name="Discount.StartDate" hidden="hidden"/>
-                            <input class="form-control form-control-solid" id="startDatepicker" placeholder="تاریخ شروع"/>
+                            <input id="startDate" name="Discount.StartDate" hidden="hidden" />
+                            <input class="form-control form-control-solid" id="startDatepicker" placeholder="تاریخ شروع" />
                         </div>
                         <div class="form-group">
                             <label>تاریخ پایان</label>
-                            <input id="endDate" name="Discount.EndDate" hidden="hidden"/>
-                            <input class="form-control form-control-solid" id="endDatepicker" placeholder="تاریخ پایان"/>
+                            <input id="endDate" name="Discount.EndDate" hidden="hidden" />
+                            <input class="form-control form-control-solid" id="endDatepicker" placeholder="تاریخ پایان" />
                         </div>
                         <div class="checkbox-inline">
                             <label class="checkbox checkbox-outline checkbox-success">
@@ -81,22 +73,15 @@
                                 فعال
                             </label>
                         </div>                      
-                        <div hidden class="form-group mt-4">
+                        <div class="form-group mt-4">
                             <label>کد تخفیف</label>
-                            <input asp-for="Discount.Code" value="@Guid.NewGuid().ToString()" class="form-control form-control-solid" />
+                            <input asp-for="Discount.Code" class="form-control form-control-solid"/>
                             <span asp-validation-for="Discount.Code" class="mt-5" style="color: red; margin-top: 10px"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>انتخاب دسته ها</label>
-                            <div class="checkbox-list">
-                                <partial name="_categoriesTree" model="Model.CategoryParentViewModel"/>
-                            </div>
-                        </div>                    
+                        </div>                   
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary mr-2">ثبت</button>
                             <a class="btn btn-secondary" asp-Page="/Discounts/index" asp-area="Admin">لغو</a>
                         </div>
-                    </div>
                 </form>
                 <!--end::Form-->
             </div>
@@ -104,24 +89,25 @@
     </div>
 </div>
 
-@section Scripts{
+
+@section Scripts {
     <script src="~/_content/ECommerce.Front.Admin/Admin/js/bootstrap-touchspin.js"></script>
     <script src="~/_content/ECommerce.Front.Admin/Admin/js/persianDatepicker.min.js"></script>
 
     <script type="text/javascript">
-        $(document).ready(function() {
-            @{
-                var sd = "";
-                var ed = "";
-                if (Model.Discount != null)
-                {
-                    if (Model.Discount.StartDate.HasValue)
-                        sd = Model.Discount.StartDate.Value.GetDateTimeFormats()[1];
-                    if (Model.Discount.EndDate.HasValue)
-                        ed = Model.Discount.EndDate.Value.GetDateTimeFormats()[1];
-                }
+        $(document).ready(function () {
+        @{
+            var sd = "";
+            var ed = "";
+            if (Model.Discount != null)
+            {
+                if (Model.Discount.StartDate.HasValue)
+                    sd = Model.Discount.StartDate.Value.GetDateTimeFormats()[1];
+                if (Model.Discount.EndDate.HasValue)
+                    ed = Model.Discount.EndDate.Value.GetDateTimeFormats()[1];
             }
-            const startDate = "@sd" === "" ? undefined : new Date("@sd");
+        }
+                    const startDate = "@sd" === "" ? undefined : new Date("@sd");
             const endDate = "@ed" === "" ? undefined : new Date("@ed");
             const options = {
                 year: "numeric",
@@ -132,14 +118,14 @@
             if (startDate) {
                 $("#startDatepicker").val(startDate.toLocaleDateString('fa-IR', options));
                 $("#startDatepicker").attr("data-gdate", "@sd")
-                $("#startDatepicker").attr("data-jdate", startDate.toLocaleDateString('fa-IR', {...options, numberingSystem: "latn"}))
+                $("#startDatepicker").attr("data-jdate", startDate.toLocaleDateString('fa-IR', { ...options, numberingSystem: "latn" }))
                 $("#startDate").val("@sd")
             }
 
             if (endDate) {
                 $("#endDatepicker").val(endDate.toLocaleDateString('fa-IR', options));
                 $("#endDatepicker").attr("data-gdate", "@ed")
-                $("#endDatepicker").attr("data-jdate", endDate.toLocaleDateString('fa-IR', {...options, numberingSystem: "latn"}))
+                $("#endDatepicker").attr("data-jdate", endDate.toLocaleDateString('fa-IR', { ...options, numberingSystem: "latn" }))
                 $("#endDate").val("@ed")
             }
 
@@ -147,10 +133,10 @@
                 theme: 'latoja',
                 fontSize: 15,
                 formatDate: "YYYY/MM/DD",
-                onSelect: function() {
+                onSelect: function () {
                     $("#startDate").val($("#startDatepicker").attr("data-gdate"));
                 },
-                selectedDate: !startDate ? undefined : startDate.toLocaleDateString('fa-IR', {...options, numberingSystem: "latn"}),
+                selectedDate: !startDate ? undefined : startDate.toLocaleDateString('fa-IR', { ...options, numberingSystem: "latn" }),
                 startDate: "today",
                 endDate: "1500/1/1"
             });
@@ -158,15 +144,15 @@
                 theme: 'latoja',
                 fontSize: 15,
                 formatDate: "YYYY/MM/DD",
-                onSelect: function() {
+                onSelect: function () {
                     $("#endDate").val($("#endDatepicker").attr("data-gdate"));
                 },
-                selectedDate: !endDate ? undefined : endDate.toLocaleDateString('fa-IR', {...options, numberingSystem: "latn"}),
+                selectedDate: !endDate ? undefined : endDate.toLocaleDateString('fa-IR', { ...options, numberingSystem: "latn" }),
                 startDate: "today",
                 endDate: "1500/1/1"
             });
 
-            $("#choose-either input[name$='WithPrice']").on("click", function() {
+            $("#choose-either input[name$='WithPrice']").on("click", function () {
                 let n = $(this).val();
                 $("div.ch-ei").hide();
                 $(`div#choose-${n}`).show();
