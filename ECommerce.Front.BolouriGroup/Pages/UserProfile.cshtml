@@ -238,7 +238,8 @@
                         <input class="form-control" type="text" placeholder="کد ملی ..." asp-for="@Model.UserInformation.NationalCode" dir="ltr">
                     </div>
 
-                    <select readonly="readonly" asp-for="@Model.UserInformation.StateId" class="form-select" id="state" onchange="setCities();">
+                    <label class="form-label">استان:</label>
+                    <select readonly="readonly" asp-for="@Model.UserInformation.StateId" class="form-select" id="state" onchange="setCities(event)">
                         @if (Model.StateList != null)
                         {
                             @foreach (var state in Model.StateList?.ReturnData)
@@ -248,7 +249,8 @@
                         }
                     </select>
 
-                    <select readonly="readonly" asp-for="@Model.UserInformation.CityId" class="form-select mt-2" id="city">
+                    <label class="form-label">شهر:</label>
+                    <select readonly="readonly" asp-for="@Model.UserInformation.CityId" class="form-select mt-2 mb-5" id="city">
                         @if (Model.CityList != null)
                         {
                             @foreach (var city in Model.CityList)
