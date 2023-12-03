@@ -15,7 +15,7 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
     {
         return await _context.Categories
             .Where(x => x.Name == name && x.ParentId == parentId && x.IsActive)
-            .FirstAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<List<Category>> Search(string searchKeyword, CancellationToken cancellationToken)

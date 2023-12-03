@@ -49,6 +49,7 @@ public class EditModel : PageModel
         }
 
         ModelState.Remove("Category.ImagePath");
+        ModelState.Remove("Upload");
 
         if (ModelState.IsValid)
         {
