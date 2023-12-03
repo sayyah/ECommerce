@@ -10,7 +10,7 @@ public interface ICategoryRepository : IAsyncRepository<Category>
     Task<PagedList<Category>> Search(PaginationParameters paginationParameters,
         CancellationToken cancellationToken);
 
-    Task<Category> GetByName(string name, CancellationToken cancellationToken, int? parentId = null);
+    Task<Category?> GetByName(string name, CancellationToken cancellationToken, int? parentId = null);
 
     Task<int> AddAll(IEnumerable<Category> categories, CancellationToken cancellationToken);
 

@@ -24,6 +24,7 @@ public class CreateModel : PageModel
 
     public async Task OnGet()
     {
+        Category = new Category();
         var result = await _categoryService.GetParents();
         Categories = result.ReturnData;
     }
