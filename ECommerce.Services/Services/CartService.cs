@@ -238,7 +238,8 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
                 PriceAmount = price.Amount,
                 PriceId = priceId,
                 ColorName = price.Color.Name,
-                Id = responseProduct.ReturnData[i].Id
+                Id = responseProduct.ReturnData[i].Id,
+                Exist = price.Exist
             };
 
             carts.Add(tempPurchaseOrderDetail);
