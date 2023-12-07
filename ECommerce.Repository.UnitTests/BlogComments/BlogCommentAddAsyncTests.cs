@@ -26,7 +26,7 @@ public partial class BlogCommentTests
         // Assert
         foreach (var action in actual.Values)
         {
-            await Assert.ThrowsAsync<DbUpdateException>(action);
+            await Assert.Throws<DbUpdateException>(action);
         }
     }
 
@@ -34,10 +34,10 @@ public partial class BlogCommentTests
     public async Task AddAsync_NullValue_ThrowsException()
     {
         // Act
-        Task action() => _blogCommentRepository.AddAsync(null!, CancellationToken);
+        Task Action() => _blogCommentRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "AddAsync: Add BlogComment async")]

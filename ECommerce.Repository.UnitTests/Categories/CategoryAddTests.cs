@@ -14,10 +14,10 @@ public partial class CategoryTests
     public void Add_NullArgument_ThrowsException()
     {
         // Act
-        void action() => _categoryRepository.Add(null!);
+        void Action() => _categoryRepository.Add(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "Add: required arguments")]

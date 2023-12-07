@@ -10,7 +10,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        var set = TestSets["unique_url"];
+        var set = _testSets["unique_url"];
         DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 
@@ -38,7 +38,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        var set = TestSets["unique_url"];
+        var set = _testSets["unique_url"];
         DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 

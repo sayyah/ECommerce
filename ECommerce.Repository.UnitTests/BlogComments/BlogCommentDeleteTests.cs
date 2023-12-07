@@ -9,10 +9,10 @@ public partial class BlogCommentTests
     public void Delete_NullBlogComment_ThrowsException()
     {
         // Act
-        void action() => _blogCommentRepository.Delete(null!);
+        void Action() => _blogCommentRepository.Delete(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "Delete: Delete blogComment from repository")]

@@ -10,20 +10,20 @@ public partial class BlogCommentTests
     public async Task UpdateRangeAsync_NullBlogComment_ThrowsException()
     {
         // Act
-        Task actual() => _blogCommentRepository.UpdateRangeAsync([ null! ], CancellationToken);
+       void Actual() => _blogCommentRepository.UpdateRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRangeAsync: Null Argument")]
     public async Task UpdateRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task actual() => _blogCommentRepository.UpdateRangeAsync(null!, CancellationToken);
+       void Actual() => _blogCommentRepository.UpdateRangeAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRangeAsync: Update blogComments")]

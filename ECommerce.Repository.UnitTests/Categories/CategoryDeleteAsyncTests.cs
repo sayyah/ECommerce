@@ -10,10 +10,10 @@ public partial class CategoryTests
     public async Task DeleteAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task action() => _categoryRepository.DeleteAsync(null!, CancellationToken);
+        Task Action() => _categoryRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete entity from repository")]

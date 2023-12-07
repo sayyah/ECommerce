@@ -10,10 +10,10 @@ public partial class CategoryTests
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void action() => _categoryRepository.DeleteRange(null!);
+        void Action() => _categoryRepository.DeleteRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "DeleteRange: Delete entities from repository")]

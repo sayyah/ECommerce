@@ -35,10 +35,10 @@ public partial class BlogCommentTests
     {
         // Act
         Dictionary<string, Action> actual =  [ ];
-        void action() => _blogCommentRepository.Add(null!);
+        void Action() => _blogCommentRepository.Add(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "Add: Add BlogComment")]

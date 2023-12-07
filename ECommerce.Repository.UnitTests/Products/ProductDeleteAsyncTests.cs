@@ -9,10 +9,10 @@ public partial class ProductTests
     public async Task DeleteAsync_NullProduct_ThrowsException()
     {
         // Act
-        Task action() => _productRepository.DeleteAsync(null!, CancellationToken);
+        Task Action() => _productRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete product from repository")]
@@ -20,7 +20,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -44,7 +44,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

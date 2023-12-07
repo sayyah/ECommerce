@@ -10,20 +10,20 @@ public partial class ProductTests
     public void DeleteRange_NullProduct_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.DeleteRange([ null! ]);
+        void Actual() => _productRepository.DeleteRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRange: Null Argument")]
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.DeleteRange(null!);
+        void Actual() => _productRepository.DeleteRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRange: Delete range of products from repository")]
@@ -31,7 +31,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -66,7 +66,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

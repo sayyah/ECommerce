@@ -31,10 +31,10 @@ public partial class BlogCategoryTests
     public void Add_NullValue_ThrowsException()
     {
         // Act
-        void action() => _blogCategoryRepository.Add(null!);
+        void Action() => _blogCategoryRepository.Add(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "Add: Add BlogCategory")]

@@ -10,20 +10,20 @@ public partial class ProductTests
     public void UpdateRange_NullProduct_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.UpdateRange([ null! ]);
+        void Actual() => _productRepository.UpdateRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRange: Null Argument")]
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.UpdateRange(null!);
+        void Actual() => _productRepository.UpdateRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRange: Update products")]
@@ -31,7 +31,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

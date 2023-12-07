@@ -9,10 +9,10 @@ public partial class BlogCommentTests
     public async Task UpdateAsync_NullInput_ThrowsException()
     {
         // Act
-        Task<BlogComment> actual() => _blogCommentRepository.UpdateAsync(null!, CancellationToken);
+        Task<BlogComment> Actual() => _blogCommentRepository.UpdateAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateAsync: Update blogComment")]

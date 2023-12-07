@@ -14,30 +14,30 @@ public partial class BlogCommentTests
         Dictionary<string, BlogComment> expected = TestSets["required_fields"];
 
         // Act
-        Task actual() => _blogCommentRepository.AddRangeAsync(expected.Values, CancellationToken);
+       void Actual() => _blogCommentRepository.AddRange(expected.Values, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.Throws<DbUpdateException>(Actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null BlogComment")]
     public async Task AddRangeAsync_NullBlogComment_ThrowsException()
     {
         // Act
-        Task actual() => _blogCommentRepository.AddRangeAsync([ null! ], CancellationToken);
+       void Actual() => _blogCommentRepository.AddRange([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null argument")]
     public async Task AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task actual() => _blogCommentRepository.AddRangeAsync(null!, CancellationToken);
+       void Actual() => _blogCommentRepository.AddRange(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Add BlogComments all together")]
@@ -47,7 +47,7 @@ public partial class BlogCommentTests
         Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
-        await _blogCommentRepository.AddRangeAsync(expected.Values, CancellationToken);
+        await _blogCommentRepository.AddRange(expected.Values, CancellationToken);
 
         // Assert
         Dictionary<string, BlogComment?> actual =  [ ];
@@ -69,7 +69,7 @@ public partial class BlogCommentTests
         Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
-        await _blogCommentRepository.AddRangeAsync(expected.Values, CancellationToken, false);
+        await _blogCommentRepository.AddRange(expected.Values, CancellationToken, false);
 
         // Assert
         Dictionary<string, BlogComment?> actual =  [ ];

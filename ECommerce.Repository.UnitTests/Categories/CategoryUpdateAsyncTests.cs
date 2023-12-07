@@ -10,10 +10,10 @@ public partial class CategoryTests
     public async Task UpdateAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task action() => _categoryRepository.UpdateAsync(null!, CancellationToken);
+        Task Action() => _categoryRepository.UpdateAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "UpdateAsync: Update entity in repository")]

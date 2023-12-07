@@ -9,10 +9,10 @@ public partial class BlogCategoryTests
     public async Task DeleteAsync_NullBlogCategory_ThrowsException()
     {
         // Act
-        Task action() => _blogCategoryRepository.DeleteAsync(null!, CancellationToken);
+        Task Action() => _blogCategoryRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete BlogCategory from repository")]

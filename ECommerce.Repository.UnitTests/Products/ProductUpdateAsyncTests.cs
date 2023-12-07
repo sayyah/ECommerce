@@ -9,10 +9,10 @@ public partial class ProductTests
     public async Task UpdateAsync_NullInput_ThrowsException()
     {
         // Act
-        Task<Product> actual() => _productRepository.UpdateAsync(null!, CancellationToken);
+        Task<Product> Actual() => _productRepository.UpdateAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateAsync: Update product")]
@@ -20,7 +20,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

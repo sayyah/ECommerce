@@ -4,11 +4,11 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IBlogCommentRepository : IAsyncRepository<BlogComment>
+public interface IBlogCommentRepository : IRepositoryBase<BlogComment>
 {
     Task<PagedList<BlogComment>> Search(PaginationParameters paginationParameters,
         CancellationToken cancellationToken);
 
-    Task<PagedList<BlogComment>> GetAllAccesptedComments(PaginationParameters paginationParameters,
+    Task<PagedList<BlogComment>> GetAllAcceptedComments(PaginationParameters paginationParameters,
         CancellationToken cancellationToken);
 }

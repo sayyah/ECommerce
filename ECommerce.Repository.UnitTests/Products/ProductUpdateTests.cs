@@ -9,10 +9,10 @@ public partial class ProductTests
     public void Update_NullInput_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.Update(null!);
+        void Actual() => _productRepository.Update(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "Update: Update product")]
@@ -20,7 +20,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

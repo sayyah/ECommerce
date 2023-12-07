@@ -9,10 +9,10 @@ public partial class BlogCategoryTests
     public void Delete_NullBlogCategory_ThrowsException()
     {
         // Act
-        void action() => _blogCategoryRepository.Delete(null!);
+        void Action() => _blogCategoryRepository.Delete(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "Delete: Delete blogCategory from repository")]

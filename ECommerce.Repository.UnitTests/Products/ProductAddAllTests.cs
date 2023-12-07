@@ -10,33 +10,33 @@ public partial class ProductTests
     public async Task AddAll_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        Dictionary<string, Product> expected = _testSets["required_fields"];
 
         // Act
-        Task<int> actual() => _productRepository.AddAll(expected.Values, CancellationToken);
+        Task<int> Actual() => _productRepository.AddAll(expected.Values, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.Throws<DbUpdateException>(Actual);
     }
 
     [Fact(DisplayName = "AddAll: Null product")]
     public async Task AddAll_NullProduct_ThrowsException()
     {
         // Act
-        Task<int> actual() => _productRepository.AddAll([ null! ], CancellationToken);
+        Task<int> Actual() => _productRepository.AddAll([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "AddAll: Null Argument")]
     public async Task AddAll_NullArgument_ThrowsException()
     {
         // Act
-        Task<int> actual() => _productRepository.AddAll(null!, CancellationToken);
+        Task<int> Actual() => _productRepository.AddAll(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "AddAll: Add products all together")]
@@ -44,7 +44,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
 
         // Act
         await _productRepository.AddAll(expected.Values, CancellationToken);

@@ -124,11 +124,11 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<BlogComment>>> GetAllAccesptedComments(string search = "", int pageNumber = 0,
+    public async Task<ServiceResult<List<BlogComment>>> GetAllAcceptedComments(string search = "", int pageNumber = 0,
         int pageSize = 10)
     {
         var result = await ReadList(Url,
-            $"GetAllAccesptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
+            $"GetAllAcceptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
 }

@@ -55,7 +55,7 @@ public class ColorTests : BaseTests
         await DbContext.SaveChangesAsync(CancellationToken);
 
         //Act
-        var newColor = await _colorRepository.GetAll(CancellationToken);
+        var newColor = await _colorRepository.GetAllAsync(CancellationToken);
 
         //Assert
         Assert.Equal(2, newColor.Count());

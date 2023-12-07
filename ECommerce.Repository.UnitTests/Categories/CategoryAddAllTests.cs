@@ -11,10 +11,10 @@ public partial class CategoryTests
     public async Task AddAll_NullArgument_ThrowsException()
     {
         // Act
-        Task<int> action() => _categoryRepository.AddAll(null!, CancellationToken);
+        Task<int> Action() => _categoryRepository.AddAll(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(action);
+        await Assert.Throws<NullReferenceException>(Action);
     }
 
     [Fact(DisplayName = "AddAll: required arguments")]
@@ -24,10 +24,10 @@ public partial class CategoryTests
         Dictionary<string, Category> expected = TestSets["required"];
 
         // Act
-        Task<int> actual() => _categoryRepository.AddAll(expected.Values, CancellationToken);
+        Task<int> Actual() => _categoryRepository.AddAll(expected.Values, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.Throws<DbUpdateException>(Actual);
     }
 
     [Fact(DisplayName = "AddAll: Add entities to repository")]

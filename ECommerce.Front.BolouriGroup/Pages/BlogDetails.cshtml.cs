@@ -39,7 +39,7 @@ public class BlogDetailsModel : PageModel
         BlogCategory = blogCategory.ReturnData;
 
         BlogComments =
-            await _blogCommentService.GetAllAccesptedComments(Convert.ToString(Blog.Id), pageNumber, pageSize);
+            await _blogCommentService.GetAllAcceptedComments(Convert.ToString(Blog.Id), pageNumber, pageSize);
 
         Blogs = await _blogService.TopBlogs(null, null, 1, 3);
         Categories = await _blogCategoryService.GetAll();

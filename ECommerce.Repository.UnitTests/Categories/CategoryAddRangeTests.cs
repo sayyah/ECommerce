@@ -11,10 +11,10 @@ public partial class CategoryTests
     public void AddRange_NullArgument_ThrowsException()
     {
         // Act
-        void action() => _categoryRepository.AddRange(null!);
+        void Action() => _categoryRepository.AddRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "AddRange: required arguments")]
@@ -24,10 +24,10 @@ public partial class CategoryTests
         Dictionary<string, Category> expected = TestSets["required"];
 
         // Act
-        void actual() => _categoryRepository.AddRange(expected.Values);
+        void Actual() => _categoryRepository.AddRange(expected.Values);
 
         // Assert
-        Assert.Throws<DbUpdateException>(actual);
+        Assert.Throws<DbUpdateException>(Actual);
     }
 
     [Fact(DisplayName = "AddRange: Add entities to repository")]

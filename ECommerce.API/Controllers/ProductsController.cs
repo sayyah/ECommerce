@@ -6,35 +6,17 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductsController : ControllerBase
+public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsController> logger) : ControllerBase
 {
-    private readonly IHolooArticleRepository _articleRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ILogger<ProductsController> _logger;
-    private readonly IHolooMGroupRepository _mGroupRepository;
-    private readonly IPriceRepository _priceRepository;
-    private readonly IProductRepository _productRepository;
-    private readonly IHolooSGroupRepository _sGroupRepository;
-    private readonly ITagRepository _tagRepository;
-    private readonly IUnitRepository _unitRepository;
-    private readonly IWishListRepository _wishListRepository;
-
-    public ProductsController(IProductRepository productRepository, IHolooArticleRepository articleRepository,
-        IHolooMGroupRepository mGroupRepository, IHolooSGroupRepository sGroupRepository,
-        ICategoryRepository categoryRepository, IPriceRepository priceRepository, IUnitRepository unitRepository,
-        ILogger<ProductsController> logger, ITagRepository tagRepository, IWishListRepository wishListRepository)
-    {
-        _productRepository = productRepository;
-        _articleRepository = articleRepository;
-        _mGroupRepository = mGroupRepository;
-        _sGroupRepository = sGroupRepository;
-        _categoryRepository = categoryRepository;
-        _priceRepository = priceRepository;
-        _unitRepository = unitRepository;
-        _logger = logger;
-        _tagRepository = tagRepository;
-        _wishListRepository = wishListRepository;
-    }
+    private readonly IHolooArticleRepository _articleRepository = unitOfWork.GetHolooRepository<IHolooArticleRepository, HolooArticle>();
+    private readonly ICategoryRepository _categoryRepository = unitOfWork.GetRepository<ICategoryRepository, Category>();
+    private readonly IHolooMGroupRepository _mGroupRepository = unitOfWork.GetHolooRepository<IHolooMGroupRepository, HolooMGroup>();
+    private readonly IPriceRepository _priceRepository = unitOfWork.GetRepository<IPriceRepository, Price>();
+    private readonly IProductRepository _productRepository = unitOfWork.GetRepository<IProductRepository, Product>();
+    private readonly IHolooSGroupRepository _sGroupRepository = unitOfWork.GetHolooRepository<IHolooSGroupRepository, HolooSGroup>();
+    private readonly ITagRepository _tagRepository = unitOfWork.GetRepository<ITagRepository, Tag>();
+    private readonly IUnitRepository _unitRepository = unitOfWork.GetRepository<IUnitRepository, Unit>();
+    private readonly IWishListRepository _wishListRepository = unitOfWork.GetRepository<IWishListRepository, WishList>();
 
     private async Task<Product> AddPriceAndExistFromHoloo(Product product, bool isWithoutBill, bool? isCheckExist,
         CancellationToken cancellationToken)
@@ -77,7 +59,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -153,7 +135,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -359,7 +341,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             {
                 PaginationDetails = new PaginationDetails(),
@@ -409,7 +391,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             {
                 PaginationDetails = new PaginationDetails(),
@@ -439,7 +421,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -468,7 +450,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -497,7 +479,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -527,7 +509,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -556,7 +538,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -583,7 +565,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -602,7 +584,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -653,7 +635,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -681,7 +663,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -724,7 +706,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -753,7 +735,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -783,7 +765,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -812,7 +794,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -847,15 +829,17 @@ public class ProductsController : ControllerBase
                     Messages = new List<string> { "آدرس محصول تکراری است" }
                 });
 
+            _productRepository.AddWithRelations(productViewModel);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _productRepository.AddWithRelations(productViewModel, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -889,7 +873,8 @@ public class ProductsController : ControllerBase
 
             var result = await _productRepository.EditWithRelations(productViewModel, cancellationToken);
             if (productViewModel.Prices.Count > 0)
-                await _priceRepository.EditAll(productViewModel.Prices, result.Id, cancellationToken);
+                _priceRepository.EditAll(productViewModel.Prices, result.Id);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
@@ -899,7 +884,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -911,7 +896,9 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            await _productRepository.DeleteAsync(id, cancellationToken);
+            await _productRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -919,7 +906,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -938,7 +925,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -964,7 +951,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -1007,7 +994,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -1047,13 +1034,6 @@ public class ProductsController : ControllerBase
                         Messages = new List<string> { "گروه فرعی برای این گروه اصلی در هلو موجود نمی باشد" }
                     });
                 }
-
-                var categories = holooSGroups.Select(x => new Category
-                {
-                    Name = x.S_groupname,
-                    ParentId = parentCategoryCode.Id,
-                    Path = parentCategoryCode.Path + "/" + x.S_groupname
-                }).ToList();
 
                 foreach (var sGroup in holooSGroups)
                 {
@@ -1107,11 +1087,12 @@ public class ProductsController : ControllerBase
                     });
                     try
                     {
-                        await _productRepository.AddRangeAsync(products, cancellationToken);
+                        _productRepository.AddRange(products);
+                        await unitOfWork.SaveAsync(cancellationToken);
                     }
                     catch (Exception e)
                     {
-                        _logger.LogCritical(e, e.Message);
+                        logger.LogCritical(e, e.Message);
                         return Ok(new ApiResult
                         {
                             Code = ResultCode.Error,
@@ -1137,7 +1118,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -1257,7 +1238,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

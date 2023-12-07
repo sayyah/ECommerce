@@ -11,33 +11,33 @@ public partial class ProductTests
     public async Task AddRangeAsync_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        Dictionary<string, Product> expected = _testSets["required_fields"];
 
         // Act
-        Task actual() => _productRepository.AddRangeAsync(expected.Values, CancellationToken);
+       void Actual() => _productRepository.AddRange(expected.Values, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.Throws<DbUpdateException>(Actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null product")]
     public async Task AddRangeAsync_NullProduct_ThrowsException()
     {
         // Act
-        Task actual() => _productRepository.AddRangeAsync([ null! ], CancellationToken);
+       void Actual() => _productRepository.AddRange([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null Argument")]
     public async Task AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task actual() => _productRepository.AddRangeAsync(null!, CancellationToken);
+       void Actual() => _productRepository.AddRange(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Add products all together")]
@@ -45,10 +45,10 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
 
         // Act
-        await _productRepository.AddRangeAsync(expected.Values, CancellationToken);
+        await _productRepository.AddRange(expected.Values, CancellationToken);
 
         // Assert
         Dictionary<string, Product?> actual =  [ ];
@@ -65,10 +65,10 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
 
         // Act
-        await _productRepository.AddRangeAsync(expected.Values, CancellationToken, false);
+        await _productRepository.AddRange(expected.Values, CancellationToken, false);
 
         // Assert
         Dictionary<string, Product?> actual =  [ ];

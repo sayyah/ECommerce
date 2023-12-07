@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ShippingRepository : AsyncRepository<Shipping>, IShippingRepository
+public class ShippingRepository : RepositoryBase<Shipping>, IShippingRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 

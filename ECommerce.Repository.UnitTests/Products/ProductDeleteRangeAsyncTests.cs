@@ -10,20 +10,20 @@ public partial class ProductTests
     public async Task DeleteRangeAsync_NullProduct_ThrowsException()
     {
         // Act
-        Task actual() => _productRepository.DeleteRangeAsync([ null! ], CancellationToken);
+       void Actual() => _productRepository.DeleteRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Null Argument")]
     public async Task DeleteRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task actual() => _productRepository.DeleteRangeAsync(null!, CancellationToken);
+       void Actual() => _productRepository.DeleteRangeAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Delete range of products from repository")]
@@ -31,7 +31,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -68,7 +68,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

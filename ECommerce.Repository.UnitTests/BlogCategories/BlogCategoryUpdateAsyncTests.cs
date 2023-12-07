@@ -9,11 +9,11 @@ public partial class BlogCategoryTests
     public async Task UpdateAsync_NullInput_ThrowsException()
     {
         // Act
-        Task<BlogCategory> actual() =>
+        Task<BlogCategory> Actual() =>
             _blogCategoryRepository.UpdateAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateAsync: Update blogCategory")]

@@ -11,7 +11,7 @@ public partial class ProductTests
     public async Task AddAsync_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        Dictionary<string, Product> expected = _testSets["required_fields"];
 
         // Act
         Dictionary<string, Func<Task<Product>>> actual =  [ ];
@@ -26,7 +26,7 @@ public partial class ProductTests
         // Assert
         foreach (var action in actual.Values)
         {
-            await Assert.ThrowsAsync<DbUpdateException>(action);
+            await Assert.Throws<DbUpdateException>(action);
         }
     }
 
@@ -34,10 +34,10 @@ public partial class ProductTests
     public async Task AddAsync_NullProduct_ThrowsException()
     {
         // Act
-        Task action() => _productRepository.AddAsync(null!, CancellationToken);
+        Task Action() => _productRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "AddAsync: Add product async")]
@@ -45,7 +45,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Product expected = TestSets["unique_url"]["test_1"];
+        Product expected = _testSets["unique_url"]["test_1"];
 
         // Act
         var actual = await _productRepository.AddAsync(expected, CancellationToken);

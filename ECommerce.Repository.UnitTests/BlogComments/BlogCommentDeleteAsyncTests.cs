@@ -9,10 +9,10 @@ public partial class BlogCommentTests
     public async Task DeleteAsync_NullBlogComment_ThrowsException()
     {
         // Act
-        Task action() => _blogCommentRepository.DeleteAsync(null!, CancellationToken);
+        Task Action() => _blogCommentRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete BlogComment from repository")]

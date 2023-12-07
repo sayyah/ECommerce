@@ -15,7 +15,7 @@ public partial class CategoryTests
         DbContext.SaveChanges();
 
         // Act
-        IEnumerable<Category> actuals = await _categoryRepository.GetAll(CancellationToken);
+        IEnumerable<Category> actuals = await _categoryRepository.GetAllAsync(CancellationToken);
 
         // Assert
         actuals

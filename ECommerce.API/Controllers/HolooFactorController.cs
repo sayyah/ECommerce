@@ -1,20 +1,15 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class HolooFactorController : ControllerBase
-{
-    private readonly IHolooABailRepository _aBailRepository;
-    private readonly IHolooFBailRepository _fBailRepository;
-    private readonly ILogger<FactorViewModel> _logger;
-
-    public HolooFactorController(IHolooFBailRepository fBailRepository, IHolooABailRepository aBailRepository,
+public class HolooFactorController(IUnitOfWork unitOfWork,
         ILogger<FactorViewModel> logger)
-    {
-        _fBailRepository = fBailRepository;
-        _aBailRepository = aBailRepository;
-        _logger = logger;
-    }
+    : ControllerBase
+{
+    private readonly IHolooABailRepository _aBailRepository = unitOfWork.GetHolooRepository<IHolooABailRepository, HolooABail>();
+    private readonly IHolooFBailRepository _fBailRepository = unitOfWork.GetHolooRepository<IHolooFBailRepository, HolooFBail>();
 
     [HttpPost]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
@@ -53,7 +48,7 @@ public class HolooFactorController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

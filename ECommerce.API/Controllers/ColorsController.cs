@@ -2,23 +2,16 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ColorsController : ControllerBase
+public class ColorsController(IUnitOfWork unitOfWork, ILogger<ColorsController> logger) : ControllerBase
 {
-    private readonly IColorRepository _colorRepository;
-    private readonly ILogger<ColorsController> _logger;
-
-    public ColorsController(IColorRepository colorGroupRepository, ILogger<ColorsController> logger)
-    {
-        _colorRepository = colorGroupRepository;
-        _logger = logger;
-    }
+    private readonly IColorRepository _colorRepository = unitOfWork.GetRepository<IColorRepository, Color>();
 
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
         {
-            var colors = await _colorRepository.GetAll(cancellationToken);
+            var colors = await _colorRepository.GetAllAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -27,7 +20,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -60,7 +53,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -86,7 +79,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -94,7 +87,7 @@ public class ColorsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Color color, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Color? color, CancellationToken cancellationToken)
     {
         try
         {
@@ -113,15 +106,17 @@ public class ColorsController : ControllerBase
                     Messages = new List<string> { "نام رنگ تکراری است" }
                 });
 
+            _colorRepository.Add(color);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _colorRepository.AddAsync(color, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -133,7 +128,9 @@ public class ColorsController : ControllerBase
     {
         try
         {
-            await _colorRepository.UpdateAsync(color, cancellationToken);
+            _colorRepository.Update(color);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -141,7 +138,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -153,7 +150,9 @@ public class ColorsController : ControllerBase
     {
         try
         {
-            await _colorRepository.DeleteAsync(id, cancellationToken);
+            await _colorRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -161,7 +160,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

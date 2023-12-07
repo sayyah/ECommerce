@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class BlogRepository : AsyncRepository<Blog>, IBlogRepository
+public class BlogRepository : RepositoryBase<Blog>, IBlogRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,12 +11,12 @@ public class BlogRepository : AsyncRepository<Blog>, IBlogRepository
         _context = context;
     }
 
-    public async Task<Blog> GetByTitle(string title, CancellationToken cancellationToken)
+    public async Task<Blog?> GetByTitle(string title, CancellationToken cancellationToken)
     {
         return await _context.Blogs.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Blog> AddWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken)
+    public async Task<Blog> AddWithRelations(BlogViewModel blogViewModel)
     {
         Blog blog = blogViewModel;
         blog.Keywords = new List<Keyword>();
@@ -28,8 +28,7 @@ public class BlogRepository : AsyncRepository<Blog>, IBlogRepository
         blog.BlogAuthor = new BlogAuthor();
         blog.BlogAuthor = await _context.BlogAuthors.FindAsync(blogViewModel.BlogAuthorId);
 
-        await _context.Blogs.AddAsync(blog, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        _context.Blogs.Add(blog);
         return blog;
     }
 
@@ -54,7 +53,6 @@ public class BlogRepository : AsyncRepository<Blog>, IBlogRepository
         foreach (var id in blogViewModel.TagsId) blog.Tags.Add(await _context.Tags.FindAsync(id));
 
         _context.Entry(blog).State = EntityState.Modified;
-        await _context.SaveChangesAsync(cancellationToken);
         return blog;
     }
 
@@ -65,7 +63,7 @@ public class BlogRepository : AsyncRepository<Blog>, IBlogRepository
         ;
     }
 
-    public async Task<Blog> GetByUrl(string url, CancellationToken cancellationToken)
+    public async Task<Blog?> GetByUrl(string url, CancellationToken cancellationToken)
     {
         return await _context.Blogs.Where(x => x.Url == url).FirstOrDefaultAsync(cancellationToken);
     }

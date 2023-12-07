@@ -2,7 +2,7 @@
 
 namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooMGroup
+public class HolooMGroup : BaseHolooEntity
 {
     [Key] public string M_groupcode { get; set; }
 

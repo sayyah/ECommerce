@@ -10,10 +10,10 @@ public partial class CategoryTests
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
-        void action() => _categoryRepository.UpdateRange(null!);
+        void Action() => _categoryRepository.UpdateRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "UpdateRange: Update entities in repository")]

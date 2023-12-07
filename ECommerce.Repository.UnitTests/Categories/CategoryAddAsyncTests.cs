@@ -11,10 +11,10 @@ public partial class CategoryTests
     public async Task AddAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task<Category> action() => _categoryRepository.AddAsync(null!, CancellationToken);
+        Task<Category> Action() => _categoryRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "AddAsync: required arguments")]
@@ -36,7 +36,7 @@ public partial class CategoryTests
         // Assert
         foreach (Func<Task<Category>> action in actual.Values)
         {
-            await Assert.ThrowsAsync<DbUpdateException>(action);
+            await Assert.Throws<DbUpdateException>(action);
         }
     }
 

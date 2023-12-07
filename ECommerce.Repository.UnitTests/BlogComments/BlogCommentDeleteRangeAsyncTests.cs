@@ -10,20 +10,20 @@ public partial class BlogCommentTests
     public async Task DeleteRangeAsync_NullBlogComment_ThrowsException()
     {
         // Act
-        Task actual() => _blogCommentRepository.DeleteRangeAsync([ null! ], CancellationToken);
+       void Actual() => _blogCommentRepository.DeleteRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Null argument")]
     public async Task DeleteRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task actual() => _blogCommentRepository.DeleteRangeAsync(null!, CancellationToken);
+       void Actual() => _blogCommentRepository.DeleteRangeAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Delete range of BlogComments from repository")]

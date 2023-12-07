@@ -17,30 +17,30 @@ public partial class BlogCommentTests
         Dictionary<string, BlogComment> expected = TestSets["required_fields"];
 
         // Act
-        void actual() => _blogCommentRepository.AddRange(expected.Values);
+        void Actual() => _blogCommentRepository.AddRange(expected.Values);
 
         // Assert
-        Assert.Throws<DbUpdateException>(actual);
+        Assert.Throws<DbUpdateException>(Actual);
     }
 
     [Fact(DisplayName = "AddRange: Null BlogComment")]
     public void AddRange_NullBlogComment_ThrowsException()
     {
         // Act
-        void actual() => _blogCommentRepository.AddRange([ null! ]);
+        void Actual() => _blogCommentRepository.AddRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "AddRange: Null argument")]
     public void AddRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCommentRepository.AddRange(null!);
+        void Actual() => _blogCommentRepository.AddRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "AddRange: Add BlogComments all together")]

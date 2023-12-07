@@ -11,10 +11,10 @@ public partial class CategoryTests
     public async Task AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task action() => _categoryRepository.AddRangeAsync(null!, CancellationToken);
+        Task Action() => _categoryRepository.AddRange(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "AddRangeAsync: required arguments")]
@@ -24,10 +24,10 @@ public partial class CategoryTests
         Dictionary<string, Category> expected = TestSets["required"];
 
         // Act
-        Task actual() => _categoryRepository.AddRangeAsync(expected.Values, CancellationToken);
+       void Actual() => _categoryRepository.AddRange(expected.Values, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.Throws<DbUpdateException>(Actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Add entities to repository")]
@@ -37,7 +37,7 @@ public partial class CategoryTests
         Dictionary<string, Category> expected = TestSets["simple_tests"];
 
         // Act
-        await _categoryRepository.AddRangeAsync(expected.Values, CancellationToken);
+        await _categoryRepository.AddRange(expected.Values, CancellationToken);
 
         // Assert
         DbContext.Categories.ToArray().Should().BeEquivalentTo(expected.Values);

@@ -10,20 +10,20 @@ public partial class BlogCategoryTests
     public void UpdateRange_NullBlogCategory_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.UpdateRange([ null! ]);
+        void Actual() => _blogCategoryRepository.UpdateRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRange: Null Argument")]
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.UpdateRange(null!);
+        void Actual() => _blogCategoryRepository.UpdateRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRange: Update blogCategorys")]

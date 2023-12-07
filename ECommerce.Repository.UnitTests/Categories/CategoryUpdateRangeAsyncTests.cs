@@ -10,10 +10,10 @@ public partial class CategoryTests
     public async Task UpdateRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task action() => _categoryRepository.UpdateRangeAsync(null!, CancellationToken);
+        Task Action() => _categoryRepository.UpdateRangeAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.Throws<ArgumentNullException>(Action);
     }
 
     [Fact(DisplayName = "UpdateRangeAsync: Update entities in repository")]

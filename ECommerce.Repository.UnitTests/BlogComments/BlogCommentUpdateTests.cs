@@ -9,10 +9,10 @@ public partial class BlogCommentTests
     public void Update_NullInput_ThrowsException()
     {
         // Act
-        void actual() => _blogCommentRepository.Update(null!);
+        void Actual() => _blogCommentRepository.Update(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "Update: Update blogComment")]

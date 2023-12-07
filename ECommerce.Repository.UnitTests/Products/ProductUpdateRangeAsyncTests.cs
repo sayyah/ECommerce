@@ -10,20 +10,20 @@ public partial class ProductTests
     public async Task UpdateRangeAsync_NullProduct_ThrowsException()
     {
         // Act
-        Task actual() => _productRepository.UpdateRangeAsync([ null! ], CancellationToken);
+       void Actual() => _productRepository.UpdateRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRangeAsync: Null Argument")]
     public async Task UpdateRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task actual() => _productRepository.UpdateRangeAsync(null!, CancellationToken);
+       void Actual() => _productRepository.UpdateRangeAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "UpdateRangeAsync: Update products")]
@@ -31,7 +31,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

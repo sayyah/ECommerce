@@ -10,20 +10,20 @@ public partial class BlogCategoryTests
     public void DeleteRange_NullBlogCategory_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.DeleteRange([ null! ]);
+        void Actual() => _blogCategoryRepository.DeleteRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRange: Null argument")]
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.DeleteRange(null!);
+        void Actual() => _blogCategoryRepository.DeleteRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact(DisplayName = "DeleteRange: Delete range of blogCategorys from repository")]
