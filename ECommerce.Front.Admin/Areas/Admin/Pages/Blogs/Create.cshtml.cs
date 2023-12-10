@@ -40,6 +40,8 @@ public class CreateModel : PageModel
 
     private async Task Initial()
     {
+        Blog = new BlogViewModel();
+
         var tags = (await _tagService.GetAll()).ReturnData;
         Tags = new SelectList(tags, nameof(Tag.Id), nameof(Tag.TagText));
 
