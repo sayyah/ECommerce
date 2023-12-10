@@ -67,6 +67,12 @@ public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder
+            .Entity<Blog>()
+            .HasOne(e => e.Image)
+            .WithOne(e => e.Blog)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
             .Entity<City>()
             .HasOne(e => e.State)
             .WithMany(e => e.Cities)
