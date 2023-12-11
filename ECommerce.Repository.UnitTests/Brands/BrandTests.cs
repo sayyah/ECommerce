@@ -6,6 +6,8 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Brands;
 
+[CollectionDefinition("BrandTests", DisableParallelization = true)]
+[Collection("BrandTests")]
 public class BrandTests : BaseTests
 {
     private readonly IBrandRepository _brandRepository;
