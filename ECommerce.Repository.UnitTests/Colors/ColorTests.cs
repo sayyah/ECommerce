@@ -6,6 +6,8 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Colors;
 
+[CollectionDefinition("ColorTests", DisableParallelization = true)]
+[Collection("ColorTests")]
 public class ColorTests : BaseTests
 {
     private readonly IColorRepository _colorRepository;
