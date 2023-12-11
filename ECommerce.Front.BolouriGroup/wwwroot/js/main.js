@@ -70,9 +70,6 @@ $(window).on("scroll", function () {
   $(".profile-card.contact").on("click", function () {
     $(".profile-card.active").removeClass("active"), $(this).addClass("active");
   }),
-  $(".profile-card.address").on("click", function () {
-    $(".profile-card.active").removeClass("active"), $(this).addClass("active");
-  }),
   $(".payment-card.payment").on("click", function () {
     $(".payment-card.active").removeClass("active"), $(this).addClass("active");
   });
