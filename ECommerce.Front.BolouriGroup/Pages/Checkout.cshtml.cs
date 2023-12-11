@@ -103,6 +103,20 @@ public class CheckoutModel : PageModel
         return new JsonResult(SumPrice);
     }
 
+    public async Task<JsonResult> OnPostEditAddress()
+    {
+        var result = await _sendInformationService.Edit(SendInformation);
+        var list = (await _sendInformationService.Load()).ReturnData;
+        return new JsonResult(
+            new
+            {
+                result.Code,
+                result.Message,
+                Data = list,
+            }
+        );
+    }
+
     private async Task<VerifyResultData> DiscountCalculate(string discountCode, int sumPrice)
     {
         DiscountResult = await _discountService.GetByCode(discountCode);
