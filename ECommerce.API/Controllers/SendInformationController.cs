@@ -95,7 +95,10 @@ public class SendInformationController(IUnitOfWork unitOfWork,
 
     [HttpPut]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<ActionResult<bool>> Put(SendInformation sendInformation, CancellationToken cancellationToken)
+    public async Task<ActionResult<bool>> Put(
+        SendInformation sendInformation,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
