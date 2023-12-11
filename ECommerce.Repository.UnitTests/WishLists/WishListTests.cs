@@ -6,6 +6,8 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.WishLists;
 
+[CollectionDefinition("WishListTests", DisableParallelization = true)]
+[Collection("WishListTests")]
 public class WishListTests : BaseTests
 {
     private readonly IWishListRepository _wishListRepository;

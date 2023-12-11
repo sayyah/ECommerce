@@ -100,31 +100,47 @@ public class SendInformationController : ControllerBase
 
     [HttpPut]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<ActionResult<bool>> Put(SendInformation sendInformation, CancellationToken cancellationToken)
+    public async Task<ActionResult<bool>> Put(
+        SendInformation sendInformation,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
             var repetitive = await _sendInformationRepository.Where(
-                x => x.UserId == sendInformation.UserId && x.RecipientName.Equals(sendInformation.RecipientName) &&
-                     x.Address.Equals(sendInformation.Address), cancellationToken);
-            if (repetitive != null && repetitive.FirstOrDefault().Id != sendInformation.Id)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.Repetitive,
-                    Messages = new List<string> { "آدرس تکراری است" }
-                });
+                x =>
+                    x.Id != sendInformation.Id
+                    && x.UserId == sendInformation.UserId
+                    && x.RecipientName.Equals(sendInformation.RecipientName)
+                    && x.Mobile.Equals(sendInformation.Mobile)
+                    && x.Address.Equals(sendInformation.Address)
+                    && x.StateId == sendInformation.StateId
+                    && x.CityId == sendInformation.CityId
+                    && x.PostalCode!.Equals(sendInformation.PostalCode),
+                cancellationToken
+            );
+            if (repetitive.Any())
+                return Ok(
+                    new ApiResult
+                    {
+                        Code = ResultCode.Repetitive,
+                        Messages = new List<string> { "آدرس تکراری است" }
+                    }
+                );
 
             await _sendInformationRepository.UpdateAsync(sendInformation, cancellationToken);
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success
-            });
+            return Ok(new ApiResult { Code = ResultCode.Success });
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            return Ok(
+                new ApiResult
+                {
+                    Code = ResultCode.DatabaseError,
+                    Messages = new List<string> { "اشکال در سمت سرور" }
+                }
+            );
         }
     }
 

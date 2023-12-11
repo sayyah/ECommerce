@@ -37,7 +37,7 @@
             Model.Message = null;
             Model.Code = null;
         }
-        <form method="post" asp-page-handler="OnPost">
+        <form method="post" asp-page-handler="OnPost" id="ch-form">
             <div class="row">
                 <div class="col-lg-8 col-sm-12">
 
@@ -53,7 +53,8 @@
                                     @foreach (var sendInformation in Model.SendInformationList)
                                     {
                                         <div class="col-md-6 col-lg-4 alert show" onclick="fillAddress(@sendInformation.Id)">
-                                            <div class="profile-card address">
+                                            <div id="profile-card-@sendInformation.Id" class="profile-card address"
+                                                style="height:100%;">
                                                 <h6>@sendInformation.RecipientName</h6>
                                                 <p>@sendInformation.Address</p>
 
@@ -64,33 +65,47 @@
                                 </div>
                             </div>
                         }
-                        <a class="account-link" onclick="myFunction()">اگر آدرس شما در لیست بالا وجود ندارد، لطفا برای وارد کردن آدرس جدید اینجا کلیک کنید</a>
+                        <a class="account-link" onclick="myFunction()">اگر آدرس شما در لیست بالا وجود ندارد، لطفا برای
+                            وارد کردن آدرس جدید اینجا کلیک کنید</a>
                         <div id="myDIV">
-                            <input type="number" hidden="hidden" class="form-control" asp-for="SendInformation.Id">
-
-                            <input type="text" class="form-control" asp-for="SendInformation.RecipientName" placeholder="نام تحویل گیرنده ...">
-                            <span asp-validation-for="SendInformation.RecipientName" class="mt-5" style="color: red; margin-top: 10px"></span>
-                            <br/>
-                            <input type="text" class="form-control" asp-for="SendInformation.Mobile" placeholder="... شماره همراه" dir="ltr">
-                            <span asp-validation-for="SendInformation.Mobile" class="mt-5" style="color: red; margin-top: 10px"></span>
-                            <input type="text" class="form-control" asp-for="SendInformation.PostalCode" placeholder="... کد پستی" dir="ltr" style="margin-top: 10px">
-                            <span asp-validation-for="SendInformation.PostalCode" class="mt-5" style="color: red; margin-top: 10px"></span>
-                            <select asp-for="SendInformation.StateId" class="custom-select form-control" id="state" onchange="setCities();" style="margin-top: 10px">
+                            <input type="number" hidden asp-for="SendInformation.Id">
+                            <input type="number" hidden asp-for="SendInformation.UserId"> 
+                            <input required type="text" class="form-control" asp-for="SendInformation.RecipientName"
+                                placeholder="نام تحویل گیرنده ...">
+                            <span asp-validation-for="SendInformation.RecipientName" class="mt-5"
+                                style="color: red; margin-top: 10px"></span>
+                            <br />
+                            <input required type="tel" maxlength="11" pattern="[0-9]{11}" class="form-control"
+                                asp-for="SendInformation.Mobile" placeholder="... شماره همراه" dir="ltr">
+                            <span asp-validation-for="SendInformation.Mobile" class="mt-5"
+                                style="color: red; margin-top: 10px"></span>
+                            <input required type="tel" pattern="[0-9]{10}" class="form-control"
+                                asp-for="SendInformation.PostalCode" placeholder="... کد پستی" dir="ltr"
+                                style="margin-top: 10px">
+                            <span asp-validation-for="SendInformation.PostalCode" class="mt-5"
+                                style="color: red; margin-top: 10px"></span>
+                            <select asp-for="SendInformation.StateId" class="custom-select form-control" id="state"
+                                onchange="setCities();" style="margin-top: 10px">
                                 @foreach (var state in Model.StateList)
                                 {
                                     <option value="@state.Id">@state.Name</option>
                                 }
                             </select>
-                            <br/>
+                            <br />
                             <select asp-for="SendInformation.CityId" class="custom-select form-control" id="city">
                                 @foreach (var city in Model.CityList)
                                 {
                                     <option stateId="@city.StateId" value="@city.Id">@city.Name</option>
                                 }
                             </select>
-                            <br/>
-                            <textarea asp-for="SendInformation.Address" class="custom-textarea form-control" placeholder="آدرس شما ..."></textarea>
-                            <span asp-validation-for="SendInformation.Address" class="mt-5" style="color: red; margin-top: 10px"></span>
+                            <br />
+                            <textarea required asp-for="SendInformation.Address" class="custom-textarea form-control"
+                                placeholder="آدرس شما ..."></textarea>
+                            <span asp-validation-for="SendInformation.Address" class="mt-5"
+                                style="color: red; margin-top: 10px"></span>
+                            <br />
+                            <input id="edit-btn" class="btn btn-primary" disabled type="button" value="ویرایش اطلاعات"
+                                onclick="editAddress()">
                         </div>
                     </div>
 
@@ -105,16 +120,18 @@
                         </div>
                         <div class="account-content">
                             <div class="row">
-                                <input type="radio" id="sadad" checked="checked" name="Portal" width="100" value="sadad">
+                                <input type="radio" id="sadad" checked="checked" name="Portal" width="100"
+                                    value="sadad">
                                 <div class="payment active">
                                     <img src="/img/payment/sadad.webp" alt="سداد" loading="lazy">
                                 </div>
                             </div>
-                            @*  <div class="row">
-                                <input type="radio" id="zarinpal" checked="checked" name="Portal" width="100" value="zarinpal">
-                                <div class="payment active">
-                                    <h3>زرین پال</h3>
-                                </div>
+                            @* <div class="row">
+                            <input type="radio" id="zarinpal" checked="checked" name="Portal" width="100"
+                            value="zarinpal">
+                            <div class="payment active">
+                            <h3>زرین پال</h3>
+                            </div>
                             </div> *@
                         </div>
                     </div>
@@ -129,20 +146,25 @@
                                 </li>
                             </ul>
 
-                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control" id="discountCode"/>
-                            <br/>
+                            <input type="text" name="discountCode" placeholder="کد تخفیف" class="form-control"
+                                id="discountCode" />
+                            <br />
                             <div class="row">
-                                <button type="button" onclick="CalculateDiscount()" class="btn btn-inline col-md-6"> اعمال کد تخفیف</button>
-                                <button type="button" onclick="RemoveDiscount()" class="btn btn-warning col-md-6"> حذف تخفیف</button>
+                                <button type="button" onclick="CalculateDiscount()" class="btn btn-inline col-md-6">
+                                    اعمال کد تخفیف</button>
+                                <button type="button" onclick="RemoveDiscount()" class="btn btn-warning col-md-6"> حذف
+                                    تخفیف</button>
                             </div>
 
                             <ul>
                                 <li>
-                                    <span>با تخفیف </span><span id="sumPrice">@Model.SumPrice.ToString("N0")</span><span>تومان</span>
+                                    <span>با تخفیف </span><span
+                                        id="sumPrice">@Model.SumPrice.ToString("N0")</span><span>تومان</span>
                                 </li>
                             </ul>
 
-                            <button type="submit" class="btn btn-inline col-md-12"> <i class="fal fa-credit-card"></i>ثبت سفارش</button>
+                            <button type="submit" class="btn btn-inline col-md-12"> <i
+                                    class="fal fa-credit-card"></i>ثبت سفارش</button>
                         </div>
                         <div class="chekout-coupon">
                         </div>
@@ -156,13 +178,65 @@
 @section Scripts
 {
     <script>
-        function fillAddress(id) {
-            var arrayOfArrays = @Html.Raw(Json.Serialize(Model.SendInformationList));
+        let selectedId;
+        let sendInfoList = @Html.Raw(Json.Serialize(Model.SendInformationList));
 
-            var sendInformation = arrayOfArrays.find(obj => {
+        function checkFormValidity() {
+            const [name, pCode, mobile, address] = ["SendInformation_RecipientName", "SendInformation_PostalCode", "SendInformation_Mobile", "SendInformation_Address"];
+            const form = $(`#${name},#${pCode},#${mobile},#${address}`).toArray();
+            const validity = form.map(v => ({ id: v.id, valid: v.validity.valid }));
+            const messages = [];
+            validity.forEach(v => {
+                if (v.id === name && !v.valid) messages.push("- نام تحویل گیرنده نباید خالی باشد")
+                if (v.id === mobile && !v.valid) messages.push("- شماره موبایل نباید خالی باشد و همچنین باید معتبر باشد")
+                if (v.id === pCode && !v.valid) messages.push("- کد پستی نباید خالی باشد و باید عدد ۱۰ رقمی باشد")
+                if (v.id === address && !v.valid) messages.push("- آدرس نباید خالی باشد")
+            });
+            return ({ isValid: validity.reduce((p, c) => p && c.valid, true), message: messages.join("\n") });
+        }
+
+        async function editAddress() {
+            if (!selectedId) return;
+            const validity = checkFormValidity();
+            if (!validity.isValid) {
+                swal(validity.message)
+                return;
+            }
+            const res = await $.ajax("/Checkout?handler=editaddress", {
+                type: "POST",
+                data: $("#ch-form").serialize(),
+                headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() }
+            });
+            if (res.code === 0) {
+                $(`#profile-card-${selectedId} h6`).text($("#myDIV input[name='SendInformation.RecipientName']").val());
+                $(`#profile-card-${selectedId} p`).text($("#myDIV textarea").val());
+                sendInfoList = res.data;
+            }
+            let message = res.message;
+            if (message === "\r\n") {
+                message = "خطا در ویرایش اطلاعات"
+            }
+            swal(message);
+        }
+
+        function fillAddress(id) {
+            if (selectedId === id) {
+                clearForm();
+                $(`.profile-card`).removeClass("active");
+                $("#edit-btn").attr("disabled", true);
+                selectedId = undefined;
+                return;
+            }
+            $("#edit-btn").removeAttr("disabled");
+            $(`.profile-card`).removeClass("active");
+            $(`#profile-card-${id}`).addClass("active");
+            selectedId = id;
+
+            var sendInformation = sendInfoList.find(obj => {
                 return obj.id == id;
             });
             $("#SendInformation_Id").val(sendInformation.id);
+            $("#SendInformation_UserId").val(sendInformation.userId);
             $("#SendInformation_RecipientName").val(sendInformation.recipientName);
             $("#SendInformation_Mobile").val(sendInformation.mobile);
             $("#SendInformation_PostalCode").val(sendInformation.postalCode);
@@ -171,6 +245,17 @@
             setCities();
             $("#city").val(sendInformation.cityId);
 
+        }
+
+        function clearForm() {
+            $("#SendInformation_Id").val(0);
+            $("#SendInformation_UserId").val(0);
+            $("#SendInformation_RecipientName").val("");
+            $("#SendInformation_Mobile").val("");
+            $("#SendInformation_PostalCode").val("");
+            $("#SendInformation_Address").val("");
+            $("#state").val(1);
+            setCities();
         }
 
         $(document).ready(function () {
