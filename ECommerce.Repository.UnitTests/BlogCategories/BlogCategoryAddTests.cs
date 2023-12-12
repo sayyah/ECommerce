@@ -1,30 +1,17 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryAddTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryAddTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Add: Null value for required Fields")]
     public void Add_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["required_fields"];
+        Dictionary<string, BlogCategory> expected = TestSets["required_fields"];
 
         // Act
         Dictionary<string, Action> actual =  [ ];
@@ -44,7 +31,6 @@ public class BlogCategoryAddTests : BaseTests
     public void Add_NullValue_ThrowsException()
     {
         // Act
-        Dictionary<string, Action> actual =  [ ];
         void action() => _blogCategoryRepository.Add(null!);
 
         // Assert
@@ -55,24 +41,14 @@ public class BlogCategoryAddTests : BaseTests
     public void Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        BlogCategory expected = TestSets["simple_tests"]["test_1"];
 
         // Act
-        foreach (BlogCategory entry in expected.Values)
-        {
-            _blogCategoryRepository.Add(entry);
-        }
+        _blogCategoryRepository.Add(expected);
 
         // Assert
-        Dictionary<string, BlogCategory?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogCategory> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogCategories.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
+        var actual = DbContext.BlogCategories.FirstOrDefault(x => x.Id == expected.Id);
 
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

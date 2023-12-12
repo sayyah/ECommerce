@@ -1,27 +1,16 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryGetAllTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryGetAllTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "GetAll: Get all entities in repository")]
     public async void GetAll_GetAllEntities_ReturnsAllEntitiesInRepository()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
         DbContext.Categories.AddRange(expected.Values);
         DbContext.SaveChanges();
 

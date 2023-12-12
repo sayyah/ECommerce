@@ -1,23 +1,10 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryUpdateTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryUpdateTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Update: Null input")]
     public void Update_NullInput_ThrowsException()
     {
@@ -32,7 +19,7 @@ public class BlogCategoryUpdateTests : BaseTests
     public void Update_UpdateEntity_EntityChanges()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

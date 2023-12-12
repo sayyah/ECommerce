@@ -1,61 +1,50 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentAddRangeAsyncTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentAddRangeAsyncTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "AddRangeAsync: Null value for required Fields")]
-    public void AddRangeAsync_RequiredFields_ThrowsException()
+    public async Task AddRangeAsync_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["required_fields"];
+        Dictionary<string, BlogComment> expected = TestSets["required_fields"];
 
         // Act
         Task actual() => _blogCommentRepository.AddRangeAsync(expected.Values, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.ThrowsAsync<DbUpdateException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null BlogComment")]
-    public void AddRangeAsync_NullBlogComment_ThrowsException()
+    public async Task AddRangeAsync_NullBlogComment_ThrowsException()
     {
         // Act
         Task actual() => _blogCommentRepository.AddRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null argument")]
-    public void AddRangeAsync_NullArgument_ThrowsException()
+    public async Task AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
         Task actual() => _blogCommentRepository.AddRangeAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Add BlogComments all together")]
     public async void AddRangeAsync_AddEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
         await _blogCommentRepository.AddRangeAsync(expected.Values, CancellationToken);
@@ -77,7 +66,7 @@ public class BlogCommentAddRangeAsyncTests : BaseTests
     public async void AddRangeAsync_NoSave_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
         await _blogCommentRepository.AddRangeAsync(expected.Values, CancellationToken, false);

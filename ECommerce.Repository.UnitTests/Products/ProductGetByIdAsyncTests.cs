@@ -1,46 +1,26 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductGetByIdAsyncTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductGetByIdAsyncTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "GetByIdAsync: Get products by Id")]
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        foreach (var product in expected.Values)
-        {
-            DbContext.Products.Add(product);
-        }
+        AddCategories();
+        var set = TestSets["unique_url"];
+        DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 
+        Product expected = set["test_2"];
+
         // Act
-        Dictionary<string, Product> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                await _productRepository.GetByIdAsync(CancellationToken, entry.Value.Id)
-            );
-        }
+        var actual = await _productRepository.GetByIdAsync(CancellationToken, expected.Id);
 
         // Assert
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

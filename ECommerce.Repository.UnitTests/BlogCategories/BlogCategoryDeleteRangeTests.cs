@@ -1,24 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryDeleteRangeTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryDeleteRangeTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteRange: Null blogCategory")]
     public void DeleteRange_NullBlogCategory_ThrowsException()
     {
@@ -43,12 +30,12 @@ public class BlogCategoryDeleteRangeTests : BaseTests
     public void DeleteRange_DeleteBlogCategories_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string blogCategoryNotToDeleteSetKey = expected.Keys.ToArray()[0];
+        string blogCategoryNotToDeleteSetKey = "test_1";
         BlogCategory blogCategoryNotToDelete = expected[blogCategoryNotToDeleteSetKey];
         IEnumerable<BlogCategory> blogCategorysToDelete = expected
             .Values
@@ -77,12 +64,12 @@ public class BlogCategoryDeleteRangeTests : BaseTests
     public void DeleteRange_NoSave_EntitiesAreInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string blogCategoryNotToDeleteSetKey = expected.Keys.ToArray()[0];
+        string blogCategoryNotToDeleteSetKey = "test_1";
         BlogCategory blogCategoryNotToDelete = expected[blogCategoryNotToDeleteSetKey];
         IEnumerable<BlogCategory> blogCategorysToDelete = expected
             .Values

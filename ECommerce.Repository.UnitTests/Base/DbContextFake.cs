@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ECommerce.Infrastructure.DataContext;
+using Microsoft.Data.Sqlite;
 
 namespace ECommerce.Repository.UnitTests.Base;
 
@@ -12,11 +13,14 @@ public class DbContextFake : DbContext
 
     public DbContextFake()
     {
+        var connection = new SqliteConnection("datasource=:memory:");
+        connection.Open();
+
         var options = new DbContextOptionsBuilder<SunflowerECommerceDbContext>()
-            .UseInMemoryDatabase("SunFlower")
+            .UseSqlite(connection)
             .Options;
         var optionsHoloo = new DbContextOptionsBuilder<HolooDbContext>()
-            .UseInMemoryDatabase("Holoo")
+            .UseSqlite(connection)
             .Options;
         _databaseContext = new SunflowerECommerceDbContext(
             options,

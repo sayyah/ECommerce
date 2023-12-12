@@ -1,23 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentUpdateRangeTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentUpdateRangeTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "UpdateRange: Null BlogComment")]
     public void UpdateRange_NullBlogComment_ThrowsException()
     {
@@ -42,7 +30,7 @@ public class BlogCommentUpdateRangeTests : BaseTests
     public void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

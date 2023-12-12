@@ -1,22 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentDeleteRangeTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentDeleteRangeTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteRange: Null blogComment")]
     public void DeleteRange_NullBlogComment_ThrowsException()
     {
@@ -41,12 +30,12 @@ public class BlogCommentDeleteRangeTests : BaseTests
     public void DeleteRange_DeleteBlogComments_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string blogCommentNotToDeleteSetKey = expected.Keys.ToArray()[0];
+        string blogCommentNotToDeleteSetKey = "test_1";
         BlogComment blogCommentNotToDelete = expected[blogCommentNotToDeleteSetKey];
         IEnumerable<BlogComment> blogCommentsToDelete = expected
             .Values
@@ -75,12 +64,12 @@ public class BlogCommentDeleteRangeTests : BaseTests
     public void DeleteRange_NoSave_EntitiesAreInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string blogCommentNotToDeleteSetKey = expected.Keys.ToArray()[0];
+        string blogCommentNotToDeleteSetKey = "test_1";
         BlogComment blogCommentNotToDelete = expected[blogCommentNotToDeleteSetKey];
         IEnumerable<BlogComment> blogCommentsToDelete = expected
             .Values

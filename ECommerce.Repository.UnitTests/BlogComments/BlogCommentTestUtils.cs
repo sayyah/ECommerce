@@ -1,12 +1,22 @@
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Interfaces;
+using ECommerce.Infrastructure.Repository;
+using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[CollectionDefinition("BlogComments", DisableParallelization = true)]
-public class BlogCommentTestUtils
+[Collection("BlogComments")]
+public partial class BlogCommentTests : BaseTests
 {
-    public static readonly Dictionary<string, Dictionary<string, BlogComment>> TestSets =
+    private readonly IBlogCommentRepository _blogCommentRepository;
+
+    public BlogCommentTests()
+    {
+        _blogCommentRepository = new BlogCommentRepository(DbContext);
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, BlogComment>> TestSets =
         new()
         {
             ["required_fields"] = new()

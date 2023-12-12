@@ -1,40 +1,29 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryDeleteAsyncTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryDeleteAsyncTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteAsync: Null Argument")]
-    public void DeleteAsync_NullArgument_ThrowsException()
+    public async Task DeleteAsync_NullArgument_ThrowsException()
     {
         // Act
         Task action() => _categoryRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete entity from repository")]
     public async void DeleteAsync_DeleteEntity_EntityRemovedFromRepository()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
         DbContext.Categories.AddRange(expected.Values);
         DbContext.SaveChanges();
-        Category categoryToRemove = expected.Values.ToArray()[Random.Shared.Next(expected.Count)];
+        Category categoryToRemove = expected["test_1"];
 
         // Act
         await _categoryRepository.DeleteAsync(categoryToRemove, CancellationToken);
