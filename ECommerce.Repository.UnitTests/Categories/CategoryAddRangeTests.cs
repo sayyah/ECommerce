@@ -1,23 +1,12 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryAddRangeTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryAddRangeTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "AddRange: Null Argument")]
     public void AddRange_NullArgument_ThrowsException()
     {
@@ -32,7 +21,7 @@ public class CategoryAddRangeTests : BaseTests
     public void AddRange_RequiredArguments_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["required"];
+        Dictionary<string, Category> expected = TestSets["required"];
 
         // Act
         void actual() => _categoryRepository.AddRange(expected.Values);
@@ -45,7 +34,7 @@ public class CategoryAddRangeTests : BaseTests
     public void AddRange_AddEntities_EntitiesExistInDatabase()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
 
         // Act
         _categoryRepository.AddRange(expected.Values);

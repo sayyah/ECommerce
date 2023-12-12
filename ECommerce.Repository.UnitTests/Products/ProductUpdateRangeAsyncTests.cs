@@ -1,42 +1,37 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductUpdateRangeAsyncTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductUpdateRangeAsyncTests()
+    [Fact(DisplayName = "UpdateRangeAsync: Null Product")]
+    public async Task UpdateRangeAsync_NullProduct_ThrowsException()
     {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
+        // Act
+        Task actual() => _productRepository.UpdateRangeAsync([ null! ], CancellationToken);
+
+        // Assert
+        await Assert.ThrowsAsync<NullReferenceException>(actual);
     }
 
-    [Fact(DisplayName = "UpdateRangeAsync: Null input")]
-    public void UpdateRangeAsync_NullInput_ThrowsException()
+    [Fact(DisplayName = "UpdateRangeAsync: Null Argument")]
+    public async Task UpdateRangeAsync_NullArgument_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         Task actual() => _productRepository.UpdateRangeAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "UpdateRangeAsync: Update products")]
     public async void UpdateRangeAsync_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -53,7 +48,7 @@ public class ProductUpdateRangeAsyncTests : BaseTests
         await _productRepository.UpdateRangeAsync(expected.Values, CancellationToken);
 
         // Assert
-        Dictionary<string, Product?> actual = new();
+        Dictionary<string, Product?> actual =  [ ];
         foreach (KeyValuePair<string, Product> entry in expected)
         {
             actual.Add(entry.Key, DbContext.Products.Single(p => p.Id == entry.Value.Id)!);

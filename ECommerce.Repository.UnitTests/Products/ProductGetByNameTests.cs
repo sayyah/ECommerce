@@ -1,51 +1,29 @@
-﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductGetByNameTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductGetByNameTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "GetByName: Get products by Name")]
     public async void GetByName_GetAddedEntityByName_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        foreach (var product in expected.Values)
-        {
-            DbContext.Products.Add(product);
-        }
+        AddCategories();
+        var set = TestSets["unique_url"];
+        DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 
+        var expected = set["test_2"];
+
         // Act
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                await _productRepository.GetByName(entry.Value.Name, CancellationToken)
-            );
-        }
+        var actual = await _productRepository.GetByName(expected.Name, CancellationToken);
 
         // Assert
         actual
-            .Values
             .Should()
             .BeEquivalentTo(
-                expected.Values,
+                expected,
                 options =>
                     options
                         .For(x => x.ProductCategories)
@@ -59,49 +37,15 @@ public class ProductGetByNameTests : BaseTests
     public async void GetByName_GetAddedEntityByNonExistingName_ReturnsNull()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        foreach (var product in expected.Values)
-        {
-            DbContext.Products.Add(product);
-        }
+        AddCategories();
+        var set = TestSets["unique_url"];
+        DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 
         // Act
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                await _productRepository.GetByName(new Guid().ToString(), CancellationToken)
-            );
-        }
+        var actual = await _productRepository.GetByName(new Guid().ToString(), CancellationToken);
 
         // Assert
-        actual.Values.Should().AllSatisfy(x => x.Should().BeNull());
-    }
-
-    [Fact(DisplayName = "GetByName: Non existing url")]
-    public async void GetByUrl_GetAddedEntityByNonExistingUrl_ReturnsNull()
-    {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        foreach (var product in expected.Values)
-        {
-            DbContext.Products.Add(product);
-        }
-        DbContext.SaveChanges();
-
-        // Act
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                await _productRepository.GetByUrl(new Guid().ToString(), CancellationToken)
-            );
-        }
-
-        // Assert
-        actual.Values.Should().AllSatisfy(x => x.Should().BeNull());
+        actual.Should().BeNull();
     }
 }

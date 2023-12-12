@@ -1,22 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryGetByIdAsyncTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryGetByIdAsyncTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "GetByIdAsync: Null Argument")]
     public async void GetByIdAsync_NullArgument_ReturnsNull()
     {
@@ -31,11 +20,11 @@ public class CategoryGetByIdAsyncTests : BaseTests
     public async void GetByIdAsync_GetEntityById_ReturnsEntity()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
         DbContext.Categories.AddRange(expected.Values);
         DbContext.SaveChanges();
 
-        Category expectedCategory = expected.Values.ToArray()[Random.Shared.Next(expected.Count)];
+        Category expectedCategory = expected["test_2"];
 
         // Act
         Category actual = await _categoryRepository.GetByIdAsync(

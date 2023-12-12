@@ -8,21 +8,13 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentAddTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentAddTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Add: Null value for required Fields")]
     public void Add_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["required_fields"];
+        Dictionary<string, BlogComment> expected = TestSets["required_fields"];
 
         // Act
         Dictionary<string, Action> actual =  [ ];
@@ -53,24 +45,14 @@ public class BlogCommentAddTests : BaseTests
     public void Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        BlogComment expected = TestSets["simple_tests"]["test_1"];
 
         // Act
-        foreach (BlogComment entry in expected.Values)
-        {
-            _blogCommentRepository.Add(entry);
-        }
+        _blogCommentRepository.Add(expected);
 
         // Assert
-        Dictionary<string, BlogComment?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogComments.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
+        var actual = DbContext.BlogComments.FirstOrDefault(x => x.Id == expected.Id);
 
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

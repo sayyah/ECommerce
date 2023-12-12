@@ -1,62 +1,57 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductAddRangeAsyncTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductAddRangeAsyncTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "AddRangeAsync: Null value for required Fields")]
-    public void AddRangeAsync_RequiredFields_ThrowsException()
+    public async Task AddRangeAsync_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["required_fields"];
+        Dictionary<string, Product> expected = TestSets["required_fields"];
 
         // Act
         Task actual() => _productRepository.AddRangeAsync(expected.Values, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.ThrowsAsync<DbUpdateException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null product")]
-    public void AddRangeAsync_NullProduct_ThrowsException()
+    public async Task AddRangeAsync_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Task actual() => _productRepository.AddRangeAsync(expected.Values, CancellationToken);
+        Task actual() => _productRepository.AddRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(actual);
+    }
+
+    [Fact(DisplayName = "AddRangeAsync: Null Argument")]
+    public async Task AddRangeAsync_NullArgument_ThrowsException()
+    {
+        // Act
+        Task actual() => _productRepository.AddRangeAsync(null!, CancellationToken);
+
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Add products all together")]
     public async void AddRangeAsync_AddEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
 
         // Act
         await _productRepository.AddRangeAsync(expected.Values, CancellationToken);
 
         // Assert
-        Dictionary<string, Product?> actual = new();
+        Dictionary<string, Product?> actual =  [ ];
         foreach (KeyValuePair<string, Product> entry in expected)
         {
             actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
@@ -69,13 +64,14 @@ public class ProductAddRangeAsyncTests : BaseTests
     public async void AddRangeAsync_NoSave_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
 
         // Act
         await _productRepository.AddRangeAsync(expected.Values, CancellationToken, false);
 
         // Assert
-        Dictionary<string, Product?> actual = new();
+        Dictionary<string, Product?> actual =  [ ];
         foreach (KeyValuePair<string, Product> entry in expected)
         {
             actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));

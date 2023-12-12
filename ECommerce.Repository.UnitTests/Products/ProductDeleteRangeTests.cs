@@ -1,43 +1,24 @@
 ﻿using System.Data;
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductDeleteRangeTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductDeleteRangeTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
-    [Fact(DisplayName = "DeleteRange: Null product")]
+    [Fact(DisplayName = "DeleteRange: Null Product")]
     public void DeleteRange_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        void actual() => _productRepository.DeleteRange(expected.Values);
+        void actual() => _productRepository.DeleteRange([ null! ]);
 
         // Assert
         Assert.Throws<NullReferenceException>(actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null input")]
-    public void DeleteRange_NullInput_ThrowsException()
+    [Fact(DisplayName = "DeleteRange: Null Argument")]
+    public void DeleteRange_NullArgument_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         void actual() => _productRepository.DeleteRange(null!);
 
@@ -49,12 +30,13 @@ public class ProductDeleteRangeTests : BaseTests
     public void DeleteRange_DeleteProducts_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string productNotToDeleteSetKey = expected.Keys.ToArray()[0];
+        string productNotToDeleteSetKey = "test_1";
         Product productNotToDelete = expected[productNotToDeleteSetKey];
         IEnumerable<Product> productsToDelete = expected
             .Values
@@ -64,7 +46,7 @@ public class ProductDeleteRangeTests : BaseTests
         _productRepository.DeleteRange(productsToDelete);
 
         // Assert
-        List<Product?> actual = new();
+        List<Product?> actual =  [ ];
         foreach (var product in productsToDelete)
         {
             actual.Add(DbContext.Products.FirstOrDefault(x => x.Id == product.Id));
@@ -83,12 +65,13 @@ public class ProductDeleteRangeTests : BaseTests
     public void DeleteRange_NoSave_EntitiesAreInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string productNotToDeleteSetKey = expected.Keys.ToArray()[0];
+        string productNotToDeleteSetKey = "test_1";
         Product productNotToDelete = expected[productNotToDeleteSetKey];
         IEnumerable<Product> productsToDelete = expected
             .Values
@@ -98,7 +81,7 @@ public class ProductDeleteRangeTests : BaseTests
         _productRepository.DeleteRange(productsToDelete, false);
 
         // Assert
-        List<Product?> actual = new();
+        List<Product?> actual =  [ ];
         foreach (var product in productsToDelete)
         {
             actual.Add(DbContext.Products.FirstOrDefault(x => x.Id == product.Id));

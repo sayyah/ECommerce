@@ -1,39 +1,26 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryUpdateAsyncTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryUpdateAsyncTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "UpdateAsync: Null input")]
-    public void UpdateAsync_NullInput_ThrowsException()
+    public async Task UpdateAsync_NullInput_ThrowsException()
     {
         // Act
         Task<BlogCategory> actual() =>
             _blogCategoryRepository.UpdateAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "UpdateAsync: Update blogCategory")]
     public async void UpdateAsync_UpdateEntity_EntityChanges()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
