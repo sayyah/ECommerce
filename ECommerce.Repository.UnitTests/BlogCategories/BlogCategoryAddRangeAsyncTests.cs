@@ -1,6 +1,4 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
 using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -8,56 +6,47 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryAddRangeAsyncTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryAddRangeAsyncTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "AddRangeAsync: Null value for required Fields")]
-    public void AddRangeAsync_RequiredFields_ThrowsException()
+    public async Task AddRangeAsync_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["required_fields"];
+        Dictionary<string, BlogCategory> expected = TestSets["required_fields"];
 
         // Act
         Task actual() => _blogCategoryRepository.AddRangeAsync(expected.Values, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.ThrowsAsync<DbUpdateException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null BlogCategory")]
-    public void AddRangeAsync_NullBlogCategory_ThrowsException()
+    public async Task AddRangeAsync_NullBlogCategory_ThrowsException()
     {
         // Act
-        Task actual() => _blogCategoryRepository.AddRangeAsync([ null! ], CancellationToken);
+        async Task actual() =>
+            await _blogCategoryRepository.AddRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Null argument")]
-    public void AddRangeAsync_NullArgument_ThrowsException()
+    public async Task AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
         Task actual() => _blogCategoryRepository.AddRangeAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "AddRangeAsync: Add BlogCategorys all together")]
     public async void AddRangeAsync_AddEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
 
         // Act
         await _blogCategoryRepository.AddRangeAsync(expected.Values, CancellationToken);
@@ -79,7 +68,7 @@ public class BlogCategoryAddRangeAsyncTests : BaseTests
     public async void AddRangeAsync_NoSave_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
 
         // Act
         await _blogCategoryRepository.AddRangeAsync(expected.Values, CancellationToken, false);

@@ -1,41 +1,30 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryAddAsyncTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryAddAsyncTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "AddAsync: Null Argument")]
-    public void AddAsync_NullArgument_ThrowsException()
+    public async Task AddAsync_NullArgument_ThrowsException()
     {
         // Act
         Task<Category> action() => _categoryRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "AddAsync: required arguments")]
-    public void AddAsync_RequiredArguments_ThrowsException()
+    public async Task AddAsync_RequiredArguments_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["required"];
+        Dictionary<string, Category> expected = TestSets["required"];
 
         // Act
-        Dictionary<string, Func<Task<Category>>> actual = new();
+        Dictionary<string, Func<Task<Category>>> actual =  [ ];
         foreach (KeyValuePair<string, Category> entry in expected)
         {
             actual.Add(
@@ -47,7 +36,7 @@ public class CategoryAddAsyncTests : BaseTests
         // Assert
         foreach (Func<Task<Category>> action in actual.Values)
         {
-            Assert.ThrowsAsync<DbUpdateException>(action);
+            await Assert.ThrowsAsync<DbUpdateException>(action);
         }
     }
 
@@ -55,19 +44,12 @@ public class CategoryAddAsyncTests : BaseTests
     public async void AddAsync_AddEntities_EntitiesExistInDatabase()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Category expected = TestSets["simple_tests"]["test_1"];
 
         // Act
-        foreach (Category category in expected.Values)
-        {
-            await _categoryRepository.AddAsync(category, CancellationToken);
-        }
+        var actual = await _categoryRepository.AddAsync(expected, CancellationToken);
 
         // Assert
-        foreach (Category category in expected.Values)
-        {
-            Category actual = DbContext.Categories.Single(c => c.Id == category.Id);
-            actual.Should().BeEquivalentTo(category);
-        }
+        actual.Should().BeEquivalentTo(expected);
     }
 }

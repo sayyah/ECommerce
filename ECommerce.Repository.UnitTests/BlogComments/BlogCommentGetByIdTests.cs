@@ -1,41 +1,24 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentGetByIdTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentGetByIdTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "GetById: Get blogComment by Id")]
     public void GetById_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
-        foreach (var blogComment in expected.Values)
-        {
-            DbContext.BlogComments.Add(blogComment);
-        }
+        DbContext.BlogComments.AddRange(TestSets["simple_tests"].Values);
         DbContext.SaveChanges();
 
+        BlogComment expected = TestSets["simple_tests"]["test_2"];
+
         // Act
-        Dictionary<string, BlogComment?> actual = new();
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
-        {
-            actual.Add(entry.Key, _blogCommentRepository.GetById(entry.Value.Id));
-        }
+        var actual = _blogCommentRepository.GetById(expected.Id);
 
         // Assert
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

@@ -1,21 +1,10 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentDeleteTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentDeleteTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Delete: Null blogComment")]
     public void Delete_NullBlogComment_ThrowsException()
     {
@@ -30,12 +19,12 @@ public class BlogCommentDeleteTests : BaseTests
     public void Delete_DeleteBlogComment_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogComment blogCommentToDelete = expected.Values.ToArray()[0];
+        BlogComment blogCommentToDelete = expected["test_1"];
 
         // Act
         _blogCommentRepository.Delete(blogCommentToDelete);
@@ -55,12 +44,12 @@ public class BlogCommentDeleteTests : BaseTests
     public void Delete_NoSave_EntityIsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogComment blogCommentToDelete = expected.Values.ToArray()[0];
+        BlogComment blogCommentToDelete = expected["test_1"];
 
         // Act
         _blogCommentRepository.Delete(blogCommentToDelete, false);

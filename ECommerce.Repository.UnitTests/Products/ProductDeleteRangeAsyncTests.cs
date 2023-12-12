@@ -1,55 +1,37 @@
 ﻿using System.Data;
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductDeleteRangeAsyncTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductDeleteRangeAsyncTests()
+    [Fact(DisplayName = "DeleteRangeAsync: Null Product")]
+    public async Task DeleteRangeAsync_NullProduct_ThrowsException()
     {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
-    [Fact(DisplayName = "DeleteRangeAsync: Null product")]
-    public void DeleteRangeAsync_NullProduct_ThrowsException()
-    {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Task actual() => _productRepository.DeleteRangeAsync(expected.Values, CancellationToken);
+        Task actual() => _productRepository.DeleteRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(actual);
     }
 
-    [Fact(DisplayName = "DeleteRangeAsync: Null input")]
-    public void DeleteRangeAsync_NullInput_ThrowsException()
+    [Fact(DisplayName = "DeleteRangeAsync: Null Argument")]
+    public async Task DeleteRangeAsync_NullArgument_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         Task actual() => _productRepository.DeleteRangeAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Delete range of products from repository")]
     public async void DeleteRangeAsync_DeleteProducts_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -66,7 +48,7 @@ public class ProductDeleteRangeAsyncTests : BaseTests
         await _productRepository.DeleteRangeAsync(productsToDelete, CancellationToken);
 
         // Assert
-        List<Product?> actual = new();
+        List<Product?> actual =  [ ];
         foreach (var product in productsToDelete)
         {
             actual.Add(DbContext.Products.FirstOrDefault(x => x.Id == product.Id));
@@ -85,7 +67,8 @@ public class ProductDeleteRangeAsyncTests : BaseTests
     public async void DeleteRangeAsync_NoSave_EntitiesAreInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -102,7 +85,7 @@ public class ProductDeleteRangeAsyncTests : BaseTests
         await _productRepository.DeleteRangeAsync(productsToDelete, CancellationToken, false);
 
         // Assert
-        List<Product?> actual = new();
+        List<Product?> actual =  [ ];
         foreach (var product in productsToDelete)
         {
             actual.Add(DbContext.Products.FirstOrDefault(x => x.Id == product.Id));

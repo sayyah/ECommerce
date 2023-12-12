@@ -1,22 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryUpdateTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryUpdateTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Update: Null Argument")]
     public void Update_NullArgument_ThrowsException()
     {
@@ -31,10 +20,10 @@ public class CategoryUpdateTests : BaseTests
     public void Update_UpdateEntity_EntityChanges()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
         DbContext.Categories.AddRange(expected.Values);
         DbContext.SaveChanges();
-        Category categoryToUpdate = expected.Values.ToArray()[Random.Shared.Next(expected.Count)];
+        Category categoryToUpdate = expected["test_3"];
 
         categoryToUpdate.Name = Guid.NewGuid().ToString();
 

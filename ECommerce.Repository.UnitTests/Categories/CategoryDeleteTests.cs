@@ -1,22 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryDeleteTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryDeleteTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Delete: Null Argument")]
     public void Delete_NullArgument_ThrowsException()
     {
@@ -31,10 +20,10 @@ public class CategoryDeleteTests : BaseTests
     public void Delete_DeleteEntity_EntityRemovedFromRepository()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
         DbContext.Categories.AddRange(expected.Values);
         DbContext.SaveChanges();
-        Category categoryToRemove = expected.Values.ToArray()[Random.Shared.Next(expected.Count)];
+        Category categoryToRemove = expected["test_1"];
 
         // Act
         _categoryRepository.Delete(categoryToRemove);

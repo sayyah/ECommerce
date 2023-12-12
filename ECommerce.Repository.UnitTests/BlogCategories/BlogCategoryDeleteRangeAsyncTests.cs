@@ -1,49 +1,36 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryDeleteRangeAsyncTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryDeleteRangeAsyncTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteRangeAsync: Null blogCategory")]
-    public void DeleteRangeAsync_NullBlogCategory_ThrowsException()
+    public async Task DeleteRangeAsync_NullBlogCategory_ThrowsException()
     {
         // Act
         Task actual() => _blogCategoryRepository.DeleteRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Null argument")]
-    public void DeleteRangeAsync_NullArgument_ThrowsException()
+    public async Task DeleteRangeAsync_NullArgument_ThrowsException()
     {
         // Act
         Task actual() => _blogCategoryRepository.DeleteRangeAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Delete range of BlogCategories from repository")]
     public async void DeleteRangeAsync_DeleteBlogCategories_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -79,7 +66,7 @@ public class BlogCategoryDeleteRangeAsyncTests : BaseTests
     public async void DeleteRangeAsync_NoSave_EntitiesAreInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
