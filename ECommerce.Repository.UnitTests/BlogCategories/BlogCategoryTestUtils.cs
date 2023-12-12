@@ -1,12 +1,22 @@
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Interfaces;
+using ECommerce.Infrastructure.Repository;
+using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[CollectionDefinition("BlogCategories", DisableParallelization = true)]
-public class BlogCategoryTestUtils
+[Collection("BlogCategories")]
+public partial class BlogCategoryTests : BaseTests
 {
-    public static Dictionary<string, Dictionary<string, BlogCategory>> TestSets =>
+    private readonly IBlogCategoryRepository _blogCategoryRepository;
+
+    public BlogCategoryTests()
+    {
+        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, BlogCategory>> TestSets =
         new()
         {
             ["required_fields"] = new()

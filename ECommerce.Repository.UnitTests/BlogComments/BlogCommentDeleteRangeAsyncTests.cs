@@ -1,54 +1,41 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentDeleteRangeAsyncTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentDeleteRangeAsyncTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteRangeAsync: Null blogComment")]
-    public void DeleteRangeAsync_NullBlogComment_ThrowsException()
+    public async Task DeleteRangeAsync_NullBlogComment_ThrowsException()
     {
         // Act
         Task actual() => _blogCommentRepository.DeleteRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Null argument")]
-    public void DeleteRangeAsync_NullArgument_ThrowsException()
+    public async Task DeleteRangeAsync_NullArgument_ThrowsException()
     {
         // Act
         Task actual() => _blogCommentRepository.DeleteRangeAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(actual);
     }
 
     [Fact(DisplayName = "DeleteRangeAsync: Delete range of BlogComments from repository")]
     public async void DeleteRangeAsync_DeleteBlogComments_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string blogCommentNotToDeleteSetKey = expected.Keys.ToArray()[
-            Random.Shared.Next(expected.Count)
-        ];
+        string blogCommentNotToDeleteSetKey = "test_1";
         BlogComment blogCommentNotToDelete = expected[blogCommentNotToDeleteSetKey];
         IEnumerable<BlogComment> blogCommentsToDelete = expected
             .Values
@@ -77,14 +64,12 @@ public class BlogCommentDeleteRangeAsyncTests : BaseTests
     public async void DeleteRangeAsync_NoSave_EntitiesAreInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string authorNotToDeleteSetKey = expected.Keys.ToArray()[
-            Random.Shared.Next(expected.Count)
-        ];
+        string authorNotToDeleteSetKey = "test_1";
         BlogComment authorNotToDelete = expected[authorNotToDeleteSetKey];
         IEnumerable<BlogComment> authorsToDelete = expected
             .Values

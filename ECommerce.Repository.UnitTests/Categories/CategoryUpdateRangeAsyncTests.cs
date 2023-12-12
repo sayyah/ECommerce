@@ -1,37 +1,26 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryUpdateRangeAsyncTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryUpdateRangeAsyncTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "UpdateRangeAsync: Null Argument")]
-    public void UpdateRangeAsync_NullArgument_ThrowsException()
+    public async Task UpdateRangeAsync_NullArgument_ThrowsException()
     {
         // Act
         Task action() => _categoryRepository.UpdateRangeAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "UpdateRangeAsync: Update entities in repository")]
     public async void UpdateRangeAsync_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
         DbContext.Categories.AddRange(expected.Values);
         DbContext.SaveChanges();
         var randomIndex = Random.Shared.Next(expected.Count);

@@ -1,21 +1,10 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentUpdateTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentUpdateTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Update: Null input")]
     public void Update_NullInput_ThrowsException()
     {
@@ -30,14 +19,12 @@ public class BlogCommentUpdateTests : BaseTests
     public void Update_UpdateEntity_EntityChanges()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogComment blogCommentToUpdate = expected.Values.ToArray()[
-            Random.Shared.Next(expected.Values.Count)
-        ];
+        BlogComment blogCommentToUpdate = expected["test_2"];
         BlogComment expectedBlogComment = DbContext
             .BlogComments
             .Single(p => p.Id == blogCommentToUpdate.Id)!;

@@ -8,21 +8,13 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentAddRangeTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentAddRangeTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "AddRange: Null value for required Fields")]
     public void AddRange_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["required_fields"];
+        Dictionary<string, BlogComment> expected = TestSets["required_fields"];
 
         // Act
         void actual() => _blogCommentRepository.AddRange(expected.Values);
@@ -55,7 +47,7 @@ public class BlogCommentAddRangeTests : BaseTests
     public void AddRange_AddEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
         _blogCommentRepository.AddRange(expected.Values);
@@ -77,7 +69,7 @@ public class BlogCommentAddRangeTests : BaseTests
     public void AddRange_NoSave_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
         _blogCommentRepository.AddRange(expected.Values, false);

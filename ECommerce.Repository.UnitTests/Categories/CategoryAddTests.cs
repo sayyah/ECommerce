@@ -8,16 +8,8 @@ using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryAddTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryAddTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "Add: Null Argument")]
     public void Add_NullArgument_ThrowsException()
     {
@@ -32,10 +24,10 @@ public class CategoryAddTests : BaseTests
     public void Add_RequiredArguments_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["required"];
+        Dictionary<string, Category> expected = TestSets["required"];
 
         // Act
-        Dictionary<string, Action> actual = new();
+        Dictionary<string, Action> actual =  [ ];
         foreach (KeyValuePair<string, Category> entry in expected)
         {
             actual.Add(entry.Key, () => _categoryRepository.Add(entry.Value));
@@ -52,19 +44,13 @@ public class CategoryAddTests : BaseTests
     public void Add_AddEntities_EntitiesExistInDatabase()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Category expected = TestSets["simple_tests"]["test_1"];
 
         // Act
-        foreach (Category category in expected.Values)
-        {
-            _categoryRepository.Add(category);
-        }
+        _categoryRepository.Add(expected);
 
         // Assert
-        foreach (Category category in expected.Values)
-        {
-            Category actual = DbContext.Categories.Single(c => c.Id == category.Id);
-            actual.Should().BeEquivalentTo(category);
-        }
+        Category actual = DbContext.Categories.Single(c => c.Id == expected.Id);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

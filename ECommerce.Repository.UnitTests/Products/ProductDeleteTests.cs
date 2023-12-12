@@ -1,53 +1,31 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductDeleteTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductDeleteTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "Delete: Null product")]
     public void Delete_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Dictionary<string, Action> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, () => _productRepository.Delete(entry.Value));
-        }
+        void action() => _productRepository.Delete(null!);
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.Throws<ArgumentNullException>(action);
-        }
+        Assert.Throws<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "Delete: Delete product from repository")]
     public void Delete_DeleteProduct_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        Product productToDelete = expected.Values.ToArray()[0];
+        Product productToDelete = expected["test_1"];
 
         // Act
         _productRepository.Delete(productToDelete);
@@ -65,12 +43,13 @@ public class ProductDeleteTests : BaseTests
     public void Delete_NoSave_EntityIsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        Product productToDelete = expected.Values.ToArray()[0];
+        Product productToDelete = expected["test_1"];
 
         // Act
         _productRepository.Delete(productToDelete, false);

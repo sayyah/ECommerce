@@ -1,30 +1,24 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductUpdateRangeTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductUpdateRangeTests()
+    [Fact(DisplayName = "UpdateRange: Null Product")]
+    public void UpdateRange_NullProduct_ThrowsException()
     {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
+        // Act
+        void actual() => _productRepository.UpdateRange([ null! ]);
+
+        // Assert
+        Assert.Throws<NullReferenceException>(actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Null input")]
-    public void UpdateRange_NullInput_ThrowsException()
+    [Fact(DisplayName = "UpdateRange: Null Argument")]
+    public void UpdateRange_NullArgument_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
         void actual() => _productRepository.UpdateRange(null!);
 
@@ -36,7 +30,8 @@ public class ProductUpdateRangeTests : BaseTests
     public void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -53,7 +48,7 @@ public class ProductUpdateRangeTests : BaseTests
         _productRepository.UpdateRange(expected.Values);
 
         // Assert
-        Dictionary<string, Product?> actual = new();
+        Dictionary<string, Product?> actual =  [ ];
         foreach (KeyValuePair<string, Product> entry in expected)
         {
             actual.Add(entry.Key, DbContext.Products.Single(p => p.Id == entry.Value.Id)!);

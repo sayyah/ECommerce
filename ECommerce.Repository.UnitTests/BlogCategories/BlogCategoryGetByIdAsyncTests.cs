@@ -7,27 +7,14 @@ using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryGetByIdAsyncTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryGetByIdAsyncTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "GetByIdAsync: Get blogCategory by Id")]
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
-        foreach (var blogCategory in expected.Values)
-        {
-            DbContext.BlogCategories.Add(blogCategory);
-        }
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
+        DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
 
         // Act

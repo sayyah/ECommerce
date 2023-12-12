@@ -1,28 +1,17 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentAddAsyncTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentAddAsyncTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "AddAsync: Null value for required Fields")]
-    public void AddAsync_RequiredFields_ThrowsException()
+    public async Task AddAsync_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["required_fields"];
+        Dictionary<string, BlogComment> expected = TestSets["required_fields"];
 
         // Act
         Dictionary<string, Func<Task<BlogComment>>> actual =  [ ];
@@ -37,37 +26,30 @@ public class BlogCommentAddAsyncTests : BaseTests
         // Assert
         foreach (var action in actual.Values)
         {
-            Assert.ThrowsAsync<DbUpdateException>(action);
+            await Assert.ThrowsAsync<DbUpdateException>(action);
         }
     }
 
     [Fact(DisplayName = "AddAsync: Null BlogComment")]
-    public void AddAsync_NullValue_ThrowsException()
+    public async Task AddAsync_NullValue_ThrowsException()
     {
         // Act
         Task action() => _blogCommentRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "AddAsync: Add BlogComment async")]
-    public void AddAsync_AddEntity_ReturnsAddedEntities()
+    public async void AddAsync_AddEntity_ReturnsAddedEntities()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        BlogComment expected = TestSets["simple_tests"]["test_1"];
 
         // Act
-        Dictionary<string, BlogComment> actual =  [ ];
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                _blogCommentRepository.AddAsync(entry.Value, CancellationToken).Result
-            );
-        }
+        var actual = await _blogCommentRepository.AddAsync(expected, CancellationToken);
 
         // Assert
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

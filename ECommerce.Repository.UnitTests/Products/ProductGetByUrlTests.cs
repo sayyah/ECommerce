@@ -1,46 +1,41 @@
-﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductGetByUrlTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductGetByUrlTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "GetByUrl: Get products by url")]
     public async void GetByUrl_GetAddedEntityByUrl_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        foreach (var product in expected.Values)
-        {
-            DbContext.Products.Add(product);
-        }
+        AddCategories();
+        var set = TestSets["unique_url"];
+        DbContext.Products.AddRange(set.Values);
+        DbContext.SaveChanges();
+
+        var expected = set["test_2"];
+
+        // Act
+        var actual = await _productRepository.GetByUrl(expected.Url, CancellationToken);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact(DisplayName = "GetByUrl: Non existing url")]
+    public async void GetByUrl_GetAddedEntityByNonExistingUrl_ReturnsNull()
+    {
+        // Arrange
+        AddCategories();
+        var set = TestSets["unique_url"];
+        DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 
         // Act
-        Dictionary<string, Product?> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                await _productRepository.GetByUrl(entry.Value.Url, CancellationToken)
-            );
-        }
+        var actual = await _productRepository.GetByUrl(new Guid().ToString(), CancellationToken);
 
         // Assert
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeNull();
     }
 }

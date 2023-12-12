@@ -1,30 +1,17 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryAddRangeTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryAddRangeTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "AddRange: Null value for required Fields")]
     public void AddRange_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["required_fields"];
+        Dictionary<string, BlogCategory> expected = TestSets["required_fields"];
 
         // Act
         void actual() => _blogCategoryRepository.AddRange(expected.Values);
@@ -57,7 +44,7 @@ public class BlogCategoryAddRangeTests : BaseTests
     public void AddRange_AddEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
 
         // Act
         _blogCategoryRepository.AddRange(expected.Values);
@@ -79,7 +66,7 @@ public class BlogCategoryAddRangeTests : BaseTests
     public void AddRange_NoSave_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
 
         // Act
         _blogCategoryRepository.AddRange(expected.Values, false);

@@ -1,36 +1,29 @@
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Interfaces;
+using ECommerce.Infrastructure.Repository;
+using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[CollectionDefinition("ProductTests", DisableParallelization = true)]
-public class ProductTestUtils
+[Collection("ProductTests")]
+public partial class ProductTests : BaseTests
 {
-    public static List<Price> GetSamplePrices()
+    private readonly IProductRepository _productRepository;
+    private readonly List<Price> Prices;
+    private readonly List<Category> Categories;
+    private readonly Dictionary<string, Dictionary<string, Product>> TestSets;
+
+    public ProductTests()
     {
-        return [
+        _productRepository = new ProductRepository(DbContext, HolooDbContext);
+
+        Prices =
+        [
             new Price()
             {
-                Id = 2,
-                ProductId = 4,
-                Amount = 200,
-                Exist = 20,
-                MaxQuantity = 20,
-                MinQuantity = 1,
-            },
-            new Price()
-            {
-                Id = 3,
-                ProductId = 5,
-                Amount = 1000,
-                Exist = 5,
-                MaxQuantity = 5,
-                MinQuantity = 1,
-            },
-            new Price()
-            {
-                Id = 4,
-                ProductId = 398,
+                Id = 1,
+                ProductId = 1,
                 Amount = 10010,
                 Exist = 20,
                 MaxQuantity = 20,
@@ -38,8 +31,8 @@ public class ProductTestUtils
             },
             new Price()
             {
-                Id = 5,
-                ProductId = -92764,
+                Id = 2,
+                ProductId = 2,
                 Amount = 2222,
                 Exist = 5,
                 MaxQuantity = 5,
@@ -47,19 +40,17 @@ public class ProductTestUtils
             },
             new Price()
             {
-                Id = 6,
-                ProductId = 420,
+                Id = 3,
+                ProductId = 3,
                 Amount = 92784,
                 Exist = 5,
                 MaxQuantity = 5,
                 MinQuantity = 1,
             },
         ];
-    }
 
-    public static List<Category> GetSampleCategories()
-    {
-        return [
+        Categories =
+        [
             new Category()
             {
                 Id = 10,
@@ -97,142 +88,66 @@ public class ProductTestUtils
                 ParentId = 10,
             },
         ];
-    }
 
-    public static Dictionary<string, Dictionary<string, Product>> GetTestSets()
-    {
-        List<Price> prices = GetSamplePrices();
-        List<Category> categories = GetSampleCategories();
-
-        return new()
+        TestSets = new()
         {
+            ["required_fields"] = new()
             {
-                "null_test",
-                new() { { "null_object", null! } }
-            },
-            {
-                "required_fields",
-                new()
+                ["test_1"] = new Product
                 {
-                    {
-                        "required_Name",
-                        new Product
-                        {
-                            Id = 1,
-                            MinOrder = 10,
-                            Url = "some random-url/w.[]"
-                        }
-                    },
-                    {
-                        "required_MinOrder",
-                        new Product
-                        {
-                            Id = 2,
-                            Name = "this has name",
-                            Url = "some random-url/w.[/\\:D]"
-                        }
-                    },
-                    {
-                        "required_Url",
-                        new Product
-                        {
-                            Id = 3,
-                            Name = "this also has name",
-                            MinOrder = 2
-                        }
-                    },
+                    Id = 1,
+                    MinOrder = 10,
+                    Url = "some random-url/w.[]"
+                },
+                ["test_2"] = new Product
+                {
+                    Id = 2,
+                    Name = "this has name",
+                    Url = "some random-url/w.[/\\:D]"
+                },
+                ["test_3"] = new Product
+                {
+                    Id = 3,
+                    Name = "this also has name",
+                    MinOrder = 2
                 }
             },
+            ["unique_url"] = new()
             {
-                "duplicate_url",
-                new()
+                ["test_1"] = new Product
                 {
-                    {
-                        "test_1",
-                        new Product
-                        {
-                            Id = 4,
-                            Name = "this has name",
-                            IsShowInIndexPage = true,
-                            Description = new string('*', 500),
-                            Review = "I'll let this one be short :>",
-                            Star = -2, // should it accept this?!
-                            MinOrder = 10,
-                            MaxOrder = 255,
-                            MinInStore = -10, // should it accept this?!
-                            ReorderingLevel = 20,
-                            IsDiscontinued = true,
-                            IsActive = true,
-                            Url = "some random-url/w.[/\\:D]",
-                            Prices =  [ prices[0] ],
-                            ProductCategories = new List<Category> { categories[1] }
-                        }
-                    },
-                    {
-                        "test_2",
-                        new Product
-                        {
-                            Id = 5,
-                            Name = "this name",
-                            IsShowInIndexPage = true,
-                            Description = "This time I'll let this one be short :>",
-                            Review = new string('*', 500),
-                            Star = 2,
-                            MinOrder = 10,
-                            MaxOrder = 255,
-                            MinInStore = 3,
-                            ReorderingLevel = 20,
-                            IsDiscontinued = true,
-                            IsActive = true,
-                            Url = "some random-url/w.[/\\:D]", // should it accept the same url as test_1?!
-                            Prices =  [ prices[1] ],
-                            ProductCategories = new List<Category> { categories[2] }
-                        }
-                    },
-                }
-            },
-            {
-                "unique_url",
-                new()
+                    Id = 1,
+                    Name = "this has name",
+                    MinOrder = 10,
+                    Url = "some random-url/w.[/\\:D]",
+                    Prices =  [ Prices[0] ],
+                    ProductCategories = new List<Category> { Categories[1] }
+                },
+                ["test_2"] = new Product
                 {
-                    {
-                        "test_1",
-                        new Product
-                        {
-                            Id = 398,
-                            Name = "this has name",
-                            MinOrder = 10,
-                            Url = "some random-url/w.[/\\:D]",
-                            Prices =  [ prices[2] ],
-                            ProductCategories = new List<Category> { categories[1] }
-                        }
-                    },
-                    {
-                        "test_2",
-                        new Product
-                        {
-                            Id = -92764,
-                            Name = "this name",
-                            MinOrder = 10,
-                            Url = "random-url",
-                            Prices =  [ prices[3] ],
-                            ProductCategories = new List<Category> { categories[2] }
-                        }
-                    },
-                    {
-                        "test_3",
-                        new Product
-                        {
-                            Id = 420,
-                            Name = "such product",
-                            MinOrder = 69,
-                            Url = "much/wow",
-                            Prices =  [ prices[4] ],
-                            ProductCategories = new List<Category> { categories[3] }
-                        }
-                    },
+                    Id = 2,
+                    Name = "this name",
+                    MinOrder = 10,
+                    Url = "random-url",
+                    Prices =  [ Prices[1] ],
+                    ProductCategories = new List<Category> { Categories[2] }
+                },
+                ["test_3"] = new Product
+                {
+                    Id = 3,
+                    Name = "such product",
+                    MinOrder = 69,
+                    Url = "much/wow",
+                    Prices =  [ Prices[2] ],
+                    ProductCategories = new List<Category> { Categories[3] }
                 }
             }
         };
+    }
+
+    private void AddCategories()
+    {
+        DbContext.Categories.AddRange(Categories);
+        DbContext.SaveChanges();
     }
 }

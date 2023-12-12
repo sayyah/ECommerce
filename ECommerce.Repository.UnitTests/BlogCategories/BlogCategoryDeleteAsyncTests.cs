@@ -1,43 +1,30 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryDeleteAsyncTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryDeleteAsyncTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteAsync: Null BlogCategory")]
-    public void DeleteAsync_NullBlogCategory_ThrowsException()
+    public async Task DeleteAsync_NullBlogCategory_ThrowsException()
     {
         // Act
         Task action() => _blogCategoryRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete BlogCategory from repository")]
     public async void DeleteAsync_DeleteBlogCategory_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogCategory blogCategoryToDelete = expected.Values.ToArray()[0];
+        BlogCategory blogCategoryToDelete = expected["test_1"];
 
         // Act
         await _blogCategoryRepository.DeleteAsync(blogCategoryToDelete, CancellationToken);
@@ -57,12 +44,12 @@ public class BlogCategoryDeleteAsyncTests : BaseTests
     public async void DeleteAsync_NoSave_EntityIsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogCategory blogCategoryToDelete = expected.Values.ToArray()[0];
+        BlogCategory blogCategoryToDelete = expected["test_1"];
 
         // Act
         await _blogCategoryRepository.DeleteAsync(blogCategoryToDelete, CancellationToken, false);
