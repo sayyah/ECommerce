@@ -1,41 +1,30 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
 
-[Collection("BlogComments")]
-public class BlogCommentDeleteAsyncTests : BaseTests
+public partial class BlogCommentTests
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-
-    public BlogCommentDeleteAsyncTests()
-    {
-        _blogCommentRepository = new BlogCommentRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteAsync: Null BlogComment")]
-    public void DeleteAsync_NullBlogComment_ThrowsException()
+    public async Task DeleteAsync_NullBlogComment_ThrowsException()
     {
         // Act
         Task action() => _blogCommentRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete BlogComment from repository")]
     public async void DeleteAsync_DeleteBlogComment_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogComment blogCommentToDelete = expected.Values.ToArray()[0];
+        BlogComment blogCommentToDelete = expected["test_1"];
 
         // Act
         await _blogCommentRepository.DeleteAsync(blogCommentToDelete, CancellationToken);
@@ -55,12 +44,12 @@ public class BlogCommentDeleteAsyncTests : BaseTests
     public async void DeleteAsync_NoSave_EntityIsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = BlogCommentTestUtils.TestSets["simple_tests"];
+        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
         DbContext.BlogComments.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogComment blogCommentToDelete = expected.Values.ToArray()[0];
+        BlogComment blogCommentToDelete = expected["test_1"];
 
         // Act
         await _blogCommentRepository.DeleteAsync(blogCommentToDelete, CancellationToken, false);

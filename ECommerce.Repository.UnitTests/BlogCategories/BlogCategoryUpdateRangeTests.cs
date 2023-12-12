@@ -1,24 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogCategories;
 
-[Collection("BlogCategories")]
-public class BlogCategoryUpdateRangeTests : BaseTests
+public partial class BlogCategoryTests
 {
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly Dictionary<string, Dictionary<string, BlogCategory>> _testSets =
-        BlogCategoryTestUtils.TestSets;
-
-    public BlogCategoryUpdateRangeTests()
-    {
-        _blogCategoryRepository = new BlogCategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "UpdateRange: Null BlogCategory")]
     public void UpdateRange_NullBlogCategory_ThrowsException()
     {
@@ -43,7 +30,7 @@ public class BlogCategoryUpdateRangeTests : BaseTests
     public void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = _testSets["simple_tests"];
+        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
         DbContext.BlogCategories.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();

@@ -1,33 +1,20 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductAddTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductAddTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "Add: Null value for required Fields")]
     public void Add_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["required_fields"];
+        Dictionary<string, Product> expected = TestSets["required_fields"];
 
         // Act
-        Dictionary<string, Action> actual = new();
+        Dictionary<string, Action> actual =  [ ];
         foreach (KeyValuePair<string, Product> entry in expected)
         {
             actual.Add(entry.Key, () => _productRepository.Add(entry.Value));
@@ -43,42 +30,26 @@ public class ProductAddTests : BaseTests
     [Fact(DisplayName = "Add: Null product")]
     public void Add_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Dictionary<string, Action> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, () => _productRepository.Add(entry.Value));
-        }
+        void action() => _productRepository.Add(null!);
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.Throws<ArgumentNullException>(action);
-        }
+        Assert.Throws<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "Add: Add product")]
     public void Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Product expected = TestSets["unique_url"]["test_1"];
 
         // Act
-        foreach (Product entry in expected.Values)
-        {
-            _productRepository.Add(entry);
-        }
+        _productRepository.Add(expected);
 
         // Assert
-        Dictionary<string, Product?> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
-        }
+        var actual = DbContext.Products.FirstOrDefault(x => x.Id == expected.Id);
 
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

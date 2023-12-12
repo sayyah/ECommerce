@@ -1,22 +1,11 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[Collection("CategoryTests")]
-public class CategoryDeleteRangeTests : BaseTests
+public partial class CategoryTests
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryDeleteRangeTests()
-    {
-        _categoryRepository = new CategoryRepository(DbContext);
-    }
-
     [Fact(DisplayName = "DeleteRange: Null Argument")]
     public void DeleteRange_NullArgument_ThrowsException()
     {
@@ -31,7 +20,7 @@ public class CategoryDeleteRangeTests : BaseTests
     public void DeleteRange_DeleteEntities_EntitiesRemovedFromRepository()
     {
         // Arrange
-        Dictionary<string, Category> expected = CategoryTestsUtils.GetTestSets()["simple_tests"];
+        Dictionary<string, Category> expected = TestSets["simple_tests"];
         DbContext.Categories.AddRange(expected.Values);
         DbContext.SaveChanges();
         var randomIndex = Random.Shared.Next(expected.Count);

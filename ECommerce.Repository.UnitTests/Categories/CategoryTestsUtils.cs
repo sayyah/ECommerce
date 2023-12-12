@@ -1,14 +1,23 @@
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Interfaces;
+using ECommerce.Infrastructure.Repository;
+using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace Ecommerce.Repository.UnitTests.Categories;
 
-[CollectionDefinition("CategoryTests", DisableParallelization = true)]
-public class CategoryTestsUtils
+[Collection("CategoryTests")]
+public partial class CategoryTests : BaseTests
 {
-    public static Dictionary<string, Dictionary<string, Category>> GetTestSets()
+    private readonly ICategoryRepository _categoryRepository;
+
+    public CategoryTests()
     {
-        return new()
+        _categoryRepository = new CategoryRepository(DbContext);
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, Category>> TestSets =
+        new()
         {
             {
                 "required",
@@ -72,5 +81,4 @@ public class CategoryTestsUtils
                 }
             },
         };
-    }
 }

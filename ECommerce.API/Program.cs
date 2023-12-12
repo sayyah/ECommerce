@@ -79,7 +79,8 @@ builder
     .AddDbContext<HolooDbContext>(
         option =>
             option
-                .UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString"))
+                .UseSqlServer(builder.Configuration.GetConnectionString("HolooConnectionString"),
+                    o => o.UseCompatibilityLevel(110))
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
     );
 

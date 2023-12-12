@@ -1,43 +1,26 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductGetByIdTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductGetByIdTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "GetById: Get products by Id")]
     public void GetById_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        foreach (var product in expected.Values)
-        {
-            DbContext.Products.Add(product);
-        }
+        AddCategories();
+        var set = TestSets["unique_url"];
+        DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 
+        Product expected = set["test_2"];
+
         // Act
-        Dictionary<string, Product?> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, _productRepository.GetById(entry.Value.Id));
-        }
+        var actual = _productRepository.GetById(expected.Id);
 
         // Assert
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

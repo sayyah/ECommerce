@@ -1,56 +1,31 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces;
-using ECommerce.Infrastructure.Repository;
-using ECommerce.Repository.UnitTests.Base;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
-[Collection("ProductTests")]
-public class ProductDeleteAsyncTests : BaseTests
+public partial class ProductTests
 {
-    private readonly IProductRepository _productRepository;
-    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
-
-    public ProductDeleteAsyncTests()
-    {
-        _productRepository = new ProductRepository(DbContext, HolooDbContext);
-        _testSets = ProductTestUtils.GetTestSets();
-    }
-
     [Fact(DisplayName = "DeleteAsync: Null product")]
-    public void DeleteAsync_NullProduct_ThrowsException()
+    public async Task DeleteAsync_NullProduct_ThrowsException()
     {
-        // Arrange
-        Dictionary<string, Product> expected = _testSets["null_test"];
-
         // Act
-        Dictionary<string, Func<Task>> actual = new();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                () => _productRepository.DeleteAsync(entry.Value, CancellationToken)
-            );
-        }
+        Task action() => _productRepository.DeleteAsync(null!, CancellationToken);
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.ThrowsAsync<ArgumentNullException>(action);
-        }
+        await Assert.ThrowsAsync<ArgumentNullException>(action);
     }
 
     [Fact(DisplayName = "DeleteAsync: Delete product from repository")]
     public async void DeleteAsync_DeleteProduct_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        Product productToDelete = expected.Values.ToArray()[0];
+        Product productToDelete = expected["test_1"];
 
         // Act
         await _productRepository.DeleteAsync(productToDelete, CancellationToken);
@@ -68,12 +43,13 @@ public class ProductDeleteAsyncTests : BaseTests
     public async void DeleteAsync_NoSave_EntityIsInRepository()
     {
         // Arrange
-        Dictionary<string, Product> expected = _testSets["unique_url"];
+        AddCategories();
+        Dictionary<string, Product> expected = TestSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        Product productToDelete = expected.Values.ToArray()[0];
+        Product productToDelete = expected["test_1"];
 
         // Act
         await _productRepository.DeleteAsync(productToDelete, CancellationToken, false);
