@@ -5,7 +5,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "Update: Null input")]
+    [Fact]
     public void Update_NullInput_ThrowsException()
     {
         // Act
@@ -15,7 +15,7 @@ public partial class ProductTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "Update: Update product")]
+    [Fact]
     public void Update_UpdateEntity_EntityChanges()
     {
         // Arrange

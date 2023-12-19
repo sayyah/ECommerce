@@ -6,7 +6,7 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "GetAll: Get all entities in repository")]
+    [Fact]
     public async void GetAll_GetAllEntities_ReturnsAllEntitiesInRepository()
     {
         // Arrange

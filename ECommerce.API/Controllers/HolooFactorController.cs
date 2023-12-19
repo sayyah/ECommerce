@@ -33,7 +33,7 @@ public class HolooFactorController(IUnitOfWork unitOfWork,
                     factor.HolooABails[index].Fac_Type = "P";
                 }
 
-                await _aBailRepository.Add(factor.HolooABails, cancellationToken);
+                _aBailRepository.Add(factor.HolooABails);
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Success

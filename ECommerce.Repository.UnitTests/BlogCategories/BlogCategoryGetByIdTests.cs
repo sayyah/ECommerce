@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "GetById: Get blogCategory by Id")]
+    [Fact]
     public void GetById_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange

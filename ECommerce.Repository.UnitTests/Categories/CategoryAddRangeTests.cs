@@ -7,7 +7,7 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "AddRange: Null Argument")]
+    [Fact]
     public void AddRange_NullArgument_ThrowsException()
     {
         // Act
@@ -17,7 +17,7 @@ public partial class CategoryTests
         Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "AddRange: required arguments")]
+    [Fact]
     public void AddRange_RequiredArguments_ThrowsException()
     {
         // Arrange
@@ -30,7 +30,7 @@ public partial class CategoryTests
         Assert.Throws<DbUpdateException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Add entities to repository")]
+    [Fact]
     public void AddRange_AddEntities_EntitiesExistInDatabase()
     {
         // Arrange

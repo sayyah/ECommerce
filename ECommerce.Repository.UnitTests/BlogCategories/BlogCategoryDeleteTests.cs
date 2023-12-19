@@ -5,7 +5,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "Delete: Null blogCategory")]
+    [Fact]
     public void Delete_NullBlogCategory_ThrowsException()
     {
         // Act
@@ -15,7 +15,7 @@ public partial class BlogCategoryTests
         Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Delete: Delete blogCategory from repository")]
+    [Fact]
     public void Delete_DeleteBlogCategory_EntityNotInRepository()
     {
         // Arrange

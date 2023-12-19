@@ -9,7 +9,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "GetByIdAsync: Get blogCategory by Id")]
+    [Fact]
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange

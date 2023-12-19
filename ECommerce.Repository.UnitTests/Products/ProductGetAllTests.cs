@@ -6,8 +6,8 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetAll: Get all products")]
-    public async void GetAll_GetAllAddedEntities_EntityExistsInRepository()
+    [Fact]
+    public void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange
         AddCategories();
@@ -16,7 +16,7 @@ public partial class ProductTests
         DbContext.SaveChanges();
 
         // Act
-        var actuals = await _productRepository.GetAll(CancellationToken);
+        var actuals = _productRepository.GetAll("");
 
         // Assert
         actuals

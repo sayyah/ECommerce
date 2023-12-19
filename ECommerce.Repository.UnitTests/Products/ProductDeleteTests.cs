@@ -5,7 +5,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "Delete: Null product")]
+    [Fact]
     public void Delete_NullProduct_ThrowsException()
     {
         // Act
@@ -15,7 +15,7 @@ public partial class ProductTests
         Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Delete: Delete product from repository")]
+    [Fact]
     public void Delete_DeleteProduct_EntityNotInRepository()
     {
         // Arrange
@@ -52,7 +52,7 @@ public partial class ProductTests
         Product productToDelete = expected["test_1"];
 
         // Act
-        _productRepository.Delete(productToDelete, false);
+        _productRepository.Delete(productToDelete);
 
         // Assert
         Product? actual = DbContext.Products.FirstOrDefault(x => x.Id == productToDelete.Id);

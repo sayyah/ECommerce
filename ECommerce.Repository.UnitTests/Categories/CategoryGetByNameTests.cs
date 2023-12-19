@@ -6,7 +6,7 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "GetByName: Get entity by name")]
+    [Fact]
     public async void GetByName_GetEntityByName_ReturnsEntity()
     {
         // Arrange

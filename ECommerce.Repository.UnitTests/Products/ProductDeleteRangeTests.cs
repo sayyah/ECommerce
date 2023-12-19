@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "DeleteRange: Null Product")]
+    [Fact]
     public void DeleteRange_NullProduct_ThrowsException()
     {
         // Act
@@ -16,7 +16,7 @@ public partial class ProductTests
         Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null Argument")]
+    [Fact]
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
@@ -26,7 +26,7 @@ public partial class ProductTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Delete range of products from repository")]
+    [Fact]
     public void DeleteRange_DeleteProducts_EntityNotInRepository()
     {
         // Arrange
@@ -78,7 +78,7 @@ public partial class ProductTests
             .Where(x => x.Id != productNotToDelete.Id);
 
         // Act
-        _productRepository.DeleteRange(productsToDelete, false);
+        _productRepository.DeleteRange(productsToDelete);
 
         // Assert
         List<Product?> actual =  [ ];

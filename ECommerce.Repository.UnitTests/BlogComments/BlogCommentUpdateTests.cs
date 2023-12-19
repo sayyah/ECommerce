@@ -5,7 +5,7 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "Update: Null input")]
+    [Fact]
     public void Update_NullInput_ThrowsException()
     {
         // Act
@@ -15,7 +15,7 @@ public partial class BlogCommentTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "Update: Update blogComment")]
+    [Fact]
     public void Update_UpdateEntity_EntityChanges()
     {
         // Arrange

@@ -130,8 +130,8 @@ public class PricesController(IUnitOfWork unitOfWork, ILogger<PricesController> 
                     Code = ResultCode.BadRequest
                 });
 
-            var newPrice = await _priceRepository.Add(price, cancellationToken);
-            _holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer, newPrice.ProductId);
+            var newPrice = await _priceRepository.AddAsync(price, cancellationToken);
+            _holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer!, newPrice.ProductId);
             await unitOfWork.SaveAsync(cancellationToken,true);
 
             return Ok(new ApiResult

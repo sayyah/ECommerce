@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "UpdateRange: Null BlogCategory")]
+    [Fact]
     public void UpdateRange_NullBlogCategory_ThrowsException()
     {
         // Act
@@ -16,7 +16,7 @@ public partial class BlogCategoryTests
         Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Null Argument")]
+    [Fact]
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
@@ -26,7 +26,7 @@ public partial class BlogCategoryTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Update blogCategorys")]
+    [Fact]
     public void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange

@@ -6,7 +6,7 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "UpdateRange: Null Argument")]
+    [Fact]
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
@@ -16,7 +16,7 @@ public partial class CategoryTests
         Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "UpdateRange: Update entities in repository")]
+    [Fact]
     public void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange

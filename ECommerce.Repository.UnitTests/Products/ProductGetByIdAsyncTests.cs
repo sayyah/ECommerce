@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetByIdAsync: Get products by Id")]
+    [Fact]
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange

@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "GetAll: Get all blogCategory")]
+    [Fact]
     public async void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange

@@ -1,4 +1,6 @@
-﻿namespace ECommerce.API.Controllers;
+﻿// Ignore Spelling: Blog
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -47,7 +49,7 @@ public class BlogCommentsController(IUnitOfWork unitOfWork, ILogger<BlogComments
         try
         {
             var result = _blogCommentRepository.GetByIdWithInclude("Answer,Blog", id);
-            if (result.Blog == null)
+            if (result?.Blog == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
@@ -124,9 +126,9 @@ public class BlogCommentsController(IUnitOfWork unitOfWork, ILogger<BlogComments
                     blogComment.Answer.IsRead = false;
                     blogComment.Answer.IsAnswered = false;
                     blogComment.Answer.DateTime = DateTime.Now;
-                    commentAnswer = await _blogCommentRepository.Add(blogComment.Answer);
+                    commentAnswer = await _blogCommentRepository.AddAsync(blogComment.Answer, cancellationToken);
                    
-                    if (commentAnswer != null)
+                    if (commentAnswer != new BlogComment())
                     {
                         blogComment.Answer = commentAnswer;
                         blogComment.AnswerId = commentAnswer.Id;

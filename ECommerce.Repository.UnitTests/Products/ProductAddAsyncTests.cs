@@ -7,7 +7,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "AddAsync: Null value for required Fields")]
+    [Fact]
     public async Task AddAsync_RequiredFields_ThrowsException()
     {
         // Arrange
@@ -26,21 +26,21 @@ public partial class ProductTests
         // Assert
         foreach (var action in actual.Values)
         {
-            await Assert.Throws<DbUpdateException>(action);
+            await Assert.ThrowsAsync<DbUpdateException>(action);
         }
     }
 
-    [Fact(DisplayName = "AddAsync: Null product")]
+    [Fact]
     public async Task AddAsync_NullProduct_ThrowsException()
     {
         // Act
         Task Action() => _productRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.Throws<ArgumentNullException>(Action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "AddAsync: Add product async")]
+    [Fact]
     public async void AddAsync_AddEntity_ReturnsAddedEntities()
     {
         // Arrange

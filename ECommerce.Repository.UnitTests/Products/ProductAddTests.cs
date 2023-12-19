@@ -7,7 +7,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "Add: Null value for required Fields")]
+    [Fact]
     public void Add_RequiredFields_ThrowsException()
     {
         // Arrange
@@ -27,7 +27,7 @@ public partial class ProductTests
         }
     }
 
-    [Fact(DisplayName = "Add: Null product")]
+    [Fact]
     public void Add_NullProduct_ThrowsException()
     {
         // Act
@@ -37,7 +37,7 @@ public partial class ProductTests
         Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Add product")]
+    [Fact]
     public void Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange

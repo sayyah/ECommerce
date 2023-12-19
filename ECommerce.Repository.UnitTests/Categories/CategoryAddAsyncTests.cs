@@ -7,17 +7,17 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "AddAsync: Null Argument")]
+    [Fact]
     public async Task AddAsync_NullArgument_ThrowsException()
     {
         // Act
         Task<Category> Action() => _categoryRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.Throws<ArgumentNullException>(Action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "AddAsync: required arguments")]
+    [Fact]
     public async Task AddAsync_RequiredArguments_ThrowsException()
     {
         // Arrange
@@ -36,11 +36,11 @@ public partial class CategoryTests
         // Assert
         foreach (Func<Task<Category>> action in actual.Values)
         {
-            await Assert.Throws<DbUpdateException>(action);
+            await Assert.ThrowsAsync<DbUpdateException>(action);
         }
     }
 
-    [Fact(DisplayName = "AddAsync: Add entities to repository")]
+    [Fact]
     public async void AddAsync_AddEntities_EntitiesExistInDatabase()
     {
         // Arrange

@@ -10,7 +10,7 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "AddRange: Null value for required Fields")]
+    [Fact]
     public void AddRange_RequiredFields_ThrowsException()
     {
         // Arrange
@@ -23,7 +23,7 @@ public partial class BlogCommentTests
         Assert.Throws<DbUpdateException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Null BlogComment")]
+    [Fact]
     public void AddRange_NullBlogComment_ThrowsException()
     {
         // Act
@@ -33,7 +33,7 @@ public partial class BlogCommentTests
         Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Null argument")]
+    [Fact]
     public void AddRange_NullArgument_ThrowsException()
     {
         // Act
@@ -43,7 +43,7 @@ public partial class BlogCommentTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Add BlogComments all together")]
+    [Fact]
     public void AddRange_AddEntities_EntityExistsInRepository()
     {
         // Arrange
@@ -65,14 +65,14 @@ public partial class BlogCommentTests
         actual.Values.Should().BeEquivalentTo(expected.Values);
     }
 
-    [Fact(DisplayName = "AddRange: No save")]
+    [Fact]
     public void AddRange_NoSave_EntityNotInRepository()
     {
         // Arrange
         Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
-        _blogCommentRepository.AddRange(expected.Values, false);
+        _blogCommentRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, BlogComment?> actual =  [ ];

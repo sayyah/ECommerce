@@ -5,7 +5,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetByName: Get products by Name")]
+    [Fact]
     public async void GetByName_GetAddedEntityByName_EntityExistsInRepository()
     {
         // Arrange
@@ -33,7 +33,7 @@ public partial class ProductTests
             );
     }
 
-    [Fact(DisplayName = "GetByName: Non existing name")]
+    [Fact]
     public async void GetByName_GetAddedEntityByNonExistingName_ReturnsNull()
     {
         // Arrange

@@ -7,7 +7,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "Add: Null value for required Fields")]
+    [Fact]
     public void Add_RequiredFields_ThrowsException()
     {
         // Arrange
@@ -27,7 +27,7 @@ public partial class BlogCategoryTests
         }
     }
 
-    [Fact(DisplayName = "Add: Null BlogCategory value")]
+    [Fact]
     public void Add_NullValue_ThrowsException()
     {
         // Act
@@ -37,7 +37,7 @@ public partial class BlogCategoryTests
         Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Add BlogCategory")]
+    [Fact]
     public void Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange

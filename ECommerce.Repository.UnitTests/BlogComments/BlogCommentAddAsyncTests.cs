@@ -7,7 +7,7 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "AddAsync: Null value for required Fields")]
+    [Fact]
     public async Task AddAsync_RequiredFields_ThrowsException()
     {
         // Arrange
@@ -26,21 +26,21 @@ public partial class BlogCommentTests
         // Assert
         foreach (var action in actual.Values)
         {
-            await Assert.Throws<DbUpdateException>(action);
+            await Assert.ThrowsAsync<DbUpdateException>(action);
         }
     }
 
-    [Fact(DisplayName = "AddAsync: Null BlogComment")]
+    [Fact]
     public async Task AddAsync_NullValue_ThrowsException()
     {
         // Act
         Task Action() => _blogCommentRepository.AddAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.Throws<ArgumentNullException>(Action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "AddAsync: Add BlogComment async")]
+    [Fact]
     public async void AddAsync_AddEntity_ReturnsAddedEntities()
     {
         // Arrange

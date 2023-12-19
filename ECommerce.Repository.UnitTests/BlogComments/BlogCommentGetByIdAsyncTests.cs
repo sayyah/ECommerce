@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "GetByIdAsync: Get blogComment by Id")]
+    [Fact]
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange

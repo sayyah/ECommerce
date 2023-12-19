@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "UpdateRange: Null Product")]
+    [Fact]
     public void UpdateRange_NullProduct_ThrowsException()
     {
         // Act
@@ -16,7 +16,7 @@ public partial class ProductTests
         Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Null Argument")]
+    [Fact]
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
@@ -26,7 +26,7 @@ public partial class ProductTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Update products")]
+    [Fact]
     public void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange

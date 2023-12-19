@@ -6,17 +6,17 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "GetByIdAsync: Null Argument")]
+    [Fact]
     public async void GetByIdAsync_NullArgument_ReturnsNull()
     {
         // Act
-        Category actual = await _categoryRepository.GetByIdAsync(CancellationToken, null!);
+        Category? actual = await _categoryRepository.GetByIdAsync(CancellationToken, null!);
 
         // Assert
         Assert.Null(actual);
     }
 
-    [Fact(DisplayName = "GetByIdAsync: Get entity by id")]
+    [Fact]
     public async void GetByIdAsync_GetEntityById_ReturnsEntity()
     {
         // Arrange
@@ -27,7 +27,7 @@ public partial class CategoryTests
         Category expectedCategory = expected["test_2"];
 
         // Act
-        Category actual = await _categoryRepository.GetByIdAsync(
+        Category? actual = await _categoryRepository.GetByIdAsync(
             CancellationToken,
             expectedCategory.Id
         );

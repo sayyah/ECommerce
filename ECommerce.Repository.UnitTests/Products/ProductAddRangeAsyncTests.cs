@@ -7,48 +7,48 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "AddRangeAsync: Null value for required Fields")]
-    public async Task AddRangeAsync_RequiredFields_ThrowsException()
+    [Fact]
+    public void AddRangeAsync_RequiredFields_ThrowsException()
     {
         // Arrange
         Dictionary<string, Product> expected = _testSets["required_fields"];
 
         // Act
-       void Actual() => _productRepository.AddRange(expected.Values, CancellationToken);
+        void Actual() => _productRepository.AddRange(expected.Values);
 
         // Assert
-        await Assert.Throws<DbUpdateException>(Actual);
+        Assert.Throws<DbUpdateException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: Null product")]
-    public async Task AddRangeAsync_NullProduct_ThrowsException()
+    [Fact]
+    public void AddRangeAsync_NullProduct_ThrowsException()
     {
         // Act
-       void Actual() => _productRepository.AddRange([ null! ], CancellationToken);
+        void Actual() => _productRepository.AddRange([ null! ]);
 
         // Assert
-        await Assert.Throws<NullReferenceException>(Actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: Null Argument")]
-    public async Task AddRangeAsync_NullArgument_ThrowsException()
+    [Fact]
+    public void AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-       void Actual() => _productRepository.AddRange(null!, CancellationToken);
+        void Actual() => _productRepository.AddRange(null!);
 
         // Assert
-        await Assert.Throws<ArgumentNullException>(Actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: Add products all together")]
-    public async void AddRangeAsync_AddEntities_EntityExistsInRepository()
+    [Fact]
+    public void AddRangeAsync_AddEntities_EntityExistsInRepository()
     {
         // Arrange
         AddCategories();
         Dictionary<string, Product> expected = _testSets["unique_url"];
 
         // Act
-        await _productRepository.AddRange(expected.Values, CancellationToken);
+        _productRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, Product?> actual =  [ ];
@@ -60,15 +60,15 @@ public partial class ProductTests
         actual.Values.Should().BeEquivalentTo(expected.Values);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: No save")]
-    public async void AddRangeAsync_NoSave_EntityExistsInRepository()
+    [Fact]
+    public void AddRangeAsync_NoSave_EntityExistsInRepository()
     {
         // Arrange
         AddCategories();
         Dictionary<string, Product> expected = _testSets["unique_url"];
 
         // Act
-        await _productRepository.AddRange(expected.Values, CancellationToken, false);
+        _productRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, Product?> actual =  [ ];

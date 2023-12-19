@@ -5,7 +5,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "Update: Null input")]
+    [Fact]
     public void Update_NullInput_ThrowsException()
     {
         // Act
@@ -15,7 +15,7 @@ public partial class BlogCategoryTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "Update: Update blogCategory")]
+    [Fact]
     public void Update_UpdateEntity_EntityChanges()
     {
         // Arrange

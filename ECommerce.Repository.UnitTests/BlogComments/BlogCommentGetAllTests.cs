@@ -6,8 +6,8 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "GetAll: Get all blogComment")]
-    public async void GetAll_GetAllAddedEntities_EntityExistsInRepository()
+    [Fact]
+    public void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange
         Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
@@ -15,7 +15,7 @@ public partial class BlogCommentTests
         DbContext.SaveChanges();
 
         // Act
-        var actuals = await _blogCommentRepository.GetAll(CancellationToken);
+        var actuals = _blogCommentRepository.GetAll("");
 
         // Assert
         actuals

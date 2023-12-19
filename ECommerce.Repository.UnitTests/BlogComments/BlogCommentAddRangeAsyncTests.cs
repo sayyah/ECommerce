@@ -7,47 +7,47 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "AddRangeAsync: Null value for required Fields")]
-    public async Task AddRangeAsync_RequiredFields_ThrowsException()
+    [Fact]
+    public void AddRangeAsync_RequiredFields_ThrowsException()
     {
         // Arrange
         Dictionary<string, BlogComment> expected = TestSets["required_fields"];
 
         // Act
-       void Actual() => _blogCommentRepository.AddRange(expected.Values, CancellationToken);
+        void Actual() => _blogCommentRepository.AddRange(expected.Values);
 
         // Assert
-        await Assert.Throws<DbUpdateException>(Actual);
+        Assert.Throws<DbUpdateException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: Null BlogComment")]
-    public async Task AddRangeAsync_NullBlogComment_ThrowsException()
+    [Fact]
+    public void AddRangeAsync_NullBlogComment_ThrowsException()
     {
         // Act
-       void Actual() => _blogCommentRepository.AddRange([ null! ], CancellationToken);
+        void Actual() => _blogCommentRepository.AddRange([ null! ]);
 
         // Assert
-        await Assert.Throws<NullReferenceException>(Actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: Null argument")]
-    public async Task AddRangeAsync_NullArgument_ThrowsException()
+    [Fact]
+    public void AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-       void Actual() => _blogCommentRepository.AddRange(null!, CancellationToken);
+        void Actual() => _blogCommentRepository.AddRange(null!);
 
         // Assert
-        await Assert.Throws<ArgumentNullException>(Actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: Add BlogComments all together")]
-    public async void AddRangeAsync_AddEntities_EntityExistsInRepository()
+    [Fact]
+    public void AddRangeAsync_AddEntities_EntityExistsInRepository()
     {
         // Arrange
         Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
-        await _blogCommentRepository.AddRange(expected.Values, CancellationToken);
+        _blogCommentRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, BlogComment?> actual =  [ ];
@@ -62,14 +62,14 @@ public partial class BlogCommentTests
         actual.Values.Should().BeEquivalentTo(expected.Values);
     }
 
-    [Fact(DisplayName = "AddRangeAsync: No save")]
-    public async void AddRangeAsync_NoSave_EntityExistsInRepository()
+    [Fact]
+    public void AddRangeAsync_NoSave_EntityExistsInRepository()
     {
         // Arrange
         Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
 
         // Act
-        await _blogCommentRepository.AddRange(expected.Values, CancellationToken, false);
+        _blogCommentRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, BlogComment?> actual =  [ ];

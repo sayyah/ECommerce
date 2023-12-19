@@ -44,8 +44,8 @@ public partial class BlogCategoryTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Add BlogCategories all together")]
-    public async Task AddRange_AddEntities_EntityExistsInRepository()
+    [Fact]
+    public void AddRange_AddEntities_EntityExistsInRepository()
     {
         // Arrange
         Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
@@ -66,14 +66,14 @@ public partial class BlogCategoryTests
         actual.Values.Should().BeEquivalentTo(expected.Values);
     }
 
-    [Fact(DisplayName = "AddRange: No save")]
-    public async Task AddRange_NoSave_EntityNotInRepository()
+    [Fact]
+    public void AddRange_NoSave_EntityNotInRepository()
     {
         // Arrange
         Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
 
         // Act
-        _blogCategoryRepository.AddRange(expected.Values, false);
+        _blogCategoryRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, BlogCategory?> actual =  [ ];

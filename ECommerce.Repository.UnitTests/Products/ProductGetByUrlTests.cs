@@ -5,7 +5,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetByUrl: Get products by url")]
+    [Fact]
     public async void GetByUrl_GetAddedEntityByUrl_EntityExistsInRepository()
     {
         // Arrange
@@ -23,7 +23,7 @@ public partial class ProductTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact(DisplayName = "GetByUrl: Non existing url")]
+    [Fact]
     public async void GetByUrl_GetAddedEntityByNonExistingUrl_ReturnsNull()
     {
         // Arrange

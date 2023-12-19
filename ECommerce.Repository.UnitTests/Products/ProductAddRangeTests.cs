@@ -7,7 +7,7 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "AddRange: Null value for required Fields")]
+    [Fact]
     public void AddRange_RequiredFields_ThrowsException()
     {
         // Arrange
@@ -20,7 +20,7 @@ public partial class ProductTests
         Assert.Throws<DbUpdateException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Null product")]
+    [Fact]
     public void AddRange_NullProduct_ThrowsException()
     {
         // Act
@@ -30,7 +30,7 @@ public partial class ProductTests
         Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Null Argument")]
+    [Fact]
     public void AddRange_NullArgument_ThrowsException()
     {
         // Act
@@ -40,7 +40,7 @@ public partial class ProductTests
         Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Add products all together")]
+    [Fact]
     public void AddRange_AddEntities_EntityExistsInRepository()
     {
         // Arrange
@@ -60,7 +60,7 @@ public partial class ProductTests
         actual.Values.Should().BeEquivalentTo(expected.Values);
     }
 
-    [Fact(DisplayName = "AddRange: No save")]
+    [Fact]
     public void AddRange_NoSave_EntityNotInRepository()
     {
         // Arrange
@@ -68,7 +68,7 @@ public partial class ProductTests
         Dictionary<string, Product> expected = _testSets["unique_url"];
 
         // Act
-        _productRepository.AddRange(expected.Values, false);
+        _productRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, Product?> actual =  [ ];
