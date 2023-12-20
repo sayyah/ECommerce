@@ -26,6 +26,8 @@ public class ContactModel : PageModel
     {
         if (ModelState.IsValid)
         {
+            Contact.CreatedDate = DateTime.Now;
+            Contact.UpdatedDate = DateTime.Now;
             var result = await _contactService.Add(Contact);
             Message = result.Message;
             Code = result.Code.ToString();
