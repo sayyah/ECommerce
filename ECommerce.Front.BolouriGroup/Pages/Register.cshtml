@@ -81,7 +81,7 @@
                             </div>
                         </div>
 
-                        <select asp-for="RegisterViewModel.StateId" class="custom-select form-control" id="state" onchange="setCities();" style="color: gray; margin-top: 10px;">
+                        <select asp-for="RegisterViewModel.StateId" class="custom-select form-control" id="state" onchange="setCities(event);" style="color: gray; margin-top: 10px;">
                             @foreach (var state in Model.StateList)
                             {
                                 <option value="@state.Id">@state.Name</option>
@@ -153,7 +153,7 @@
         }
 
         $(document).ready(function () {
-            setCities();
+            setCities(event);
         });
 
         function SendRegisterConfirmSms() {
