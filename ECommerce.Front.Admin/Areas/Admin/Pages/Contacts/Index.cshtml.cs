@@ -1,3 +1,4 @@
+using System.Globalization;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Contacts;
@@ -19,6 +20,7 @@ public class IndexModel : PageModel
     public async Task OnGet(string search = "", int pageNumber = 1, int pageSize = 10, string message = null,
         string code = null)
     {
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("fa-IR");
         Message = message;
         Code = code;
         var result = await _contactService.GetAll(search, pageNumber, pageSize);
