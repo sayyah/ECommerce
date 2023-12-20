@@ -67,8 +67,8 @@
                         foreach (var contact in Model.Contacts.ReturnData)
                         {
                             <tr>
-                                <th scope="row">@(i++)</th>پ
-                                <td>@contact.CreatedDate</td>
+                                <th scope="row">@(i++)</th>
+                                <td class="createdDate">@(contact.CreatedDate > DateTime.MinValue ? contact.CreatedDate.ToString("yyyy/MM/dd") : "")</td>
                                 <td>@contact.Name</td>
                                 <td>@contact.Email</td>
                                 @if (!string.IsNullOrEmpty(contact.ReplayMessage))
