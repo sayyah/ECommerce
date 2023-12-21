@@ -11,7 +11,7 @@ public interface IProductRepository : IRepositoryBase<Product>
 
     Task<Product?> GetByUrl(string url, CancellationToken cancellationToken);
 
-    void AddAll(IEnumerable<Product?> products);
+    Task AddAll(IEnumerable<Product?> products);
 
     //Task<IEnumerable<Product?>> GetAllHolooProducts(CancellationToken cancellationToken);
 

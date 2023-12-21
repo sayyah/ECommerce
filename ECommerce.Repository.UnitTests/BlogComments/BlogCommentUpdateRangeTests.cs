@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
@@ -7,50 +8,65 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 public partial class BlogCommentTests
 {
     [Fact]
-    public void UpdateRange_NullBlogComment_ThrowsException()
+    public async Task UpdateRange_NullBlogComment_ThrowsException()
     {
         // Act
-        void Actual() => _blogCommentRepository.UpdateRange([ null! ]);
+        async Task Action()
+        {
+            _blogCommentRepository.UpdateRange([ null! ]);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<NullReferenceException>(Actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
     }
 
     [Fact]
-    public void UpdateRange_NullArgument_ThrowsException()
+    public async Task UpdateRange_NullArgument_ThrowsException()
     {
         // Act
-        void Actual() => _blogCommentRepository.UpdateRange(null!);
+        async Task Action()
+        {
+            _blogCommentRepository.UpdateRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(Actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
     [Fact]
-    public void UpdateRange_UpdateEntities_EntitiesChange()
+    public async Task UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
-        DbContext.BlogComments.AddRange(expected.Values);
+        var expected = Fixture
+            .Build<BlogComment>()
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .CreateMany(5);
+        DbContext.BlogComments.AddRange(expected);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
+        foreach (BlogComment blogComment in expected)
         {
-            expected[entry.Key] = DbContext.BlogComments.Single(p => p.Id == entry.Value.Id)!;
-            expected[entry.Key].Text = Guid.NewGuid().ToString();
-            // should other fields be tested too?
+            blogComment.Text = Fixture.Create<string>();
+            blogComment.Email = Fixture.Create<string>();
+            blogComment.Name = Fixture.Create<string>();
         }
 
         // Act
-        _blogCommentRepository.UpdateRange(expected.Values);
+        _blogCommentRepository.UpdateRange(expected);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.BlogComments.ToList();
 
         // Assert
-        Dictionary<string, BlogComment?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
-        {
-            actual.Add(entry.Key, DbContext.BlogComments.Single(p => p.Id == entry.Value.Id)!);
-        }
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

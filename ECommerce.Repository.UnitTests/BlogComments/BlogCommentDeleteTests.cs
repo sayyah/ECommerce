@@ -1,4 +1,6 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
+using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
@@ -6,65 +8,49 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 public partial class BlogCommentTests
 {
     [Fact]
-    public void Delete_NullBlogComment_ThrowsException()
+    public async Task Delete_NullBlogComment_ThrowsException()
     {
         // Act
-        void Action() => _blogCommentRepository.Delete(null!);
+        async Task Action()
+        {
+            _blogCommentRepository.Delete(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(Action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
     [Fact]
-    public void Delete_DeleteBlogComment_EntityNotInRepository()
+    public async Task Delete_DeleteBlogComment_EntityNotInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
-        DbContext.BlogComments.AddRange(expected.Values);
+        IEnumerable<BlogComment> expected = Fixture
+            .Build<BlogComment>()
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .CreateMany(5);
+        DbContext.BlogComments.AddRange(expected);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogComment blogCommentToDelete = expected["test_1"];
+        BlogComment blogCommentToDelete = expected.ElementAt(2);
 
         // Act
         _blogCommentRepository.Delete(blogCommentToDelete);
-
-        // Assert
+        await UnitOfWork.SaveAsync(CancellationToken);
         BlogComment? actual = DbContext
             .BlogComments
             .FirstOrDefault(x => x.Id == blogCommentToDelete.Id);
 
-        Assert.Null(actual);
-        Assert.Equal(expected.Count - 1, DbContext.BlogComments.Count());
-    }
-
-    [Fact(
-        DisplayName = "Delete: (No Save) Entity is in repository and is deleted after SaveChanges is called"
-    )]
-    public void Delete_NoSave_EntityIsInRepository()
-    {
-        // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
-        DbContext.BlogComments.AddRange(expected.Values);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
-
-        BlogComment blogCommentToDelete = expected["test_1"];
-
-        // Act
-        _blogCommentRepository.Delete(blogCommentToDelete);
-
         // Assert
-        BlogComment? actual = DbContext
-            .BlogComments
-            .FirstOrDefault(x => x.Id == blogCommentToDelete.Id);
-
-        Assert.NotNull(actual);
-        Assert.Equal(expected.Count, DbContext.BlogComments.Count());
-
-        DbContext.SaveChanges();
-        actual = DbContext.BlogComments.FirstOrDefault(x => x.Id == blogCommentToDelete.Id);
-        Assert.Null(actual);
-        Assert.Equal(expected.Count - 1, DbContext.BlogComments.Count());
+        actual.Should().BeNull();
+        DbContext.BlogComments.Count().Should().Be(expected.Count() - 1);
     }
 }

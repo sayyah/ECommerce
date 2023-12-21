@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
@@ -10,10 +11,21 @@ public partial class BlogCommentTests
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange
-        DbContext.BlogComments.AddRange(TestSets["simple_tests"].Values);
+        var blogComments = Fixture
+            .Build<BlogComment>()
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .CreateMany(5);
+        DbContext.BlogComments.AddRange(blogComments);
         DbContext.SaveChanges();
 
-        BlogComment expected = TestSets["simple_tests"]["test_2"];
+        BlogComment expected = blogComments.ElementAt(2);
 
         // Act
         var actual = await _blogCommentRepository.GetByIdAsync(CancellationToken, expected.Id);

@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -7,40 +8,102 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "AddAll: Null Argument")]
+    [Fact]
     public async Task AddAll_NullArgument_ThrowsException()
     {
         // Act
-        Task Action() => _categoryRepository.AddAll(null!, CancellationToken);
+        async Task Action()
+        {
+            await _categoryRepository.AddAll(null!, CancellationToken);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
         await Assert.ThrowsAsync<NullReferenceException>(Action);
     }
 
-    [Fact(DisplayName = "AddAll: required arguments")]
-    public async Task AddAll_RequiredArguments_ThrowsException()
+    [Fact]
+    public async Task AddAll_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Category> expected = TestSets["required"];
+        IEnumerable<Category> categories =
+        [
+            Fixture
+                .Build<Category>()
+                .With(p => p.Name, () => null!)
+                .Without(p => p.Parent)
+                .Without(p => p.ParentId)
+                .Without(p => p.Categories)
+                .Without(p => p.Products)
+                .Without(p => p.SlideShows)
+                .Without(p => p.Discount)
+                .Without(p => p.DiscountId)
+                .Create(),
+        ];
 
         // Act
-        Task Actual() => _categoryRepository.AddAll(expected.Values, CancellationToken);
+        async Task Actual()
+        {
+            await _categoryRepository.AddAll(categories, CancellationToken);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
         await Assert.ThrowsAsync<DbUpdateException>(Actual);
     }
 
-    [Fact(DisplayName = "AddAll: Add entities to repository")]
+    [Fact]
+    public async Task AddAll_RequiredPathField_ThrowsException()
+    {
+        // Arrange
+        IEnumerable<Category> categories =
+        [
+            Fixture
+                .Build<Category>()
+                .With(p => p.Path, () => null!)
+                .Without(p => p.Parent)
+                .Without(p => p.ParentId)
+                .Without(p => p.Categories)
+                .Without(p => p.Products)
+                .Without(p => p.SlideShows)
+                .Without(p => p.Discount)
+                .Without(p => p.DiscountId)
+                .Create(),
+        ];
+
+        // Act
+        async Task Actual()
+        {
+            await _categoryRepository.AddAll(categories, CancellationToken);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
+
+        // Assert
+        await Assert.ThrowsAsync<DbUpdateException>(Actual);
+    }
+
+    [Fact]
     public async void AddAll_AddEntities_EntitiesExistInDatabase()
     {
         // Arrange
-        Dictionary<string, Category> expected = TestSets["simple_tests"];
+        var expected = Fixture
+            .Build<Category>()
+            .Without(p => p.Parent)
+            .Without(p => p.ParentId)
+            .Without(p => p.Categories)
+            .Without(p => p.Products)
+            .Without(p => p.SlideShows)
+            .Without(p => p.Discount)
+            .Without(p => p.DiscountId)
+            .CreateMany();
 
         // Act
-        Task actual = _categoryRepository.AddAll(expected.Values, CancellationToken);
+        await _categoryRepository.AddAll(expected, CancellationToken);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Categories.ToList();
 
         // Assert
-        // Assert.Equal(expected.Count, actual);
-        // DbContext.Categories.ToArray().Should().BeEquivalentTo(expected.Values);
+        Assert.Equal(expected.Count(), actual.Count);
+        DbContext.Categories.ToArray().Should().BeEquivalentTo(expected);
     }
 }

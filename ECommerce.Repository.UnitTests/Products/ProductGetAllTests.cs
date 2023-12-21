@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Entities;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 
@@ -10,20 +11,30 @@ public partial class ProductTests
     public void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = _testSets["unique_url"];
-        DbContext.Products.AddRange(expected.Values);
+        var expected = Fixture
+            .Build<Product>()
+            .Without(p => p.ProductCategories)
+            .Without(p => p.ProductComments)
+            .Without(p => p.ProductUserRanks)
+            .Without(p => p.AttributeGroupProducts)
+            .Without(p => p.AttributeValues)
+            .Without(p => p.Prices)
+            .Without(p => p.Images)
+            .Without(p => p.Supplier)
+            .Without(p => p.SupplierId)
+            .Without(p => p.Brand)
+            .Without(p => p.BrandId)
+            .Without(p => p.Keywords)
+            .Without(p => p.Tags)
+            .Without(p => p.SlideShows)
+            .CreateMany(5);
+        DbContext.Products.AddRange(expected);
         DbContext.SaveChanges();
 
         // Act
         var actuals = _productRepository.GetAll("");
 
         // Assert
-        actuals
-            .Should()
-            .BeEquivalentTo(
-                expected.Values,
-                options => options.Excluding(p => p.Prices).Excluding(p => p.ProductCategories)
-            );
+        actuals.Should().BeEquivalentTo(expected);
     }
 }

@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
@@ -7,30 +8,56 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 public partial class CategoryTests
 {
     [Fact]
-    public void Update_NullArgument_ThrowsException()
+    public async void Update_NullArgument_ThrowsException()
     {
         // Act
-        void Action() => _categoryRepository.Update(null!);
+        async Task Action()
+        {
+            _categoryRepository.Update(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(Action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
     [Fact]
-    public void Update_UpdateEntity_EntityChanges()
+    public async void Update_UpdateEntity_EntityChanges()
     {
         // Arrange
-        Dictionary<string, Category> expected = TestSets["simple_tests"];
-        DbContext.Categories.AddRange(expected.Values);
+        var parent = Fixture
+            .Build<Category>()
+            .With(p => p.Parent, () => null)
+            .With(p => p.ParentId, () => null)
+            .Without(p => p.Categories)
+            .Without(p => p.Products)
+            .Without(p => p.SlideShows)
+            .Without(p => p.Discount)
+            .Without(p => p.DiscountId)
+            .Create();
+        var children = Fixture
+            .Build<Category>()
+            .With(p => p.Parent, () => parent)
+            .With(p => p.ParentId, () => parent.Id)
+            .Without(p => p.Categories)
+            .Without(p => p.Products)
+            .Without(p => p.SlideShows)
+            .Without(p => p.Discount)
+            .Without(p => p.DiscountId)
+            .CreateMany(5);
+        parent.Categories = children.ToList();
+        var expected = children.Append(parent);
+        DbContext.Categories.AddRange(expected);
         DbContext.SaveChanges();
-        Category categoryToUpdate = expected["test_3"];
+        Category categoryToUpdate = expected.ElementAt(3);
 
         categoryToUpdate.Name = Guid.NewGuid().ToString();
 
         // Act
         _categoryRepository.Update(categoryToUpdate);
+        await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        DbContext.Categories.Should().BeEquivalentTo(expected.Values);
+        DbContext.Categories.Should().BeEquivalentTo(expected);
     }
 }

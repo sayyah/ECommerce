@@ -32,9 +32,9 @@ public class ProductRepository : RepositoryBase<Product>, IProductRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public void AddAll(IEnumerable<Product?> products)
+    public Task AddAll(IEnumerable<Product?> products)
     {
-        _context.Products.AddRangeAsync(products);
+        return _context.Products.AddRangeAsync(products);
     }
 
     //public async Task<IEnumerable<Product>> GetAllHolooProducts(CancellationToken cancellationToken) => await _context.Products.Where(x => x.ArticleCode != null).ToListAsync(cancellationToken);

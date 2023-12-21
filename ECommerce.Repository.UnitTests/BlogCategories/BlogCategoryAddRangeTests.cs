@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using ECommerce.Infrastructure.Repository;
 using FluentAssertions;
@@ -9,97 +10,93 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 public partial class BlogCategoryTests
 {
     [Fact]
-    public async Task AddRange_RequiredFields_ThrowsException()
+    public async Task AddRange_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["required_fields"];
+        List<BlogCategory> blogCategoryList =
+        [
+            Fixture
+            .Build<BlogCategory>()
+            .With(p => p.Name, () => null!)
+            .With(p => p.BlogCategories, () => [])
+            .With(p => p.Parent, () => null!)
+            .With(p => p.Blogs, () => [])
+            .Create()
+        ];
 
         // Act
-        void Actual() => _blogCategoryRepository.AddRange(expected.Values);
-        await UnitOfWork.SaveAsync(CancellationToken);
+        async Task Actual()
+        {
+            _blogCategoryRepository.AddRange(blogCategoryList);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<DbUpdateException>(Actual);
+        await Assert.ThrowsAsync<DbUpdateException>(Actual);
     }
 
     [Fact]
     public async Task AddRange_NullBlogCategory_ThrowsException()
     {
         // Act
-        void Actual() => _blogCategoryRepository.AddRange(new List<BlogCategory>());
-        await UnitOfWork.SaveAsync(CancellationToken);
+        async Task Actual()
+        {
+            _blogCategoryRepository.AddRange([ null! ]);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<NullReferenceException>(Actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Actual);
     }
 
     [Fact]
     public async Task AddRange_NullArgument_ThrowsException()
     {
         // Act
-        void Actual() => _blogCategoryRepository.AddRange(null!);
+        async Task Actual()
+        {
+            _blogCategoryRepository.AddRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
+
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(Actual);
+    }
+
+    [Fact]
+    public async Task AddRange_AddEntities_EntityExistsInRepositoryAsync()
+    {
+        BlogCategory root = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => null)
+            .With(p => p.ParentId, () => null)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child1 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child2 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        root.BlogCategories!.Add(child1);
+        root.BlogCategories.Add(child2);
+        List<BlogCategory> expected =  [ root, child1, child2 ];
+
+        // Act
+        _blogCategoryRepository.AddRange(expected);
         await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(Actual);
-    }
-
-    [Fact]
-    public void AddRange_AddEntities_EntityExistsInRepository()
-    {
-        // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
-
-        // Act
-        _blogCategoryRepository.AddRange(expected.Values);
-
-        // Assert
-        Dictionary<string, BlogCategory?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogCategory> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogCategories.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
-
-        actual.Values.Should().BeEquivalentTo(expected.Values);
-    }
-
-    [Fact]
-    public void AddRange_NoSave_EntityNotInRepository()
-    {
-        // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
-
-        // Act
-        _blogCategoryRepository.AddRange(expected.Values);
-
-        // Assert
-        Dictionary<string, BlogCategory?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogCategory> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogCategories.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
-
-        foreach (var item in actual.Values)
-        {
-            Assert.Null(item);
-        }
-
-        DbContext.SaveChanges();
-        actual.Clear();
-        foreach (KeyValuePair<string, BlogCategory> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogCategories.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
-
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        List<BlogCategory> actual =  [ .. DbContext.BlogCategories ];
+        actual.Should().BeEquivalentTo(expected);
     }
 }

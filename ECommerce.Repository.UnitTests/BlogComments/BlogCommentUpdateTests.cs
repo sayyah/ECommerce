@@ -1,4 +1,6 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
+using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;
@@ -6,36 +8,52 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 public partial class BlogCommentTests
 {
     [Fact]
-    public void Update_NullInput_ThrowsException()
+    public async Task Update_NullInput_ThrowsException()
     {
         // Act
-        void Actual() => _blogCommentRepository.Update(null!);
+        async Task Action()
+        {
+            _blogCommentRepository.Update(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(Actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
     [Fact]
-    public void Update_UpdateEntity_EntityChanges()
+    public async void Update_UpdateEntity_EntityChanges()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
-        DbContext.BlogComments.AddRange(expected.Values);
+        var expected = Fixture
+            .Build<BlogComment>()
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .CreateMany(5);
+        DbContext.BlogComments.AddRange(expected);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        BlogComment blogCommentToUpdate = expected["test_2"];
+        BlogComment blogCommentToUpdate = expected.ElementAt(2);
         BlogComment expectedBlogComment = DbContext
             .BlogComments
-            .Single(p => p.Id == blogCommentToUpdate.Id)!;
-        expectedBlogComment.Text = Guid.NewGuid().ToString();
-        // should other fields be tested too?
+            .Single(p => p.Id == blogCommentToUpdate.Id);
+        expectedBlogComment.Text = Fixture.Create<string>();
+        expectedBlogComment.Email = Fixture.Create<string>();
+        expectedBlogComment.Name = Fixture.Create<string>();
 
         // Act
         _blogCommentRepository.Update(expectedBlogComment);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        BlogComment? actual = DbContext.BlogComments.Single(p => p.Id == blogCommentToUpdate.Id);
 
         // Assert
-        BlogComment? actual = DbContext.BlogComments.Single(p => p.Id == blogCommentToUpdate.Id);
-        Assert.Equivalent(expectedBlogComment, actual);
+        actual.Should().BeEquivalentTo(expectedBlogComment);
     }
 }

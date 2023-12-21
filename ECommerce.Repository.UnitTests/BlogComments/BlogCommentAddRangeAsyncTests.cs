@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -8,94 +9,83 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 public partial class BlogCommentTests
 {
     [Fact]
-    public void AddRangeAsync_RequiredFields_ThrowsException()
+    public async Task AddRangeAsync_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["required_fields"];
+        IEnumerable<BlogComment> blogComment = Fixture
+            .Build<BlogComment>()
+            .With(p => p.Text, () => null!)
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .CreateMany(1);
 
         // Act
-        void Actual() => _blogCommentRepository.AddRange(expected.Values);
+        async Task Action()
+        {
+            _blogCommentRepository.AddRange(blogComment);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<DbUpdateException>(Actual);
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
     [Fact]
-    public void AddRangeAsync_NullBlogComment_ThrowsException()
+    public async Task AddRangeAsync_NullBlogComment_ThrowsException()
     {
         // Act
-        void Actual() => _blogCommentRepository.AddRange([ null! ]);
+        async Task Action()
+        {
+            _blogCommentRepository.AddRange([ null! ]);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<NullReferenceException>(Actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
     }
 
     [Fact]
-    public void AddRangeAsync_NullArgument_ThrowsException()
+    public async Task AddRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        void Actual() => _blogCommentRepository.AddRange(null!);
+        async Task Action()
+        {
+            _blogCommentRepository.AddRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(Actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
     [Fact]
-    public void AddRangeAsync_AddEntities_EntityExistsInRepository()
+    public async Task AddRangeAsync_AddEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
+        IEnumerable<BlogComment> expected = Fixture
+            .Build<BlogComment>()
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .CreateMany(5);
 
         // Act
-        _blogCommentRepository.AddRange(expected.Values);
+        _blogCommentRepository.AddRange(expected);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.BlogComments.ToList();
 
         // Assert
-        Dictionary<string, BlogComment?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogComments.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
-
-        actual.Values.Should().BeEquivalentTo(expected.Values);
-    }
-
-    [Fact]
-    public void AddRangeAsync_NoSave_EntityExistsInRepository()
-    {
-        // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
-
-        // Act
-        _blogCommentRepository.AddRange(expected.Values);
-
-        // Assert
-        Dictionary<string, BlogComment?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogComments.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
-
-        foreach (var item in actual.Values)
-        {
-            Assert.Null(item);
-        }
-
-        DbContext.SaveChanges();
-        actual.Clear();
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
-        {
-            actual.Add(
-                entry.Key,
-                DbContext.BlogComments.FirstOrDefault(x => x.Id == entry.Value.Id)
-            );
-        }
-
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected);
     }
 }
