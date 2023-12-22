@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.SlideShows;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.SlideShows;
 
 public class DetailModel : PageModel
 {

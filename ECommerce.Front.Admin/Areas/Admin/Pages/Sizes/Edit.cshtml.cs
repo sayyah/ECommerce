@@ -1,6 +1,6 @@
 ﻿using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Sizes;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Sizes;
 
 public class EditModel : PageModel
 {

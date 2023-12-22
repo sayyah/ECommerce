@@ -1,7 +1,9 @@
 ﻿using ECommerce.Services.IServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Hosting;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Blogs;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
 public class CreateModel : PageModel
 {

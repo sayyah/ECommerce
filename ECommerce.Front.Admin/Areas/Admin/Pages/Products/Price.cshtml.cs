@@ -2,7 +2,7 @@
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
 public class PriceModel : PageModel
 {

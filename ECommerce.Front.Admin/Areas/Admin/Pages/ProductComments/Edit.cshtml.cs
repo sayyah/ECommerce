@@ -1,6 +1,6 @@
 ﻿using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductComments;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductComments;
 
 public class EditModel : PageModel
 {
