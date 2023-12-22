@@ -1,6 +1,6 @@
 ﻿using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Units;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Units;
 
 public class EditModel : PageModel
 {

@@ -1,7 +1,7 @@
 using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductAttributes;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributes;
 
 public class IndexModel : PageModel
 {

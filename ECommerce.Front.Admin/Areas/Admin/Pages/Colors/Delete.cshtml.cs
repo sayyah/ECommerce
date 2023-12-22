@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Colors;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
 public class DeleteModel : PageModel
 {

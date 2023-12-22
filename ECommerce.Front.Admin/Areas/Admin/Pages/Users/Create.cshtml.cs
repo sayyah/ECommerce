@@ -1,4 +1,4 @@
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Users;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Users;
 
 public class CreateModel : PageModel
 {

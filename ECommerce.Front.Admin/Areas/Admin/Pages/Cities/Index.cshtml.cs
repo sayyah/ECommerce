@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Cities;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Cities;
 
 public class IndexModel : PageModel
 {

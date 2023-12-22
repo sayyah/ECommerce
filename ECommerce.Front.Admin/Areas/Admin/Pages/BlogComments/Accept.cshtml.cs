@@ -1,6 +1,6 @@
 ﻿using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogComments;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
 public class AcceptModel : PageModel
 {

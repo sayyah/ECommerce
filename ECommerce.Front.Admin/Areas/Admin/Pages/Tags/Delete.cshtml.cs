@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Tags;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
 public class DeleteModel : PageModel
 {
