@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class PaymentMethodRepository : AsyncRepository<PaymentMethod>, IPaymentMethodRepository
+public class PaymentMethodRepository : RepositoryBase<PaymentMethod>, IPaymentMethodRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,15 +11,14 @@ public class PaymentMethodRepository : AsyncRepository<PaymentMethod>, IPaymentM
         _context = context;
     }
 
-    public async Task<PaymentMethod> GetByAccountNumber(string name, CancellationToken cancellationToken)
+    public async Task<PaymentMethod?> GetByAccountNumber(string name, CancellationToken cancellationToken)
     {
         return await _context.PaymentMethods.Where(x => x.AccountNumber == name).FirstOrDefaultAsync();
     }
 
-    public async Task<int> AddAll(IEnumerable<PaymentMethod> paymentMethods, CancellationToken cancellationToken)
+    public void AddAll(IEnumerable<PaymentMethod> paymentMethods)
     {
-        await _context.PaymentMethods.AddRangeAsync(paymentMethods, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        _context.PaymentMethods.AddRangeAsync(paymentMethods);
     }
 
     public async Task<PagedList<PaymentMethod>> Search(PaginationParameters paginationParameters,

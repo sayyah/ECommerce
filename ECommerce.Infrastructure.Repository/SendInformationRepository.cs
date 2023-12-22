@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class SendInformationRepository : AsyncRepository<SendInformation>, ISendInformationRepository
+public class SendInformationRepository : RepositoryBase<SendInformation>, ISendInformationRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 

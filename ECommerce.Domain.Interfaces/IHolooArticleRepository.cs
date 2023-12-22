@@ -6,15 +6,15 @@ namespace ECommerce.Domain.Interfaces;
 
 public interface IHolooArticleRepository : IHolooRepository<HolooArticle>
 {
-    Task<IEnumerable<HolooArticle>> GetAllArticleMCodeSCode(string code, CancellationToken cancellationToken,
+    Task<List<HolooArticle>> GetAllArticleMCodeSCode(string code, CancellationToken cancellationToken,
         short sendToSite = 0);
 
-    Task<IEnumerable<HolooArticle>>
+    Task<List<HolooArticle>>
         GetAllMCode(string mCode, CancellationToken cancellationToken, short sendToSite = 0);
 
-    Task SyncHolooWebId(string aCodeC, int productId, CancellationToken cancellationToken);
+    void SyncHolooWebId(string aCodeC, int productId);
 
-    Task<IEnumerable<HolooArticle>> GetHolooArticles(List<string> aCodeCs, CancellationToken cancellationToken);
+    Task<List<HolooArticle>> GetHolooArticles(List<string> aCodeCs, CancellationToken cancellationToken);
 
     Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice);
 
@@ -25,9 +25,9 @@ public interface IHolooArticleRepository : IHolooRepository<HolooArticle>
     Task<List<Price>> AddPrice(List<Price> prices, IEnumerable<HolooArticle> holooArticles, bool? isCheckExist,
         CancellationToken cancellationToken);
 
-    Task<IEnumerable<HolooArticle>> GetHolooArticlesDefaultWarehouse(List<string> aCodeCs,
+    Task<List<HolooArticle>> GetHolooArticlesDefaultWarehouse(List<string?> aCodeCs,
         CancellationToken cancellationToken);
 
-    Task<IEnumerable<HolooArticle>> GetHolooArticlesOthereWarehouse(List<string> aCodeCs,
+    Task<List<HolooArticle>> GetHolooArticlesOtherWarehouse(List<string?> aCodeCs,
         CancellationToken cancellationToken);
 }

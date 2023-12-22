@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class TagRepository : AsyncRepository<Tag>, ITagRepository
+public class TagRepository : RepositoryBase<Tag>, ITagRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class TagRepository : AsyncRepository<Tag>, ITagRepository
         _context = context;
     }
 
-    public async Task<Tag> GetByTagText(string tagText, CancellationToken cancellationToken)
+    public async Task<Tag?> GetByTagText(string tagText, CancellationToken cancellationToken)
     {
         return await _context.Tags.Where(x => x.TagText == tagText).FirstOrDefaultAsync(cancellationToken);
     }

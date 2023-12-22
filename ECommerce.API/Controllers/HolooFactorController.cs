@@ -1,24 +1,19 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class HolooFactorController : ControllerBase
-{
-    private readonly IHolooABailRepository _aBailRepository;
-    private readonly IHolooFBailRepository _fBailRepository;
-    private readonly ILogger<FactorViewModel> _logger;
-
-    public HolooFactorController(IHolooFBailRepository fBailRepository, IHolooABailRepository aBailRepository,
+public class HolooFactorController(IUnitOfWork unitOfWork,
         ILogger<FactorViewModel> logger)
-    {
-        _fBailRepository = fBailRepository;
-        _aBailRepository = aBailRepository;
-        _logger = logger;
-    }
+    : ControllerBase
+{
+    private readonly IHolooABailRepository _aBailRepository = unitOfWork.GetHolooRepository<HolooABailRepository, HolooABail>();
+    private readonly IHolooFBailRepository _fBailRepository = unitOfWork.GetHolooRepository<HolooFBailRepository, HolooFBail>();
 
     [HttpPost]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(FactorViewModel factor, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(FactorViewModel? factor, CancellationToken cancellationToken)
     {
         try
         {
@@ -29,33 +24,32 @@ public class HolooFactorController : ControllerBase
                 });
 
             factor.HolooFBail.Fac_Type = "P";
-            var repetitiveBrand = await _fBailRepository.Add(factor.HolooFBail, cancellationToken);
-            if (repetitiveBrand != null)
-            {
-                for (var index = 0; index < factor.HolooABails.Count; index++)
-                {
-                    factor.HolooABails[index].Fac_Code = repetitiveBrand;
-                    factor.HolooABails[index].Fac_Type = "P";
-                }
-
-                await _aBailRepository.Add(factor.HolooABails, cancellationToken);
+            var bailCode = await _fBailRepository.Add(factor.HolooFBail, cancellationToken);
+            if (bailCode == null)
                 return Ok(new ApiResult
                 {
-                    Code = ResultCode.Success
+                    Code = ResultCode.Error,
+                    Messages = new List<string> { "مشکل در ثبت فاکتور" }
                 });
+            foreach (var t in factor.HolooABails)
+            {
+                t.Fac_Code = bailCode;
+                t.Fac_Type = "P";
             }
 
+            _aBailRepository.Add(factor.HolooABails);
+            await unitOfWork.SaveAsync(cancellationToken, true);
             return Ok(new ApiResult
             {
-                Code = ResultCode.Error,
-                Messages = new List<string> { "مشکل در ثبت فاکتور" }
+                Code = ResultCode.Success
             });
+
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

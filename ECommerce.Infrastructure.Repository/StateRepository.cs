@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class StateRepository : AsyncRepository<State>, IStateRepository
+public class StateRepository : RepositoryBase<State>, IStateRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class StateRepository : AsyncRepository<State>, IStateRepository
         _context = context;
     }
 
-    public async Task<State> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<State?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.States.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

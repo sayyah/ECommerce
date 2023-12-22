@@ -4,12 +4,12 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IUnitRepository : IAsyncRepository<Unit>
+public interface IUnitRepository : IRepositoryBase<Unit>
 {
     Task<PagedList<Unit>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
-    Task<Unit> GetByName(string name, CancellationToken cancellationToken);
+    Task<Unit?> GetByName(string name, CancellationToken cancellationToken);
 
-    Task<int> AddAll(IEnumerable<Unit> units, CancellationToken cancellationToken);
+    void AddAll(IEnumerable<Unit> units);
 
     int? GetId(int? unitCode, CancellationToken cancellationToken);
 }

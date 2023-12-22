@@ -1,109 +1,82 @@
 ﻿using System.Data;
+using AutoFixture;
 using ECommerce.Domain.Entities;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "DeleteRange: Null Product")]
-    public void DeleteRange_NullProduct_ThrowsException()
+    [Fact]
+    public async void DeleteRange_NullProduct_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.DeleteRange([ null! ]);
+        async Task Action()
+        {
+            _productRepository.DeleteRange([ null! ]);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null Argument")]
-    public void DeleteRange_NullArgument_ThrowsException()
+    [Fact]
+    public async void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.DeleteRange(null!);
+        async Task Action()
+        {
+            _productRepository.DeleteRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "DeleteRange: Delete range of products from repository")]
-    public void DeleteRange_DeleteProducts_EntityNotInRepository()
+    [Fact]
+    public async void DeleteRange_DeleteProducts_EntityNotInRepository()
     {
         // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
-        DbContext.Products.AddRange(expected.Values);
+        var products = Fixture
+            .Build<Product>()
+            .Without(p => p.ProductCategories)
+            .Without(p => p.ProductComments)
+            .Without(p => p.ProductUserRanks)
+            .Without(p => p.AttributeGroupProducts)
+            .Without(p => p.AttributeValues)
+            .Without(p => p.Prices)
+            .Without(p => p.Images)
+            .Without(p => p.Supplier)
+            .Without(p => p.SupplierId)
+            .Without(p => p.Brand)
+            .Without(p => p.BrandId)
+            .Without(p => p.Keywords)
+            .Without(p => p.Tags)
+            .Without(p => p.SlideShows)
+            .CreateMany(5);
+        DbContext.Products.AddRange(products);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        string productNotToDeleteSetKey = "test_1";
-        Product productNotToDelete = expected[productNotToDeleteSetKey];
-        IEnumerable<Product> productsToDelete = expected
-            .Values
-            .Where(x => x.Id != productNotToDelete.Id);
+        Product productNotToDelete = products.ElementAt(2);
+        IEnumerable<Product> productsToDelete = products.Where(x => x.Id != productNotToDelete.Id);
 
         // Act
         _productRepository.DeleteRange(productsToDelete);
+        await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        List<Product?> actual =  [ ];
-        foreach (var product in productsToDelete)
-        {
-            actual.Add(DbContext.Products.FirstOrDefault(x => x.Id == product.Id));
-        }
-
-        Assert.Equal(1, DbContext.Products.Count());
-        foreach (var product in actual)
-        {
-            Assert.Null(product);
-        }
-    }
-
-    [Fact(
-        DisplayName = "DeleteRange: (No Save) Entites are in repository and are deleted after SaveChanges is called"
-    )]
-    public void DeleteRange_NoSave_EntitiesAreInRepository()
-    {
-        // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
-        DbContext.Products.AddRange(expected.Values);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
-
-        string productNotToDeleteSetKey = "test_1";
-        Product productNotToDelete = expected[productNotToDeleteSetKey];
-        IEnumerable<Product> productsToDelete = expected
-            .Values
-            .Where(x => x.Id != productNotToDelete.Id);
-
-        // Act
-        _productRepository.DeleteRange(productsToDelete, false);
-
-        // Assert
-        List<Product?> actual =  [ ];
-        foreach (var product in productsToDelete)
-        {
-            actual.Add(DbContext.Products.FirstOrDefault(x => x.Id == product.Id));
-        }
-
-        Assert.Equal(expected.Count, DbContext.Products.Count());
-        foreach (var product in actual)
-        {
-            Assert.NotNull(product);
-        }
-
-        DbContext.SaveChanges();
-        actual.Clear();
-        foreach (var product in productsToDelete)
-        {
-            actual.Add(DbContext.Products.FirstOrDefault(x => x.Id == product.Id));
-        }
-
-        Assert.Equal(1, DbContext.Products.Count());
-        foreach (var product in actual)
-        {
-            Assert.Null(product);
-        }
+        DbContext.Products.Count().Should().Be(1);
+        DbContext
+            .Products
+            .Include(p => p.Store)
+            .Include(p => p.HolooCompany)
+            .FirstOrDefault()
+            .Should()
+            .BeEquivalentTo(productNotToDelete);
     }
 }

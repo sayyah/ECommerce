@@ -27,7 +27,7 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
         return (fCode.ToString("000000"), fCodeC);
     }
 
-    public async Task<string> Add(HolooFBail bail, CancellationToken cancellationToken)
+    public async Task<string?> Add(HolooFBail bail, CancellationToken cancellationToken)
     {
         var lastRow = await _context.FBAILPRE.OrderByDescending(o => o.Fac_Code)
             .FirstOrDefaultAsync(x => x.Fac_Type.Equals("P"), cancellationToken);
@@ -37,7 +37,6 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
         try
         {
             _context.Add(bail);
-            var result = await _context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
         catch (Exception e)
@@ -46,7 +45,6 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
             bail.Fac_Code_C = lastFacCode;
             bail.Fac_Code = lastFacCode.ToString("000000");
             _context.Add(bail);
-            var result = await _context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
     }

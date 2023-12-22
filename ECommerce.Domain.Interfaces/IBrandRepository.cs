@@ -4,7 +4,7 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IContactRepository : IAsyncRepository<Contact>
+public interface IContactRepository : IRepositoryBase<Contact>
 {
     Task<PagedList<Contact>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
     Task<Contact?> GetByName(string name, CancellationToken cancellationToken);

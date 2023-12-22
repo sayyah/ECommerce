@@ -2,17 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogCategoriesController : ControllerBase
-{
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly ILogger<BlogCategoriesController> _logger;
-
-    public BlogCategoriesController(IBlogCategoryRepository blogCategoryRepository,
+public class BlogCategoriesController(IUnitOfWork unitOfWork,
         ILogger<BlogCategoriesController> logger)
-    {
-        _blogCategoryRepository = blogCategoryRepository;
-        _logger = logger;
-    }
+    : ControllerBase
+{
+    private readonly IBlogCategoryRepository _blogCategoryRepository = unitOfWork.GetRepository<BlogCategoryRepository,BlogCategory>();
 
     [HttpGet]
     public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
@@ -41,7 +35,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -67,7 +61,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -94,7 +88,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -103,7 +97,7 @@ public class BlogCategoriesController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(BlogCategory blogCategory, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(BlogCategory? blogCategory, CancellationToken cancellationToken)
     {
         try
         {
@@ -122,16 +116,17 @@ public class BlogCategoriesController : ControllerBase
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام دسته تکراری است" }
                 });
+            _blogCategoryRepository.Add(blogCategory);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _blogCategoryRepository.AddAsync(blogCategory, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -143,7 +138,8 @@ public class BlogCategoriesController : ControllerBase
     {
         try
         {
-            await _blogCategoryRepository.UpdateAsync(blogCategory, cancellationToken);
+            _blogCategoryRepository.Update(blogCategory);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -151,7 +147,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -163,7 +159,8 @@ public class BlogCategoriesController : ControllerBase
     {
         try
         {
-            await _blogCategoryRepository.DeleteAsync(id, cancellationToken);
+            await _blogCategoryRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -171,7 +168,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

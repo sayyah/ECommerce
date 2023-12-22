@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Entities;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -7,88 +8,129 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "AddRange: Null value for required Fields")]
-    public void AddRange_RequiredFields_ThrowsException()
+    [Fact]
+    public async void AddRange_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        var list = Fixture
+            .Build<Product>()
+            .With(p => p.Name, () => null!)
+            .Without(p => p.ProductCategories)
+            .Without(p => p.ProductComments)
+            .Without(p => p.ProductUserRanks)
+            .Without(p => p.AttributeGroupProducts)
+            .Without(p => p.AttributeValues)
+            .Without(p => p.Prices)
+            .Without(p => p.Images)
+            .Without(p => p.Supplier)
+            .Without(p => p.SupplierId)
+            .Without(p => p.Brand)
+            .Without(p => p.BrandId)
+            .Without(p => p.Keywords)
+            .Without(p => p.Tags)
+            .Without(p => p.SlideShows)
+            .CreateMany(1);
 
         // Act
-        void actual() => _productRepository.AddRange(expected.Values);
-
-        // Assert
-        Assert.Throws<DbUpdateException>(actual);
-    }
-
-    [Fact(DisplayName = "AddRange: Null product")]
-    public void AddRange_NullProduct_ThrowsException()
-    {
-        // Act
-        void actual() => _productRepository.AddRange([ null! ]);
-
-        // Assert
-        Assert.Throws<NullReferenceException>(actual);
-    }
-
-    [Fact(DisplayName = "AddRange: Null Argument")]
-    public void AddRange_NullArgument_ThrowsException()
-    {
-        // Act
-        void actual() => _productRepository.AddRange(null!);
-
-        // Assert
-        Assert.Throws<ArgumentNullException>(actual);
-    }
-
-    [Fact(DisplayName = "AddRange: Add products all together")]
-    public void AddRange_AddEntities_EntityExistsInRepository()
-    {
-        // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
-
-        // Act
-        _productRepository.AddRange(expected.Values);
-
-        // Assert
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
+        async Task Action()
         {
-            actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
+            _productRepository.AddRange(list);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        // Assert
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "AddRange: No save")]
-    public void AddRange_NoSave_EntityNotInRepository()
+    [Fact]
+    public async void AddRange_RequiredUrlField_ThrowsException()
     {
         // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        var list = Fixture
+            .Build<Product>()
+            .With(p => p.Url, () => null!)
+            .Without(p => p.ProductCategories)
+            .Without(p => p.ProductComments)
+            .Without(p => p.ProductUserRanks)
+            .Without(p => p.AttributeGroupProducts)
+            .Without(p => p.AttributeValues)
+            .Without(p => p.Prices)
+            .Without(p => p.Images)
+            .Without(p => p.Supplier)
+            .Without(p => p.SupplierId)
+            .Without(p => p.Brand)
+            .Without(p => p.BrandId)
+            .Without(p => p.Keywords)
+            .Without(p => p.Tags)
+            .Without(p => p.SlideShows)
+            .CreateMany(1);
 
         // Act
-        _productRepository.AddRange(expected.Values, false);
+        async Task Action()
+        {
+            _productRepository.AddRange(list);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
+    }
+
+    [Fact]
+    public async void AddRange_NullProduct_ThrowsException()
+    {
+        // Act
+        async Task Action()
         {
-            actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
+            _productRepository.AddRange([ null! ]);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
-        foreach (var item in actual.Values)
+        // Assert
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
+    }
+
+    [Fact]
+    public async void AddRange_NullArgument_ThrowsException()
+    {
+        // Act
+        async Task Action()
         {
-            Assert.Null(item);
+            _productRepository.AddRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
-        DbContext.SaveChanges();
-        actual.Clear();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
-        }
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
+    }
 
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+    [Fact]
+    public async void AddRange_AddEntities_EntityExistsInRepository()
+    {
+        // Arrange
+        var expected = Fixture
+            .Build<Product>()
+            .Without(p => p.ProductCategories)
+            .Without(p => p.ProductComments)
+            .Without(p => p.ProductUserRanks)
+            .Without(p => p.AttributeGroupProducts)
+            .Without(p => p.AttributeValues)
+            .Without(p => p.Prices)
+            .Without(p => p.Images)
+            .Without(p => p.Supplier)
+            .Without(p => p.SupplierId)
+            .Without(p => p.Brand)
+            .Without(p => p.BrandId)
+            .Without(p => p.Keywords)
+            .Without(p => p.Tags)
+            .Without(p => p.SlideShows)
+            .CreateMany(5);
+
+        // Act
+        _productRepository.AddRange(expected);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Products;
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
     }
 }

@@ -2,19 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ImagesController : ControllerBase
-{
-    private readonly IHostEnvironment _environment;
-    private readonly IImageRepository _imageRepository;
-    private readonly ILogger<ImagesController> _logger;
-
-    public ImagesController(IHostEnvironment environment, IImageRepository imageRepository,
+public class ImagesController(IUnitOfWork unitOfWork,
         ILogger<ImagesController> logger)
-    {
-        _environment = environment;
-        _imageRepository = imageRepository;
-        _logger = logger;
-    }
+    : ControllerBase
+{
+    private readonly IImageRepository _imageRepository = unitOfWork.GetRepository<ImageRepository, Image>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -43,7 +35,7 @@ public class ImagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -71,11 +63,12 @@ public class ImagesController : ControllerBase
     {
         try
         {
-            var addedImage = await _imageRepository.AddAsync(image, cancellationToken);
+            _imageRepository.Add(image);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = addedImage.Id
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -90,11 +83,12 @@ public class ImagesController : ControllerBase
     {
         try
         {
-            var addedImage = await _imageRepository.AddAsync(image, cancellationToken);
+             _imageRepository.Add(image);
+             await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = addedImage.Id
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -107,8 +101,11 @@ public class ImagesController : ControllerBase
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var image = _imageRepository.GetById(id);
-        await _imageRepository.DeleteByName(image.Name, cancellationToken);
+        var image = await _imageRepository.GetByIdAsync(cancellationToken,id);
+        if (image is { Name: not null })
+        {
+            await _imageRepository.DeleteByName(image.Name, cancellationToken);
+        }
 
         return Ok(new ApiResult
         {

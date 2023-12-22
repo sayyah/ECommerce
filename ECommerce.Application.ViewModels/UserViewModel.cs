@@ -19,7 +19,7 @@ public class UserListViewModel
     public bool IsColleague { get; set; } = false;
 }
 
-public class UserFilterdParameters
+public class userFilterParameters
 {
     public PaginationParameters? PaginationParameters { get; set; }
     public UserSort UserSort { get; set; }

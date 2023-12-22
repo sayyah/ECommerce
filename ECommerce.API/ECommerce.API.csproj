@@ -13,6 +13,7 @@
 		<Using Include="Microsoft.AspNetCore.Mvc" />
 		<Using Include="ECommerce.Application.ViewModels" />
 		<Using Include="Microsoft.AspNetCore.Authorization" />
+		<Using Include="ECommerce.Infrastructure.Repository"/>
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="DotNetEnv" Version="2.5.0" />

@@ -2,17 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class StoreController : ControllerBase
+public class StoreController(IUnitOfWork unitOfWork, ILogger<StoreController> logger) : ControllerBase
 {
-    private readonly ILogger<StoreController> _logger;
-
-    private readonly IStoreRepository _storeRepository;
-
-    public StoreController(IStoreRepository storeRepository, ILogger<StoreController> logger)
-    {
-        _storeRepository = storeRepository;
-        _logger = logger;
-    }
+    private readonly IStoreRepository _storeRepository = unitOfWork.GetRepository<StoreRepository, Store>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -41,7 +33,7 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -66,14 +58,14 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Store store, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Store? store, CancellationToken cancellationToken)
     {
         try
         {
@@ -92,15 +84,17 @@ public class StoreController : ControllerBase
                     Messages = new List<string> { "نام انبار تکراری است" }
                 });
 
+            _storeRepository.Add(store);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _storeRepository.AddAsync(store, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -119,7 +113,9 @@ public class StoreController : ControllerBase
                     Messages = new List<string> { "نام انبار تکراری است" }
                 });
             if (repetitive != null) _storeRepository.Detach(repetitive);
-            await _storeRepository.UpdateAsync(store, cancellationToken);
+            _storeRepository.Update(store);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -127,7 +123,7 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -138,7 +134,9 @@ public class StoreController : ControllerBase
     {
         try
         {
-            await _storeRepository.DeleteAsync(id, cancellationToken);
+            await _storeRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -146,7 +144,7 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

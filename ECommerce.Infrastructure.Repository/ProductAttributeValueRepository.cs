@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ProductAttributeValueRepository : AsyncRepository<ProductAttributeValue>, IProductAttributeValueRepository
+public class ProductAttributeValueRepository : RepositoryBase<ProductAttributeValue>, IProductAttributeValueRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
