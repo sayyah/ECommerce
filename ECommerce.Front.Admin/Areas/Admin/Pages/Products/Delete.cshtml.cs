@@ -1,6 +1,7 @@
 using ECommerce.Services.IServices;
+using Microsoft.AspNetCore.Http;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Products;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
 public class DeleteModel : PageModel
 {

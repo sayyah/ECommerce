@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Keywords;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
 public class IndexModel : PageModel
 {

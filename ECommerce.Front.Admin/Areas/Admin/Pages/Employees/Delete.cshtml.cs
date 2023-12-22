@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Employees;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 
 public class DeleteModel : PageModel
 {

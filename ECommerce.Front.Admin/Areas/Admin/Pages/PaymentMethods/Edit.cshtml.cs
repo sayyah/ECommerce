@@ -1,6 +1,6 @@
 ﻿using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.PaymentMethods;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.PaymentMethods;
 
 public class EditModel : PageModel
 {
