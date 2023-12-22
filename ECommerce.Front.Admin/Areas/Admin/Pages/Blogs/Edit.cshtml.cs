@@ -1,6 +1,8 @@
 ﻿using ECommerce.Services.IServices;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Blogs;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
 public class EditModel : PageModel
 {

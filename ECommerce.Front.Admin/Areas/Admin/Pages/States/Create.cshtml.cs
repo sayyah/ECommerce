@@ -1,6 +1,6 @@
 ﻿using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.States;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.States;
 
 public class CreateModel : PageModel
 {

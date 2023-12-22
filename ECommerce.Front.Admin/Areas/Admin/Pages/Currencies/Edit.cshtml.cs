@@ -1,6 +1,6 @@
 ﻿using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Currencies;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Currencies;
 
 public class EditModel : PageModel
 {
