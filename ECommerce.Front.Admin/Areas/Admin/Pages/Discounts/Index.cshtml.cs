@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Discounts;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Discounts;
 
 public class IndexModel : PageModel
 {

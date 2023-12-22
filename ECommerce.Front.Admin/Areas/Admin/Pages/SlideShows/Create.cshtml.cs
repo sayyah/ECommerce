@@ -1,6 +1,8 @@
 ﻿using ECommerce.Services.IServices;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.SlideShows;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.SlideShows;
 
 public class CreateModel : PageModel
 {

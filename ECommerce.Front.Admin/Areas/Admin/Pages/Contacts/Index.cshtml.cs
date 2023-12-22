@@ -1,7 +1,7 @@
 using System.Globalization;
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Contacts;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Contacts;
 
 public class IndexModel : PageModel
 {
