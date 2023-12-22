@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooSndList
+public class HolooSndList : BaseHolooEntity
 {
     public HolooSndList(int sanad_Code, string col_Code, string moien_Code, string tafzili_Code, double? bed,
         double? bes, string comment_Line)

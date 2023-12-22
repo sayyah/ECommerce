@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using System.Reflection;
+using ECommerce.Domain.Entities;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Pluralize.NET.Core;
-using System.Reflection;
-using ECommerce.Domain.Entities;
 
 namespace ECommerce.Infrastructure.DataContext.Utilities;
 

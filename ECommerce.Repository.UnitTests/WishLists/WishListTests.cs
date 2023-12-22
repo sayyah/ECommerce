@@ -118,86 +118,6 @@ public class WishListTests : BaseTests
     }
 
     [Fact]
-    public async Task DeleteAsync_DeleteOneEntity_ReturnDeletedEntity()
-    {
-        //Arrange
-        var user = AddUser();
-        var (_, price) = AddProduct();
-        int id = 1;
-
-        WishList wishList =
-            new()
-            {
-                Id = id,
-                UserId = user.Id,
-                PriceId = price.Id,
-            };
-
-        //Act
-        await DbContext.WishLists.AddAsync(wishList, CancellationToken);
-        await DbContext.SaveChangesAsync();
-        var newWishList = _wishListRepository.DeleteAsync(wishList.Id, CancellationToken);
-
-        //Assert
-        Assert.Equal(id, newWishList.Id);
-    }
-
-    [Fact]
-    public async Task DeleteAsync_DeleteNullEntity_ReturnFaulted()
-    {
-        //Arrange
-        var user = AddUser();
-        var (_, price) = AddProduct();
-        int falseId = 2;
-        int id = 1;
-
-        WishList wishList =
-            new()
-            {
-                Id = id,
-                UserId = user.Id,
-                PriceId = price.Id,
-            };
-
-        //Act
-        await DbContext.WishLists.AddAsync(wishList, CancellationToken);
-        await DbContext.SaveChangesAsync();
-        var newWishList = _wishListRepository.DeleteAsync(falseId, CancellationToken);
-
-        //Assert
-        Assert.Equal(TaskStatus.Faulted, newWishList.Status);
-    }
-
-    [Fact]
-    public async Task EditAsync_EditNotExistEntity_ThrowException()
-    {
-        //Arrange
-        var user = AddUser();
-        var (_, price) = AddProduct();
-        int falseId = 3;
-        int id = 1;
-
-        WishList wishList =
-            new()
-            {
-                Id = id,
-                UserId = user.Id,
-                PriceId = price.Id,
-            };
-
-        WishList editWishList = new() { Id = falseId };
-
-        //Act
-        await DbContext.WishLists.AddAsync(wishList, CancellationToken);
-        await DbContext.SaveChangesAsync();
-        Task action() =>
-            _wishListRepository.UpdateAsync(editWishList, CancellationToken.None, true);
-
-        //Assert
-        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(action);
-    }
-
-    [Fact]
     public async Task GetAll_CountAllEntities_ReturnsTwoEntities()
     {
         //Arrange
@@ -227,7 +147,7 @@ public class WishListTests : BaseTests
         await DbContext.SaveChangesAsync();
 
         //Act
-        var newWishLists = await _wishListRepository.GetAll(CancellationToken);
+        var newWishLists = await _wishListRepository.GetAllAsync(CancellationToken);
 
         //Assert
         Assert.Equal(2, newWishLists.Count());

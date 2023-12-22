@@ -2,16 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CurrenciesController : ControllerBase
+public class CurrenciesController(IUnitOfWork unitOfWork, ILogger<CurrenciesController> logger)
+    : ControllerBase
 {
-    private readonly ICurrencyRepository _currencyRepository;
-    private readonly ILogger<CurrenciesController> _logger;
-
-    public CurrenciesController(ICurrencyRepository currencyRepository, ILogger<CurrenciesController> logger)
-    {
-        _currencyRepository = currencyRepository;
-        _logger = logger;
-    }
+    private readonly ICurrencyRepository _currencyRepository = unitOfWork.GetRepository<ICurrencyRepository, Currency>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -41,7 +35,7 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -66,14 +60,14 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Currency currency, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Currency? currency, CancellationToken cancellationToken)
     {
         try
         {
@@ -84,15 +78,17 @@ public class CurrenciesController : ControllerBase
                 });
             currency.Name = currency.Name.Trim();
 
+            _currencyRepository.Add(currency);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _currencyRepository.AddAsync(currency, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -117,7 +113,9 @@ public class CurrenciesController : ControllerBase
                     Messages = new List<string> { "نام ارز تکراری است" }
                 });
             if (repetitiveCurrency != null) _currencyRepository.Detach(repetitiveCurrency);
-            await _currencyRepository.UpdateAsync(currency, cancellationToken);
+            _currencyRepository.Update(currency);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -125,7 +123,7 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -142,7 +140,9 @@ public class CurrenciesController : ControllerBase
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "ارز پیشفرض قابل حذف نیست" }
                 });
-            await _currencyRepository.DeleteAsync(id, cancellationToken);
+            await _currencyRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -150,7 +150,7 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

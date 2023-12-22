@@ -10,15 +10,15 @@ namespace ECommerce.Repository.UnitTests.Products;
 public partial class ProductTests : BaseTests
 {
     private readonly IProductRepository _productRepository;
-    private readonly List<Price> Prices;
-    private readonly List<Category> Categories;
-    private readonly Dictionary<string, Dictionary<string, Product>> TestSets;
+    private readonly List<Price> _prices;
+    private readonly List<Category> _categories;
+    private readonly Dictionary<string, Dictionary<string, Product>> _testSets;
 
     public ProductTests()
     {
         _productRepository = new ProductRepository(DbContext, HolooDbContext);
 
-        Prices =
+        _prices =
         [
             new Price()
             {
@@ -49,7 +49,7 @@ public partial class ProductTests : BaseTests
             },
         ];
 
-        Categories =
+        _categories =
         [
             new Category()
             {
@@ -89,7 +89,7 @@ public partial class ProductTests : BaseTests
             },
         ];
 
-        TestSets = new()
+        _testSets = new()
         {
             ["required_fields"] = new()
             {
@@ -120,8 +120,8 @@ public partial class ProductTests : BaseTests
                     Name = "this has name",
                     MinOrder = 10,
                     Url = "some random-url/w.[/\\:D]",
-                    Prices =  [ Prices[0] ],
-                    ProductCategories = new List<Category> { Categories[1] }
+                    Prices = [_prices[0]],
+                    ProductCategories = new List<Category> { _categories[1] }
                 },
                 ["test_2"] = new Product
                 {
@@ -129,8 +129,8 @@ public partial class ProductTests : BaseTests
                     Name = "this name",
                     MinOrder = 10,
                     Url = "random-url",
-                    Prices =  [ Prices[1] ],
-                    ProductCategories = new List<Category> { Categories[2] }
+                    Prices = [_prices[1]],
+                    ProductCategories = new List<Category> { _categories[2] }
                 },
                 ["test_3"] = new Product
                 {
@@ -138,8 +138,8 @@ public partial class ProductTests : BaseTests
                     Name = "such product",
                     MinOrder = 69,
                     Url = "much/wow",
-                    Prices =  [ Prices[2] ],
-                    ProductCategories = new List<Category> { Categories[3] }
+                    Prices = [_prices[2]],
+                    ProductCategories = new List<Category> { _categories[3] }
                 }
             }
         };
@@ -147,7 +147,7 @@ public partial class ProductTests : BaseTests
 
     private void AddCategories()
     {
-        DbContext.Categories.AddRange(Categories);
+        DbContext.Categories.AddRange(_categories);
         DbContext.SaveChanges();
     }
 }

@@ -6,7 +6,7 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "GetByName: Get blogCategory by Name")]
+    [Fact]
     public async void GetByName_GetAddedEntityByName_EntityExistsInRepository()
     {
         // Arrange
@@ -32,7 +32,7 @@ public partial class BlogCategoryTests
         actual.Values.Should().BeEquivalentTo(expected.Values);
     }
 
-    [Fact(DisplayName = "GetByName: Non existing name")]
+    [Fact]
     public async void GetByName_GetAddedEntityByNonExistingName_ReturnsNull()
     {
         // Arrange

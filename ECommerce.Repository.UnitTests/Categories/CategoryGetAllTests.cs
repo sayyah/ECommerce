@@ -6,7 +6,7 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "GetAll: Get all entities in repository")]
+    [Fact]
     public async void GetAll_GetAllEntities_ReturnsAllEntitiesInRepository()
     {
         // Arrange
@@ -15,7 +15,7 @@ public partial class CategoryTests
         DbContext.SaveChanges();
 
         // Act
-        IEnumerable<Category> actuals = await _categoryRepository.GetAll(CancellationToken);
+        IEnumerable<Category> actuals = await _categoryRepository.GetAllAsync(CancellationToken);
 
         // Assert
         actuals

@@ -2,19 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ContactsController : ControllerBase
-{
-    private readonly IContactRepository _contactRepository;
-    private readonly IEmailRepository _emailRepository;
-    private readonly ILogger<ContactsController> _logger;
-
-    public ContactsController(IContactRepository contactRepository, ILogger<ContactsController> logger,
+public class ContactsController(IUnitOfWork unitOfWork, ILogger<ContactsController> logger,
         IEmailRepository emailRepository)
-    {
-        _contactRepository = contactRepository;
-        _logger = logger;
-        _emailRepository = emailRepository;
-    }
+    : ControllerBase
+{
+    private readonly IContactRepository _contactRepository = unitOfWork.GetRepository<IContactRepository, Contact>();
 
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
@@ -45,7 +37,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -72,7 +64,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -100,7 +92,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -128,7 +120,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -154,15 +146,17 @@ public class ContactsController : ControllerBase
                     Messages = new List<string> { "ایمیل و متن باید وارد شود" }
                 });
 
+            _contactRepository.Add(contact);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _contactRepository.AddAsync(contact, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -174,9 +168,12 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            await _contactRepository.UpdateAsync(contact, cancellationToken);
-            await _emailRepository.SendEmailAsync(contact.Email, "پاسخ به تماس با ما", contact.ReplayMessage,
+            _contactRepository.Update(contact);
+            await unitOfWork.SaveAsync(cancellationToken);
+
+            await emailRepository.SendEmailAsync(contact.Email, "پاسخ به تماس با ما", contact.ReplayMessage,
                 cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -184,7 +181,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -196,7 +193,9 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            await _contactRepository.DeleteAsync(id, cancellationToken);
+            await _contactRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -204,7 +203,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

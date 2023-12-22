@@ -5,12 +5,12 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetByUrl: Get products by url")]
+    [Fact]
     public async void GetByUrl_GetAddedEntityByUrl_EntityExistsInRepository()
     {
         // Arrange
         AddCategories();
-        var set = TestSets["unique_url"];
+        var set = _testSets["unique_url"];
         DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 
@@ -23,12 +23,12 @@ public partial class ProductTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact(DisplayName = "GetByUrl: Non existing url")]
+    [Fact]
     public async void GetByUrl_GetAddedEntityByNonExistingUrl_ReturnsNull()
     {
         // Arrange
         AddCategories();
-        var set = TestSets["unique_url"];
+        var set = _testSets["unique_url"];
         DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 

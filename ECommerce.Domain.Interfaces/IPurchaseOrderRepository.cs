@@ -4,7 +4,7 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IPurchaseOrderRepository : IAsyncRepository<PurchaseOrder>
+public interface IPurchaseOrderRepository : IRepositoryBase<PurchaseOrder>
 {
     Task<PagedList<PurchaseListViewModel>> Search(PurchaseFiltreOrderViewModel purchaseFiltreOrderViewModel,
         CancellationToken cancellationToken);

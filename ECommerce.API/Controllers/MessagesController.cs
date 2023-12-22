@@ -2,16 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class MessagesController : ControllerBase
+public class MessagesController(IUnitOfWork unitOfWork, ILogger<MessagesController> logger) : ControllerBase
 {
-    private readonly ILogger<MessagesController> _logger;
-    private readonly IMessageRepository _messageRepository;
-
-    public MessagesController(IMessageRepository messageRepository, ILogger<MessagesController> logger)
-    {
-        _messageRepository = messageRepository;
-        _logger = logger;
-    }
+    private readonly IMessageRepository _messageRepository = unitOfWork.GetRepository<IMessageRepository, Message>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -40,7 +33,7 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -65,13 +58,13 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(Message message, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Message? message, CancellationToken cancellationToken)
     {
         try
         {
@@ -82,15 +75,18 @@ public class MessagesController : ControllerBase
                 });
 
             message.DateTime = DateTime.Now;
+            _messageRepository.Add(message);
+            await unitOfWork.SaveAsync(cancellationToken);
+
+           
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _messageRepository.AddAsync(message, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -101,7 +97,9 @@ public class MessagesController : ControllerBase
     {
         try
         {
-            await _messageRepository.UpdateAsync(message, cancellationToken);
+            _messageRepository.Update(message);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -109,7 +107,7 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -120,7 +118,9 @@ public class MessagesController : ControllerBase
     {
         try
         {
-            await _messageRepository.DeleteAsync(id, cancellationToken);
+            await _messageRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -128,7 +128,7 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

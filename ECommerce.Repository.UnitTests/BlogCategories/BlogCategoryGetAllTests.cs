@@ -6,8 +6,8 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "GetAll: Get all blogCategory")]
-    public async void GetAll_GetAllAddedEntities_EntityExistsInRepository()
+    [Fact]
+    public void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange
         Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
@@ -15,7 +15,7 @@ public partial class BlogCategoryTests
         DbContext.SaveChanges();
 
         // Act
-        var actuals = await _blogCategoryRepository.GetAll(CancellationToken);
+        var actuals = _blogCategoryRepository.GetAll("");
 
         // Assert
         actuals

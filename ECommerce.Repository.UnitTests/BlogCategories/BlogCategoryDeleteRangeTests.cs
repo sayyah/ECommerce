@@ -6,27 +6,27 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "DeleteRange: Null blogCategory")]
+    [Fact]
     public void DeleteRange_NullBlogCategory_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.DeleteRange([ null! ]);
+        void Actual() => _blogCategoryRepository.DeleteRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null argument")]
+    [Fact]
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.DeleteRange(null!);
+        void Actual() => _blogCategoryRepository.DeleteRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Delete range of blogCategorys from repository")]
+    [Fact]
     public void DeleteRange_DeleteBlogCategories_EntityNotInRepository()
     {
         // Arrange
@@ -76,7 +76,7 @@ public partial class BlogCategoryTests
             .Where(x => x.Id != blogCategoryNotToDelete.Id);
 
         // Act
-        _blogCategoryRepository.DeleteRange(blogCategorysToDelete, false);
+        _blogCategoryRepository.DeleteRange(blogCategorysToDelete);
 
         // Assert
         List<BlogCategory?> actual =  [ ];

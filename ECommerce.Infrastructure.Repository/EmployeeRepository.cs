@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class EmployeeRepository : AsyncRepository<Employee>, IEmployeeRepository
+public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class EmployeeRepository : AsyncRepository<Employee>, IEmployeeRepository
         _context = context;
     }
 
-    public async Task<Employee> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Employee?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.Employees.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

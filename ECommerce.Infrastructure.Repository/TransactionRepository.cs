@@ -4,7 +4,7 @@ using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class TransactionRepository : AsyncRepository<Transaction>, ITransactionRepository
+public class TransactionRepository : RepositoryBase<Transaction>, ITransactionRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -13,32 +13,32 @@ public class TransactionRepository : AsyncRepository<Transaction>, ITransactionR
         _context = context;
     }
 
-    public async Task<PagedList<Transaction>> Search(TransactionFiltreViewModel transactionFiltreViewModel,
+    public async Task<PagedList<Transaction>> Search(transactionFilterViewModel transactionFilterViewModel,
         CancellationToken cancellationToken)
     {
         var query = _context.Transactions
-            .Where(x => x.User.UserName.Contains(transactionFiltreViewModel.PaginationParameters.Search))
+            .Where(x => x.User.UserName.Contains(transactionFilterViewModel.PaginationParameters.Search))
             .Include(d => d.PaymentMethod)
             .Include(x => x.User)
             .AsNoTracking();
 
-        if (transactionFiltreViewModel.UserId > 0)
-            query = query.Where(x => x.UserId == transactionFiltreViewModel.UserId);
-        if (transactionFiltreViewModel.ToTransactionDate != null)
-            query = query.Where(x => x.TransactionDate <= transactionFiltreViewModel.ToTransactionDate);
-        if (transactionFiltreViewModel.FromTransactionDate != null)
-            query = query.Where(x => x.TransactionDate >= transactionFiltreViewModel.FromTransactionDate);
-        if (transactionFiltreViewModel.MinimumAmount != null)
-            query = query.Where(x => x.Amount >= transactionFiltreViewModel.MinimumAmount);
-        if (transactionFiltreViewModel.MaximumAmount != null)
-            query = query.Where(x => x.Amount <= transactionFiltreViewModel.MaximumAmount);
-        if (transactionFiltreViewModel.PaymentMethodStatus != null)
+        if (transactionFilterViewModel.UserId > 0)
+            query = query.Where(x => x.UserId == transactionFilterViewModel.UserId);
+        if (transactionFilterViewModel.ToTransactionDate != null)
+            query = query.Where(x => x.TransactionDate <= transactionFilterViewModel.ToTransactionDate);
+        if (transactionFilterViewModel.FromTransactionDate != null)
+            query = query.Where(x => x.TransactionDate >= transactionFilterViewModel.FromTransactionDate);
+        if (transactionFilterViewModel.MinimumAmount != null)
+            query = query.Where(x => x.Amount >= transactionFilterViewModel.MinimumAmount);
+        if (transactionFilterViewModel.MaximumAmount != null)
+            query = query.Where(x => x.Amount <= transactionFilterViewModel.MaximumAmount);
+        if (transactionFilterViewModel.PaymentMethodStatus != null)
             query = query.Where(x =>
-                x.PaymentMethod.PaymentMethodStatus == transactionFiltreViewModel.PaymentMethodStatus);
+                x.PaymentMethod.PaymentMethodStatus == transactionFilterViewModel.PaymentMethodStatus);
 
 
         var sortedQuery = query.OrderByDescending(x => x.Id);
-        switch (transactionFiltreViewModel.TransactionSort)
+        switch (transactionFilterViewModel.TransactionSort)
         {
             case TransactionSort.LowToHighPiceBuying:
                 sortedQuery = query.OrderBy(x => x.Amount);
@@ -64,7 +64,7 @@ public class TransactionRepository : AsyncRepository<Transaction>, ITransactionR
         }).ToListAsync(cancellationToken);
 
         return PagedList<Transaction>.ToPagedList(transactionList,
-            transactionFiltreViewModel.PaginationParameters.PageNumber,
-            transactionFiltreViewModel.PaginationParameters.PageSize);
+            transactionFilterViewModel.PaginationParameters.PageNumber,
+            transactionFilterViewModel.PaginationParameters.PageSize);
     }
 }

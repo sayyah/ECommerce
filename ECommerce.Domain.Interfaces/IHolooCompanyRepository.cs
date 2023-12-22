@@ -2,6 +2,6 @@
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IHolooCompanyRepository : IAsyncRepository<HolooCompany>
+public interface IHolooCompanyRepository : IRepositoryBase<HolooCompany>
 {
 }

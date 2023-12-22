@@ -16,7 +16,7 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
         _aBailRepository = aBailRepository;
     }
 
-    public async Task SyncHolooWebId(string aCodeC, int productId, CancellationToken cancellationToken)
+    public void SyncHolooWebId(string aCodeC, int productId)
     {
         var articles = _context.ARTICLE.Where(x => x.A_Code_C == aCodeC);
         foreach (var article in articles)
@@ -24,8 +24,6 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
             article.WebId = productId;
             _context.ARTICLE.Update(article);
         }
-
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice)
@@ -125,7 +123,7 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<HolooArticle>> GetHolooArticles(List<string> aCodeCs,
+    public async Task<List<HolooArticle>> GetHolooArticles(List<string> aCodeCs,
         CancellationToken cancellationToken)
     {
         var temp = _context.ARTICLE.Where(

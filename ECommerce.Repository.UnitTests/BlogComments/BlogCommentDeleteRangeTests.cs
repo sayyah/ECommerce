@@ -6,27 +6,27 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "DeleteRange: Null blogComment")]
+    [Fact]
     public void DeleteRange_NullBlogComment_ThrowsException()
     {
         // Act
-        void actual() => _blogCommentRepository.DeleteRange([ null! ]);
+        void Actual() => _blogCommentRepository.DeleteRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null argument")]
+    [Fact]
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCommentRepository.DeleteRange(null!);
+        void Actual() => _blogCommentRepository.DeleteRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Delete range of blogComments from repository")]
+    [Fact]
     public void DeleteRange_DeleteBlogComments_EntityNotInRepository()
     {
         // Arrange
@@ -76,7 +76,7 @@ public partial class BlogCommentTests
             .Where(x => x.Id != blogCommentNotToDelete.Id);
 
         // Act
-        _blogCommentRepository.DeleteRange(blogCommentsToDelete, false);
+        _blogCommentRepository.DeleteRange(blogCommentsToDelete);
 
         // Assert
         List<BlogComment?> actual =  [ ];

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class PurchaseOrderDetailRepository : AsyncRepository<PurchaseOrderDetail>, IPurchaseOrderDetailRepository
+public class PurchaseOrderDetailRepository : RepositoryBase<PurchaseOrderDetail>, IPurchaseOrderDetailRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -31,6 +31,6 @@ public class PurchaseOrderDetailRepository : AsyncRepository<PurchaseOrderDetail
             purchaseOrders.Add(purchaseOrderDetail);
         }
 
-        await UpdateRangeAsync(purchaseOrders, cancellationToken);
+        UpdateRange(purchaseOrders);
     }
 }

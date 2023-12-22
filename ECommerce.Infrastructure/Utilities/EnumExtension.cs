@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using ECommerce.Infrastructure.DataContext.Utilities;
 
 namespace ECommerce.Infrastructure.DataContext.Utilities;
 

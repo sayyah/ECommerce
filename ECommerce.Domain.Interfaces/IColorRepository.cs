@@ -4,8 +4,8 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IColorRepository : IAsyncRepository<Color>
+public interface IColorRepository : IRepositoryBase<Color>
 {
     Task<PagedList<Color>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
-    Task<Color> GetByName(string name, CancellationToken cancellationToken);
+    Task<Color?> GetByName(string name, CancellationToken cancellationToken);
 }

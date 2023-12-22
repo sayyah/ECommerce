@@ -2,16 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class KeywordsController : ControllerBase
+public class KeywordsController(IUnitOfWork unitOfWork, ILogger<KeywordsController> logger) : ControllerBase
 {
-    private readonly IKeywordRepository _keywordRepository;
-    private readonly ILogger<KeywordsController> _logger;
-
-    public KeywordsController(IKeywordRepository keywordRepository, ILogger<KeywordsController> logger)
-    {
-        _keywordRepository = keywordRepository;
-        _logger = logger;
-    }
+    private readonly IKeywordRepository _keywordRepository = unitOfWork.GetRepository<IKeywordRepository, Keyword>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -40,7 +33,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -53,12 +46,12 @@ public class KeywordsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _keywordRepository.GetAll(cancellationToken)
+                ReturnData = await _keywordRepository.GetAllAsync(cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -77,7 +70,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -102,14 +95,14 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Keyword keywords, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Keyword? keywords, CancellationToken cancellationToken)
     {
         try
         {
@@ -128,15 +121,17 @@ public class KeywordsController : ControllerBase
                     Messages = new List<string> { "کلمه کلیدی تکراری است" }
                 });
 
+            _keywordRepository.Add(keywords);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _keywordRepository.AddAsync(keywords, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -155,7 +150,9 @@ public class KeywordsController : ControllerBase
                     Messages = new List<string> { "کلمه کلیدی تکراری است" }
                 });
             if (repetitive != null) _keywordRepository.Detach(repetitive);
-            await _keywordRepository.UpdateAsync(keyword, cancellationToken);
+            _keywordRepository.Update(keyword);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -163,7 +160,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -174,7 +171,9 @@ public class KeywordsController : ControllerBase
     {
         try
         {
-            await _keywordRepository.DeleteAsync(id, cancellationToken);
+            await _keywordRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -182,7 +181,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

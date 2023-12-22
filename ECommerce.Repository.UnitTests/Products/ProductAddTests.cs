@@ -7,11 +7,11 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "Add: Null value for required Fields")]
+    [Fact]
     public void Add_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        Dictionary<string, Product> expected = _testSets["required_fields"];
 
         // Act
         Dictionary<string, Action> actual =  [ ];
@@ -27,22 +27,22 @@ public partial class ProductTests
         }
     }
 
-    [Fact(DisplayName = "Add: Null product")]
+    [Fact]
     public void Add_NullProduct_ThrowsException()
     {
         // Act
-        void action() => _productRepository.Add(null!);
+        void Action() => _productRepository.Add(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Add product")]
+    [Fact]
     public void Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange
         AddCategories();
-        Product expected = TestSets["unique_url"]["test_1"];
+        Product expected = _testSets["unique_url"]["test_1"];
 
         // Act
         _productRepository.Add(expected);

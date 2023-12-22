@@ -6,32 +6,32 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "DeleteRange: Null Product")]
+    [Fact]
     public void DeleteRange_NullProduct_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.DeleteRange([ null! ]);
+        void Actual() => _productRepository.DeleteRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null Argument")]
+    [Fact]
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.DeleteRange(null!);
+        void Actual() => _productRepository.DeleteRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Delete range of products from repository")]
+    [Fact]
     public void DeleteRange_DeleteProducts_EntityNotInRepository()
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -66,7 +66,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -78,7 +78,7 @@ public partial class ProductTests
             .Where(x => x.Id != productNotToDelete.Id);
 
         // Act
-        _productRepository.DeleteRange(productsToDelete, false);
+        _productRepository.DeleteRange(productsToDelete);
 
         // Assert
         List<Product?> actual =  [ ];

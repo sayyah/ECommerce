@@ -4,20 +4,11 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class PaymentMethodsController : ControllerBase
+public class PaymentMethodsController(IUnitOfWork unitOfWork, ILogger<PaymentMethodsController> logger)
+    : ControllerBase
 {
-    private readonly IHolooAccountNumberRepository _accountNumberRepository;
-    private readonly ILogger<PaymentMethodsController> _logger;
-
-    private readonly IPaymentMethodRepository _paymentMethodRepository;
-
-    public PaymentMethodsController(IPaymentMethodRepository discountRepository,
-        IHolooAccountNumberRepository accountNumberRepository, ILogger<PaymentMethodsController> logger)
-    {
-        _paymentMethodRepository = discountRepository;
-        _accountNumberRepository = accountNumberRepository;
-        _logger = logger;
-    }
+    private readonly IHolooAccountNumberRepository _accountNumberRepository = unitOfWork.GetHolooRepository<IHolooAccountNumberRepository, HolooAccountNumber>();
+    private readonly IPaymentMethodRepository _paymentMethodRepository = unitOfWork.GetRepository<IPaymentMethodRepository, PaymentMethod>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -46,7 +37,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -71,14 +62,14 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(PaymentMethod paymentMethod, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(PaymentMethod? paymentMethod, CancellationToken cancellationToken)
     {
         try
         {
@@ -88,7 +79,6 @@ public class PaymentMethodsController : ControllerBase
                 {
                     Code = ResultCode.BadRequest
                 });
-                ;
             }
 
             paymentMethod.AccountNumber = paymentMethod.AccountNumber.Trim();
@@ -102,15 +92,17 @@ public class PaymentMethodsController : ControllerBase
                     Messages = new List<string> { "شماره حساب تکراری است" }
                 });
 
+            _paymentMethodRepository.Add(paymentMethod);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _paymentMethodRepository.AddAsync(paymentMethod, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -130,7 +122,9 @@ public class PaymentMethodsController : ControllerBase
                     Messages = new List<string> { "شماره حساب تکراری است" }
                 });
             if (repetitive != null) _paymentMethodRepository.Detach(repetitive);
-            await _paymentMethodRepository.UpdateAsync(paymentMethod, cancellationToken);
+            _paymentMethodRepository.Update(paymentMethod);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -138,7 +132,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -149,7 +143,9 @@ public class PaymentMethodsController : ControllerBase
     {
         try
         {
-            await _paymentMethodRepository.DeleteAsync(id, cancellationToken);
+            await _paymentMethodRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -157,7 +153,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -175,7 +171,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -201,7 +197,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -212,21 +208,28 @@ public class PaymentMethodsController : ControllerBase
     {
         try
         {
-            var paymentMethods = (await _accountNumberRepository.GetAll(cancellationToken))!.Select(x =>
+            var paymentMethods = (await _accountNumberRepository.GetAll(cancellationToken)).Select(x =>
                 new PaymentMethod
                 {
                     AccountNumber = x.Account_N,
                     BankCode = x.Bank_Code,
                     BrunchName = x.Branch_Name,
-                    BankName = x.Branch_Name
+                    BankName = x.Branch_Name??""
                 });
-            var result = await _paymentMethodRepository.AddAll(paymentMethods, cancellationToken);
-            if (result == 0)
+            _paymentMethodRepository.AddAll(paymentMethods);
+
+            try
+            {
+                await unitOfWork.SaveAsync(cancellationToken);
+            }
+            catch
+            {
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
                     Messages = new List<string> { "افزودن اتوماتیک به مشکل برخورد کرد" }
                 });
+            }
 
             return Ok(new ApiResult
             {
@@ -235,7 +238,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

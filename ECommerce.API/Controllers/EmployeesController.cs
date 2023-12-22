@@ -2,19 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class EmployeesController : ControllerBase
+public class EmployeesController(IUnitOfWork unitOfWork, ILogger<EmployeesController> logger)
+    : ControllerBase
 {
-    private readonly IHolooArticleRepository _articleRepository;
-    private readonly IEmployeeRepository _employeeRepository;
-    private readonly ILogger<EmployeesController> _logger;
-
-    public EmployeesController(IEmployeeRepository employeeRepository, ILogger<EmployeesController> logger,
-        IHolooArticleRepository articleRepository)
-    {
-        _employeeRepository = employeeRepository;
-        _logger = logger;
-        _articleRepository = articleRepository;
-    }
+    private readonly IEmployeeRepository _employeeRepository = unitOfWork.GetRepository<IEmployeeRepository, Employee>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -44,7 +35,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -70,7 +61,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -79,7 +70,7 @@ public class EmployeesController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Employee employee, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Employee? employee, CancellationToken cancellationToken)
     {
         try
         {
@@ -98,16 +89,17 @@ public class EmployeesController : ControllerBase
                     Messages = new List<string> { "نام کارمند تکراری است" }
                 });
 
+            _employeeRepository.Add(employee);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _employeeRepository.AddAsync(employee, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -119,7 +111,9 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            await _employeeRepository.UpdateAsync(employee, cancellationToken);
+            _employeeRepository.Update(employee);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -127,7 +121,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -139,7 +133,9 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            await _employeeRepository.DeleteAsync(id, cancellationToken);
+            await _employeeRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -147,7 +143,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
