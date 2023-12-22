@@ -1,4 +1,5 @@
 using ECommerce.Domain.Entities;
+using ECommerce.Infrastructure.Repository;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -7,40 +8,43 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "AddRange: Null value for required Fields")]
-    public void AddRange_RequiredFields_ThrowsException()
+    [Fact]
+    public async Task AddRange_RequiredFields_ThrowsException()
     {
         // Arrange
         Dictionary<string, BlogCategory> expected = TestSets["required_fields"];
 
         // Act
-        void actual() => _blogCategoryRepository.AddRange(expected.Values);
+        void Actual() => _blogCategoryRepository.AddRange(expected.Values);
+        await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        Assert.Throws<DbUpdateException>(actual);
+        Assert.Throws<DbUpdateException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Null BlogCategory")]
-    public void AddRange_NullBlogCategory_ThrowsException()
+    [Fact]
+    public async Task AddRange_NullBlogCategory_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.AddRange([ null! ]);
+        void Actual() => _blogCategoryRepository.AddRange(new List<BlogCategory>());
+        await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Null argument")]
-    public void AddRange_NullArgument_ThrowsException()
+    [Fact]
+    public async Task AddRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.AddRange(null!);
+        void Actual() => _blogCategoryRepository.AddRange(null!);
+        await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "AddRange: Add BlogCategories all together")]
+    [Fact]
     public void AddRange_AddEntities_EntityExistsInRepository()
     {
         // Arrange
@@ -62,14 +66,14 @@ public partial class BlogCategoryTests
         actual.Values.Should().BeEquivalentTo(expected.Values);
     }
 
-    [Fact(DisplayName = "AddRange: No save")]
+    [Fact]
     public void AddRange_NoSave_EntityNotInRepository()
     {
         // Arrange
         Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
 
         // Act
-        _blogCategoryRepository.AddRange(expected.Values, false);
+        _blogCategoryRepository.AddRange(expected.Values);
 
         // Assert
         Dictionary<string, BlogCategory?> actual =  [ ];

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooArticle
+public class HolooArticle : BaseHolooEntity
 {
     [Key] public string A_Code { get; set; }
 

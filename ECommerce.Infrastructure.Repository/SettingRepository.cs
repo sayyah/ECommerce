@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class SettingRepository : AsyncRepository<Setting>, ISettingRepository
+public class SettingRepository : RepositoryBase<Setting>, ISettingRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 

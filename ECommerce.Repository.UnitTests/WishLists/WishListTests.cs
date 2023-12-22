@@ -190,11 +190,11 @@ public class WishListTests : BaseTests
         //Act
         await DbContext.WishLists.AddAsync(wishList, CancellationToken);
         await DbContext.SaveChangesAsync();
-        Task action() =>
+        Task Action() =>
             _wishListRepository.UpdateAsync(editWishList, CancellationToken.None, true);
 
         //Assert
-        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(action);
+        await Assert.Throws<DbUpdateConcurrencyException>(Action);
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class WishListTests : BaseTests
         await DbContext.SaveChangesAsync();
 
         //Act
-        var newWishLists = await _wishListRepository.GetAll(CancellationToken);
+        var newWishLists = await _wishListRepository.GetAllAsync(CancellationToken);
 
         //Assert
         Assert.Equal(2, newWishLists.Count());

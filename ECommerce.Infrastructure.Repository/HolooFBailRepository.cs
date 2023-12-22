@@ -37,7 +37,6 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
         try
         {
             _context.Add(bail);
-            var result = await _context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
         catch (Exception e)
@@ -46,7 +45,6 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
             bail.Fac_Code_C = lastFacCode;
             bail.Fac_Code = lastFacCode.ToString("000000");
             _context.Add(bail);
-            var result = await _context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
     }

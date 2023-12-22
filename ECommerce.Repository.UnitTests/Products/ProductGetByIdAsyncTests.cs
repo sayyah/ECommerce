@@ -6,12 +6,12 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetByIdAsync: Get products by Id")]
+    [Fact]
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange
         AddCategories();
-        var set = TestSets["unique_url"];
+        var set = _testSets["unique_url"];
         DbContext.Products.AddRange(set.Values);
         DbContext.SaveChanges();
 

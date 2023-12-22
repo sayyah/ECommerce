@@ -5,17 +5,17 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "Delete: Null blogComment")]
+    [Fact]
     public void Delete_NullBlogComment_ThrowsException()
     {
         // Act
-        void action() => _blogCommentRepository.Delete(null!);
+        void Action() => _blogCommentRepository.Delete(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Delete: Delete blogComment from repository")]
+    [Fact]
     public void Delete_DeleteBlogComment_EntityNotInRepository()
     {
         // Arrange
@@ -52,7 +52,7 @@ public partial class BlogCommentTests
         BlogComment blogCommentToDelete = expected["test_1"];
 
         // Act
-        _blogCommentRepository.Delete(blogCommentToDelete, false);
+        _blogCommentRepository.Delete(blogCommentToDelete);
 
         // Assert
         BlogComment? actual = DbContext

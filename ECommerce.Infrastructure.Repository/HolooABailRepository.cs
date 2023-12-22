@@ -1,5 +1,4 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
@@ -21,15 +20,8 @@ public class HolooABailRepository : HolooRepository<HolooABail>, IHolooABailRepo
         return result;
     }
 
-    public async Task<bool> Add(List<HolooABail> aBails, CancellationToken cancellationToken)
+    public void Add(List<HolooABail> aBails)
     {
-        await _context.AddRangeAsync(aBails, cancellationToken);
-        var result = await _context.SaveChangesAsync(cancellationToken);
-        return result > 0;
-    }
-
-    public async Task<List<HolooABail>> GetAll(CancellationToken cancellationToken)
-    {
-        return await _context.ABAILPRE.ToListAsync(cancellationToken);
+        _context.AddRangeAsync(aBails);
     }
 }

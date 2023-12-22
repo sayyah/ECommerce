@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ContactRepository : AsyncRepository<Contact>, IContactRepository
+public class ContactRepository : RepositoryBase<Contact>, IContactRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
+public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -18,17 +18,16 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<Category>> Search(string searchKeyword, CancellationToken cancellationToken)
+    public async Task<List<Category>?> Search(string searchKeyword, CancellationToken cancellationToken)
     {
         return await _context.Categories
             .Where(x => x.Name.Contains(searchKeyword) && x.IsActive)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> AddAll(IEnumerable<Category> categories, CancellationToken cancellationToken)
+    public async Task AddAll(IEnumerable<Category> categories, CancellationToken cancellationToken)
     {
         await _context.Categories.AddRangeAsync(categories, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<int>> GetIdsByUrl(string categoryUrl, CancellationToken cancellationToken)
@@ -55,7 +54,7 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
             }).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<CategoryParentViewModel>> Parents(int productId, CancellationToken cancellationToken)
+    public async Task<List<CategoryParentViewModel>?> Parents(int productId, CancellationToken cancellationToken)
     {
         var productCategory = new List<int>();
         if (productId > 0)

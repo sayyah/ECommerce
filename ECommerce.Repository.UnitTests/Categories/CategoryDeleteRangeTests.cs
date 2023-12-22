@@ -6,17 +6,17 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "DeleteRange: Null Argument")]
+    [Fact]
     public void DeleteRange_NullArgument_ThrowsException()
     {
         // Act
-        void action() => _categoryRepository.DeleteRange(null!);
+        void Action() => _categoryRepository.DeleteRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "DeleteRange: Delete entities from repository")]
+    [Fact]
     public void DeleteRange_DeleteEntities_EntitiesRemovedFromRepository()
     {
         // Arrange

@@ -6,65 +6,28 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class PurchaseOrdersController : ControllerBase
-{
-    private readonly IHolooABailRepository _aBailRepository;
-    private readonly IHolooArticleRepository _articleRepository;
-    private readonly IConfiguration _configuration;
-    private readonly IDiscountRepository _discountRepository;
-    private readonly IHolooABailRepository _holooABailRepository;
-    private readonly IHolooCustomerRepository _holooCustomerRepository;
-    private readonly IHolooFBailRepository _holooFBailRepository;
-    private readonly IHolooSanadListRepository _holooSanadListRepository;
-    private readonly IHolooSanadRepository _holooSanadRepository;
-    private readonly ILogger<PurchaseOrdersController> _logger;
-    private readonly IPriceRepository _priceRepository;
-    private readonly IProductRepository _productRepository;
-    private readonly IPurchaseOrderDetailRepository _purchaseOrderDetailRepository;
-    private readonly IPurchaseOrderRepository _purchaseOrderRepository;
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly IUserRepository _userRepository;
-
-    public PurchaseOrdersController(
-        IPurchaseOrderRepository purchaseOrderRepository,
-        IPurchaseOrderDetailRepository purchaseOrderDetailRepository,
-        IProductRepository productRepository,
-        ILogger<PurchaseOrdersController> logger,
-        IHolooArticleRepository articleRepository,
-        IPriceRepository priceRepository,
-        IHolooFBailRepository holooFBailRepository,
-        IHolooABailRepository holooABailRepository,
-        IHolooSanadRepository holooSanadRepository,
-        IHolooSanadListRepository holooSanadListRepository,
-        IUserRepository userRepository,
-        IHolooCustomerRepository holooCustomerRepository,
-        ITransactionRepository transactionRepository,
-        IDiscountRepository discountRepository,
-        IHolooABailRepository aBailRepository,
+public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOrdersController> logger,
         IConfiguration configuration)
-    {
-        _purchaseOrderRepository = purchaseOrderRepository;
-        _purchaseOrderDetailRepository = purchaseOrderDetailRepository;
-        _productRepository = productRepository;
-        _logger = logger;
-        _articleRepository = articleRepository;
-        _priceRepository = priceRepository;
-        _holooFBailRepository = holooFBailRepository;
-        _holooABailRepository = holooABailRepository;
-        _holooSanadRepository = holooSanadRepository;
-        _holooSanadListRepository = holooSanadListRepository;
-        _userRepository = userRepository;
-        _holooCustomerRepository = holooCustomerRepository;
-        _transactionRepository = transactionRepository;
-        _discountRepository = discountRepository;
-        _configuration = configuration;
-        _aBailRepository = aBailRepository;
-    }
+    : ControllerBase
+{
+    private readonly IHolooABailRepository _aBailRepository = unitOfWork.GetHolooRepository<IHolooABailRepository, HolooABail>();
+    private readonly IHolooArticleRepository _articleRepository = unitOfWork.GetHolooRepository<IHolooArticleRepository, HolooArticle>();
+    private readonly IDiscountRepository _discountRepository = unitOfWork.GetRepository<IDiscountRepository, Discount>();
+    private readonly IHolooCustomerRepository _customerRepository = unitOfWork.GetHolooRepository<IHolooCustomerRepository, HolooCustomer>();
+    private readonly IHolooFBailRepository _fBailRepository = unitOfWork.GetHolooRepository<IHolooFBailRepository, HolooFBail>();
+    private readonly IHolooSanadListRepository _sanadListRepository = unitOfWork.GetHolooRepository<IHolooSanadListRepository, HolooSndList>();
+    private readonly IHolooSanadRepository _sanadRepository = unitOfWork.GetHolooRepository<IHolooSanadRepository, HolooSanad>();
+    private readonly IPriceRepository _priceRepository = unitOfWork.GetRepository<IPriceRepository, Price>();
+    private readonly IProductRepository _productRepository = unitOfWork.GetRepository<IProductRepository, Product>();
+    private readonly IPurchaseOrderDetailRepository _purchaseOrderDetailRepository = unitOfWork.GetRepository<IPurchaseOrderDetailRepository, PurchaseOrderDetail>();
+    private readonly IPurchaseOrderRepository _purchaseOrderRepository = unitOfWork.GetRepository<IPurchaseOrderRepository, PurchaseOrder>();
+    private readonly ITransactionRepository _transactionRepository = unitOfWork.GetRepository<ITransactionRepository, Transaction>();
+    private readonly IUserRepository _userRepository = unitOfWork.GetRepository<IUserRepository, User>();
 
     private async Task<List<PurchaseOrderViewModel>> AddPriceAndExistFromHolooList(
         List<PurchaseOrderViewModel> products, CancellationToken cancellationToken)
     {
-        int userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
+        int userCode = Convert.ToInt32(configuration.GetValue<string>("UserCode"));
         foreach (var product in products.Where(x => x.Price.ArticleCode != null))
             if (product.Price.SellNumber != null && product.Price.SellNumber != Price.HolooSellNumber.خالی)
             {
@@ -94,14 +57,8 @@ public class PurchaseOrdersController : ControllerBase
                 Messages = new List<string> { "اشکال در سمت سرور" }
             });
         purchaseOrder.Status = status;
-        var result = await _purchaseOrderRepository.UpdateAsync(purchaseOrder, cancellationToken);
-        if (result == null)
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.DatabaseError,
-                ReturnData = false,
-                Messages = new List<string> { "اشکال در سمت سرور" }
-            });
+        _purchaseOrderRepository.Update(purchaseOrder);
+        await unitOfWork.SaveAsync(cancellationToken);
 
         return Ok(new ApiResult
         {
@@ -141,7 +98,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -168,7 +125,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -194,7 +151,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -221,7 +178,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -247,7 +204,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -273,7 +230,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -300,7 +257,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -336,7 +293,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -390,7 +347,7 @@ public class PurchaseOrdersController : ControllerBase
             double soldExist = 0;
             if (price.ArticleCode != null)
             {
-                var userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
+                var userCode = Convert.ToInt32(configuration.GetValue<string>("UserCode"));
                 soldExist = _aBailRepository.GetWithACode(userCode, price.ArticleCode, cancellationToken);
                 var holooPrice = await _articleRepository.GetHolooPrice(price.ArticleCodeCustomer,
                     (Price.HolooSellNumber)price.SellNumber);
@@ -427,8 +384,10 @@ public class PurchaseOrdersController : ControllerBase
                 {
                     repetitiveDetail.Quantity += createPurchaseCommand.Quantity;
                     repetitiveDetail.SumPrice = repetitiveDetail.Quantity * unitPrice;
-                    await _purchaseOrderDetailRepository.UpdateAsync(repetitiveDetail, cancellationToken);
-                    await _purchaseOrderRepository.UpdateAsync(repetitivePurchaseOrder, cancellationToken);
+                     _purchaseOrderDetailRepository.Update(repetitiveDetail);
+                     _purchaseOrderRepository.Update(repetitivePurchaseOrder);
+                    await unitOfWork.SaveAsync(cancellationToken);
+
                     return Ok(new ApiResult
                     {
                         Code = ResultCode.Repetitive,
@@ -436,7 +395,7 @@ public class PurchaseOrdersController : ControllerBase
                     });
                 }
 
-                await _purchaseOrderDetailRepository.AddAsync(new PurchaseOrderDetail
+                _purchaseOrderDetailRepository.Add(new PurchaseOrderDetail
                 {
                     PurchaseOrderId = repetitivePurchaseOrder.Id,
                     Name = product.Name,
@@ -445,8 +404,9 @@ public class PurchaseOrdersController : ControllerBase
                     PriceId = price!.Id,
                     Quantity = createPurchaseCommand.Quantity,
                     SumPrice = sumPrice
-                }, cancellationToken);
-                await _purchaseOrderRepository.UpdateAsync(repetitivePurchaseOrder, cancellationToken);
+                });
+                 _purchaseOrderRepository.Update(repetitivePurchaseOrder);
+                 await unitOfWork.SaveAsync(cancellationToken);
 
                 return Ok(new ApiResult
                 {
@@ -473,6 +433,8 @@ public class PurchaseOrdersController : ControllerBase
                 SumPrice = sumPrice
             }, cancellationToken);
             purchaseOrder.PurchaseOrderDetails.Add(purchaseOrderDetail);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Messages = new[] { "کالا با موفقیت به سبد خرید اضافه شد" },
@@ -481,7 +443,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -500,18 +462,18 @@ public class PurchaseOrdersController : ControllerBase
             purchaseOrderDetails.Quantity -= 1;
             if (purchaseOrderDetails.Quantity <= 0)
             {
-                await _purchaseOrderDetailRepository.DeleteAsync(purchaseOrderDetails.Id, cancellationToken);
+                await _purchaseOrderDetailRepository.DeleteById(purchaseOrderDetails.Id, cancellationToken);
             }
             else
             {
                 purchaseOrderDetails.SumPrice = purchaseOrderDetails.Quantity * purchaseOrderDetails.UnitPrice;
-                await _purchaseOrderDetailRepository.UpdateAsync(purchaseOrderDetails, cancellationToken);
+                _purchaseOrderDetailRepository.Update(purchaseOrderDetails);
             }
 
             purchaseOrder.Amount -= purchaseOrderDetails.UnitPrice;
             if (purchaseOrder.Amount <= 0 || purchaseOrder.PurchaseOrderDetails == null)
             {
-                await _purchaseOrderRepository.DeleteAsync(purchaseOrder.Id, cancellationToken);
+                await _purchaseOrderRepository.DeleteById(purchaseOrder.Id, cancellationToken);
             }
             else
             {
@@ -519,8 +481,9 @@ public class PurchaseOrdersController : ControllerBase
                     await _purchaseOrderRepository.GetPurchaseOrderWithIncludeById(
                         (int)purchaseOrderDetails.PurchaseOrderId, cancellationToken);
                 purchaseOrder.Amount = purchaseOrder.PurchaseOrderDetails.Sum(x => x.SumPrice);
-                await _purchaseOrderRepository.UpdateAsync(purchaseOrder, cancellationToken);
+                _purchaseOrderRepository.Update(purchaseOrder);
             }
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
@@ -529,7 +492,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -574,14 +537,14 @@ public class PurchaseOrdersController : ControllerBase
             //purchaseOrder.PaymentDate = DateTime.Now;
             var resultUser = await _userRepository.GetByIdAsync(cancellationToken, purchaseOrder.UserId);
             var cCode = resultUser.CustomerCode;
-            var (fCode, fCodeC) = await _holooFBailRepository.GetFactorCode(cancellationToken);
+            var (fCode, fCodeC) = await _fBailRepository.GetFactorCode(cancellationToken);
             var amount = Convert.ToDouble(purchaseOrder.Amount);
             double? takhfif = null;
             if (discount != null) takhfif = (amount - CalculateDiscount(discount, amount)) * 10;
 
             amount *= 10;
-            var userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
-            var fBail = await _holooFBailRepository.Add(new HolooFBail
+            var userCode = Convert.ToInt32(configuration.GetValue<string>("UserCode"));
+            var fBail = await _fBailRepository.Add(new HolooFBail
             {
                 C_Code = cCode,
                 Fac_Code = fCode,
@@ -610,7 +573,7 @@ public class PurchaseOrdersController : ControllerBase
                 double otherWarehouseCount = orderDetail.Quantity;
                 var holoo_A = holooArticle.Where(c => c.A_Code_C == orderDetail.Price.ArticleCodeCustomer)
                     .FirstOrDefault();
-                double soldExist = _holooABailRepository.GetWithACode(userCode, holoo_A.A_Code, cancellationToken);
+                double soldExist = _aBailRepository.GetWithACode(userCode, holoo_A.A_Code, cancellationToken);
                 if ((holoo_A.Exist - soldExist) > 0)
                 {
                     if ((holoo_A.Exist - soldExist) < orderDetail.Quantity)
@@ -640,7 +603,7 @@ public class PurchaseOrdersController : ControllerBase
                         purchaseOrderDetails.Select(c => c.Price.ArticleCodeCustomer).ToList(), cancellationToken);
                     var holoo_A_Othere = holooArticleOthere
                         .Where(c => c.A_Code_C == orderDetail.Price.ArticleCodeCustomer).FirstOrDefault();
-                    double soldOtherExist = _holooABailRepository.GetWithACode(userCode, holoo_A_Othere.A_Code, cancellationToken);
+                    double soldOtherExist = _aBailRepository.GetWithACode(userCode, holoo_A_Othere.A_Code, cancellationToken);
                     if (holoo_A_Othere.Exist - soldOtherExist > 0)
                         aBail.Add(new HolooABail
                         {
@@ -666,17 +629,17 @@ public class PurchaseOrdersController : ControllerBase
             }
 
 
-            await _holooABailRepository.Add(aBail, cancellationToken);
+            _aBailRepository.Add(aBail);
             purchaseOrder.FBailCode = fBail;
 
 
-            var customer = await _holooCustomerRepository.GetCustomerByCode(cCode);
+            var customer = await _customerRepository.GetCustomerByCode(cCode);
             var sanad = new HolooSanad($"کدرهگیری:{purchaseOrder.Transaction.RefId}-{purchaseOrder.Description}");
-            var sanadCodes = await _holooSanadRepository.Add(sanad, cancellationToken);
+            var sanadCodes = await _sanadRepository.Add(sanad, cancellationToken);
             var sanadCode = Convert.ToInt32(sanadCodes.Item1);
             var sanadCodeCustomer = Convert.ToInt32(sanadCodes.Item2);
             purchaseOrder.Transaction.Amount *= 10;
-            await _transactionRepository.AddAsync(new Transaction
+            _transactionRepository.Add(new Transaction
             {
                 Amount = purchaseOrder.Transaction.Amount,
                 PaymentId = purchaseOrder.Transaction.PaymentId,
@@ -688,24 +651,26 @@ public class PurchaseOrdersController : ControllerBase
                 SanadCode = sanadCode,
                 SanadCodeCustomer = sanadCodeCustomer,
                 PurchaseOrderId = purchaseOrder.Id
-            }, cancellationToken);
+            });
 
-            var col_Code = _configuration.GetValue<string>("SiteSettings:SanadSettings:col_Code");
-            var moien_Code = _configuration.GetValue<string>("SiteSettings:SanadSettings:moien_Code");
-            var tafzili_Code = _configuration.GetValue<string>("SiteSettings:SanadSettings:tafzili_Code");
+            var col_Code = configuration.GetValue<string>("SiteSettings:SanadSettings:col_Code");
+            var moien_Code = configuration.GetValue<string>("SiteSettings:SanadSettings:moien_Code");
+            var tafzili_Code = configuration.GetValue<string>("SiteSettings:SanadSettings:tafzili_Code");
 
-            await _holooSanadListRepository.Add(
+            _sanadListRepository.Add(
                 new HolooSndList(sanadCode, col_Code, moien_Code, tafzili_Code,
                     Convert.ToDouble(purchaseOrder.Transaction.Amount), 0,
-                    $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"), cancellationToken);
-            await _holooSanadListRepository.Add(
+                    $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"));
+            _sanadListRepository.Add(
                 new HolooSndList(sanadCode, "103", customer.Moien_Code_Bed, "", 0,
                     Convert.ToDouble(purchaseOrder.Transaction.Amount),
-                    $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"), cancellationToken);
+                    $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"));
 
             purchaseOrder.IsPaid = true;
 
-            await _purchaseOrderRepository.UpdateAsync(purchaseOrder, cancellationToken);
+            _purchaseOrderRepository.Update(purchaseOrder);
+            await unitOfWork.SaveAsync(cancellationToken, true);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -714,7 +679,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             {
                 Code = ResultCode.DatabaseError
@@ -728,7 +693,9 @@ public class PurchaseOrdersController : ControllerBase
     {
         try
         {
-            await _purchaseOrderRepository.UpdateAsync(purchaseOrder, cancellationToken);
+            _purchaseOrderRepository.Update(purchaseOrder);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -736,7 +703,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -748,12 +715,14 @@ public class PurchaseOrdersController : ControllerBase
         try
         {
             var purchaseOrderDetails = await _purchaseOrderDetailRepository.GetByIdAsync(cancellationToken, id);
-            await _purchaseOrderDetailRepository.DeleteAsync(id, cancellationToken);
+            await _purchaseOrderDetailRepository.DeleteById(id, cancellationToken);
             var purchaseOrder =
                 await _purchaseOrderRepository.GetPurchaseOrderWithIncludeById(
                     (int)purchaseOrderDetails.PurchaseOrderId, cancellationToken);
             purchaseOrder.Amount = purchaseOrder.PurchaseOrderDetails.Sum(x => x.SumPrice);
-            await _purchaseOrderRepository.UpdateAsync(purchaseOrder, cancellationToken);
+            _purchaseOrderRepository.Update(purchaseOrder);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -761,7 +730,7 @@ public class PurchaseOrdersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

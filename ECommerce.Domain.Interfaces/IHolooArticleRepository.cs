@@ -12,9 +12,9 @@ public interface IHolooArticleRepository : IHolooRepository<HolooArticle>
     Task<IEnumerable<HolooArticle>>
         GetAllMCode(string mCode, CancellationToken cancellationToken, short sendToSite = 0);
 
-    Task SyncHolooWebId(string aCodeC, int productId, CancellationToken cancellationToken);
+    void SyncHolooWebId(string aCodeC, int productId);
 
-    Task<IEnumerable<HolooArticle>> GetHolooArticles(List<string> aCodeCs, CancellationToken cancellationToken);
+    Task<List<HolooArticle>> GetHolooArticles(List<string> aCodeCs, CancellationToken cancellationToken);
 
     Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice);
 

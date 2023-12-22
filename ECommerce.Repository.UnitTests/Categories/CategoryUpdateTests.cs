@@ -6,17 +6,17 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "Update: Null Argument")]
+    [Fact]
     public void Update_NullArgument_ThrowsException()
     {
         // Act
-        void action() => _categoryRepository.Update(null!);
+        void Action() => _categoryRepository.Update(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Update: Update entity in repository")]
+    [Fact]
     public void Update_UpdateEntity_EntityChanges()
     {
         // Arrange

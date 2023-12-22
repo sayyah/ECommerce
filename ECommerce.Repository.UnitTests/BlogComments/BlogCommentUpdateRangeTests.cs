@@ -6,27 +6,27 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "UpdateRange: Null BlogComment")]
+    [Fact]
     public void UpdateRange_NullBlogComment_ThrowsException()
     {
         // Act
-        void actual() => _blogCommentRepository.UpdateRange([ null! ]);
+        void Actual() => _blogCommentRepository.UpdateRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Null Argument")]
+    [Fact]
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCommentRepository.UpdateRange(null!);
+        void Actual() => _blogCommentRepository.UpdateRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Update blogComments")]
+    [Fact]
     public void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange

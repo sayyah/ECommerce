@@ -2,16 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BrandsController : ControllerBase
+public class BrandsController(IUnitOfWork unitOfWork, ILogger<BrandsController> logger) : ControllerBase
 {
-    private readonly IBrandRepository _brandRepository;
-    private readonly ILogger<BrandsController> _logger;
-
-    public BrandsController(IBrandRepository brandRepository, ILogger<BrandsController> logger)
-    {
-        _brandRepository = brandRepository;
-        _logger = logger;
-    }
+    private readonly IBrandRepository _brandRepository = unitOfWork.GetRepository<IBrandRepository, Brand>();
 
     /// <summary>
     ///     Get All Brands.
@@ -21,7 +14,7 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            var result = await _brandRepository.GetAll(cancellationToken);
+            var result = await _brandRepository.GetAllAsync(cancellationToken);
             var brands = result.ToList();
             brands.Insert(0, new Brand
             {
@@ -35,7 +28,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -60,17 +53,6 @@ public class BrandsController : ControllerBase
                 Search = paginationParameters.Search
             };
 
-            //var metadata = new
-            //{
-            //    entity.TotalCount,
-            //    entity.PageSize,
-            //    entity.CurrentPage,
-            //    entity.TotalPages,
-            //    entity.HasNext,
-            //    entity.HasPrevious
-            //};
-            //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
             return Ok(new ApiResult
             {
                 PaginationDetails = paginationDetails,
@@ -80,7 +62,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -91,7 +73,6 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            var x = User.Identity.Name;
             var result = await _brandRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
@@ -107,7 +88,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -115,7 +96,7 @@ public class BrandsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Brand brand, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Brand? brand, CancellationToken cancellationToken)
     {
         try
         {
@@ -134,15 +115,17 @@ public class BrandsController : ControllerBase
                     Messages = new List<string> { "نام برند تکراری است" }
                 });
 
+            _brandRepository.Add(brand);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _brandRepository.AddAsync(brand, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -162,7 +145,9 @@ public class BrandsController : ControllerBase
                     Messages = new List<string> { "نام برند تکراری است" }
                 });
             if (repetitive != null) _brandRepository.Detach(repetitive);
-            await _brandRepository.UpdateAsync(brand, cancellationToken);
+            _brandRepository.Update(brand);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -170,7 +155,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -182,7 +167,9 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            await _brandRepository.DeleteAsync(id, cancellationToken);
+            await _brandRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -190,7 +177,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

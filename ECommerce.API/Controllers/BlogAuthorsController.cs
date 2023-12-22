@@ -2,16 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogAuthorsController : ControllerBase
+public class BlogAuthorsController(IUnitOfWork unitOfWork, ILogger<BlogAuthorsController> logger)
+    : ControllerBase
 {
-    private readonly IBlogAuthorRepository _blogAuthorRepository;
-    private readonly ILogger<BlogAuthorsController> _logger;
-
-    public BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogger<BlogAuthorsController> logger)
-    {
-        _blogAuthorRepository = brandRepository;
-        _logger = logger;
-    }
+    private readonly IBlogAuthorRepository _blogAuthorRepository = unitOfWork.GetRepository<IBlogAuthorRepository, BlogAuthor>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -41,7 +35,7 @@ public class BlogAuthorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -52,13 +46,7 @@ public class BlogAuthorsController : ControllerBase
     {
         try
         {
-            var result = await _blogAuthorRepository.GetAll(cancellationToken);
-            if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
-
+            var result = await _blogAuthorRepository.GetAllAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -67,7 +55,7 @@ public class BlogAuthorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -93,7 +81,7 @@ public class BlogAuthorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -101,7 +89,7 @@ public class BlogAuthorsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(BlogAuthor blogAuthor, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(BlogAuthor? blogAuthor, CancellationToken cancellationToken)
     {
         try
         {
@@ -120,15 +108,16 @@ public class BlogAuthorsController : ControllerBase
                     Messages = new List<string> { "نام نویسنده تکراری است" }
                 });
 
+            _blogAuthorRepository.Add(blogAuthor);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _blogAuthorRepository.AddAsync(blogAuthor, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -140,7 +129,8 @@ public class BlogAuthorsController : ControllerBase
     {
         try
         {
-            await _blogAuthorRepository.UpdateAsync(blogAuthor, cancellationToken);
+            _blogAuthorRepository.Update(blogAuthor);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -148,7 +138,7 @@ public class BlogAuthorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -160,7 +150,9 @@ public class BlogAuthorsController : ControllerBase
     {
         try
         {
-            await _blogAuthorRepository.DeleteAsync(id, cancellationToken);
+            await _blogAuthorRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -168,7 +160,7 @@ public class BlogAuthorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

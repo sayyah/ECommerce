@@ -1,20 +1,13 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class UnitsController : ControllerBase
+public class UnitsController(IUnitOfWork unitOfWork, ILogger<UnitsController> logger) : ControllerBase
 {
-    private readonly IHolooUnitRepository _holooUnitRepository;
-    private readonly ILogger<UnitsController> _logger;
-    private readonly IUnitRepository _unitRepository;
-
-    public UnitsController(IUnitRepository unitRepository, IHolooUnitRepository holooUnitRepository,
-        ILogger<UnitsController> logger)
-    {
-        _unitRepository = unitRepository;
-        _holooUnitRepository = holooUnitRepository;
-        _logger = logger;
-    }
+    private readonly IHolooUnitRepository _holooUnitRepository = unitOfWork.GetHolooRepository<IHolooUnitRepository, HolooUnit>();
+    private readonly IUnitRepository _unitRepository = unitOfWork.GetRepository<IUnitRepository, Unit>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -43,7 +36,7 @@ public class UnitsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -61,7 +54,7 @@ public class UnitsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -86,14 +79,14 @@ public class UnitsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Unit unit, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Unit? unit, CancellationToken cancellationToken)
     {
         try
         {
@@ -112,15 +105,17 @@ public class UnitsController : ControllerBase
                     Messages = new List<string> { "نام واحد تکراری است" }
                 });
 
+            _unitRepository.Add(unit);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _unitRepository.AddAsync(unit, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -145,7 +140,9 @@ public class UnitsController : ControllerBase
                     Messages = new List<string> { "نام واحد تکراری است" }
                 });
             if (repetitive != null) _unitRepository.Detach(repetitive);
-            await _unitRepository.UpdateAsync(unit, cancellationToken);
+            _unitRepository.Update(unit);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -153,7 +150,7 @@ public class UnitsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -170,7 +167,9 @@ public class UnitsController : ControllerBase
                     Code = ResultCode.BadRequest,
                     Messages = new List<string> { "واحد پیشفرض قابل حذف نیست" }
                 });
-            await _unitRepository.DeleteAsync(id, cancellationToken);
+            await _unitRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -178,7 +177,7 @@ public class UnitsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -189,7 +188,7 @@ public class UnitsController : ControllerBase
     {
         try
         {
-            var units = (await _holooUnitRepository.GetAll(cancellationToken))!.Select(x => new Unit
+            var units = (await _holooUnitRepository.GetAll(cancellationToken)).Select(x => new Unit
             {
                 Name = x.Unit_Name,
                 Few = x.Unit_Few,
@@ -200,11 +199,12 @@ public class UnitsController : ControllerBase
 
             try
             {
-                await _unitRepository.AddRangeAsync(units, cancellationToken);
+                _unitRepository.AddRange(units);
+                await unitOfWork.SaveAsync(cancellationToken);
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, e.Message);
+                logger.LogCritical(e, e.Message);
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.DatabaseError,
@@ -219,7 +219,7 @@ public class UnitsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

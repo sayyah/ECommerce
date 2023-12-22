@@ -6,27 +6,27 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "DeleteRangeAsync: Null blogCategory")]
+    [Fact]
     public async Task DeleteRangeAsync_NullBlogCategory_ThrowsException()
     {
         // Act
-        Task actual() => _blogCategoryRepository.DeleteRangeAsync([ null! ], CancellationToken);
+        void Actual() => _blogCategoryRepository.DeleteRangeAsync([ null! ], CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRangeAsync: Null argument")]
+    [Fact]
     public async Task DeleteRangeAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task actual() => _blogCategoryRepository.DeleteRangeAsync(null!, CancellationToken);
+        void Actual() => _blogCategoryRepository.DeleteRangeAsync(null!, CancellationToken);
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(actual);
+        await Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRangeAsync: Delete range of BlogCategories from repository")]
+    [Fact]
     public async void DeleteRangeAsync_DeleteBlogCategories_EntityNotInRepository()
     {
         // Arrange

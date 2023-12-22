@@ -5,22 +5,22 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "Delete: Null product")]
+    [Fact]
     public void Delete_NullProduct_ThrowsException()
     {
         // Act
-        void action() => _productRepository.Delete(null!);
+        void Action() => _productRepository.Delete(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        Assert.Throws<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Delete: Delete product from repository")]
+    [Fact]
     public void Delete_DeleteProduct_EntityNotInRepository()
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -44,7 +44,7 @@ public partial class ProductTests
     {
         // Arrange
         AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        Dictionary<string, Product> expected = _testSets["unique_url"];
         DbContext.Products.AddRange(expected.Values);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
@@ -52,7 +52,7 @@ public partial class ProductTests
         Product productToDelete = expected["test_1"];
 
         // Act
-        _productRepository.Delete(productToDelete, false);
+        _productRepository.Delete(productToDelete);
 
         // Assert
         Product? actual = DbContext.Products.FirstOrDefault(x => x.Id == productToDelete.Id);
