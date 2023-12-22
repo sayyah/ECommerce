@@ -1,7 +1,7 @@
 ﻿using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Cities;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Cities;
 
 public class EditModel : PageModel
 {

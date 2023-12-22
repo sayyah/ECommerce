@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.ProductAttributeGroups;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributeGroups;
 
 public class DeleteModel : PageModel
 {

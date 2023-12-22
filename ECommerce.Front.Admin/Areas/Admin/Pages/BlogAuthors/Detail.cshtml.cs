@@ -1,6 +1,6 @@
 using ECommerce.Services.IServices;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.BlogAuthors;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogAuthors;
 
 public class DetailModel : PageModel
 {

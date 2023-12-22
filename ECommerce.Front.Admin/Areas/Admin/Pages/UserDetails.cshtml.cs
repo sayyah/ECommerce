@@ -1,4 +1,4 @@
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages;
 
 public class UserDetilsModel : PageModel
 {

@@ -1,7 +1,7 @@
 ﻿using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ECommerce.Front.BolouriGroup.Areas.Admin.Pages.Employees;
+namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 
 public class EditModel : PageModel
 {
