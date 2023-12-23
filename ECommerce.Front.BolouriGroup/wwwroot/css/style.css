@@ -1672,7 +1672,26 @@ tbody tr td:last-child { border-left: none; }
     width: 100%;
     z-index: 1;
 }
-
+.Image__Placeholder{
+    height:250px;
+    animation:image-loading 1s linear infinite alternate;
+}
+.Image__Placeholder-Details {
+    height: 170px;
+    animation: image-loading 1s linear infinite alternate;
+}
+.Image__Placeholder-promo {
+    height: 125px;
+    animation: image-loading 1s linear infinite alternate;
+}
+@keyframes image-loading{
+    0% {
+        background-color:hsl(250, 20%, 80%);
+    }
+    100% {
+        background-color: hsl(250, 20%, 95%);
+    }
+}
 @media (max-width: 575px) {
     .product-card {
         margin-bottom: 8px;
