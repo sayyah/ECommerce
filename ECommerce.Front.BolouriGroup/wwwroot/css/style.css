@@ -204,7 +204,7 @@ button:focus { outline: none; }
 
 .section { margin-bottom: 60px; }
 
-.inner-section { margin-bottom: 100px; }
+.inner-section { margin-bottom: 80px; }
 
 .section-heading {
     margin-bottom: 40px;
@@ -237,14 +237,22 @@ button:focus { outline: none; }
         line-height: 36px;
     }
 }
-
-@media (min-width: 768px) and (max-width: 1199px) {
-    .section { margin-bottom: 75px; }
-
-    .inner-section { margin-bottom: 80px; }
+@media (min-width: 1199px) and (max-width: 2500px) {
+    .single-banner {
+        padding: 150px 0 !important;
+    }
 }
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .section {
+            margin-bottom: 75px;
+        }
 
-.alert {
+        .inner-section {
+            margin-bottom: 80px;
+        }
+    }
+
+    .alert {
     border: none;
     border-radius: 0;
     margin: 0;
