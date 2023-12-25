@@ -204,7 +204,7 @@ button:focus { outline: none; }
 
 .section { margin-bottom: 60px; }
 
-.inner-section { margin-bottom: 80px; }
+.inner-section { margin-bottom: 20px; }
 
 .section-heading {
     margin-bottom: 40px;
@@ -224,7 +224,7 @@ button:focus { outline: none; }
 @media (max-width: 767px) {
     .section { margin-bottom: 55px; }
 
-    .inner-section { margin-bottom: 60px; }
+    .inner-section { margin-bottom: 20px; }
 
     .res-card { margin: 0 auto; }
 
@@ -241,6 +241,10 @@ button:focus { outline: none; }
     .single-banner {
         padding: 150px 0 !important;
     }
+    .inner-section {
+        margin-bottom: 40px !important;
+        ;
+    }
 }
     @media (min-width: 768px) and (max-width: 1199px) {
         .section {
@@ -248,7 +252,7 @@ button:focus { outline: none; }
         }
 
         .inner-section {
-            margin-bottom: 80px;
+            margin-bottom: 20px;
         }
     }
 
@@ -5370,6 +5374,13 @@ tbody tr td:last-child { border-left: none; }
 }
 
 @media (max-width: 767px) {
+    .TitleSlide {
+        font-size: 20px !important;
+    }
+    .single-banner h2 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
     .single-banner { padding: 40px 0; }
 
     .single-banner-404 { padding: 50px 0; }
@@ -5387,6 +5398,13 @@ tbody tr td:last-child { border-left: none; }
 }
 
 @media (max-width: 575px) {
+    .TitleSlide {
+        font-size: 18px !important;
+    }
+    .single-banner h2 {
+        font-size: 18px;
+        margin-bottom: -15px;
+    }
     .single-banner { padding: 0; }
 
     .single-banner-404 { padding: 0px; }
@@ -5406,6 +5424,13 @@ tbody tr td:last-child { border-left: none; }
 }
 
 @media (max-width: 413px) {
+    .TitleSlide {
+        font-size: 18px !important;
+    }
+    .single-banner h2 {
+        font-size: 12px;
+        margin-bottom: -25px;
+    }
     .single-banner { padding: 0; }
 
     .single-banner-404 {
@@ -7753,7 +7778,7 @@ tbody tr td:last-child { border-left: none; }
     .btn { padding: 3px !important; }
 }
 
-.TitleSlide { font-size: 35px !important; }
+.TitleSlide { font-size: 35px; }
 
 .home-classic-slider .banner-content p {
     color: var(--white);
