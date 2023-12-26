@@ -56,6 +56,15 @@ public class SunflowerECommerceDbContext(DbContextOptions<SunflowerECommerceDbCo
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Product>()
+            .HasIndex(b => b.Url)
+            .IsUnique()
+            .HasFilter("[Url] IS NOT NULL");
+
+        modelBuilder.Entity<Product>()
+           .HasIndex(b => b.Name)
+           .HasFilter("[Name] IS NOT NULL");
+
         modelBuilder
             .Entity<Blog>()
             .HasOne(e => e.Image)

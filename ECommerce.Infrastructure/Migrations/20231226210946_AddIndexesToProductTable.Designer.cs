@@ -4,6 +4,7 @@ using ECommerce.Infrastructure.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Infrastructure.DataContext.Migrations
 {
     [DbContext(typeof(SunflowerECommerceDbContext))]
-    partial class SunflowerECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231226210946_AddIndexesToProductTable")]
+    partial class AddIndexesToProductTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4167,7 +4170,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HolooCompany");
+                    b.ToTable("HolooCompanies");
 
                     b.HasData(
                         new
@@ -4504,6 +4507,10 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                     b.HasIndex("StoreId");
 
                     b.HasIndex("SupplierId");
+
+                    b.HasIndex("Url")
+                        .IsUnique()
+                        .HasFilter("[Url] IS NOT NULL");
 
                     b.ToTable("Products");
                 });
@@ -5705,7 +5712,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             Birthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "6059c33c-aacc-4348-a731-ce1727c331f6",
+                            ConcurrencyStamp = "2269e981-ca51-43cf-9413-b191f8df2edc",
                             Email = "sayyah.alireza@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Alireza",
@@ -5720,10 +5727,10 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                             Mobile = "No Mobile",
                             NormalizedEmail = "SAYYAH.ALIREZA@GMAIL.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK8wjIF038UjDcsPXFdGExtZQBSLTkOtEMf2hQUMkHV7YFtFDyEFT24PfMD15e7lhg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKk4Mdc9L0uxXAF2BXtgqZYqkoQO6SYtC9ZfdaJsTpbldOtFaZCtryPRPG5JZp2e/Q==",
                             PhoneNumber = "0911307006",
                             PhoneNumberConfirmed = true,
-                            RegisterDate = new DateTime(2023, 12, 31, 7, 44, 44, 95, DateTimeKind.Local).AddTicks(771),
+                            RegisterDate = new DateTime(2023, 12, 27, 0, 39, 45, 533, DateTimeKind.Local).AddTicks(257),
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "superadmin",
@@ -6115,8 +6122,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
 
                     b.HasOne("ECommerce.Domain.Entities.Product", "Product")
                         .WithMany("Images")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("Blog");
 
