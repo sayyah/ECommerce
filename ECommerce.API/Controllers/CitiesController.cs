@@ -2,16 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CitiesController : ControllerBase
+public class CitiesController(IUnitOfWork unitOfWork, ILogger<CitiesController> logger) : ControllerBase
 {
-    private readonly ICityRepository _cityRepository;
-    private readonly ILogger<CitiesController> _logger;
-
-    public CitiesController(ICityRepository cityRepository, ILogger<CitiesController> logger)
-    {
-        _cityRepository = cityRepository;
-        _logger = logger;
-    }
+    private readonly ICityRepository _cityRepository = unitOfWork.GetRepository<CityRepository, City>();
 
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
@@ -21,12 +14,12 @@ public class CitiesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = (await _cityRepository.GetAll(cancellationToken)).OrderBy(x => x.Name)
+                ReturnData = (await _cityRepository.GetAllAsync(cancellationToken)).OrderBy(x => x.Name)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -60,7 +53,7 @@ public class CitiesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -71,15 +64,21 @@ public class CitiesController : ControllerBase
     {
         try
         {
+            var cities = await _cityRepository.Where(x => x.StateId == id, cancellationToken);
+            if (cities != null)
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.Success,
+                    ReturnData = cities.OrderBy(x => x.Name)
+                });
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = (await _cityRepository.Where(x => x.StateId == id, cancellationToken)).OrderBy(x => x.Name)
+                Code = ResultCode.NotFound,
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -97,14 +96,14 @@ public class CitiesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(City city, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(City? city, CancellationToken cancellationToken)
     {
         try
         {
@@ -123,15 +122,17 @@ public class CitiesController : ControllerBase
                     Messages = new List<string> { "نام شهر تکراری است" }
                 });
 
+            _cityRepository.Add(city);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _cityRepository.AddAsync(city, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -142,7 +143,9 @@ public class CitiesController : ControllerBase
     {
         try
         {
-            await _cityRepository.UpdateAsync(city, cancellationToken);
+            _cityRepository.Update(city);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -150,7 +153,7 @@ public class CitiesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -161,7 +164,9 @@ public class CitiesController : ControllerBase
     {
         try
         {
-            await _cityRepository.DeleteAsync(id, cancellationToken);
+            await _cityRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -169,7 +174,7 @@ public class CitiesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

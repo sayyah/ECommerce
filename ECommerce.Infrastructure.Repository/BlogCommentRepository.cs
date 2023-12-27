@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class BlogCommentRepository : AsyncRepository<BlogComment>, IBlogCommentRepository
+public class BlogCommentRepository : RepositoryBase<BlogComment>, IBlogCommentRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -22,7 +22,7 @@ public class BlogCommentRepository : AsyncRepository<BlogComment>, IBlogCommentR
             paginationParameters.PageSize);
     }
 
-    public async Task<PagedList<BlogComment>> GetAllAccesptedComments(PaginationParameters paginationParameters,
+    public async Task<PagedList<BlogComment>> GetAllAcceptedComments(PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
     {
         return PagedList<BlogComment>.ToPagedList(

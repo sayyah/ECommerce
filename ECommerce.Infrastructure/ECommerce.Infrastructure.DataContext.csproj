@@ -5,8 +5,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Configurations\**" />
+    <Compile Remove="DataContext\**" />
+    <EmbeddedResource Remove="Configurations\**" />
+    <EmbeddedResource Remove="DataContext\**" />
+    <None Remove="Configurations\**" />
+    <None Remove="DataContext\**" />
+  </ItemGroup>
 	<ItemGroup>
-	<Folder Include="DataContext\" />
 	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />

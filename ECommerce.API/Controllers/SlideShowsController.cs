@@ -1,31 +1,25 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SlideShowsController : ControllerBase
+public class SlideShowsController(IUnitOfWork unitOfWork, ILogger<SlideShowsController> logger)
+    : ControllerBase
 {
-    private readonly IHolooArticleRepository _articleRepository;
-    private readonly ILogger<SlideShowsController> _logger;
-    private readonly ISlideShowRepository _slideShowRepository;
-
-    public SlideShowsController(ISlideShowRepository slideShowRepository, IHolooArticleRepository articleRepository,
-        ILogger<SlideShowsController> logger)
-    {
-        _slideShowRepository = slideShowRepository;
-        _articleRepository = articleRepository;
-        _logger = logger;
-    }
+    private readonly IHolooArticleRepository _articleRepository = unitOfWork.GetHolooRepository<HolooArticleRepository, HolooArticle>();
+    private readonly ISlideShowRepository _slideShowRepository = unitOfWork.GetRepository<SlideShowRepository, SlideShow>();
 
     private async Task<Product> AddPriceAndExistFromHoloo(Product product)
     {
-        foreach (var productPrices in product.Prices)
-            if (productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی)
-            {
-                var article = await _articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer,
-                    productPrices.SellNumber!.Value);
-                productPrices.Amount = article.price / 10;
-                productPrices.Exist = (double)article.exist;
-            }
+        if (product.Prices == null) return product;
+        foreach (var productPrices in product.Prices.Where(productPrices => productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی))
+        {
+            var article = await _articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer!,
+                productPrices.SellNumber!.Value);
+            productPrices.Amount = article.price / 10;
+            productPrices.Exist = article.exist?? 0;
+        }
 
         return product;
     }
@@ -53,9 +47,10 @@ public class SlideShowsController : ControllerBase
                 if (slideShow.Product != null)
                 {
                     var productTemp = await AddPriceAndExistFromHoloo(slideShow.Product);
-                    slideShow.Price = productTemp.Prices != null && productTemp.Prices.FirstOrDefault() == null
-                        ? 0
-                        : productTemp.Prices.FirstOrDefault().Amount;
+                    if (productTemp.Prices is { Count: > 0 })
+                        slideShow.Price = productTemp.Prices != null && productTemp.Prices.FirstOrDefault() == null
+                            ? 0
+                            : productTemp.Prices!.FirstOrDefault()!.Amount;
                 }
 
                 returnSlideShow.Add(slideShow);
@@ -69,7 +64,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -95,7 +90,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -103,11 +98,17 @@ public class SlideShowsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(SlideShow slideShow, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(SlideShow? slideShow, CancellationToken cancellationToken)
     {
         try
         {
-            if (slideShow == null) return BadRequest();
+            if (slideShow == null)
+            {
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.BadRequest
+                });
+            }
             slideShow.Title = slideShow.Title.Trim();
 
             var repetitiveTitle = await _slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
@@ -129,7 +130,9 @@ public class SlideShowsController : ControllerBase
                     });
             }
 
-            await _slideShowRepository.AddAsync(slideShow, cancellationToken);
+            _slideShowRepository.Add(slideShow);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -137,7 +140,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -170,7 +173,9 @@ public class SlideShowsController : ControllerBase
                     });
             }
 
-            await _slideShowRepository.UpdateAsync(slideShow, cancellationToken);
+            _slideShowRepository.Update(slideShow);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -178,7 +183,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -190,7 +195,9 @@ public class SlideShowsController : ControllerBase
     {
         try
         {
-            await _slideShowRepository.DeleteAsync(id, cancellationToken);
+            await _slideShowRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -198,7 +205,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

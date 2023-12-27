@@ -8,60 +8,50 @@ using Microsoft.Extensions.Configuration;
 
 namespace ECommerce.Infrastructure.DataContext;
 
-public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int>
+public class SunflowerECommerceDbContext(DbContextOptions<SunflowerECommerceDbContext> options,
+        IDataProtectionProvider dataProtectionProvider, IConfiguration configRoot)
+    : IdentityDbContext<User, UserRole, int>(options)
 {
-    private readonly IConfiguration _configRoot;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
-
-    public SunflowerECommerceDbContext(DbContextOptions<SunflowerECommerceDbContext> options,
-        IDataProtectionProvider dataProtectionProvider, IConfiguration configRoot) : base(options)
-    {
-        _dataProtectionProvider = dataProtectionProvider;
-        _configRoot = configRoot;
-    }
-
-
-    public virtual DbSet<BlogAuthor> BlogAuthors { get; set; }
-    public virtual DbSet<BlogCategory> BlogCategories { get; set; }
-    public virtual DbSet<BlogComment> BlogComments { get; set; }
-    public virtual DbSet<Blog> Blogs { get; set; }
-    public virtual DbSet<Brand> Brands { get; set; }
-    public virtual DbSet<Category> Categories { get; set; }
-    public virtual DbSet<City> Cities { get; set; }
-    public virtual DbSet<Currency> Currencies { get; set; }
-    public virtual DbSet<Color> Colors { get; set; }
-    public virtual DbSet<Contact> Contacts { get; set; }
-    public virtual DbSet<Department> Departments { get; set; }
-    public virtual DbSet<Discount> Discounts { get; set; }
-    public virtual DbSet<Employee> Employees { get; set; }
-    public virtual DbSet<HolooCompany> HolooCompanies { get; set; }
-    public virtual DbSet<Image> Images { get; set; }
-    public virtual DbSet<Keyword> Keywords { get; set; }
-    public virtual DbSet<LoginHistory> LoginHistories { get; set; }
-    public virtual DbSet<Message> Messages { get; set; }
-    public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
-    public virtual DbSet<Price> Prices { get; set; }
-    public virtual DbSet<Product?> Products { get; set; }
-    public virtual DbSet<ProductAttributeGroup> ProductAttributeGroups { get; set; }
-    public virtual DbSet<ProductAttribute> ProductAttributes { get; set; }
-    public virtual DbSet<ProductAttributeValue> ProductAttributeValues { get; set; }
-    public virtual DbSet<ProductComment> ProductComments { get; set; }
-    public virtual DbSet<ProductSellCount> ProductSellCounts { get; set; }
-    public virtual DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
-    public virtual DbSet<PurchaseOrder?> PurchaseOrders { get; set; }
-    public virtual DbSet<SendInformation> SendInformation { get; set; }
-    public virtual DbSet<Setting> Settings { get; set; }
-    public virtual DbSet<Shipping> Shipping { get; set; }
-    public virtual DbSet<Size> Sizes { get; set; }
-    public virtual DbSet<SlideShow> SlideShows { get; set; }
-    public virtual DbSet<ProductUserRank> ProductUserRanks { get; set; }
-    public virtual DbSet<State> States { get; set; }
-    public virtual DbSet<Store> Stores { get; set; }
-    public virtual DbSet<Supplier> Suppliers { get; set; }
-    public virtual DbSet<Tag> Tags { get; set; }
-    public virtual DbSet<Transaction> Transactions { get; set; }
-    public virtual DbSet<Unit> Units { get; set; }
-    public virtual DbSet<WishList> WishLists { get; set; }
+    public virtual  DbSet<BlogAuthor> BlogAuthors { get; set; }
+    public virtual  DbSet<BlogCategory> BlogCategories { get; set; }
+    public virtual  DbSet<BlogComment> BlogComments { get; set; }
+    public virtual  DbSet<Blog> Blogs { get; set; }
+    public virtual  DbSet<Brand> Brands { get; set; }
+    public virtual  DbSet<Category> Categories { get; set; }
+    public virtual  DbSet<City> Cities { get; set; }
+    public virtual  DbSet<Currency> Currencies { get; set; }
+    public virtual  DbSet<Color> Colors { get; set; }
+    public virtual  DbSet<Contact> Contacts { get; set; }
+    public virtual  DbSet<Department> Departments { get; set; }
+    public virtual  DbSet<Discount> Discounts { get; set; }
+    public virtual  DbSet<Employee> Employees { get; set; }
+    public virtual  DbSet<Image> Images { get; set; }
+    public virtual  DbSet<Keyword> Keywords { get; set; }
+    public virtual  DbSet<LoginHistory> LoginHistories { get; set; }
+    public virtual  DbSet<Message> Messages { get; set; }
+    public virtual  DbSet<PaymentMethod> PaymentMethods { get; set; }
+    public virtual  DbSet<Price> Prices { get; set; }
+    public virtual  DbSet<Product> Products { get; set; }
+    public virtual  DbSet<ProductAttributeGroup> ProductAttributeGroups { get; set; }
+    public virtual  DbSet<ProductAttribute> ProductAttributes { get; set; }
+    public virtual  DbSet<ProductAttributeValue> ProductAttributeValues { get; set; }
+    public virtual  DbSet<ProductComment> ProductComments { get; set; }
+    public virtual  DbSet<ProductSellCount> ProductSellCounts { get; set; }
+    public virtual  DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
+    public virtual  DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+    public virtual  DbSet<SendInformation> SendInformation { get; set; }
+    public virtual  DbSet<Setting> Settings { get; set; }
+    public virtual  DbSet<Shipping> Shipping { get; set; }
+    public virtual  DbSet<Size> Sizes { get; set; }
+    public virtual  DbSet<SlideShow> SlideShows { get; set; }
+    public virtual  DbSet<ProductUserRank> ProductUserRanks { get; set; }
+    public virtual  DbSet<State> States { get; set; }
+    public virtual  DbSet<Store> Stores { get; set; }
+    public virtual  DbSet<Supplier> Suppliers { get; set; }
+    public virtual  DbSet<Tag> Tags { get; set; }
+    public virtual  DbSet<Transaction> Transactions { get; set; }
+    public virtual  DbSet<Unit> Units { get; set; }
+    public virtual  DbSet<WishList> WishLists { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -561,7 +551,7 @@ public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int
             Email = "sayyah.alireza@gmail.com",
             NormalizedEmail = "SAYYAH.ALIREZA@GMAIL.COM",
             EmailConfirmed = true,
-            PasswordHash = new PasswordHasher<User>().HashPassword(null, "!qa@ws#ed123"),
+            PasswordHash = new PasswordHasher<User>().HashPassword(null!, "!qa@ws#ed123"),
             SecurityStamp = string.Empty,
             AccessFailedCount = 0,
             FirstName = "Alireza",
@@ -571,24 +561,7 @@ public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int
             UserRoleId = 1,
             IsActive = true
         });
-        //modelBuilder.Entity<User>().HasData(new User
-        //{
-        //    Id = 2,
-        //    UserName = "sajjadnazmi",
-        //    NormalizedUserName = "SAJJADNAZMI",
-        //    Email = "sajjad.nazmi@gmail.com",
-        //    NormalizedEmail = "SAJJAD.NAZMI@GMAIL.COM",
-        //    EmailConfirmed = true,
-        //    PasswordHash = new PasswordHasher<User>().HashPassword(null, "@grp_bolouri3395"),
-        //    SecurityStamp = string.Empty,
-        //    AccessFailedCount = 0,
-        //    FirstName = "Sajjad",
-        //    LastName = "Nazmi",
-        //    PhoneNumber = "09119394726",
-        //    PhoneNumberConfirmed = true,
-        //    UserRoleId = 1,
-        //    IsActive = true
-        //});
+
         modelBuilder.Entity<IdentityUserRole<int>>().HasData(new IdentityUserRole<int> { UserId = 1, RoleId = 1 });
         modelBuilder.Entity<Setting>().HasData(new Setting
         {
@@ -651,7 +624,7 @@ public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int
         modelBuilder.ConfigureIdentityTableName();
         modelBuilder.AddSequentialGuidForIdConvention();
         //modelBuilder.AddPluralizingTableNameConvention();
-        modelBuilder.AddColumnProtector(_dataProtectionProvider, _configRoot);
+        modelBuilder.AddColumnProtector(dataProtectionProvider, configRoot);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

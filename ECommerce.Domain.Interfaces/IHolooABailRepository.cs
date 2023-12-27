@@ -4,9 +4,7 @@ namespace ECommerce.Domain.Interfaces;
 
 public interface IHolooABailRepository : IHolooRepository<HolooABail>
 {
-    Task<bool> Add(List<HolooABail> aBails, CancellationToken cancellationToken);
-
-    Task<List<HolooABail>> GetAll(CancellationToken cancellationToken);
+    void Add(List<HolooABail> aBails);
 
     double GetWithACode(int userCode, string aCode, CancellationToken cancellationToken);
 }

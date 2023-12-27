@@ -38,8 +38,7 @@ public class HolooSarfaslRepository : HolooRepository<HolooSarfasl>, IHolooSarfa
             Selected = false
         };
 
-        await _context.Sarfasl.AddAsync(sarfasl, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+         _context.Sarfasl.Add(sarfasl);
         return newMoeinCode;
     }
 }

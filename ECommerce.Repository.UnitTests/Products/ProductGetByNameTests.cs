@@ -1,45 +1,67 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
+using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetByName: Get products by Name")]
+    [Fact]
     public async void GetByName_GetAddedEntityByName_EntityExistsInRepository()
     {
         // Arrange
-        AddCategories();
-        var set = TestSets["unique_url"];
-        DbContext.Products.AddRange(set.Values);
+        var products = Fixture
+            .Build<Product>()
+            .Without(p => p.ProductCategories)
+            .Without(p => p.ProductComments)
+            .Without(p => p.ProductUserRanks)
+            .Without(p => p.AttributeGroupProducts)
+            .Without(p => p.AttributeValues)
+            .Without(p => p.Prices)
+            .Without(p => p.Images)
+            .Without(p => p.Supplier)
+            .Without(p => p.SupplierId)
+            .Without(p => p.Brand)
+            .Without(p => p.BrandId)
+            .Without(p => p.Keywords)
+            .Without(p => p.Tags)
+            .Without(p => p.SlideShows)
+            .CreateMany(5);
+        DbContext.Products.AddRange(products);
         DbContext.SaveChanges();
 
-        var expected = set["test_2"];
+        var expected = products.ElementAt(2);
 
         // Act
         var actual = await _productRepository.GetByName(expected.Name, CancellationToken);
 
         // Assert
-        actual
-            .Should()
-            .BeEquivalentTo(
-                expected,
-                options =>
-                    options
-                        .For(x => x.ProductCategories)
-                        .Exclude(x => x.Products)
-                        .For(x => x.Prices)
-                        .Exclude(x => x.Product)
-            );
+        actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact(DisplayName = "GetByName: Non existing name")]
+    [Fact]
     public async void GetByName_GetAddedEntityByNonExistingName_ReturnsNull()
     {
         // Arrange
-        AddCategories();
-        var set = TestSets["unique_url"];
-        DbContext.Products.AddRange(set.Values);
+        var products = Fixture
+            .Build<Product>()
+            .Without(p => p.ProductCategories)
+            .Without(p => p.ProductComments)
+            .Without(p => p.ProductUserRanks)
+            .Without(p => p.AttributeGroupProducts)
+            .Without(p => p.AttributeValues)
+            .Without(p => p.Prices)
+            .Without(p => p.Images)
+            .Without(p => p.Supplier)
+            .Without(p => p.SupplierId)
+            .Without(p => p.Brand)
+            .Without(p => p.BrandId)
+            .Without(p => p.Keywords)
+            .Without(p => p.Tags)
+            .Without(p => p.SlideShows)
+            .CreateMany(5);
+        DbContext.Products.AddRange(products);
         DbContext.SaveChanges();
 
         // Act

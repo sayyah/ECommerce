@@ -12,11 +12,8 @@ public class HolooSanadListRepository : HolooRepository<HolooSndList>, IHolooSan
         _context = context;
     }
 
-    public async Task<bool> Add(HolooSndList sanadList, CancellationToken cancellationToken)
+    public void Add(HolooSndList sanadList)
     {
-        // _context.Entry(sanadList).State = EntityState.Detached;
-        await _context.Snd_List.AddAsync(sanadList, cancellationToken);
-        var result = await _context.SaveChangesAsync(cancellationToken);
-        return result == 0;
+        _context.Snd_List.Add(sanadList);
     }
 }

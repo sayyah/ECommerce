@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class DepartmentRepository : AsyncRepository<Department>, IDepartmentRepository
+public class DepartmentRepository : RepositoryBase<Department>, IDepartmentRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class DepartmentRepository : AsyncRepository<Department>, IDepartmentRepo
         _context = context;
     }
 
-    public async Task<Department> GetByTitle(string name, CancellationToken cancellationToken)
+    public async Task<Department?> GetByTitle(string name, CancellationToken cancellationToken)
     {
         return await _context.Departments.Where(x => x.Title == name).FirstOrDefaultAsync(cancellationToken);
     }

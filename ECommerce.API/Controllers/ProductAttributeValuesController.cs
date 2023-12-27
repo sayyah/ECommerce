@@ -2,17 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductAttributeValuesController : ControllerBase
-{
-    private readonly ILogger<ProductAttributeValuesController> _logger;
-    private readonly IProductAttributeValueRepository _productAttributeValueRepository;
-
-    public ProductAttributeValuesController(IProductAttributeValueRepository productAttributeValueRepository,
+public class ProductAttributeValuesController(IUnitOfWork unitOfWork,
         ILogger<ProductAttributeValuesController> logger)
-    {
-        _productAttributeValueRepository = productAttributeValueRepository;
-        _logger = logger;
-    }
+    : ControllerBase
+{
+    private readonly IProductAttributeValueRepository _productAttributeValueRepository = unitOfWork.GetRepository<ProductAttributeValueRepository, ProductAttributeValue>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -41,7 +35,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -66,7 +60,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -78,7 +72,9 @@ public class ProductAttributeValuesController : ControllerBase
     {
         try
         {
-            await _productAttributeValueRepository.UpdateAsync(productAttributeValue, cancellationToken);
+            _productAttributeValueRepository.Update(productAttributeValue);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -86,7 +82,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -97,7 +93,9 @@ public class ProductAttributeValuesController : ControllerBase
     {
         try
         {
-            await _productAttributeValueRepository.DeleteAsync(id, cancellationToken);
+            await _productAttributeValueRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -105,7 +103,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class SupplierRepository : AsyncRepository<Supplier>, ISupplierRepository
+public class SupplierRepository : RepositoryBase<Supplier>, ISupplierRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class SupplierRepository : AsyncRepository<Supplier>, ISupplierRepository
         _context = context;
     }
 
-    public async Task<Supplier> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Supplier?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.Suppliers.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

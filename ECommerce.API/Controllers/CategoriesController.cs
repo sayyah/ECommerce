@@ -4,16 +4,10 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CategoriesController : ControllerBase
+public class CategoriesController(IUnitOfWork unitOfWork, ILogger<CategoriesController> logger)
+    : ControllerBase
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ILogger<CategoriesController> _logger;
-
-    public CategoriesController(ICategoryRepository categoryRepository, ILogger<CategoriesController> logger)
-    {
-        _categoryRepository = categoryRepository;
-        _logger = logger;
-    }
+    private readonly ICategoryRepository _categoryRepository = unitOfWork.GetRepository<CategoryRepository, Category>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -42,7 +36,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -67,7 +61,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -92,7 +86,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -118,7 +112,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -145,7 +139,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -157,27 +151,27 @@ public class CategoriesController : ControllerBase
         try
         {
             var categoryList = _categoryRepository.GetAll("Products")
-                .Where(x => x.Products.Any(p => p.Id == productId));
+                .Where(x => x.Products != null && x.Products.Any(p => p.Id == productId));
             return Ok(await categoryList.Select(x => new CategoryViewModel
             {
                 Id = x.Id,
                 Name = x.Name,
-                ProductsId = x.Products.Select(product => product.Id).ToList(),
+                ProductsId = x.Products!.Select(product => product.Id).ToList(),
                 ParentId = x.ParentId,
                 Parent = x.Parent,
-                Categories = x.Categories.Select(category => category.Id).ToList()
+                Categories = x.Categories!.Select(category => category.Id).ToList()
             }).ToListAsync(cancellationToken));
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Category category, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Category? category, CancellationToken cancellationToken)
     {
         try
         {
@@ -197,15 +191,17 @@ public class CategoriesController : ControllerBase
                     Messages = new List<string> { "نام دسته تکراری است" }
                 });
 
+            _categoryRepository.Add(category);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _categoryRepository.AddAsync(category, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -216,7 +212,9 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            await _categoryRepository.UpdateAsync(category, cancellationToken);
+            _categoryRepository.Update(category);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -224,7 +222,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -235,7 +233,9 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            await _categoryRepository.DeleteAsync(id, cancellationToken);
+            await _categoryRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -243,7 +243,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

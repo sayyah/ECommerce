@@ -1,8 +1,6 @@
-using System.Text;
-using System.Text.Json.Serialization;
+using ECommerce.API;
 using ECommerce.Application.PersianTranslations.Identity;
 using ECommerce.Infrastructure.DataContext;
-using ECommerce.Infrastructure.Repository;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +10,9 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
+using System.Reflection;
+using System.Text;
+using System.Text.Json.Serialization;
 
 DotNetEnv.Env.TraversePath().Load("../.env");
 
@@ -183,65 +184,8 @@ builder
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
 
-#region DI
-
-builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
-builder.Services.AddScoped<IBlogAuthorRepository, BlogAuthorRepository>();
-builder.Services.AddScoped<IBlogCategoryRepository, BlogCategoryRepository>();
-builder.Services.AddScoped<IBlogCommentRepository, BlogCommentRepository>();
-builder.Services.AddScoped<IBlogRepository, BlogRepository>();
-builder.Services.AddScoped<IBrandRepository, BrandRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ICityRepository, CityRepository>();
-builder.Services.AddScoped<IColorRepository, ColorRepository>();
-builder.Services.AddScoped<IContactRepository, ContactRepository>();
-builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
-builder.Services.AddScoped<IEmailRepository, EmailRepository>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-builder.Services.AddScoped<IHolooCompanyRepository, HolooCompanyRepository>();
-builder.Services.AddScoped<IImageRepository, ImageRepository>();
-builder.Services.AddScoped<IKeywordRepository, KeywordRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-builder.Services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
-builder.Services.AddScoped<IPriceRepository, PriceRepository>();
-builder.Services.AddScoped<IProductAttributeGroupRepository, ProductAttributeGroupRepository>();
-builder.Services.AddScoped<IProductAttributeRepository, ProductAttributeRepository>();
-builder.Services.AddScoped<IProductAttributeValueRepository, ProductAttributeValueRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IProductCommentRepository, ProductCommentRepository>();
-builder.Services.AddScoped<IProductUserRankRepository, ProductUserRankRepository>();
-builder.Services.AddScoped<IPurchaseOrderDetailRepository, PurchaseOrderDetailRepository>();
-builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
-builder.Services.AddScoped<ISendInformationRepository, SendInformationRepository>();
-builder.Services.AddScoped<ISettingRepository, SettingRepository>();
-builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
-builder.Services.AddScoped<ISizeRepository, SizeRepository>();
-builder.Services.AddScoped<ISlideShowRepository, SlideShowRepository>();
-builder.Services.AddScoped<IStateRepository, StateRepository>();
-builder.Services.AddScoped<IStoreRepository, StoreRepository>();
-builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-builder.Services.AddScoped<ITagRepository, TagRepository>();
-builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-builder.Services.AddScoped<IUnitRepository, UnitRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IWishListRepository, WishListRepository>();
-
-builder.Services.AddScoped(typeof(IHolooRepository<>), typeof(HolooRepository<>));
-builder.Services.AddScoped<IHolooAccountNumberRepository, HolooAccountNumberRepository>();
-builder.Services.AddScoped<IHolooUnitRepository, HolooUnitRepository>();
-builder.Services.AddScoped<IHolooArticleRepository, HolooArticleRepository>();
-builder.Services.AddScoped<IHolooMGroupRepository, HolooMGroupRepository>();
-builder.Services.AddScoped<IHolooSGroupRepository, HolooSGroupRepository>();
-builder.Services.AddScoped<IHolooSanadRepository, HolooSanadRepository>();
-builder.Services.AddScoped<IHolooSanadListRepository, HolooSanadListRepository>();
-builder.Services.AddScoped<IHolooABailRepository, HolooABailRepository>();
-builder.Services.AddScoped<IHolooFBailRepository, HolooFBailRepository>();
-builder.Services.AddScoped<IHolooCustomerRepository, HolooCustomerRepository>();
-builder.Services.AddScoped<IHolooSarfaslRepository, HolooSarfaslRepository>();
-
-#endregion
+//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddRepositories(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

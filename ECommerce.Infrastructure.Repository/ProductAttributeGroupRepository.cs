@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeGroup>, IProductAttributeGroupRepository
+public class ProductAttributeGroupRepository : RepositoryBase<ProductAttributeGroup>, IProductAttributeGroupRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
         _context = context;
     }
 
-    public async Task<ProductAttributeGroup> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<ProductAttributeGroup?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.ProductAttributeGroups.Where(x => x.Name == name)
             .FirstOrDefaultAsync(cancellationToken);
@@ -24,7 +24,7 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
         ;
     }
 
-    public async Task<IEnumerable<ProductAttributeGroup>> GetAllAttributeWithProductId(int productId,
+    public async Task<List<ProductAttributeGroup>?> GetAllAttributeWithProductId(int productId,
         CancellationToken cancellationToken)
     {
         var group = await _context.ProductAttributeGroups
@@ -48,8 +48,7 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
         return group;
     }
 
-    public async Task<List<ProductAttributeGroup>> AddWithAttributeValue(
-        List<ProductAttributeGroup> productAttributeGroups, int productId, CancellationToken cancellationToken)
+    public List<ProductAttributeGroup> AddWithAttributeValue(List<ProductAttributeGroup> productAttributeGroups, int productId)
     {
         foreach (var productAttributeGroup in productAttributeGroups)
             foreach (var productAttribute in productAttributeGroup.Attribute)
@@ -71,7 +70,6 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
                         });
                 }
 
-        await _context.SaveChangesAsync(cancellationToken);
         return productAttributeGroups;
     }
 

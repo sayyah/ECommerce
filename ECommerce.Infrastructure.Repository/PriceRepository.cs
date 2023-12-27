@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class PriceRepository : AsyncRepository<Price>, IPriceRepository
+public class PriceRepository : RepositoryBase<Price>, IPriceRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,26 +11,23 @@ public class PriceRepository : AsyncRepository<Price>, IPriceRepository
         _context = context;
     }
 
-    public async Task<int> AddAll(IEnumerable<Price> prices, CancellationToken cancellationToken)
+    public void AddAll(IEnumerable<Price> prices)
     {
-        await _context.Prices.AddRangeAsync(prices, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        _context.Prices.AddRange(prices);
     }
 
-    public async Task<int> EditAll(IEnumerable<Price> prices, int id, CancellationToken cancellationToken)
+    public void EditAll(IEnumerable<Price> prices, int id)
     {
         _context.Prices.RemoveRange(_context.Prices.Where(x => x.ProductId == prices.FirstOrDefault().ProductId));
         foreach (var price in prices)
         {
             price.Id = 0;
             price.ProductId = id;
-            await _context.Prices.AddAsync(price, cancellationToken);
+            _context.Prices.Add(price);
         }
-
-        return await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Price>> PriceOfProduct(int id, CancellationToken cancellationToken)
+    public async Task<List<Price>?> PriceOfProduct(int id, CancellationToken cancellationToken)
     {
         return await _context.Prices.AsNoTracking().Where(x => x.ProductId == id).Include(x => x.Currency)
             .Include(c => c.Color)

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ImageRepository : AsyncRepository<Image>, IImageRepository
+public class ImageRepository : RepositoryBase<Image>, IImageRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,20 +11,19 @@ public class ImageRepository : AsyncRepository<Image>, IImageRepository
         _context = context;
     }
 
-    public async Task<int> DeleteByName(string name, CancellationToken cancellationToken)
+    public async Task DeleteByName(string name, CancellationToken cancellationToken)
     {
         var image = await _context.Images.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
         _context.Images.Remove(image);
-        return await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<List<Image>> GetByProductId(int productId, CancellationToken cancellationToken)
+    public async Task<List<Image>?> GetByProductId(int productId, CancellationToken cancellationToken)
     {
         return await
             _context.Images.Where(x => x.ProductId == productId).ToListAsync(cancellationToken);
     }
 
-    public async Task<Image> GetByBlogId(int blogId, CancellationToken cancellationToken)
+    public async Task<Image?> GetByBlogId(int blogId, CancellationToken cancellationToken)
     {
         return await _context.Images.Where(x => x.BlogId == blogId).FirstOrDefaultAsync(cancellationToken);
     }

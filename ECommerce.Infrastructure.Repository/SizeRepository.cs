@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class SizeRepository : AsyncRepository<Size>, ISizeRepository
+public class SizeRepository : RepositoryBase<Size>, ISizeRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class SizeRepository : AsyncRepository<Size>, ISizeRepository
         _context = context;
     }
 
-    public async Task<Size> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Size?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.Sizes.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

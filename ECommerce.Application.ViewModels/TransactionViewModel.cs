@@ -3,7 +3,7 @@ using ECommerce.Domain.Entities.Helper;
 
 namespace ECommerce.Application.ViewModels;
 
-public class TransactionFiltreViewModel
+public class transactionFilterViewModel
 {
     public PaginationParameters? PaginationParameters { get; set; }
 
