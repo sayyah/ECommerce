@@ -13,7 +13,7 @@ public interface IBlogRepository : IRepositoryBase<Blog>
     Task<PagedList<Blog>> GetByTagText(PaginationParameters paginationParameters, CancellationToken cancellationToken);
     Task<Blog?> GetByTitle(string title, CancellationToken cancellationToken);
 
-    Task<Blog> AddWithRelations(BlogViewModel blogViewModel);
+    Task<Blog> AddWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken);
 
     Task<Blog> EditWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken);
 

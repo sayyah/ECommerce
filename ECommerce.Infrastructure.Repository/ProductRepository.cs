@@ -39,7 +39,7 @@ public class ProductRepository : RepositoryBase<Product>, IProductRepository
 
     //public async Task<IEnumerable<Product>> GetAllHolooProducts(CancellationToken cancellationToken) => await _context.Products.Where(x => x.ArticleCode != null).ToListAsync(cancellationToken);
 
-    public Product? AddWithRelations(ProductViewModel productViewModel)
+    public async Task<Product> AddWithRelations(ProductViewModel productViewModel, CancellationToken cancellationToken)
     {
         Product? product = productViewModel;
         //product.Prices = productViewModel.Prices;
@@ -63,8 +63,8 @@ public class ProductRepository : RepositoryBase<Product>, IProductRepository
         //    product.AttributeValues.Add(productAttribute.FirstOrDefault());
         //}
 
-        _context.Products.Add(product);
-        return product;
+       var newProduct = await _context.Products.AddAsync(product, cancellationToken);
+       return newProduct.Entity;
     }
 
     public async Task<Product?> EditWithRelations(ProductViewModel productViewModel,

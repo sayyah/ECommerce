@@ -829,12 +829,13 @@ public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsControll
                     Messages = new List<string> { "آدرس محصول تکراری است" }
                 });
 
-            _productRepository.AddWithRelations(productViewModel);
+            var newProduct = await _productRepository.AddWithRelations(productViewModel, cancellationToken);
             await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success
+                Code = ResultCode.Success,
+                ReturnData = newProduct
             });
         }
         catch (Exception e)

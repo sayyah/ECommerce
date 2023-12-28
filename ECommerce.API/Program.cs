@@ -184,7 +184,7 @@ builder
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
 
-//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 builder.Services.AddRepositories(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();

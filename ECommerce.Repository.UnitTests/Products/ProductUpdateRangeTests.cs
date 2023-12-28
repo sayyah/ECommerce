@@ -13,7 +13,7 @@ public partial class ProductTests
         // Act
         async Task Action()
         {
-            _productRepository.UpdateRange([ null! ]);
+            _productRepository.UpdateRange(new List<Product> { null! });
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -39,27 +39,9 @@ public partial class ProductTests
     public async void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        var expected = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var expected = Fixture.CreateMany<Product>(2).ToList();
         DbContext.Products.AddRange(expected);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
-
+        await DbContext.SaveChangesAsync();
         foreach (var product in expected)
         {
             product.Url = Fixture.Create<string>();

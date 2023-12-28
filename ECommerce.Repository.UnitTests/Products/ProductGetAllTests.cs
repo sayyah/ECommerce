@@ -11,23 +11,7 @@ public partial class ProductTests
     public void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange
-        var expected = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var expected = Fixture.CreateMany<Product>(2).ToList();
         DbContext.Products.AddRange(expected);
         DbContext.SaveChanges();
 

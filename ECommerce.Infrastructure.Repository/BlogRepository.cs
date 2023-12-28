@@ -16,7 +16,7 @@ public class BlogRepository : RepositoryBase<Blog>, IBlogRepository
         return await _context.Blogs.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Blog> AddWithRelations(BlogViewModel blogViewModel)
+    public async Task<Blog> AddWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken)
     {
         Blog blog = blogViewModel;
         blog.Keywords = new List<Keyword>();
@@ -28,8 +28,8 @@ public class BlogRepository : RepositoryBase<Blog>, IBlogRepository
         blog.BlogAuthor = new BlogAuthor();
         blog.BlogAuthor = await _context.BlogAuthors.FindAsync(blogViewModel.BlogAuthorId);
 
-        _context.Blogs.Add(blog);
-        return blog;
+        var newBlog = await _context.Blogs.AddAsync(blog, cancellationToken);
+        return newBlog.Entity;
     }
 
     public async Task<Blog> EditWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken)

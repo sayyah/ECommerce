@@ -11,27 +11,10 @@ public partial class ProductTests
     public async void GetByName_GetAddedEntityByName_EntityExistsInRepository()
     {
         // Arrange
-        var products = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var products = Fixture.CreateMany<Product>(2).ToList();
         DbContext.Products.AddRange(products);
-        DbContext.SaveChanges();
-
-        var expected = products.ElementAt(2);
+        await DbContext.SaveChangesAsync(CancellationToken);
+        var expected = products.ElementAt(1);
 
         // Act
         var actual = await _productRepository.GetByName(expected.Name, CancellationToken);
@@ -44,25 +27,9 @@ public partial class ProductTests
     public async void GetByName_GetAddedEntityByNonExistingName_ReturnsNull()
     {
         // Arrange
-        var products = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var products = Fixture.CreateMany<Product>(2).ToList();
         DbContext.Products.AddRange(products);
-        DbContext.SaveChanges();
+        await DbContext.SaveChangesAsync(CancellationToken);
 
         // Act
         var actual = await _productRepository.GetByName(new Guid().ToString(), CancellationToken);

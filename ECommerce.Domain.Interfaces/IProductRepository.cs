@@ -15,7 +15,7 @@ public interface IProductRepository : IRepositoryBase<Product>
 
     //Task<IEnumerable<Product?>> GetAllHolooProducts(CancellationToken cancellationToken);
 
-    Product? AddWithRelations(ProductViewModel productViewModel);
+    Task<Product?> AddWithRelations(ProductViewModel productViewModel, CancellationToken cancellationToken);
 
     Task<Product?> EditWithRelations(ProductViewModel productViewModel, CancellationToken cancellationToken);
 

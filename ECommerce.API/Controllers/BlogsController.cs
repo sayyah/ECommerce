@@ -126,12 +126,13 @@ public class BlogsController(IUnitOfWork unitOfWork, ILogger<BlogsController> lo
                     Messages = new List<string> { "آدرس مقاله تکراری است" }
                 });
 
-            await _blogRepository.AddWithRelations(blogViewModel);
+            var newBlog = await _blogRepository.AddWithRelations(blogViewModel, cancellationToken);
             await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success
+                Code = ResultCode.Success,
+                ReturnData = newBlog
             });
         }
         catch (Exception e)

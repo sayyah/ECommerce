@@ -112,7 +112,7 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
 
     public async Task<int?> GetSecondsLeftConfirmCodeExpire(string username, CancellationToken cancellationToken)
     {
-        var user = await TableNoTracking.Where(x => x.UserName == username).FirstOrDefaultAsync();
+        var user = await TableNoTracking.Where(x => x.UserName == username).FirstOrDefaultAsync(cancellationToken);
         if (user == null) return null;
         if (user.ConfirmCodeExpirationDate == null) return 0;
         var result = (int)(user.ConfirmCodeExpirationDate - DateTime.Now).Value.TotalSeconds;

@@ -15,7 +15,7 @@ public partial class ProductTests
         // Act
         async Task Action()
         {
-            _productRepository.DeleteRange([ null! ]);
+            _productRepository.DeleteRange(new List<Product>() { null! });
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -38,45 +38,24 @@ public partial class ProductTests
     }
 
     [Fact]
-    public async void DeleteRange_DeleteProducts_EntityNotInRepository()
+    public async Task DeleteRange_DeleteProducts_EntityNotInRepository()
     {
         // Arrange
-        var products = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var product1 = Fixture.Create<Product>();
+        var product2 = Fixture.Create<Product>();
+        var products = new List<Product>() { product1, product2 };
         DbContext.Products.AddRange(products);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
-
-        Product productNotToDelete = products.ElementAt(2);
-        IEnumerable<Product> productsToDelete = products.Where(x => x.Id != productNotToDelete.Id);
+        await DbContext.SaveChangesAsync(CancellationToken);
+        var expected = product1;
+        var productsToDelete = new List<Product>() { product2 };
 
         // Act
         _productRepository.DeleteRange(productsToDelete);
         await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Products.FirstOrDefault();
 
         // Assert
         DbContext.Products.Count().Should().Be(1);
-        DbContext
-            .Products
-            .Include(p => p.Store)
-            .Include(p => p.HolooCompany)
-            .FirstOrDefault()
-            .Should()
-            .BeEquivalentTo(productNotToDelete);
+        actual.Should().BeEquivalentTo(expected);
     }
 }

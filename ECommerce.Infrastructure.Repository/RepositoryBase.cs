@@ -112,7 +112,7 @@ public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : 
 
     public virtual async Task DeleteById(int id, CancellationToken cancellationToken)
     {
-        var entity = await Entities.FindAsync(new[] { id }, cancellationToken);
+        var entity = await Entities.FindAsync(id, cancellationToken);
         if (entity != null) Entities.Remove(entity);
     }
 

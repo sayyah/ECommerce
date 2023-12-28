@@ -12,29 +12,14 @@ public partial class ProductTests
     public async void AddRange_RequiredNameField_ThrowsException()
     {
         // Arrange
-        var list = Fixture
-            .Build<Product>()
-            .With(p => p.Name, () => null!)
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(1);
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
+        var products = new List<Product> { product };
 
         // Act
         async Task Action()
         {
-            _productRepository.AddRange(list);
+            _productRepository.AddRange(products);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -46,29 +31,14 @@ public partial class ProductTests
     public async void AddRange_RequiredUrlField_ThrowsException()
     {
         // Arrange
-        var list = Fixture
-            .Build<Product>()
-            .With(p => p.Url, () => null!)
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(1);
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
+        var products = new List<Product> { product };
 
         // Act
         async Task Action()
         {
-            _productRepository.AddRange(list);
+            _productRepository.AddRange(products);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -82,7 +52,7 @@ public partial class ProductTests
         // Act
         async Task Action()
         {
-            _productRepository.AddRange([ null! ]);
+            _productRepository.AddRange(new List<Product> { null! });
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -108,23 +78,7 @@ public partial class ProductTests
     public async void AddRange_AddEntities_EntityExistsInRepository()
     {
         // Arrange
-        var expected = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var expected = Fixture.CreateMany<Product>(2).ToList();
 
         // Act
         _productRepository.AddRange(expected);

@@ -25,28 +25,10 @@ public partial class ProductTests
     public async void Delete_DeleteProduct_EntityNotInRepository()
     {
         // Arrange
-        var products = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var products = Fixture.CreateMany<Product>(2).ToList();
         DbContext.Products.AddRange(products);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
-
-        Product productToDelete = products.ElementAt(2);
+        await DbContext.SaveChangesAsync(CancellationToken);
+        Product productToDelete = products.ElementAt(1);
 
         // Act
         _productRepository.Delete(productToDelete);

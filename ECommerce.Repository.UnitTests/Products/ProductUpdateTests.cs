@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using ECommerce.Domain.Entities;
+using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
@@ -24,29 +25,11 @@ public partial class ProductTests
     public async void Update_UpdateEntity_EntityChanges()
     {
         // Arrange
-        var expected = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
-        DbContext.Products.AddRange(expected);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
+        var products = Fixture.CreateMany<Product>(2).ToList();
+        DbContext.Products.AddRange(products);
+        await DbContext.SaveChangesAsync(CancellationToken);
 
-        Product productToUpdate = expected.ElementAt(2);
-        Product expectedProduct = DbContext.Products.Single(p => p.Id == productToUpdate.Id)!;
+        Product expectedProduct = products.ElementAt(1);
         expectedProduct.Url = Guid.NewGuid().ToString();
         expectedProduct.Name = Guid.NewGuid().ToString();
         expectedProduct.MinOrder = Random.Shared.Next();
@@ -54,9 +37,9 @@ public partial class ProductTests
         // Act
         _productRepository.Update(expectedProduct);
         await UnitOfWork.SaveAsync(CancellationToken);
-        Product? actual = DbContext.Products.Single(p => p.Id == productToUpdate.Id);
+        var actual = DbContext.Products.Single(p => p.Id == expectedProduct.Id);
 
         // Assert
-        Assert.Equivalent(expectedProduct, actual);
+        actual.Should().BeEquivalentTo(expectedProduct);
     }
 }

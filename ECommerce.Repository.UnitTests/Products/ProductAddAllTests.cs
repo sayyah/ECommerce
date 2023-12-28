@@ -1,7 +1,8 @@
-﻿using AutoFixture;
+﻿using FluentAssertions;
 using ECommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using AutoFixture;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
@@ -11,29 +12,14 @@ public partial class ProductTests
     public async void AddAll_RequiredNameField_ThrowsException()
     {
         // Arrange
-        IEnumerable<Product> expected = Fixture
-            .Build<Product>()
-            .With(p => p.Name, () => null!)
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(1);
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
+        var products = new List<Product> { product };
 
         // Act
         async Task Action()
         {
-            await _productRepository.AddAll(expected);
+            await _productRepository.AddAll(products);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -45,29 +31,14 @@ public partial class ProductTests
     public async void AddAll_RequiredUrlField_ThrowsException()
     {
         // Arrange
-        IEnumerable<Product> list = Fixture
-            .Build<Product>()
-            .With(p => p.Url, () => null!)
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(1);
+        var product = Fixture.Create<Product>();
+        product.Url = null!;
+        var products = new List<Product> { product };
 
         // Act
         async Task Action()
         {
-            await _productRepository.AddAll(list);
+            await _productRepository.AddAll(products);
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -81,7 +52,7 @@ public partial class ProductTests
         // Act
         async Task Action()
         {
-            await _productRepository.AddAll([ null! ]);
+            await _productRepository.AddAll(new List<Product>() { null! });
             await UnitOfWork.SaveAsync(CancellationToken);
         }
 
@@ -107,29 +78,14 @@ public partial class ProductTests
     public async void AddAll_AddEntities_ReturnsAddedEntitiesCount()
     {
         // Arrange
-        var expected = Fixture
-            .Build<Product>()
-            .Without(p => p.ProductCategories)
-            .Without(p => p.ProductComments)
-            .Without(p => p.ProductUserRanks)
-            .Without(p => p.AttributeGroupProducts)
-            .Without(p => p.AttributeValues)
-            .Without(p => p.Prices)
-            .Without(p => p.Images)
-            .Without(p => p.Supplier)
-            .Without(p => p.SupplierId)
-            .Without(p => p.Brand)
-            .Without(p => p.BrandId)
-            .Without(p => p.Keywords)
-            .Without(p => p.Tags)
-            .Without(p => p.SlideShows)
-            .CreateMany(5);
+        var expected = Fixture.CreateMany<Product>(2).ToList();
 
         // Act
         await _productRepository.AddAll(expected);
         await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Products.ToList();
 
         // Assert
-        Assert.Equal(expected.Count(), DbContext.Products.Count());
+        actual.Should().BeEquivalentTo(expected);
     }
 }

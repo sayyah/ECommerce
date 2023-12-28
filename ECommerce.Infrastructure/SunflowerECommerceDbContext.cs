@@ -63,6 +63,12 @@ public class SunflowerECommerceDbContext(DbContextOptions<SunflowerECommerceDbCo
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder
+            .Entity<Product>()
+            .HasMany(e => e.Images)
+            .WithOne(e => e.Product)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
             .Entity<City>()
             .HasOne(e => e.State)
             .WithMany(e => e.Cities)
