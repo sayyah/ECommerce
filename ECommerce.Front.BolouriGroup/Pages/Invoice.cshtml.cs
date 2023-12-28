@@ -2,6 +2,7 @@
 using System.Text;
 using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
+using Hangfire;
 using PersianDate.Standard;
 using ZarinpalSandbox;
 
@@ -112,12 +113,13 @@ public class InvoiceModel : PageModel
                     }
                     else if (result.Code == ServiceCode.Success)
                     {
-                        string num1 = _configuration.GetValue<string>("InvoiceNumbers:num1");
-                        await _userService.SendInvocieSms(
-                            result.Message ?? "",
-                            num1,
-                            DateTime.Now.ToString("MM/dd/yyyy")
-                        );
+                        var mobile = _configuration.GetValue<string>("InvoiceNumbers:num1")!;
+
+                        var job = BackgroundJob.Enqueue(
+                            () => _userService.SendInvoiceSms(
+                                                        result.Message ?? "",
+                                                        mobile,
+                                                        DateTime.Now.ToString("MM/dd/yyyy")) );
                         Code = result.Code.ToString();
                         Message = "سفارش شما با موفقیت ثبت شد";
                     }
@@ -201,22 +203,22 @@ public class InvoiceModel : PageModel
                     string num2 = _configuration.GetValue<string>("InvoiceNumbers:num2");
                     string num3 = _configuration.GetValue<string>("InvoiceNumbers:num3");
                     string num4 = _configuration.GetValue<string>("InvoiceNumbers:num4");
-                    await _userService.SendInvocieSms(
+                    await _userService.SendInvoiceSms(
                         resulPay.Message ?? "",
                         num1,
                         DateTime.Now.ToFa()
                     );
-                    await _userService.SendInvocieSms(
+                    await _userService.SendInvoiceSms(
                         resulPay.Message ?? "",
                         num2,
                         DateTime.Now.ToFa()
                     );
-                    await _userService.SendInvocieSms(
+                    await _userService.SendInvoiceSms(
                         resulPay.Message ?? "",
                         num3,
                         DateTime.Now.ToFa()
                     );
-                    await _userService.SendInvocieSms(
+                    await _userService.SendInvoiceSms(
                         resulPay.Message ?? "",
                         num4,
                         DateTime.Now.ToFa()

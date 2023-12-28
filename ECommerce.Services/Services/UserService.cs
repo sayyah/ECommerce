@@ -225,24 +225,30 @@ public class UserService : EntityService<User>, IUserService
         return Return(result);
     }
 
-    public async Task<ResponseVerifySmsIrViewModel> SendInvocieSms(string invoice, string mobile, string persianDate)
+    public async Task<ResponseVerifySmsIrViewModel> SendInvoiceSms(string invoice, string mobile, string persianDate)
     {
         var apiKey = _smsSettings.apikey;
         var apiName = _smsSettings.apiName;
         var url = _smsSettings.url;
-        var RequestSMSIrViewModel = new RequestVerifySmsIrViewModel();
-        var invoiceParameter = new RequestVerifySmsIrParameters();
-        invoiceParameter.Name = "INVOICE";
-        invoiceParameter.Value = invoice;
-        var dateParameter = new RequestVerifySmsIrParameters();
-        dateParameter.Name = "DATE";
-        dateParameter.Value = persianDate;
-        RequestSMSIrViewModel.Parameters = new[] { invoiceParameter, dateParameter };
-        RequestSMSIrViewModel.TemplateId = _smsSettings.invoiceTemplateId;
-        RequestSMSIrViewModel.Mobile = mobile;
+        var invoiceParameter = new RequestVerifySmsIrParameters
+        {
+            Name = "INVOICE",
+            Value = invoice
+        };
+        var dateParameter = new RequestVerifySmsIrParameters
+        {
+            Name = "DATE",
+            Value = persianDate
+        };
+        var requestSmsIrViewModel = new RequestVerifySmsIrViewModel
+        {
+            Parameters = new[] { invoiceParameter, dateParameter },
+            TemplateId = _smsSettings.invoiceTemplateId,
+            Mobile = mobile
+        };
         var result =
             await _http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
-                apiName, apiKey, RequestSMSIrViewModel, url);
+                apiName, apiKey, requestSmsIrViewModel, url);
         return result;
     }
 

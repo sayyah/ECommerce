@@ -2,7 +2,7 @@
 
 public class ResponseVerifySmsIrViewModel
 {
-    public int Status { get; set; }
+    public int Status { get; set; } // Status Code in sms.ir/developer-web-service/rest-api
     public string Message { get; set; }
     public DataResponseBody Data { get; set; }
 }
