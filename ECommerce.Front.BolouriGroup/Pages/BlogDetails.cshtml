@@ -4,12 +4,17 @@
 @model BlogDetailsModel
 @{
 <<<<<<< HEAD
+<<<<<<< HEAD
     ViewData["Title"] = "جزئیات وبلاگ مجموعه بلوری";
     ViewData["description"] = "جزئیات وبلاگ مجموعه بلوری";
 =======
     ViewData["Title"] = "@Html.Raw(Model.Blog.Title)";
     ViewData["description"] = "@Html.Raw(Model.Blog.Summary)";
 >>>>>>> 62ab79e6 (Fixes #635 SeoLastUpdate)
+=======
+    ViewData["Title"] = @Html.Raw(Model.Blog.Title);
+    ViewData["description"] = @Html.Raw(Model.Blog.Summary);
+>>>>>>> c37266f9 (Fixed #674 BlogTitle)
 }
 <section class="inner-section single-banner">
     <div class="container">
