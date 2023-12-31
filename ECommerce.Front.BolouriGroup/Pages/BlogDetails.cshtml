@@ -3,8 +3,8 @@
 @using PersianDate.Standard
 @model BlogDetailsModel
 @{
-    ViewData["Title"] = "@Html.Raw(Model.Blog.Title)";
-    ViewData["description"] = "@Html.Raw(Model.Blog.Summary)";
+    ViewData["Title"] = @Html.Raw(Model.Blog.Title);
+    ViewData["description"] = @Html.Raw(Model.Blog.Summary);
 }
 <section class="inner-section single-banner">
     <div class="container">
