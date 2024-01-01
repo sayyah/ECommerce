@@ -2,24 +2,18 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductAttributesController : ControllerBase
-{
-    private readonly ILogger<ProductAttributesController> _logger;
-    private readonly IProductAttributeRepository _productAttributeRepository;
-
-    public ProductAttributesController(IProductAttributeRepository productAttributeRepository,
+public class ProductAttributesController(IUnitOfWork unitOfWork,
         ILogger<ProductAttributesController> logger)
-    {
-        _productAttributeRepository = productAttributeRepository;
-        _logger = logger;
-    }
+    : ControllerBase
+{
+    private readonly IProductAttributeRepository _productAttributeRepository = unitOfWork.GetRepository<ProductAttributeRepository, ProductAttribute>();
 
     [HttpGet]
     public async Task<IActionResult> GetAll(int groupId, CancellationToken cancellationToken)
     {
         try
         {
-            var entity = await _productAttributeRepository.GetAll(cancellationToken);
+            var entity = await _productAttributeRepository.GetAllAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
@@ -29,7 +23,7 @@ public class ProductAttributesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -49,7 +43,7 @@ public class ProductAttributesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -81,7 +75,7 @@ public class ProductAttributesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -106,14 +100,14 @@ public class ProductAttributesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(ProductAttribute productAttribute, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(ProductAttribute? productAttribute, CancellationToken cancellationToken)
     {
         try
         {
@@ -133,15 +127,17 @@ public class ProductAttributesController : ControllerBase
                     Messages = new List<string> { "نام خصوصیت تکراری است" }
                 });
 
+            _productAttributeRepository.Add(productAttribute);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _productAttributeRepository.AddAsync(productAttribute, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -160,7 +156,9 @@ public class ProductAttributesController : ControllerBase
                     Messages = new List<string> { "نام خصوصیت تکراری است" }
                 });
             if (repetitive != null) _productAttributeRepository.Detach(repetitive);
-            await _productAttributeRepository.UpdateAsync(productAttribute, cancellationToken);
+            _productAttributeRepository.Update(productAttribute);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -168,7 +166,7 @@ public class ProductAttributesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -179,7 +177,9 @@ public class ProductAttributesController : ControllerBase
     {
         try
         {
-            await _productAttributeRepository.DeleteAsync(id, cancellationToken);
+            await _productAttributeRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -187,7 +187,7 @@ public class ProductAttributesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

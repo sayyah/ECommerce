@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class SlideShowRepository : AsyncRepository<SlideShow>, ISlideShowRepository
+public class SlideShowRepository : RepositoryBase<SlideShow>, ISlideShowRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -20,7 +20,7 @@ public class SlideShowRepository : AsyncRepository<SlideShow>, ISlideShowReposit
         return repetitive;
     }
 
-    public async Task<SlideShow> GetByTitle(string title, CancellationToken cancellationToken)
+    public async Task<SlideShow?> GetByTitle(string title, CancellationToken cancellationToken)
     {
         return await _context.SlideShows.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }

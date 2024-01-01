@@ -2,17 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SuppliersController : ControllerBase
+public class SuppliersController(IUnitOfWork unitOfWork, ILogger<SuppliersController> logger)
+    : ControllerBase
 {
-    private readonly ILogger<SuppliersController> _logger;
-
-    private readonly ISupplierRepository _supplierRepository;
-
-    public SuppliersController(ISupplierRepository discountRepository, ILogger<SuppliersController> logger)
-    {
-        _supplierRepository = discountRepository;
-        _logger = logger;
-    }
+    private readonly ISupplierRepository _supplierRepository = unitOfWork.GetRepository<SupplierRepository, Supplier>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -41,7 +34,7 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -66,14 +59,14 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Supplier supplier, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Supplier? supplier, CancellationToken cancellationToken)
     {
         try
         {
@@ -92,15 +85,17 @@ public class SuppliersController : ControllerBase
                     Messages = new List<string> { "نام تامین کننده تکراری است" }
                 });
 
+            _supplierRepository.Add(supplier);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _supplierRepository.AddAsync(supplier, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -119,7 +114,8 @@ public class SuppliersController : ControllerBase
                     Messages = new List<string> { "نام تامین کننده تکراری است" }
                 });
             if (repetitive != null) _supplierRepository.Detach(repetitive);
-            await _supplierRepository.UpdateAsync(supplier, cancellationToken);
+             _supplierRepository.Update(supplier);
+             await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -127,7 +123,7 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -138,7 +134,9 @@ public class SuppliersController : ControllerBase
     {
         try
         {
-            await _supplierRepository.DeleteAsync(id, cancellationToken);
+            await _supplierRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -146,7 +144,7 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

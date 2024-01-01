@@ -5,14 +5,14 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IPriceRepository : IAsyncRepository<Price>
+public interface IPriceRepository : IRepositoryBase<Price>
 {
     Task<PagedList<Price>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
-    Task<int> AddAll(IEnumerable<Price> prices, CancellationToken cancellationToken);
+    void AddAll(IEnumerable<Price> prices);
 
-    Task<int> EditAll(IEnumerable<Price> prices, int id, CancellationToken cancellationToken);
+    void EditAll(IEnumerable<Price> prices, int id);
 
-    Task<IEnumerable<Price>> PriceOfProduct(int id, CancellationToken cancellationToken);
+    Task<List<Price>?> PriceOfProduct(int id, CancellationToken cancellationToken);
 
     Task<List<ProductIndexPageViewModel?>> TopDiscounts(int count, CancellationToken cancellationToken);
     List<int> GetProductIdWithsArticleCodeCustomer(string articleCodeCustomer);

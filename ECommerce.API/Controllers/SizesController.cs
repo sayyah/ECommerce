@@ -2,16 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SizesController : ControllerBase
+public class SizesController(IUnitOfWork unitOfWork, ILogger<SizesController> logger) : ControllerBase
 {
-    private readonly ILogger<SizesController> _logger;
-    private readonly ISizeRepository _sizeRepository;
-
-    public SizesController(ISizeRepository sizeRepository, ILogger<SizesController> logger)
-    {
-        _sizeRepository = sizeRepository;
-        _logger = logger;
-    }
+    private readonly ISizeRepository _sizeRepository = unitOfWork.GetRepository<SizeRepository, Size>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -40,7 +33,7 @@ public class SizesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -65,14 +58,14 @@ public class SizesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Size size, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Size? size, CancellationToken cancellationToken)
     {
         try
         {
@@ -90,16 +83,18 @@ public class SizesController : ControllerBase
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "سایز تکراری است" }
                 });
+            
+            _sizeRepository.Add(size);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _sizeRepository.AddAsync(size, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -110,7 +105,9 @@ public class SizesController : ControllerBase
     {
         try
         {
-            await _sizeRepository.UpdateAsync(size, cancellationToken);
+             _sizeRepository.Update(size);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -118,7 +115,7 @@ public class SizesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -129,7 +126,9 @@ public class SizesController : ControllerBase
     {
         try
         {
-            await _sizeRepository.DeleteAsync(id, cancellationToken);
+            await _sizeRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -137,7 +136,7 @@ public class SizesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

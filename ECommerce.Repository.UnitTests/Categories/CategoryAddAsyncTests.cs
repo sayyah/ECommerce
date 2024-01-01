@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -7,49 +8,99 @@ namespace Ecommerce.Repository.UnitTests.Categories;
 
 public partial class CategoryTests
 {
-    [Fact(DisplayName = "AddAsync: Null Argument")]
+    [Fact]
     public async Task AddAsync_NullArgument_ThrowsException()
     {
         // Act
-        Task<Category> action() => _categoryRepository.AddAsync(null!, CancellationToken);
+        async Task<Category> Action()
+        {
+            var categories = await _categoryRepository.AddAsync(null!, CancellationToken);
+            await UnitOfWork.SaveAsync(CancellationToken);
+            return categories;
+        }
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "AddAsync: required arguments")]
-    public async Task AddAsync_RequiredArguments_ThrowsException()
+    [Fact]
+    public async Task AddAsync_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Category> expected = TestSets["required"];
+        Category category = Fixture
+            .Build<Category>()
+            .With(p => p.Name, () => null!)
+            .Without(p => p.Parent)
+            .Without(p => p.ParentId)
+            .Without(p => p.Categories)
+            .Without(p => p.Products)
+            .Without(p => p.SlideShows)
+            .Without(p => p.Discount)
+            .Without(p => p.DiscountId)
+            .Create();
 
         // Act
-        Dictionary<string, Func<Task<Category>>> actual =  [ ];
-        foreach (KeyValuePair<string, Category> entry in expected)
+        async Task<Category> Action()
         {
-            actual.Add(
-                entry.Key,
-                () => _categoryRepository.AddAsync(entry.Value, CancellationToken)
-            );
+            var res = await _categoryRepository.AddAsync(category, CancellationToken);
+            await UnitOfWork.SaveAsync(CancellationToken);
+            return res;
         }
 
         // Assert
-        foreach (Func<Task<Category>> action in actual.Values)
-        {
-            await Assert.ThrowsAsync<DbUpdateException>(action);
-        }
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "AddAsync: Add entities to repository")]
+    [Fact]
+    public async Task AddAsync_RequiredPathField_ThrowsException()
+    {
+        // Arrange
+        Category category = Fixture
+            .Build<Category>()
+            .With(p => p.Path, () => null!)
+            .Without(p => p.Parent)
+            .Without(p => p.ParentId)
+            .Without(p => p.Categories)
+            .Without(p => p.Products)
+            .Without(p => p.SlideShows)
+            .Without(p => p.Discount)
+            .Without(p => p.DiscountId)
+            .Create();
+
+        // Act
+        async Task<Category> Action()
+        {
+            var res = await _categoryRepository.AddAsync(category, CancellationToken);
+            await UnitOfWork.SaveAsync(CancellationToken);
+            return res;
+        }
+
+        // Assert
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
+    }
+
+    [Fact]
     public async void AddAsync_AddEntities_EntitiesExistInDatabase()
     {
         // Arrange
-        Category expected = TestSets["simple_tests"]["test_1"];
+        Category expected = Fixture
+            .Build<Category>()
+            .Without(p => p.Parent)
+            .Without(p => p.ParentId)
+            .Without(p => p.Categories)
+            .Without(p => p.Products)
+            .Without(p => p.SlideShows)
+            .Without(p => p.Discount)
+            .Without(p => p.DiscountId)
+            .Create();
 
         // Act
-        var actual = await _categoryRepository.AddAsync(expected, CancellationToken);
+        await _categoryRepository.AddAsync(expected, CancellationToken);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Categories.FirstOrDefault();
 
         // Assert
+        DbContext.Categories.Count().Should().Be(1);
         actual.Should().BeEquivalentTo(expected);
     }
 }

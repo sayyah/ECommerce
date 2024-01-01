@@ -2,18 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class TransactionsController : Controller
+public class TransactionsController(IUnitOfWork unitOfWork,
+        ILogger<PurchaseOrdersController> logger)
+    : Controller
 {
-    private readonly ILogger<PurchaseOrdersController> _logger;
-    private readonly ITransactionRepository _transactionRepository;
-
-    public TransactionsController(
-        ILogger<PurchaseOrdersController> logger,
-        ITransactionRepository transactionRepository)
-    {
-        _logger = logger;
-        _transactionRepository = transactionRepository;
-    }
+    private readonly ITransactionRepository _transactionRepository = unitOfWork.GetRepository<TransactionRepository, Transaction>();
 
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
@@ -36,42 +29,49 @@ public class TransactionsController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<IActionResult> Get([FromQuery] TransactionFiltreViewModel transactionFiltreViewModel,
+    public async Task<IActionResult> Get([FromQuery] transactionFilterViewModel? transactionFilterViewModel,
         CancellationToken cancellationToken)
     {
         try
         {
-            if (string.IsNullOrEmpty(transactionFiltreViewModel.PaginationParameters.Search))
-                transactionFiltreViewModel.PaginationParameters.Search = "";
-            var entity = await _transactionRepository.Search(transactionFiltreViewModel, cancellationToken);
-            var paginationDetails = new PaginationDetails
+            if (transactionFilterViewModel is { PaginationParameters: not null } &&
+                string.IsNullOrEmpty(transactionFilterViewModel.PaginationParameters.Search))
             {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = transactionFiltreViewModel.PaginationParameters.Search
-            };
+                transactionFilterViewModel.PaginationParameters.Search = "";
+                var entity = await _transactionRepository.Search(transactionFilterViewModel, cancellationToken);
+                var paginationDetails = new PaginationDetails
+                {
+                    TotalCount = entity.TotalCount,
+                    PageSize = entity.PageSize,
+                    CurrentPage = entity.CurrentPage,
+                    TotalPages = entity.TotalPages,
+                    HasNext = entity.HasNext,
+                    HasPrevious = entity.HasPrevious,
+                    Search = transactionFilterViewModel.PaginationParameters.Search
+                };
 
+                return Ok(new ApiResult
+                {
+                    PaginationDetails = paginationDetails,
+                    Code = ResultCode.Success,
+                    ReturnData = entity
+                });
+            }
             return Ok(new ApiResult
             {
-                PaginationDetails = paginationDetails,
-                Code = ResultCode.Success,
-                ReturnData = entity
+                Code = ResultCode.NotFound
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -85,12 +85,12 @@ public class TransactionsController : Controller
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _transactionRepository.GetAll(cancellationToken)
+                ReturnData = await _transactionRepository.GetAllAsync(cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

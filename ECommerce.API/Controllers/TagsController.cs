@@ -2,16 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class TagsController : ControllerBase
+public class TagsController(IUnitOfWork unitOfWork, ILogger<TagsController> logger) : ControllerBase
 {
-    private readonly ILogger<TagsController> _logger;
-    private readonly ITagRepository _tagRepository;
-
-    public TagsController(ITagRepository tagRepository, ILogger<TagsController> logger)
-    {
-        _tagRepository = tagRepository;
-        _logger = logger;
-    }
+    private readonly ITagRepository _tagRepository = unitOfWork.GetRepository<TagRepository, Tag>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -41,7 +34,7 @@ public class TagsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -54,12 +47,12 @@ public class TagsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _tagRepository.GetAll(cancellationToken)
+                ReturnData = await _tagRepository.GetAllAsync(cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -78,7 +71,7 @@ public class TagsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -103,14 +96,14 @@ public class TagsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Tag tag, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Tag? tag, CancellationToken cancellationToken)
     {
         try
         {
@@ -129,16 +122,17 @@ public class TagsController : ControllerBase
                     Messages = new List<string> { "تگ تکراری است" }
                 });
 
+            _tagRepository.Add(tag);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _tagRepository.AddAsync(tag, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -157,7 +151,9 @@ public class TagsController : ControllerBase
                     Messages = new List<string> { "تگ تکراری است" }
                 });
             if (repetitive != null) _tagRepository.Detach(repetitive);
-            await _tagRepository.UpdateAsync(tag, cancellationToken);
+             _tagRepository.Update(tag);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -165,7 +161,7 @@ public class TagsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -176,7 +172,9 @@ public class TagsController : ControllerBase
     {
         try
         {
-            await _tagRepository.DeleteAsync(id, cancellationToken);
+            await _tagRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -184,7 +182,7 @@ public class TagsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -202,7 +200,7 @@ public class TagsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -220,7 +218,7 @@ public class TagsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

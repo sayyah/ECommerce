@@ -4,7 +4,7 @@ using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class BlogAuthorRepository : AsyncRepository<BlogAuthor>, IBlogAuthorRepository
+public class BlogAuthorRepository : RepositoryBase<BlogAuthor>, IBlogAuthorRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -13,7 +13,7 @@ public class BlogAuthorRepository : AsyncRepository<BlogAuthor>, IBlogAuthorRepo
         _context = context;
     }
 
-    public async Task<BlogAuthor> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<BlogAuthor?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.BlogAuthors.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

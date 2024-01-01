@@ -8,5 +8,4 @@ public interface IHolooCustomerRepository : IHolooRepository<HolooCustomer>
     Task<(string customerCode, string customerCodeC)> GetNewCustomerCode();
 
     Task<HolooCustomer> GetCustomerByCode(string customerCode);
-    Task SaveAddedCustomer (CancellationToken cancellationToken);
 }

@@ -3,7 +3,7 @@ using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ProductRepository : AsyncRepository<Product>, IProductRepository
+public class ProductRepository : RepositoryBase<Product>, IProductRepository
 {
     private readonly SunflowerECommerceDbContext _context;
     private readonly HolooDbContext _holooDbContext;
@@ -32,15 +32,14 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<int> AddAll(IEnumerable<Product?> products, CancellationToken cancellationToken)
+    public Task AddAll(IEnumerable<Product?> products)
     {
-        await _context.Products.AddRangeAsync(products, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        return _context.Products.AddRangeAsync(products);
     }
 
     //public async Task<IEnumerable<Product>> GetAllHolooProducts(CancellationToken cancellationToken) => await _context.Products.Where(x => x.ArticleCode != null).ToListAsync(cancellationToken);
 
-    public async Task<Product?> AddWithRelations(ProductViewModel productViewModel, CancellationToken cancellationToken)
+    public async Task<Product> AddWithRelations(ProductViewModel productViewModel, CancellationToken cancellationToken)
     {
         Product? product = productViewModel;
         //product.Prices = productViewModel.Prices;
@@ -64,9 +63,8 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         //    product.AttributeValues.Add(productAttribute.FirstOrDefault());
         //}
 
-        await _context.Products.AddAsync(product, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-        return product;
+       var newProduct = await _context.Products.AddAsync(product, cancellationToken);
+       return newProduct.Entity;
     }
 
     public async Task<Product?> EditWithRelations(ProductViewModel productViewModel,
@@ -122,7 +120,6 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         //}
 
         _context.Entry(product).State = EntityState.Modified;
-        await _context.SaveChangesAsync(cancellationToken);
         return product;
     }
 

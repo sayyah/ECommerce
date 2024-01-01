@@ -1,6 +1,4 @@
-﻿using ECommerce.Infrastructure.DataContext.Utilities;
-
-namespace ECommerce.Infrastructure.DataContext.Utilities;
+﻿namespace ECommerce.Infrastructure.DataContext.Utilities;
 
 public static class RangeUtility
 {

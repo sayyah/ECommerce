@@ -1,5 +1,4 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
@@ -17,8 +16,7 @@ public class HolooSanadRepository : HolooRepository<HolooSanad>, IHolooSanadRepo
         var sanadCodeCustomer = await _context.Sanad.OrderByDescending(s => s.Sanad_Code_C).Select(c => c.Sanad_Code_C)
             .FirstAsync(cancellationToken);
         sanad.Sanad_Code_C = sanadCodeCustomer ?? 1;
-        await _context.Sanad.AddAsync(sanad, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        _context.Sanad.Add(sanad);
         return (sanad.Sanad_Code.ToString(), sanad.Sanad_Code_C.ToString());
     }
 }

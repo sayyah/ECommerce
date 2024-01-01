@@ -1,15 +1,9 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class HolooRepository<T> : IHolooRepository<T> where T : class
+public class HolooRepository<T>(HolooDbContext context) : IHolooRepository<T>
+    where T : class
 {
-    protected HolooDbContext Context;
-
-    public HolooRepository(HolooDbContext context)
-    {
-        Context = context;
-    }
+    protected HolooDbContext Context = context;
 
     public void Dispose()
     {

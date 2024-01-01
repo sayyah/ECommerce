@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ProductUserRankRepository : AsyncRepository<ProductUserRank>, IProductUserRankRepository
+public class ProductUserRankRepository : RepositoryBase<ProductUserRank>, IProductUserRankRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
