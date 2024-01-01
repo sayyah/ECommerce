@@ -1673,17 +1673,10 @@ tbody tr td:last-child { border-left: none; }
     z-index: 1;
 }
 .Image__Placeholder{
-    height:250px;
+    height:auto;
     animation:image-loading 1s linear infinite alternate;
 }
-.Image__Placeholder-Details {
-    height: 170px;
-    animation: image-loading 1s linear infinite alternate;
-}
-.Image__Placeholder-promo {
-    height: 125px;
-    animation: image-loading 1s linear infinite alternate;
-}
+
 @keyframes image-loading{
     0% {
         background-color:hsl(250, 20%, 80%);
