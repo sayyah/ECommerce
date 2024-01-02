@@ -3,7 +3,7 @@ using ECommerce.Domain.Entities.HolooEntity;
 
 namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooUnit
+public class HolooUnit : BaseHolooEntity
 {
     [Key] public int Unit_Code { get; set; }
 

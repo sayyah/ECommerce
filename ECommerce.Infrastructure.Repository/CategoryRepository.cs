@@ -1,46 +1,37 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
+public class CategoryRepository(SunflowerECommerceDbContext context) : RepositoryBase<Category>(context),
+    ICategoryRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public CategoryRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<Category> GetByName(string name, CancellationToken cancellationToken, int? parentId = null)
     {
-        return await _context.Categories
+        return await context.Categories
             .Where(x => x.Name == name && x.ParentId == parentId && x.IsActive)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<Category>> Search(string searchKeyword, CancellationToken cancellationToken)
+    public async Task<List<Category>?> Search(string searchKeyword, CancellationToken cancellationToken)
     {
-        return await _context.Categories
+        return await context.Categories
             .Where(x => x.Name.Contains(searchKeyword) && x.IsActive)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> AddAll(IEnumerable<Category> categories, CancellationToken cancellationToken)
+    public async Task AddAll(IEnumerable<Category> categories, CancellationToken cancellationToken)
     {
-        await _context.Categories.AddRangeAsync(categories, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        await context.Categories.AddRangeAsync(categories, cancellationToken);
     }
 
     public async Task<IEnumerable<int>> GetIdsByUrl(string categoryUrl, CancellationToken cancellationToken)
     {
-        return await _context.Categories
+        return await context.Categories
             .Where(x => (x.Path == categoryUrl || x.Categories.Any(y => y.Path == categoryUrl)) && x.IsActive)
             .Select(x => x.Id).ToListAsync(cancellationToken);
     }
 
     public async Task<CategoryViewModel?> GetByUrl(string categoryUrl, CancellationToken cancellationToken)
     {
-        return await _context.Categories
+        return await context.Categories
             //.Where(x => (x.Path == categoryUrl || x.Categories.Any(y => y.Path == categoryUrl)) && x.IsActive)
             .Where(x => x.Path == categoryUrl && x.IsActive)
             .Select(x => new CategoryViewModel
@@ -55,16 +46,16 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
             }).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<CategoryParentViewModel>> Parents(int productId, CancellationToken cancellationToken)
+    public async Task<List<CategoryParentViewModel>?> Parents(int productId, CancellationToken cancellationToken)
     {
         var productCategory = new List<int>();
         if (productId > 0)
         {
-            var temp = _context.Products.Where(x => x.Id == productId).Include(x => x.ProductCategories);
+            var temp = context.Products.Where(x => x.Id == productId).Include(x => x.ProductCategories);
             productCategory = temp.First().ProductCategories.Select(x => x.Id).ToList();
         }
 
-        var allCategory = await _context.Categories.Where(x => x.IsActive).ToListAsync(cancellationToken);
+        var allCategory = await context.Categories.Where(x => x.IsActive).ToListAsync(cancellationToken);
 
         var result = await Children(allCategory, productCategory, null);
         return result.OrderBy(x => x.DisplayOrder).ToList();
@@ -74,7 +65,7 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
     {
         var categoriesId = new List<int>();
 
-        var categories = _context.Categories.Where(x => x.ParentId == categoryId);
+        var categories = context.Categories.Where(x => x.ParentId == categoryId);
         if (categories.Any())
             foreach (var i in categories.Select(x => x.Id))
             {
@@ -91,7 +82,7 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
         CancellationToken cancellationToken)
     {
         return PagedList<Category>.ToPagedList(
-            await _context.Categories.Where(x => x.Name.Contains(paginationParameters.Search)).OrderBy(on => on.Id)
+            await context.Categories.Where(x => x.Name.Contains(paginationParameters.Search)).OrderBy(on => on.Id)
                 .ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
@@ -99,7 +90,7 @@ public class CategoryRepository : AsyncRepository<Category>, ICategoryRepository
 
     public IQueryable<Category> GetCategoriesWithProduct(CancellationToken cancellationToken)
     {
-        return _context.Categories.Include(x => x.Products);
+        return context.Categories.Include(x => x.Products);
     }
 
     private async Task<List<CategoryParentViewModel>> Children(List<Category> allCategory,

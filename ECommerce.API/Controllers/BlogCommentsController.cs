@@ -1,20 +1,14 @@
-﻿namespace ECommerce.API.Controllers;
+﻿// Ignore Spelling: Blog
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogCommentsController : ControllerBase
+public class BlogCommentsController(IUnitOfWork unitOfWork, ILogger<BlogCommentsController> logger)
+    : ControllerBase
 {
-    private readonly IBlogCommentRepository _blogCommentRepository;
-    private readonly IImageRepository _imageRepository;
-    private readonly ILogger<BlogCommentsController> _logger;
-
-    public BlogCommentsController(IBlogCommentRepository blogCommentRepository, ILogger<BlogCommentsController> logger
-        , IImageRepository imageRepository)
-    {
-        _blogCommentRepository = blogCommentRepository;
-        _logger = logger;
-        _imageRepository = imageRepository;
-    }
+    private readonly IBlogCommentRepository _blogCommentRepository = unitOfWork.GetRepository<BlogCommentRepository,BlogComment>();
+    private readonly IImageRepository _imageRepository = unitOfWork.GetRepository <ImageRepository,Image>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -44,7 +38,7 @@ public class BlogCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -55,13 +49,14 @@ public class BlogCommentsController : ControllerBase
         try
         {
             var result = _blogCommentRepository.GetByIdWithInclude("Answer,Blog", id);
-            result.Blog.Image = await _imageRepository.GetByBlogId(result.Blog.Id, cancellationToken);
-            if (result.Answer == null) result.Answer = new BlogComment();
-            if (result == null)
+            if (result?.Blog == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
                 });
+
+            result.Blog.Image = await _imageRepository.GetByBlogId(result.Blog.Id, cancellationToken);
+            result.Answer ??= new BlogComment();
 
             return Ok(new ApiResult
             {
@@ -71,13 +66,13 @@ public class BlogCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(BlogComment blogComment, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(BlogComment? blogComment, CancellationToken cancellationToken)
     {
         try
         {
@@ -91,16 +86,17 @@ public class BlogCommentsController : ControllerBase
             blogComment.IsRead = false;
             blogComment.IsAnswered = false;
             blogComment.DateTime = DateTime.Now;
+            _blogCommentRepository.Add(blogComment);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _blogCommentRepository.AddAsync(blogComment, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -111,12 +107,15 @@ public class BlogCommentsController : ControllerBase
     {
         try
         {
-            BlogComment? _commentAnswer;
+            BlogComment? commentAnswer;
             if (blogComment.AnswerId != null)
             {
-                _commentAnswer = await _blogCommentRepository.GetByIdAsync(cancellationToken, blogComment.AnswerId);
-                _commentAnswer.DateTime = DateTime.Now;
-                await _blogCommentRepository.UpdateAsync(_commentAnswer, cancellationToken);
+                commentAnswer = await _blogCommentRepository.GetByIdAsync(cancellationToken, blogComment.AnswerId);
+                if (commentAnswer != null)
+                {
+                    commentAnswer.DateTime = DateTime.Now;
+                    _blogCommentRepository.Update(commentAnswer);
+                }
             }
             else
             {
@@ -127,16 +126,19 @@ public class BlogCommentsController : ControllerBase
                     blogComment.Answer.IsRead = false;
                     blogComment.Answer.IsAnswered = false;
                     blogComment.Answer.DateTime = DateTime.Now;
-                    _commentAnswer = await _blogCommentRepository.AddAsync(blogComment.Answer, cancellationToken);
-                    if (_commentAnswer != null)
+                    commentAnswer = await _blogCommentRepository.AddAsync(blogComment.Answer, cancellationToken);
+                   
+                    if (commentAnswer != new BlogComment())
                     {
-                        blogComment.Answer = _commentAnswer;
-                        blogComment.AnswerId = _commentAnswer.Id;
+                        blogComment.Answer = commentAnswer;
+                        blogComment.AnswerId = commentAnswer.Id;
                     }
                 }
             }
 
-            await _blogCommentRepository.UpdateAsync(blogComment, cancellationToken);
+            _blogCommentRepository.Update(blogComment);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -144,7 +146,7 @@ public class BlogCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -155,7 +157,8 @@ public class BlogCommentsController : ControllerBase
     {
         try
         {
-            await _blogCommentRepository.DeleteAsync(id, cancellationToken);
+            await _blogCommentRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -163,19 +166,19 @@ public class BlogCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAccesptedComments([FromQuery] PaginationParameters paginationParameters,
+    public async Task<IActionResult> GetAllAcceptedComments([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogCommentRepository.GetAllAccesptedComments(paginationParameters, cancellationToken);
+            var entity = await _blogCommentRepository.GetAllAcceptedComments(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -195,7 +198,7 @@ public class BlogCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ColorRepository : AsyncRepository<Color>, IColorRepository
+public class ColorRepository : RepositoryBase<Color>, IColorRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -11,7 +11,7 @@ public class ColorRepository : AsyncRepository<Color>, IColorRepository
         _context = context;
     }
 
-    public async Task<Color> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Color?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.Colors.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

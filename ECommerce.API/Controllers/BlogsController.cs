@@ -1,20 +1,12 @@
-﻿using ECommerce.Application.ViewModels;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogsController : ControllerBase
+public class BlogsController(IUnitOfWork unitOfWork, ILogger<BlogsController> logger) : ControllerBase
 {
-    private readonly IBlogRepository _blogRepository;
-    private readonly ILogger<BlogsController> _logger;
-
-    public BlogsController(IBlogRepository blogRepository, ILogger<BlogsController> logger)
-    {
-        _blogRepository = blogRepository;
-        _logger = logger;
-    }
+    private readonly IBlogRepository _blogRepository = unitOfWork.GetRepository<BlogRepository, Blog>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -43,7 +35,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -75,7 +67,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -101,14 +93,14 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(BlogViewModel blogViewModel, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(BlogViewModel? blogViewModel, CancellationToken cancellationToken)
     {
         try
         {
@@ -134,22 +126,25 @@ public class BlogsController : ControllerBase
                     Messages = new List<string> { "آدرس مقاله تکراری است" }
                 });
 
+            var newBlog = await _blogRepository.AddWithRelations(blogViewModel, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _blogRepository.AddWithRelations(blogViewModel, cancellationToken)
+                ReturnData = newBlog
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
 
     [HttpPut]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<ActionResult<int>> Put(BlogViewModel blogViewModel, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> Put(BlogViewModel? blogViewModel, CancellationToken cancellationToken)
     {
         try
         {
@@ -173,6 +168,8 @@ public class BlogsController : ControllerBase
                 });
             if (repetitiveUrl != null) _blogRepository.Detach(repetitiveUrl);
             await _blogRepository.EditWithRelations(blogViewModel, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -180,7 +177,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -191,7 +188,9 @@ public class BlogsController : ControllerBase
     {
         try
         {
-            await _blogRepository.DeleteAsync(id, cancellationToken);
+            await _blogRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -199,7 +198,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -217,7 +216,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -243,7 +242,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

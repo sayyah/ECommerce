@@ -2,16 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class DepartmentsController : ControllerBase
+public class DepartmentsController(IUnitOfWork unitOfWork, ILogger<DepartmentsController> logger)
+    : ControllerBase
 {
-    private readonly IDepartmentRepository _departmentRepository;
-    private readonly ILogger<DepartmentsController> _logger;
-
-    public DepartmentsController(IDepartmentRepository departmentRepository, ILogger<DepartmentsController> logger)
-    {
-        _departmentRepository = departmentRepository;
-        _logger = logger;
-    }
+    private readonly IDepartmentRepository _departmentRepository = unitOfWork.GetRepository<DepartmentRepository, Department>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -40,7 +34,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -65,7 +59,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -75,12 +69,7 @@ public class DepartmentsController : ControllerBase
     {
         try
         {
-            var result = await _departmentRepository.GetAll(cancellationToken);
-            if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
+            var result = await _departmentRepository.GetAllAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
@@ -90,15 +79,15 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Department department, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Department? department, CancellationToken cancellationToken)
     {
         try
         {
@@ -117,15 +106,17 @@ public class DepartmentsController : ControllerBase
                     Messages = new List<string> { "عنوان دپارتمان تکراری است" }
                 });
 
+            _departmentRepository.Add(department);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await _departmentRepository.AddAsync(department, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -144,7 +135,9 @@ public class DepartmentsController : ControllerBase
                     Messages = new List<string> { "نام دپارتمان تکراری است" }
                 });
             if (repetitiveDepartment != null) _departmentRepository.Detach(repetitiveDepartment);
-            await _departmentRepository.UpdateAsync(department, cancellationToken);
+            _departmentRepository.Update(department);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -152,7 +145,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -163,7 +156,9 @@ public class DepartmentsController : ControllerBase
     {
         try
         {
-            await _departmentRepository.DeleteAsync(id, cancellationToken);
+            await _departmentRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -171,7 +166,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchaseOrderRepository
+public class PurchaseOrderRepository : RepositoryBase<PurchaseOrder>, IPurchaseOrderRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -52,7 +52,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<PurchaseOrderViewModel>> GetProductListByUserId(int userId,
+    public async Task<List<PurchaseOrderViewModel>?> GetProductListByUserId(int userId,
         CancellationToken cancellationToken)
     {
         try

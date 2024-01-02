@@ -2,7 +2,7 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class MessageRepository : AsyncRepository<Message>, IMessageRepository
+public class MessageRepository : RepositoryBase<Message>, IMessageRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 

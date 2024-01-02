@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Entities;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -7,88 +8,83 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "AddRange: Null value for required Fields")]
-    public void AddRange_RequiredFields_ThrowsException()
+    [Fact]
+    public async void AddRange_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
+        var products = new List<Product> { product };
 
         // Act
-        void actual() => _productRepository.AddRange(expected.Values);
+        async Task Action()
+        {
+            _productRepository.AddRange(products);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<DbUpdateException>(actual);
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "AddRange: Null product")]
-    public void AddRange_NullProduct_ThrowsException()
-    {
-        // Act
-        void actual() => _productRepository.AddRange([ null! ]);
-
-        // Assert
-        Assert.Throws<NullReferenceException>(actual);
-    }
-
-    [Fact(DisplayName = "AddRange: Null Argument")]
-    public void AddRange_NullArgument_ThrowsException()
-    {
-        // Act
-        void actual() => _productRepository.AddRange(null!);
-
-        // Assert
-        Assert.Throws<ArgumentNullException>(actual);
-    }
-
-    [Fact(DisplayName = "AddRange: Add products all together")]
-    public void AddRange_AddEntities_EntityExistsInRepository()
+    [Fact]
+    public async void AddRange_RequiredUrlField_ThrowsException()
     {
         // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
+        var products = new List<Product> { product };
 
         // Act
-        _productRepository.AddRange(expected.Values);
-
-        // Assert
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
+        async Task Action()
         {
-            actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
+            _productRepository.AddRange(products);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        // Assert
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "AddRange: No save")]
-    public void AddRange_NoSave_EntityNotInRepository()
+    [Fact]
+    public async void AddRange_NullProduct_ThrowsException()
     {
-        // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
-
         // Act
-        _productRepository.AddRange(expected.Values, false);
+        async Task Action()
+        {
+            _productRepository.AddRange(new List<Product> { null! });
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
+    }
+
+    [Fact]
+    public async void AddRange_NullArgument_ThrowsException()
+    {
+        // Act
+        async Task Action()
         {
-            actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
+            _productRepository.AddRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
-        foreach (var item in actual.Values)
-        {
-            Assert.Null(item);
-        }
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
+    }
 
-        DbContext.SaveChanges();
-        actual.Clear();
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, DbContext.Products.FirstOrDefault(x => x.Id == entry.Value.Id));
-        }
+    [Fact]
+    public async void AddRange_AddEntities_EntityExistsInRepository()
+    {
+        // Arrange
+        var expected = Fixture.CreateMany<Product>(2).ToList();
 
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        // Act
+        _productRepository.AddRange(expected);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Products;
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
     }
 }

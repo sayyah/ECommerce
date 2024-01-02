@@ -4,9 +4,9 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IUserRepository : IAsyncRepository<User>
+public interface IUserRepository : IRepositoryBase<User>
 {
-    Task<PagedList<UserListViewModel>> Search(UserFilterdParameters paginationParameters,
+    Task<PagedList<UserListViewModel>> Search(userFilterParameters paginationParameters,
         CancellationToken cancellationToken);
 
     Task<bool> Exists(int id, string email, string phoneNumber, CancellationToken cancellationToken);
@@ -14,10 +14,9 @@ public interface IUserRepository : IAsyncRepository<User>
     Task<User> GetByPhoneNumber(string phone, CancellationToken cancellationToken);
     Task<List<UserRole>> GetUserRoles(int id, CancellationToken cancellationToken);
     Task<List<UserRole>> GetApplicationRoles(CancellationToken cancellationToken);
-    Task AddLoginHistory(int userId, string token, string ipAddress, DateTime expirationDate);
+    void AddLoginHistory(int userId, string token, string ipAddress, DateTime expirationDate);
 
-    Task<bool> SetConfirmCodeByUsername(string username, int confirmCode, DateTime codeConfirmExpairDate,
-        CancellationToken cancellationToken);
+   void SetConfirmCodeByUsername(string username, int confirmCode, DateTime codeConfirmExpireDate);
 
     Task<int?> GetSecondsLeftConfirmCodeExpire(string username, CancellationToken cancellationToken);
 }

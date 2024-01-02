@@ -4,7 +4,7 @@ using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class UnitRepository : AsyncRepository<Unit>, IUnitRepository
+public class UnitRepository : RepositoryBase<Unit>, IUnitRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -23,15 +23,14 @@ public class UnitRepository : AsyncRepository<Unit>, IUnitRepository
             paginationParameters.PageSize);
     }
 
-    public async Task<Unit> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Unit?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await _context.Units.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<int> AddAll(IEnumerable<Unit> units, CancellationToken cancellationToken)
+    public void AddAll(IEnumerable<Unit> units)
     {
-        await _context.Units.AddRangeAsync(units, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        _context.Units.AddRange(units);
     }
 
     public int? GetId(int? unitCode, CancellationToken cancellationToken)

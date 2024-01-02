@@ -1,8 +1,6 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCategoryRepository
+public class BlogCategoryRepository : RepositoryBase<BlogCategory>, IBlogCategoryRepository
 {
     private readonly SunflowerECommerceDbContext _context;
 
@@ -17,18 +15,19 @@ public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCatego
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<CategoryParentViewModel>> Parents(int blogId, CancellationToken cancellationToken)
+    public async Task<List<CategoryParentViewModel>?> Parents(int blogId, CancellationToken cancellationToken)
     {
-        var blogCategory = 0;
+        var blogCategoryId = 0;
         if (blogId > 0)
         {
             var temp = _context.Blogs.Where(x => x.Id == blogId).Include(x => x.BlogCategory);
-            blogCategory = temp.First().BlogCategory.Id;
+            var blog = await temp.FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            if (blog != null) blogCategoryId = blog.BlogCategoryId;
         }
 
         var allCategory = await _context.BlogCategories.ToListAsync(cancellationToken);
 
-        var result = await Children(allCategory, blogCategory, null);
+        var result = await Children(allCategory, blogCategoryId, null);
         return result.OrderBy(x => x.DisplayOrder).ToList();
     }
 
@@ -43,14 +42,14 @@ public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCatego
     }
 
     private async Task<List<CategoryParentViewModel>> Children(List<BlogCategory> allCategory,
-        int blogCategory, int? parentId)
+        int blogCategoryId, int? parentId)
     {
         var temp = new List<CategoryParentViewModel>();
         var ret = new List<CategoryParentViewModel>();
         foreach (var parent in allCategory.Where(p => p.ParentId == parentId).ToList())
         {
             if (allCategory.Any(p => p.ParentId == parent.Id))
-                temp = await Children(allCategory, blogCategory, parent.Id);
+                temp = await Children(allCategory, blogCategoryId, parent.Id);
 
             ret.Add(new CategoryParentViewModel
             {
@@ -58,7 +57,7 @@ public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCatego
                 Name = parent.Name,
                 Depth = (int)parent.Depth,
                 Children = temp,
-                Checked = blogCategory == parent.Id
+                Checked = blogCategoryId == parent.Id
             });
             temp = new List<CategoryParentViewModel>();
         }
