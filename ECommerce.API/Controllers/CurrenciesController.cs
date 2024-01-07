@@ -2,17 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CurrenciesController : ControllerBase
+public class CurrenciesController(ICurrencyRepository currencyRepository, ILogger<CurrenciesController> logger)
+    : ControllerBase
 {
-    private readonly ICurrencyRepository _currencyRepository;
-    private readonly ILogger<CurrenciesController> _logger;
-
-    public CurrenciesController(ICurrencyRepository currencyRepository, ILogger<CurrenciesController> logger)
-    {
-        _currencyRepository = currencyRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -20,7 +12,7 @@ public class CurrenciesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _currencyRepository.Search(paginationParameters, cancellationToken);
+            var entity = await currencyRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -41,7 +33,7 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -51,7 +43,7 @@ public class CurrenciesController : ControllerBase
     {
         try
         {
-            var result = await _currencyRepository.GetByIdAsync(cancellationToken, id);
+            var result = await currencyRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -66,7 +58,7 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -87,12 +79,12 @@ public class CurrenciesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _currencyRepository.AddAsync(currency, cancellationToken)
+                ReturnData = await currencyRepository.AddAsync(currency, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -109,15 +101,15 @@ public class CurrenciesController : ControllerBase
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "ارز پیشفرض قابل تغییر نیست" }
                 });
-            var repetitiveCurrency = await _currencyRepository.GetByName(currency.Name, cancellationToken);
+            var repetitiveCurrency = await currencyRepository.GetByName(currency.Name, cancellationToken);
             if (repetitiveCurrency != null && repetitiveCurrency.Id != currency.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام ارز تکراری است" }
                 });
-            if (repetitiveCurrency != null) _currencyRepository.Detach(repetitiveCurrency);
-            await _currencyRepository.UpdateAsync(currency, cancellationToken);
+            if (repetitiveCurrency != null) currencyRepository.Detach(repetitiveCurrency);
+            await currencyRepository.UpdateAsync(currency, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -125,7 +117,7 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -142,7 +134,7 @@ public class CurrenciesController : ControllerBase
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "ارز پیشفرض قابل حذف نیست" }
                 });
-            await _currencyRepository.DeleteAsync(id, cancellationToken);
+            await currencyRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -150,7 +142,7 @@ public class CurrenciesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

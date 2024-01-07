@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
-public class DetailModel : PageModel
+public class DetailModel(IBlogService blogService) : PageModel
 {
-    private readonly IBlogService _blogService;
-
-    public DetailModel(IBlogService blogService)
-    {
-        _blogService = blogService;
-    }
-
     public Blog Blog { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _blogService.GetById(id);
+        var result = await blogService.GetById(id);
         if (result.Code == 0)
         {
             Blog = result.ReturnData;

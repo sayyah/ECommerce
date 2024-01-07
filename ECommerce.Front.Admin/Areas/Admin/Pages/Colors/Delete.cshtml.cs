@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IColorService colorService) : PageModel
 {
-    private readonly IColorService _colorService;
-
-    public DeleteModel(IColorService colorService)
-    {
-        _colorService = colorService;
-    }
-
     public Color Color { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _colorService.GetById(id);
+        var result = await colorService.GetById(id);
         if (result.Code == 0)
         {
             Color = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _colorService.Delete(id);
+            var result = await colorService.Delete(id);
             return RedirectToPage("/Colors/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

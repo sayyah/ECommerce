@@ -1,14 +1,8 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class TransactionService : EntityService<Transaction>, ITransactionService
+public class TransactionService(IHttpService http) : EntityService<Transaction>(http), ITransactionService
 {
     private const string Url = "api/Transactions";
-    private readonly IHttpService _http;
-
-    public TransactionService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Transaction>>> Load(int userId = 0, string userName = "", string search = "",
         int pageNumber = 1, int pageSize = 10,
@@ -53,7 +47,7 @@ public class TransactionService : EntityService<Transaction>, ITransactionServic
 
     public async Task<ServiceResult<Transaction>> GetById(int id)
     {
-        var result = await _http.GetAsync<Transaction>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Transaction>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

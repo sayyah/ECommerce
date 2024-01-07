@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
-public class DetailModel : PageModel
+public class DetailModel(IKeywordService keywordService) : PageModel
 {
-    private readonly IKeywordService _keywordService;
-
-    public DetailModel(IKeywordService keywordService)
-    {
-        _keywordService = keywordService;
-    }
-
     public Keyword Keyword { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _keywordService.GetById(id);
+        var result = await keywordService.GetById(id);
         if (result.Code == 0)
         {
             Keyword = result.ReturnData;

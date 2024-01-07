@@ -2,19 +2,9 @@
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class RegisterModel : PageModel
+public class RegisterModel(IUserService userService, ICityService cityService, IStateService stateService)
+    : PageModel
 {
-    private readonly ICityService _cityService;
-    private readonly IStateService _stateService;
-    private readonly IUserService _userService;
-
-    public RegisterModel(IUserService userService, ICityService cityService, IStateService stateService)
-    {
-        _userService = userService;
-        _cityService = cityService;
-        _stateService = stateService;
-    }
-
     [BindProperty] public RegisterViewModel RegisterViewModel { get; set; } = new();
 
     [TempData] public string Message { get; set; }
@@ -35,15 +25,15 @@ public class RegisterModel : PageModel
 
     private async Task Load()
     {
-        StateList = (await _stateService.Load()).ReturnData;
-        var cityServiceResponse = await _cityService.LoadAllCity();
+        StateList = (await stateService.Load()).ReturnData;
+        var cityServiceResponse = await cityService.LoadAllCity();
         CityList = cityServiceResponse.ReturnData;
     }
 
     public async Task<IActionResult> OnPostRegister()
     {
         await Load();
-        if (!await _userService.GetVerificationByNationalId(RegisterViewModel.NationalCode))
+        if (!await userService.GetVerificationByNationalId(RegisterViewModel.NationalCode))
 
         {
             Message = "کد ملی نامعتبر می باشد";
@@ -98,7 +88,7 @@ public class RegisterModel : PageModel
         RegisterViewModel.Email = "boloorico@gmail.com";
         RegisterViewModel.IsHaveEmail = false;
 
-        var result = await _userService.Register(RegisterViewModel);
+        var result = await userService.Register(RegisterViewModel);
         if (result.Code > 0)
         {
             Message = result.Message;
@@ -113,7 +103,7 @@ public class RegisterModel : PageModel
     {
         var code = GenerateCode(username);
         if (code == 0) return new JsonResult(null);
-        var smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
+        var smsResponsModel = await userService.SendAuthenticationSms(username, code.ToString());
         return new JsonResult(smsResponsModel);
     }
 

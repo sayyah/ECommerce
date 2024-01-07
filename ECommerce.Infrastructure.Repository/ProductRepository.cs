@@ -1,27 +1,18 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class ProductRepository : AsyncRepository<Product>, IProductRepository
+public class ProductRepository(SunflowerECommerceDbContext context, HolooDbContext holooDbContext)
+    : AsyncRepository<Product>(context), IProductRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-    private readonly HolooDbContext _holooDbContext;
-
-    public ProductRepository(SunflowerECommerceDbContext context, HolooDbContext holooDbContext) : base(context)
-    {
-        _context = context;
-        _holooDbContext = holooDbContext;
-    }
-
     public async Task<Product?> GetByName(string name, CancellationToken cancellationToken)
     {
-        return await _context.Products.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
+        return await context.Products.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Product?> GetByUrl(string url, CancellationToken cancellationToken)
     {
-        return await _context.Products
+        return await context.Products
             .Where(x => x.Url == url && x.Prices!.Any())
             .Include(x => x.Brand)
             .Include(x => x.Keywords)
@@ -34,8 +25,8 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public async Task<int> AddAll(IEnumerable<Product?> products, CancellationToken cancellationToken)
     {
-        await _context.Products.AddRangeAsync(products, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        await context.Products.AddRangeAsync(products, cancellationToken);
+        return await context.SaveChangesAsync(cancellationToken);
     }
 
     //public async Task<IEnumerable<Product>> GetAllHolooProducts(CancellationToken cancellationToken) => await _context.Products.Where(x => x.ArticleCode != null).ToListAsync(cancellationToken);
@@ -45,12 +36,12 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         Product? product = productViewModel;
         //product.Prices = productViewModel.Prices;
         product.Keywords = new List<Keyword>();
-        foreach (var id in productViewModel.KeywordsId) product.Keywords.Add(_context.Keywords.First(x => x.Id == id));
+        foreach (var id in productViewModel.KeywordsId) product.Keywords.Add(context.Keywords.First(x => x.Id == id));
         product.Tags = new List<Tag>();
-        foreach (var id in productViewModel.TagsId) product.Tags.Add(_context.Tags.First(x => x.Id == id));
+        foreach (var id in productViewModel.TagsId) product.Tags.Add(context.Tags.First(x => x.Id == id));
         product.ProductCategories = new List<Category>();
         foreach (var id in productViewModel.CategoriesId)
-            product.ProductCategories.Add(_context.Categories.First(x => x.Id == id));
+            product.ProductCategories.Add(context.Categories.First(x => x.Id == id));
 
         //product.AttributeGroupProducts = new List<ProductAttributeGroup>();
         //foreach (var id in productViewModel.Attributes.Select(x => x.AttributeGroupId).Distinct())
@@ -64,15 +55,15 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         //    product.AttributeValues.Add(productAttribute.FirstOrDefault());
         //}
 
-        await _context.Products.AddAsync(product, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.Products.AddAsync(product, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return product;
     }
 
     public async Task<Product?> EditWithRelations(ProductViewModel productViewModel,
         CancellationToken cancellationToken)
     {
-        var product = await _context.Products.Where(x => x.Id == productViewModel.Id)
+        var product = await context.Products.Where(x => x.Id == productViewModel.Id)
             .Include(nameof(Product.ProductCategories)).Include(nameof(Product.Tags)).Include(nameof(Product.Keywords))
             .Include(nameof(Product.Images)).Include(nameof(Product.AttributeValues))
             .Include(nameof(Product.AttributeGroupProducts)).FirstAsync(cancellationToken);
@@ -97,15 +88,15 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
         foreach (var productKeyword in product.Keywords) product.Keywords.Remove(productKeyword);
         foreach (var id in productViewModel.KeywordsId)
-            product.Keywords.Add(await _context.Keywords.FirstAsync(x => x.Id == id));
+            product.Keywords.Add(await context.Keywords.FirstAsync(x => x.Id == id));
 
         var tags = product.Tags;
         foreach (var tag in tags) product.Tags.Remove(tag);
-        foreach (var id in productViewModel.TagsId) product.Tags.Add(await _context.Tags.FirstAsync(x => x.Id == id));
+        foreach (var id in productViewModel.TagsId) product.Tags.Add(await context.Tags.FirstAsync(x => x.Id == id));
 
         foreach (var category in product.ProductCategories) product.ProductCategories.Remove(category);
         foreach (var id in productViewModel.CategoriesId)
-            product.ProductCategories.Add(await _context.Categories.FirstAsync(x => x.Id == id));
+            product.ProductCategories.Add(await context.Categories.FirstAsync(x => x.Id == id));
 
         //if (productViewModel.Attributes != null)
         //{
@@ -121,20 +112,20 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         //    }
         //}
 
-        _context.Entry(product).State = EntityState.Modified;
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Entry(product).State = EntityState.Modified;
+        await context.SaveChangesAsync(cancellationToken);
         return product;
     }
 
     public IQueryable<Product> GetWithInclude(CancellationToken cancellationToken)
     {
-        return _context.Products.AsNoTracking().Include(x => x.ProductCategories).Include(x => x.Prices)
+        return context.Products.AsNoTracking().Include(x => x.ProductCategories).Include(x => x.Prices)
             .Include(x => x.Brand).Include(x => x.Images);
     }
 
     public IQueryable<Product> GetProductByIdWithInclude(int productId)
     {
-        return _context.Products.AsNoTracking().Where(x => x.Id == productId)
+        return context.Products.AsNoTracking().Where(x => x.Id == productId)
             .Include(c => c.ProductCategories)
             .Include(u => u.ProductUserRanks)
             .Include(p => p.Prices)
@@ -148,14 +139,14 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public int GetCategoryProductCount(int categoryId, CancellationToken cancellationToken)
     {
-        return _context.Products.Count(x => x.ProductCategories.Any(i => i.Id == categoryId));
+        return context.Products.Count(x => x.ProductCategories.Any(i => i.Id == categoryId));
     }
 
     public async Task<List<ProductIndexPageViewModel>> GetProductList(List<int> productIdList,
         CancellationToken cancellationToken)
     {
         var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
-        var products = await _context.Products
+        var products = await context.Products
             .Where(x => productIdList.Contains(x.Id))
             .Include(x => x.Brand)
             .Include(x => x.Images)
@@ -169,7 +160,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public IEnumerable<ProductCompareViewModel> GetProductListWithAttribute(List<int> productIdList)
     {
-        var group = _context.ProductAttributeGroups.AsNoTracking()
+        var group = context.ProductAttributeGroups.AsNoTracking()
             .Include(a => a.Attribute)
             .ToList();
 
@@ -182,10 +173,10 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         //        .ToListAsync(cancellationToken);
         //}
 
-        var productValues = _context.ProductAttributeValues.Where(x => productIdList.Contains(x.ProductId.Value))
+        var productValues = context.ProductAttributeValues.Where(x => productIdList.Contains(x.ProductId.Value))
             .ToList();
 
-        var products = _context.Products.AsNoTracking()
+        var products = context.Products.AsNoTracking()
             .Where(x => productIdList.Contains(x.Id))
             .Include(x => x.ProductCategories)
             .Include(x => x.Prices)
@@ -250,7 +241,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public async Task<List<Product>> GetByCategoryId(int categoryId, CancellationToken cancellationToken)
     {
-        var products = await _context.Products.Where(x => x.ProductCategories.Any(y => y.Id == categoryId))
+        var products = await context.Products.Where(x => x.ProductCategories.Any(y => y.Id == categoryId))
             .OrderByDescending(x => x.Id)
             .Include(x => x.Brand)
             .Include(x => x.Images)
@@ -270,7 +261,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
     public IQueryable<Product?> GetProducts(List<int> categoriesId, List<int>? brandsId, List<int>? starsCount,
         List<int>? tagsId)
     {
-        var products = _context.Products.Where(x => x.Prices!.Any()).AsQueryable();
+        var products = context.Products.Where(x => x.Prices!.Any()).AsQueryable();
 
         if (categoriesId.Any(x => x != 0))
             products = products.Where(x =>
@@ -291,14 +282,14 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public IQueryable<Product?> GetAllProducts()
     {
-        var products = _context.Products.Where(x => x.Prices!.Any()).AsQueryable();
+        var products = context.Products.Where(x => x.Prices!.Any()).AsQueryable();
         var result = products.Include(x => x.Prices).ThenInclude(y => y.Discount);
         return result;
     }
 
     public async Task<Product?> GetProductById(int id, CancellationToken cancellationToken)
     {
-        return await _context.Products
+        return await context.Products
             .Where(x => x.Id == id)
             .Include(x => x.Brand)
             .Include(x => x.Images)
@@ -312,7 +303,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         CancellationToken cancellationToken)
     {
         return PagedList<ProductIndexPageViewModel>.ToPagedList(
-            await _context.Products.Where(x => x.Name.Contains(paginationParameters.Search))
+            await context.Products.Where(x => x.Name.Contains(paginationParameters.Search))
                 .AsNoTracking()
                 .OrderByDescending(on => on.Id)
                 .Select(p => new ProductIndexPageViewModel
@@ -337,7 +328,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
     public async Task<List<ProductIndexPageViewModel>> TopNew(int count, int start, string? topCategory,
         CancellationToken cancellationToken)
     {
-        var products = await _context.Products.Where(x => x.Images!.Count > 0 && x.Prices!.Any())
+        var products = await context.Products.Where(x => x.Images!.Count > 0 && x.Prices!.Any())
             .OrderByDescending(x => x.Id).Skip(start).Take(count)
             .Include(x => x.Prices).ThenInclude(c => c.Discount)
             .Select(p => new ProductIndexPageViewModel
@@ -361,7 +352,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
     public async Task<List<ProductIndexPageViewModel>> TopPrices(int count, int start, string? topCategory,
         CancellationToken cancellationToken)
     {
-        var products = await _context.Prices.OrderByDescending(x => x.Amount)
+        var products = await context.Prices.OrderByDescending(x => x.Amount)
             .Where(x => x.Product.Images.Count > 0).Include(x => x.Discount)
             .Skip(start).Take(count)
             .Select(p => new ProductIndexPageViewModel
@@ -398,9 +389,9 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
             _ => productPrices.Amount
         };
 
-        var temp = _holooDbContext.ARTICLE.Where(
+        var temp = holooDbContext.ARTICLE.Where(
             x => article.A_Code_C == x.A_Code_C);
-        var bolooryFlag = _holooDbContext.Customer.First().C_Name == "گروه تجهيزات صنعتي بلوري";
+        var bolooryFlag = holooDbContext.Customer.First().C_Name == "گروه تجهيزات صنعتي بلوري";
         var articlesWithSameCode = temp.Where(x => Convert.ToInt32(x.A_Code) < 3400000 || !bolooryFlag).ToList();
         productPrices.Exist = articlesWithSameCode.Sum(x => x.Exist) ?? 0;
         return productPrices;
@@ -408,7 +399,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public async Task<List<ProductIndexPageViewModel>> TopChip(int count, CancellationToken cancellationToken)
     {
-        var products = await _context.Prices.OrderBy(x => x.Amount)
+        var products = await context.Prices.OrderBy(x => x.Amount)
             .Where(x => x.Product!.Images!.Count > 0).Include(x => x.Discount)
             .Take(count)
             .Select(p => new ProductIndexPageViewModel
@@ -464,7 +455,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
     public async Task<List<ProductIndexPageViewModel>> TopStars(int count, int start, string? topCategory,
         CancellationToken cancellationToken)
     {
-        var products = await _context.ProductUserRanks.OrderByDescending(x => x.Stars)
+        var products = await context.ProductUserRanks.OrderByDescending(x => x.Stars)
             .Where(x => x.Product!.Images!.Count > 0 && x.Product.Prices!.Any()).Include(x => x.Product)
             .ThenInclude(x => x.Prices).ThenInclude(x => x.Discount)
             .Skip(start).Take(count)
@@ -488,7 +479,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public async Task<List<ProductIndexPageViewModel>> TopSells(int count, CancellationToken cancellationToken)
     {
-        var products = await _context.ProductSellCounts.OrderByDescending(x => x.Count)
+        var products = await context.ProductSellCounts.OrderByDescending(x => x.Count)
             .Where(x => x.Product!.Images!.Count > 0 && x.Product.Prices!.Any()).Include(x => x.Product)
             .ThenInclude(x => x.Prices).ThenInclude(x => x.Discount)
             .Take(count)
@@ -516,7 +507,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         //    .Where(y => y.Products.Any(x => x.Id == productId && x.Prices.Any()))
         //    .ToListAsync(cancellationToken);
 
-        var product = await _context.Products.Include(i => i.Tags)
+        var product = await context.Products.Include(i => i.Tags)
             .FirstAsync(x => x.Id == productId, cancellationToken);
 
         var products = new List<ProductIndexPageViewModel>();
@@ -531,7 +522,7 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         var j = 0;
         foreach (var tag in product.Tags)
         {
-            var selectedProduct = await _context.Products
+            var selectedProduct = await context.Products
                 .Where(x => x.Tags.Contains(tag) && x.Id != productId && !selectedProductId.Contains(x.Id))
                 .Skip(rnd.Next(0, tag.Products.Count - 1))
                 .Select(p => new ProductIndexPageViewModel
@@ -563,15 +554,15 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
         j = 0;
         if (products.Count == 0)
         {
-            var category = await _context.Categories
+            var category = await context.Categories
                 .FirstAsync(y => y.Products.Any(x => x.Id == productId && x.Prices.Any()));
 
             var categoryProductCount =
-                _context.Products.Count(x => x.ProductCategories.Any(c => c.Id == category.Id)) - 1;
+                context.Products.Count(x => x.ProductCategories.Any(c => c.Id == category.Id)) - 1;
             if (categoryProductCount <= 1) return products;
             for (var i = 1; i <= count; i++)
             {
-                var selectedProductByCategory = await _context.Products
+                var selectedProductByCategory = await context.Products
                     .Where(x => x.ProductCategories.Any(c => c.Id == category.Id) && x.Id != productId &&
                                 x.Id != productId && !selectedProductId.Contains(x.Id))
                     .Skip(rnd.Next(0, categoryProductCount))
@@ -607,14 +598,14 @@ public class ProductRepository : AsyncRepository<Product>, IProductRepository
 
     public IQueryable<Product> GetAllWithInclude(CancellationToken cancellationToken)
     {
-        var products = _context.Products.Include(x => x.Prices).Include(x => x.Brand)
+        var products = context.Products.Include(x => x.Prices).Include(x => x.Brand)
             .Include(x => x.Images).Include(x => x.ProductUserRanks);
         return products;
     }
 
     public List<int> GetProductsIdWithCategories(int categoryId)
     {
-        var ProductsIds = _context.Products
+        var ProductsIds = context.Products
             .Include(x => x.ProductCategories)
             .Where(x => x.ProductCategories.Any(c => c.Id == categoryId)).Select(c => c.Id)
             .ToList();

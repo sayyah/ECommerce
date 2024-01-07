@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductComments;
 
-public class IndexModel : PageModel
+public class IndexModel(IProductCommentService productCommentService) : PageModel
 {
-    private readonly IProductCommentService _productComments;
-
-    public IndexModel(IProductCommentService productCommentService)
-    {
-        _productComments = productCommentService;
-    }
-
     public ServiceResult<List<ProductComment>> ProductComments { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -21,7 +14,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _productComments.Load(search, pageNumber, pageSize);
+        var result = await productCommentService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

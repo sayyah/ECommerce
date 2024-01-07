@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.States;
 
-public class IndexModel : PageModel
+public class IndexModel(IStateService stateService) : PageModel
 {
-    private readonly IStateService _stateService;
-
-    public IndexModel(IStateService stateService)
-    {
-        _stateService = stateService;
-    }
-
     public ServiceResult<List<State>> States { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _stateService.GetWithPagination(search, pageNumber, pageSize);
+        var result = await stateService.GetWithPagination(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

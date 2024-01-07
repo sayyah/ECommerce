@@ -2,17 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CitiesController : ControllerBase
+public class CitiesController(ICityRepository cityRepository, ILogger<CitiesController> logger)
+    : ControllerBase
 {
-    private readonly ICityRepository _cityRepository;
-    private readonly ILogger<CitiesController> _logger;
-
-    public CitiesController(ICityRepository cityRepository, ILogger<CitiesController> logger)
-    {
-        _cityRepository = cityRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
@@ -21,12 +13,12 @@ public class CitiesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = (await _cityRepository.GetAll(cancellationToken)).OrderBy(x => x.Name)
+                ReturnData = (await cityRepository.GetAll(cancellationToken)).OrderBy(x => x.Name)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -38,7 +30,7 @@ public class CitiesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _cityRepository.Search(paginationParameters, cancellationToken);
+            var entity = await cityRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -60,7 +52,7 @@ public class CitiesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -74,12 +66,12 @@ public class CitiesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = (await _cityRepository.Where(x => x.StateId == id, cancellationToken)).OrderBy(x => x.Name)
+                ReturnData = (await cityRepository.Where(x => x.StateId == id, cancellationToken)).OrderBy(x => x.Name)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -92,12 +84,12 @@ public class CitiesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _cityRepository.GetByIdAsync(cancellationToken, id)
+                ReturnData = await cityRepository.GetByIdAsync(cancellationToken, id)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -115,7 +107,7 @@ public class CitiesController : ControllerBase
                 });
             city.Name = city.Name.Trim();
 
-            var repetitiveCity = await _cityRepository.GetByName(city.Name, cancellationToken);
+            var repetitiveCity = await cityRepository.GetByName(city.Name, cancellationToken);
             if (repetitiveCity != null)
                 return Ok(new ApiResult
                 {
@@ -126,12 +118,12 @@ public class CitiesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _cityRepository.AddAsync(city, cancellationToken)
+                ReturnData = await cityRepository.AddAsync(city, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -142,7 +134,7 @@ public class CitiesController : ControllerBase
     {
         try
         {
-            await _cityRepository.UpdateAsync(city, cancellationToken);
+            await cityRepository.UpdateAsync(city, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -150,7 +142,7 @@ public class CitiesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -161,7 +153,7 @@ public class CitiesController : ControllerBase
     {
         try
         {
-            await _cityRepository.DeleteAsync(id, cancellationToken);
+            await cityRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -169,7 +161,7 @@ public class CitiesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

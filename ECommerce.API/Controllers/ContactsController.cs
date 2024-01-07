@@ -2,20 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ContactsController : ControllerBase
-{
-    private readonly IContactRepository _contactRepository;
-    private readonly IEmailRepository _emailRepository;
-    private readonly ILogger<ContactsController> _logger;
-
-    public ContactsController(IContactRepository contactRepository, ILogger<ContactsController> logger,
+public class ContactsController(IContactRepository contactRepository, ILogger<ContactsController> logger,
         IEmailRepository emailRepository)
-    {
-        _contactRepository = contactRepository;
-        _logger = logger;
-        _emailRepository = emailRepository;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
@@ -24,7 +14,7 @@ public class ContactsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _contactRepository.Search(paginationParameters, cancellationToken);
+            var entity = await contactRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -45,7 +35,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -57,7 +47,7 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            var result = await _contactRepository.GetByIdAsync(cancellationToken, id);
+            var result = await contactRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -72,7 +62,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -84,7 +74,7 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            var result = await _contactRepository.GetByName(name, cancellationToken);
+            var result = await contactRepository.GetByName(name, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -100,7 +90,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -112,7 +102,7 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            var result = await _contactRepository.GetByEmail(email, cancellationToken);
+            var result = await contactRepository.GetByEmail(email, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -128,7 +118,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -139,7 +129,7 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            var result = await _contactRepository.GetRepetitive(contact, cancellationToken);
+            var result = await contactRepository.GetRepetitive(contact, cancellationToken);
             if (result != null)
                 return Ok(new ApiResult
                 {
@@ -157,12 +147,12 @@ public class ContactsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _contactRepository.AddAsync(contact, cancellationToken)
+                ReturnData = await contactRepository.AddAsync(contact, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -174,8 +164,8 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            await _contactRepository.UpdateAsync(contact, cancellationToken);
-            await _emailRepository.SendEmailAsync(contact.Email, "پاسخ به تماس با ما", contact.ReplayMessage,
+            await contactRepository.UpdateAsync(contact, cancellationToken);
+            await emailRepository.SendEmailAsync(contact.Email, "پاسخ به تماس با ما", contact.ReplayMessage,
                 cancellationToken);
             return Ok(new ApiResult
             {
@@ -184,7 +174,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -196,7 +186,7 @@ public class ContactsController : ControllerBase
     {
         try
         {
-            await _contactRepository.DeleteAsync(id, cancellationToken);
+            await contactRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -204,7 +194,7 @@ public class ContactsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

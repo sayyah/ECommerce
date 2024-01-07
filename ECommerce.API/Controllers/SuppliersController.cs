@@ -2,18 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SuppliersController : ControllerBase
+public class SuppliersController(ISupplierRepository discountRepository, ILogger<SuppliersController> logger)
+    : ControllerBase
 {
-    private readonly ILogger<SuppliersController> _logger;
-
-    private readonly ISupplierRepository _supplierRepository;
-
-    public SuppliersController(ISupplierRepository discountRepository, ILogger<SuppliersController> logger)
-    {
-        _supplierRepository = discountRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -21,7 +12,7 @@ public class SuppliersController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _supplierRepository.Search(paginationParameters, cancellationToken);
+            var entity = await discountRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -41,7 +32,7 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -51,7 +42,7 @@ public class SuppliersController : ControllerBase
     {
         try
         {
-            var result = await _supplierRepository.GetByIdAsync(cancellationToken, id);
+            var result = await discountRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -66,7 +57,7 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -84,7 +75,7 @@ public class SuppliersController : ControllerBase
                 });
             supplier.Name = supplier.Name.Trim();
 
-            var repetitiveSupplier = await _supplierRepository.GetByName(supplier.Name, cancellationToken);
+            var repetitiveSupplier = await discountRepository.GetByName(supplier.Name, cancellationToken);
             if (repetitiveSupplier != null)
                 return Ok(new ApiResult
                 {
@@ -95,12 +86,12 @@ public class SuppliersController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _supplierRepository.AddAsync(supplier, cancellationToken)
+                ReturnData = await discountRepository.AddAsync(supplier, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -111,15 +102,15 @@ public class SuppliersController : ControllerBase
     {
         try
         {
-            var repetitive = await _supplierRepository.GetByName(supplier.Name, cancellationToken);
+            var repetitive = await discountRepository.GetByName(supplier.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != supplier.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام تامین کننده تکراری است" }
                 });
-            if (repetitive != null) _supplierRepository.Detach(repetitive);
-            await _supplierRepository.UpdateAsync(supplier, cancellationToken);
+            if (repetitive != null) discountRepository.Detach(repetitive);
+            await discountRepository.UpdateAsync(supplier, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -127,7 +118,7 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -138,7 +129,7 @@ public class SuppliersController : ControllerBase
     {
         try
         {
-            await _supplierRepository.DeleteAsync(id, cancellationToken);
+            await discountRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -146,7 +137,7 @@ public class SuppliersController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

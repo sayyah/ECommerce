@@ -2,25 +2,18 @@
 
 namespace ECommerce.Services.Services;
 
-public class WishListService : EntityService<WishList>, IWishListService
+public class WishListService(IHttpService http, ICookieService cookieService) : EntityService<WishList>(http),
+    IWishListService
 {
     private const string Url = "api/WishLists";
-    private readonly ICookieService _cookieService;
-    private readonly IHttpService _http;
-
-    public WishListService(IHttpService http, ICookieService cookieService) : base(http)
-    {
-        _http = http;
-        _cookieService = cookieService;
-    }
 
     public async Task<ServiceResult<List<WishListViewModel>>> Load()
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
 
         if (currentUser.Id != 0)
         {
-            var response = await _http.GetAsync<List<WishListViewModel>>(Url, $"GetById?id={currentUser.Id}");
+            var response = await http.GetAsync<List<WishListViewModel>>(Url, $"GetById?id={currentUser.Id}");
 
             return new ServiceResult<List<WishListViewModel>>
             {
@@ -39,7 +32,7 @@ public class WishListService : EntityService<WishList>, IWishListService
 
     public async Task<ServiceResult> Invert(int priceId)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id == 0)
             return new ServiceResult
             {
@@ -51,7 +44,7 @@ public class WishListService : EntityService<WishList>, IWishListService
             PriceId = priceId,
             UserId = currentUser.Id
         };
-        var response = await _http.PutAsync(Url, wishList, "Invert");
+        var response = await http.PutAsync(Url, wishList, "Invert");
 
         return new ServiceResult
         {
@@ -62,7 +55,7 @@ public class WishListService : EntityService<WishList>, IWishListService
 
     public async Task<ServiceResult> Add(int priceId)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id == 0)
             //await _sweet.FireAsync(, "Info");
             return new ServiceResult
@@ -91,7 +84,7 @@ public class WishListService : EntityService<WishList>, IWishListService
 
     public async Task<ServiceResult> Delete(int wishListId)
     {
-        var deleteResult = await _http.DeleteAsync(Url, wishListId);
+        var deleteResult = await http.DeleteAsync(Url, wishListId);
         if (deleteResult.Code == 0)
             return new ServiceResult
             {

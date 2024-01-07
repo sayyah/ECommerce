@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Discounts;
 
-public class CreateModel : PageModel
+public class CreateModel(IDiscountService discountService) : PageModel
 {
-    private readonly IDiscountService _discountService;
-
-    public CreateModel(IDiscountService discountService)
-    {
-        _discountService = discountService;
-    }
-
     [BindProperty] public Discount Discount { get; set; }
     [BindProperty] public bool WithPrice { get; set; }
 
@@ -36,7 +29,7 @@ public class CreateModel : PageModel
         {
             if (WithPrice) Discount.Percent = null;
             else Discount.Amount = null;
-            var result = await _discountService.Add(Discount);
+            var result = await discountService.Add(Discount);
             if (result.Code == 0)
                 return RedirectToPage("/Discounts/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

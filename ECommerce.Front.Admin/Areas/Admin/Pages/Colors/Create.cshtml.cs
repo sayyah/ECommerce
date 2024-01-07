@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class CreateModel : PageModel
+public class CreateModel(IColorService colorService) : PageModel
 {
-    private readonly IColorService _colorService;
-
-    public CreateModel(IColorService colorService)
-    {
-        _colorService = colorService;
-    }
-
     [BindProperty] public Color Color { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _colorService.Add(Color);
+            var result = await colorService.Add(Color);
             if (result.Code == 0)
                 return RedirectToPage("/Colors/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

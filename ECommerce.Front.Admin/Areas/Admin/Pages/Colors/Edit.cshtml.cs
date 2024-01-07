@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class EditModel : PageModel
+public class EditModel(IColorService colorService) : PageModel
 {
-    private readonly IColorService _colorService;
-
-    public EditModel(IColorService colorService)
-    {
-        _colorService = colorService;
-    }
-
     [BindProperty] public Color Color { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _colorService.GetById(id);
+        var result = await colorService.GetById(id);
         Color = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _colorService.Edit(Color);
+            var result = await colorService.Edit(Color);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

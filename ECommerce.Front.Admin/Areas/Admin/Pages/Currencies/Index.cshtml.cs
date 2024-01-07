@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Currencies;
 
-public class IndexModel : PageModel
+public class IndexModel(ICurrencyService currencyService) : PageModel
 {
-    private readonly ICurrencyService _currencyService;
-
-    public IndexModel(ICurrencyService currencyService)
-    {
-        _currencyService = currencyService;
-    }
-
     public ServiceResult<List<Currency>> Currencies { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _currencyService.Load(search, pageNumber, pageSize);
+        var result = await currencyService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             result.PaginationDetails.Address = "/Currencies/Index";

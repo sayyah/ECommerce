@@ -3,19 +3,11 @@ using Microsoft.Extensions.Options;
 
 namespace ECommerce.Services.Services;
 
-public class UserService : EntityService<User>, IUserService
+public class UserService(IHttpService http, ICookieService cookieService, IOptions<SmsIrSettings> options)
+    : EntityService<User>(http), IUserService
 {
     private const string Url = "api/Users";
-    private readonly ICookieService _cookieService;
-    private readonly IHttpService _http;
-    private readonly SmsIrSettings _smsSettings;
-
-    public UserService(IHttpService http, ICookieService cookieService, IOptions<SmsIrSettings> options) : base(http)
-    {
-        _http = http;
-        _cookieService = cookieService;
-        _smsSettings = options.Value;
-    }
+    private readonly SmsIrSettings _smsSettings = options.Value;
 
     public async Task<bool> GetVerificationByNationalId(string nationalId)
     {
@@ -37,7 +29,7 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult> Logout()
     {
-        var result = await _http.GetAsync<bool>(Url, "LogoutUser");
+        var result = await http.GetAsync<bool>(Url, "LogoutUser");
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -53,12 +45,12 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult<LoginViewModel>> Login(LoginViewModel loginViewModel)
     {
-        var result = await _http.PostAsync<LoginViewModel, string>(Url, loginViewModel, "Login");
+        var result = await http.PostAsync<LoginViewModel, string>(Url, loginViewModel, "Login");
         if (result.Code == 0)
         {
-            await _cookieService.SetToken(result.ReturnData);
+            await cookieService.SetToken(result.ReturnData);
 
-            var resultCurrentUser = _cookieService.GetCurrentUser();
+            var resultCurrentUser = cookieService.GetCurrentUser();
 
 
             return new ServiceResult<LoginViewModel>
@@ -84,7 +76,7 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult> Register(RegisterViewModel registerViewModel)
     {
-        var result = await _http.PostAsync(Url, registerViewModel, "Register");
+        var result = await http.PostAsync(Url, registerViewModel, "Register");
 
         if (result.Code != 0 || result.Status != 200)
             return new ServiceResult
@@ -110,7 +102,7 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult> Update(User user)
     {
-        var result = await _http.PutAsync(Url, user);
+        var result = await http.PutAsync(Url, user);
 
         return new ServiceResult
         {
@@ -127,14 +119,14 @@ public class UserService : EntityService<User>, IUserService
                 Code = ServiceCode.Success,
                 Message = "پسوردها مطابقت ندارند"
             };
-        var user = _cookieService.GetCurrentUser();
+        var user = cookieService.GetCurrentUser();
         var resetPasswordViewModel = new ResetPasswordViewModel
         {
             Password = newPass,
             OldPassword = oldPass,
             Username = user.Username
         };
-        var result = await _http.PostAsync(Url, resetPasswordViewModel, "ResetPassword");
+        var result = await http.PostAsync(Url, resetPasswordViewModel, "ResetPassword");
 
         return new ServiceResult
         {
@@ -151,7 +143,7 @@ public class UserService : EntityService<User>, IUserService
                 Code = ServiceCode.Success,
                 Message = "پسوردها مطابقت ندارند"
             };
-        var result = await _http.PostAsync(Url, resetForgotPasswordViewModel, "ResetForgotPassword");
+        var result = await http.PostAsync(Url, resetForgotPasswordViewModel, "ResetForgotPassword");
 
         return new ServiceResult
         {
@@ -163,7 +155,7 @@ public class UserService : EntityService<User>, IUserService
     public async Task<ServiceResult> ForgotPassword(string email)
     {
         var forgotPasswordViewModel = new ForgotPasswordViewModel { EmailOrPhoneNumber = email };
-        var result = await _http.PostAsync(Url, forgotPasswordViewModel, "ForgotPassword");
+        var result = await http.PostAsync(Url, forgotPasswordViewModel, "ForgotPassword");
 
         return new ServiceResult
         {
@@ -186,21 +178,21 @@ public class UserService : EntityService<User>, IUserService
         if (isColleague != null) command += $"IsColleauge={isColleague}&";
         if (HasBuying != null) command += $"HasBuying={HasBuying}&";
         command += $"UserSort={userSort}";
-        var result = await _http.GetAsync<List<UserListViewModel>>(Url, command);
+        var result = await http.GetAsync<List<UserListViewModel>>(Url, command);
         return Return(result);
     }
 
     public async Task<ServiceResult<User>> GetUser()
     {
-        var resultCurrentUser = _cookieService.GetCurrentUser();
+        var resultCurrentUser = cookieService.GetCurrentUser();
         var command = "Get/" + resultCurrentUser.Id;
-        var result = await _http.GetAsync<User>(Url, command);
+        var result = await http.GetAsync<User>(Url, command);
         return Return(result);
     }
 
     public async Task<ServiceResult<User>> GetById(int id)
     {
-        var result = await _http.GetAsync<User>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<User>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
@@ -208,7 +200,7 @@ public class UserService : EntityService<User>, IUserService
     {
         //var result = await Delete(Url, id);
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -221,7 +213,7 @@ public class UserService : EntityService<User>, IUserService
 
     public async Task<ServiceResult> Edit(User user)
     {
-        var result = await _http.PutAsync(Url, user);
+        var result = await http.PutAsync(Url, user);
         return Return(result);
     }
 
@@ -241,7 +233,7 @@ public class UserService : EntityService<User>, IUserService
         RequestSMSIrViewModel.TemplateId = _smsSettings.invoiceTemplateId;
         RequestSMSIrViewModel.Mobile = mobile;
         var result =
-            await _http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
+            await http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
                 apiName, apiKey, RequestSMSIrViewModel, url);
         return result;
     }
@@ -259,21 +251,21 @@ public class UserService : EntityService<User>, IUserService
         RequestSMSIrViewModel.TemplateId = _smsSettings.authenticationTemplateId;
         RequestSMSIrViewModel.Mobile = mobile;
         var result =
-            await _http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
+            await http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
                 apiName, apiKey, RequestSMSIrViewModel, url);
         return result;
     }
 
     public async Task<ServiceResult<bool>> SetConfirmCodeByUsername(string username, string confirmCode)
     {
-        var result = await _http.GetAsync<bool>(Url, $"SetConfirmCodeByUsername?username={username}" +
+        var result = await http.GetAsync<bool>(Url, $"SetConfirmCodeByUsername?username={username}" +
                                                      $"&confirmCode={confirmCode}");
         return Return(result);
     }
 
     public async Task<ServiceResult<int?>> GetSecondsLeftConfirmCodeExpire(string username)
     {
-        var result = await _http.GetAsync<int?>(Url, $"GetSecondsLeftConfirmCodeExpire?username={username}");
+        var result = await http.GetAsync<int?>(Url, $"GetSecondsLeftConfirmCodeExpire?username={username}");
         return Return(result);
     }
 

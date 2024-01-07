@@ -1,25 +1,18 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeGroup>, IProductAttributeGroupRepository
+public class ProductAttributeGroupRepository
+    (SunflowerECommerceDbContext context) : AsyncRepository<ProductAttributeGroup>(context),
+        IProductAttributeGroupRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public ProductAttributeGroupRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<ProductAttributeGroup> GetByName(string name, CancellationToken cancellationToken)
     {
-        return await _context.ProductAttributeGroups.Where(x => x.Name == name)
+        return await context.ProductAttributeGroups.Where(x => x.Name == name)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<List<ProductAttributeGroup>> GetWithInclude(CancellationToken cancellationToken)
     {
-        return await _context.ProductAttributeGroups.Include(nameof(ProductAttributeGroup.Attribute))
+        return await context.ProductAttributeGroups.Include(nameof(ProductAttributeGroup.Attribute))
             .ToListAsync(cancellationToken);
         ;
     }
@@ -27,11 +20,11 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
     public async Task<IEnumerable<ProductAttributeGroup>> GetAllAttributeWithProductId(int productId,
         CancellationToken cancellationToken)
     {
-        var group = await _context.ProductAttributeGroups
+        var group = await context.ProductAttributeGroups
             //.Where(p => p.Products.Any(x => x.Id == productId))
             .Include(a => a.Attribute)
             .ToListAsync(cancellationToken);
-        var productValues = await _context.ProductAttributeValues.Where(x => x.ProductId == productId)
+        var productValues = await context.ProductAttributeValues.Where(x => x.ProductId == productId)
             .ToListAsync(cancellationToken);
 
         foreach (var productAttributeGroup in group)
@@ -56,14 +49,14 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
                 if (productAttribute.AttributeValue[0].Id > 0)
                 {
                     var entity =
-                        _context.ProductAttributeValues.First(x => x.Id == productAttribute.AttributeValue[0].Id);
+                        context.ProductAttributeValues.First(x => x.Id == productAttribute.AttributeValue[0].Id);
                     entity.Value = productAttribute.AttributeValue[0].Value.Trim();
-                    _context.ProductAttributeValues.Update(entity);
+                    context.ProductAttributeValues.Update(entity);
                 }
                 else
                 {
                     if (productAttribute.AttributeValue[0].Value != null)
-                        _context.ProductAttributeValues.Add(new ProductAttributeValue
+                        context.ProductAttributeValues.Add(new ProductAttributeValue
                         {
                             ProductId = productId,
                             Value = productAttribute.AttributeValue[0].Value.Trim(),
@@ -71,7 +64,7 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
                         });
                 }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return productAttributeGroups;
     }
 
@@ -79,7 +72,7 @@ public class ProductAttributeGroupRepository : AsyncRepository<ProductAttributeG
         CancellationToken cancellationToken)
     {
         return PagedList<ProductAttributeGroup>.ToPagedList(
-            await _context.ProductAttributeGroups.Where(x => x.Name.Contains(paginationParameters.Search))
+            await context.ProductAttributeGroups.Where(x => x.Name.Contains(paginationParameters.Search))
                 .AsNoTracking().OrderBy(on => on.Id).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);

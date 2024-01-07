@@ -2,18 +2,11 @@
 
 namespace ECommerce.Front.BolouriGroup.ViewComponents;
 
-public class CategoriesMenuViewComponent : ViewComponent
+public class CategoriesMenuViewComponent(ICategoryService categoryService) : ViewComponent
 {
-    private readonly ICategoryService _categoryService;
-
-    public CategoriesMenuViewComponent(ICategoryService categoryService)
-    {
-        _categoryService = categoryService;
-    }
-
     public async Task<IViewComponentResult> InvokeAsync()
     {
-        var result = (await _categoryService.GetParents()).ReturnData;
+        var result = (await categoryService.GetParents()).ReturnData;
         return View(result);
     }
 }

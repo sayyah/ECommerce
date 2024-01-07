@@ -2,16 +2,11 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages;
 
-public class TransactionsModel : PageModel
+public class TransactionsModel(ITransactionService transactionService) : PageModel
 {
     private readonly IUserService _userService;
 
-    public TransactionsModel(ITransactionService transactionService)
-    {
-        TransactionService = transactionService;
-    }
-
-    private ITransactionService TransactionService { get; set; }
+    private ITransactionService TransactionService { get; set; } = transactionService;
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 

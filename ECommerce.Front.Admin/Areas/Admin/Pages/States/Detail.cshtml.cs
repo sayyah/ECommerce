@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.States;
 
-public class DetailModel : PageModel
+public class DetailModel(IStateService stateService) : PageModel
 {
-    private readonly IStateService _stateService;
-
-    public DetailModel(IStateService stateService)
-    {
-        _stateService = stateService;
-    }
-
     public State State { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _stateService.GetById(id);
+        var result = await stateService.GetById(id);
         if (result.Code == 0)
         {
             State = result.ReturnData;

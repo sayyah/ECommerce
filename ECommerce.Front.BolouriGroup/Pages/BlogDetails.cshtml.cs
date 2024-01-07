@@ -3,24 +3,10 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class BlogDetailsModel : PageModel
-{
-    private readonly IBlogCategoryService _blogCategoryService;
-    private readonly IBlogCommentService _blogCommentService;
-    private readonly IBlogService _blogService;
-    private readonly ITagService _tagService;
-    private readonly IUserService _userService;
-
-    public BlogDetailsModel(IBlogService blogService, IBlogCategoryService blogCategoryService,
+public class BlogDetailsModel(IBlogService blogService, IBlogCategoryService blogCategoryService,
         IBlogCommentService blogCommentService, IUserService userService, ITagService tagService)
-    {
-        _blogService = blogService;
-        _blogCategoryService = blogCategoryService;
-        _blogCommentService = blogCommentService;
-        _userService = userService;
-        _tagService = tagService;
-    }
-
+    : PageModel
+{
     public BlogDetailsViewModel Blog { get; set; }
     public BlogCategory BlogCategory { get; set; }
     public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
@@ -32,19 +18,19 @@ public class BlogDetailsModel : PageModel
 
     private async Task Initial(string blogUrl, int pageNumber = 1, int pageSize = 10)
     {
-        var result = await _blogService.GetByUrl(blogUrl);
+        var result = await blogService.GetByUrl(blogUrl);
         if (result.Code > 0) return;
         Blog = result.ReturnData;
-        var blogCategory = await _blogCategoryService.GetById(Blog.BlogCategoryId);
+        var blogCategory = await blogCategoryService.GetById(Blog.BlogCategoryId);
         BlogCategory = blogCategory.ReturnData;
 
         BlogComments =
-            await _blogCommentService.GetAllAccesptedComments(Convert.ToString(Blog.Id), pageNumber, pageSize);
+            await blogCommentService.GetAllAccesptedComments(Convert.ToString(Blog.Id), pageNumber, pageSize);
 
-        Blogs = await _blogService.TopBlogs(null, null, 1, 3);
-        Categories = await _blogCategoryService.GetAll();
+        Blogs = await blogService.TopBlogs(null, null, 1, 3);
+        Categories = await blogCategoryService.GetAll();
 
-        Tags = await _tagService.GetAllBlogTags();
+        Tags = await tagService.GetAllBlogTags();
     }
 
     public async Task OnGet(string blogUrl, int pageNumber = 1, int pageSize = 10)
@@ -85,16 +71,16 @@ public class BlogDetailsModel : PageModel
             UserId = null
         };
 
-        var user = await _userService.GetUser();
+        var user = await userService.GetUser();
         if (user.Code == 0) blogComment.UserId = user.ReturnData.Id;
 
-        var resultProduct = await _blogService.GetByUrl(blogUrl);
+        var resultProduct = await blogService.GetByUrl(blogUrl);
         if (resultProduct.Code > 0) return new JsonResult(resultData);
 
         Blog = resultProduct.ReturnData;
         blogComment.BlogId = Blog.Id;
 
-        var result = await _blogCommentService.Add(blogComment);
+        var result = await blogCommentService.Add(blogComment);
         if (result.Code == 0)
         {
             resultData.Description = "نظر شما ثبت شد، پس از تایید توسط ادمین سایت، نمایش داده می شود";

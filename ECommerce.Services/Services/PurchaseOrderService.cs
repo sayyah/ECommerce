@@ -2,21 +2,14 @@
 
 namespace ECommerce.Services.Services;
 
-public class PurchaseOrderService : EntityService<PurchaseOrder>, IPurchaseOrderService
+public class PurchaseOrderService(IHttpService http, ICookieService cookieService) : EntityService<PurchaseOrder>(http),
+    IPurchaseOrderService
 {
     private const string Url = "api/PurchaseOrders";
-    private readonly ICookieService _cookieService;
-    private readonly IHttpService _http;
-
-    public PurchaseOrderService(IHttpService http, ICookieService cookieService) : base(http)
-    {
-        _cookieService = cookieService;
-        _http = http;
-    }
 
     public async Task<ServiceResult<PurchaseOrder>> GetByUserId()
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id == 0)
             return new ServiceResult<PurchaseOrder>
             {
@@ -34,7 +27,7 @@ public class PurchaseOrderService : EntityService<PurchaseOrder>, IPurchaseOrder
 
     public async Task<ServiceResult<PurchaseOrder>> GetByUserAndOrderId(long orderId)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id == 0)
             return new ServiceResult<PurchaseOrder>
             {
@@ -46,7 +39,7 @@ public class PurchaseOrderService : EntityService<PurchaseOrder>, IPurchaseOrder
 
     public async Task<ServiceResult<PurchaseOrder>> GetPurchaseOrderWithIncludeById(int id)
     {
-        var result = await _http.GetAsync<PurchaseOrder>(Url, $"GetPurchaseOrderWithIncludeById?id={id}");
+        var result = await http.GetAsync<PurchaseOrder>(Url, $"GetPurchaseOrderWithIncludeById?id={id}");
         return Return(result);
     }
 
@@ -70,7 +63,7 @@ public class PurchaseOrderService : EntityService<PurchaseOrder>, IPurchaseOrder
 
     public async Task<ServiceResult<bool>> SetStatusById(int id, Status status)
     {
-        var result = await _http.GetAsync<bool>(Url, $"SetStatusById?id={id}&status={status}");
+        var result = await http.GetAsync<bool>(Url, $"SetStatusById?id={id}&status={status}");
         return Return(result);
     }
 
@@ -98,7 +91,7 @@ public class PurchaseOrderService : EntityService<PurchaseOrder>, IPurchaseOrder
         if (paymentMethodStatus != null) command += $"PaymentMethodStatus={paymentMethodStatus}&";
 
         command += $"PurchaseSort={purchaseSort}";
-        var result = await _http.GetAsync<List<PurchaseListViewModel>>(Url, command);
+        var result = await http.GetAsync<List<PurchaseListViewModel>>(Url, command);
         return Return(result);
     }
 }

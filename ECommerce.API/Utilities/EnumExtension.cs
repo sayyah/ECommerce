@@ -105,34 +105,19 @@ public enum DisplayProperty
     Order
 }
 
-public class OrderAttribute : Attribute
+public class OrderAttribute(int order) : Attribute
 {
-    public readonly int Order;
-
-    public OrderAttribute(int order)
-    {
-        Order = order;
-    }
+    public readonly int Order = order;
 }
 
-public class NameAttribute : Attribute
+public class NameAttribute(string name) : Attribute
 {
-    public readonly string Name;
-
-    public NameAttribute(string name)
-    {
-        Name = name;
-    }
+    public readonly string Name = name;
 }
 
-public class ValueAttribute : Attribute
+public class ValueAttribute(int value) : Attribute
 {
-    public readonly int Value;
-
-    public ValueAttribute(int value)
-    {
-        Value = value;
-    }
+    public readonly int Value = value;
 }
 
 public class EnumField

@@ -2,26 +2,16 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SlideShowsController : ControllerBase
-{
-    private readonly IHolooArticleRepository _articleRepository;
-    private readonly ILogger<SlideShowsController> _logger;
-    private readonly ISlideShowRepository _slideShowRepository;
-
-    public SlideShowsController(ISlideShowRepository slideShowRepository, IHolooArticleRepository articleRepository,
+public class SlideShowsController(ISlideShowRepository slideShowRepository, IHolooArticleRepository articleRepository,
         ILogger<SlideShowsController> logger)
-    {
-        _slideShowRepository = slideShowRepository;
-        _articleRepository = articleRepository;
-        _logger = logger;
-    }
-
+    : ControllerBase
+{
     private async Task<Product> AddPriceAndExistFromHoloo(Product product)
     {
         foreach (var productPrices in product.Prices)
             if (productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی)
             {
-                var article = await _articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer,
+                var article = await articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer,
                     productPrices.SellNumber!.Value);
                 productPrices.Amount = article.price / 10;
                 productPrices.Exist = (double)article.exist;
@@ -35,7 +25,7 @@ public class SlideShowsController : ControllerBase
     {
         try
         {
-            var slideShowsList = await _slideShowRepository.GetAllWithInclude(pageNumber, pageSize, cancellationToken);
+            var slideShowsList = await slideShowRepository.GetAllWithInclude(pageNumber, pageSize, cancellationToken);
             var returnSlideShow = new List<SlideShowViewModel>();
             var slideShowViewModelList = slideShowsList.Select(s => new SlideShowViewModel
             {
@@ -69,7 +59,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -80,7 +70,7 @@ public class SlideShowsController : ControllerBase
     {
         try
         {
-            var result = await _slideShowRepository.GetByIdAsync(cancellationToken, id);
+            var result = await slideShowRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -95,7 +85,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -110,7 +100,7 @@ public class SlideShowsController : ControllerBase
             if (slideShow == null) return BadRequest();
             slideShow.Title = slideShow.Title.Trim();
 
-            var repetitiveTitle = await _slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
+            var repetitiveTitle = await slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
             if (repetitiveTitle != null)
                 return Ok(new ApiResult
                 {
@@ -119,7 +109,7 @@ public class SlideShowsController : ControllerBase
                 });
             if (slideShow.ProductId != null)
             {
-                var repetitiveProduct = _slideShowRepository.IsRepetitiveProduct(0, slideShow.ProductId,
+                var repetitiveProduct = slideShowRepository.IsRepetitiveProduct(0, slideShow.ProductId,
                     slideShow.CategoryId, cancellationToken);
                 if (repetitiveProduct)
                     return Ok(new ApiResult
@@ -129,7 +119,7 @@ public class SlideShowsController : ControllerBase
                     });
             }
 
-            await _slideShowRepository.AddAsync(slideShow, cancellationToken);
+            await slideShowRepository.AddAsync(slideShow, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -137,7 +127,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -149,18 +139,18 @@ public class SlideShowsController : ControllerBase
     {
         try
         {
-            var repetitiveTitle = await _slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
+            var repetitiveTitle = await slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
             if (repetitiveTitle != null && repetitiveTitle.Id != slideShow.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "عنوان اسلاید شو تکراری است" }
                 });
-            if (repetitiveTitle != null) _slideShowRepository.Detach(repetitiveTitle);
+            if (repetitiveTitle != null) slideShowRepository.Detach(repetitiveTitle);
 
             if (slideShow.ProductId != null)
             {
-                var repetitiveProduct = _slideShowRepository.IsRepetitiveProduct(slideShow.Id, slideShow.ProductId,
+                var repetitiveProduct = slideShowRepository.IsRepetitiveProduct(slideShow.Id, slideShow.ProductId,
                     slideShow.CategoryId, cancellationToken);
                 if (repetitiveProduct)
                     return Ok(new ApiResult
@@ -170,7 +160,7 @@ public class SlideShowsController : ControllerBase
                     });
             }
 
-            await _slideShowRepository.UpdateAsync(slideShow, cancellationToken);
+            await slideShowRepository.UpdateAsync(slideShow, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -178,7 +168,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -190,7 +180,7 @@ public class SlideShowsController : ControllerBase
     {
         try
         {
-            await _slideShowRepository.DeleteAsync(id, cancellationToken);
+            await slideShowRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -198,7 +188,7 @@ public class SlideShowsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

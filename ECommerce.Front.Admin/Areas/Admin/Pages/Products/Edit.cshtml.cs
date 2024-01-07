@@ -4,37 +4,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
-public class EditModel : PageModel
-{
-    private readonly IBrandService _brandService;
-    private readonly ICategoryService _categoryService;
-    private readonly IDiscountService _discountService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-    private readonly IKeywordService _keywordService;
-    private readonly IProductService _productService;
-    private readonly IStoreService _storeService;
-    private readonly ISupplierService _supplierService;
-    private readonly ITagService _tagService;
-
-    public EditModel(IProductService productService, ITagService tagService, ICategoryService categoryService,
+public class EditModel(IProductService productService, ITagService tagService, ICategoryService categoryService,
         IHostEnvironment environment,
         IKeywordService keywordService, IBrandService brandService, IDiscountService discountService,
         IStoreService storeService,
         ISupplierService supplierService, IImageService imageService)
-    {
-        _productService = productService;
-        _tagService = tagService;
-        _categoryService = categoryService;
-        _environment = environment;
-        _keywordService = keywordService;
-        _brandService = brandService;
-        _discountService = discountService;
-        _storeService = storeService;
-        _supplierService = supplierService;
-        _imageService = imageService;
-    }
-
+    : PageModel
+{
     public List<Discount> Discounts { get; set; }
     public List<Store> Stores { get; set; }
     public List<Supplier> Suppliers { get; set; }
@@ -85,13 +61,13 @@ public class EditModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _productService.Edit(Product);
+            var result = await productService.Edit(Product);
             if (result.Code == 0)
             {
                 foreach (var upload in Uploads)
                 {
-                    var resultImage = await _imageService.Add(upload, Product.Id, "Images/Products",
-                        _environment.ContentRootPath);
+                    var resultImage = await imageService.Add(upload, Product.Id, "Images/Products",
+                        environment.ContentRootPath);
                     if (resultImage.Code > 0)
                     {
                         Message = resultImage.Message;
@@ -118,7 +94,7 @@ public class EditModel : PageModel
     public async Task<IActionResult> OnPostDeleteImage(string imageName, int id, int productId)
     {
         {
-            var result = await _imageService.Delete($"Images/Products/{imageName}", id, _environment.ContentRootPath);
+            var result = await imageService.Delete($"Images/Products/{imageName}", id, environment.ContentRootPath);
 
             if (result.Code == 0)
                 return RedirectToPage("/Products/Edit",
@@ -133,7 +109,7 @@ public class EditModel : PageModel
 
     private async Task<ServiceResult<ProductViewModel>> Initial(int id)
     {
-        var result = await _productService.GetById(id);
+        var result = await productService.GetById(id);
         if (result.Code > 0)
             return new ServiceResult<ProductViewModel>
             {
@@ -143,19 +119,19 @@ public class EditModel : PageModel
         Product = result.ReturnData;
 
         //Product = new ProductViewModel();
-        Stores = (await _storeService.Load()).ReturnData;
+        Stores = (await storeService.Load()).ReturnData;
 
-        Discounts = (await _discountService.Load()).ReturnData;
+        Discounts = (await discountService.Load()).ReturnData;
 
-        Suppliers = (await _supplierService.Load()).ReturnData;
+        Suppliers = (await supplierService.Load()).ReturnData;
 
-        Brands = (await _brandService.Load()).ReturnData;
+        Brands = (await brandService.Load()).ReturnData;
 
-        Tags = (await _tagService.GetAll()).ReturnData;
+        Tags = (await tagService.GetAll()).ReturnData;
 
-        Keywords = (await _keywordService.GetAll()).ReturnData;
+        Keywords = (await keywordService.GetAll()).ReturnData;
 
-        CategoryParentViewModel = (await _categoryService.GetParents(id)).ReturnData;
+        CategoryParentViewModel = (await categoryService.GetParents(id)).ReturnData;
 
         return result;
     }

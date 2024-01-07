@@ -2,13 +2,9 @@
 
 namespace ECommerce.Services.Services;
 
-public class HolooSGroupService : EntityService<HolooSGroup>, IHolooSGroupService
+public class HolooSGroupService(IHttpService http) : EntityService<HolooSGroup>(http), IHolooSGroupService
 {
     private const string Url = "api/Products";
-
-    public HolooSGroupService(IHttpService http) : base(http)
-    {
-    }
 
     public async Task<ServiceResult<List<HolooSGroup>>> Load(string mGroupCode)
     {

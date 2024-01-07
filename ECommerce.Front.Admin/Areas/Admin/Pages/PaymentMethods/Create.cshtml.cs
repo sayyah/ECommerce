@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.PaymentMethods;
 
-public class CreateModel : PageModel
+public class CreateModel(IPaymentMethodService paymentMethodService) : PageModel
 {
-    private readonly IPaymentMethodService _paymentMethodService;
-
-    public CreateModel(IPaymentMethodService paymentMethodService)
-    {
-        _paymentMethodService = paymentMethodService;
-    }
-
     [BindProperty] public PaymentMethod PaymentMethod { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _paymentMethodService.Add(PaymentMethod);
+            var result = await paymentMethodService.Add(PaymentMethod);
             if (result.Code == 0)
                 return RedirectToPage("/PaymentMethods/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

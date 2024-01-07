@@ -2,17 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class DepartmentsController : ControllerBase
+public class DepartmentsController(IDepartmentRepository departmentRepository, ILogger<DepartmentsController> logger)
+    : ControllerBase
 {
-    private readonly IDepartmentRepository _departmentRepository;
-    private readonly ILogger<DepartmentsController> _logger;
-
-    public DepartmentsController(IDepartmentRepository departmentRepository, ILogger<DepartmentsController> logger)
-    {
-        _departmentRepository = departmentRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -20,7 +12,7 @@ public class DepartmentsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _departmentRepository.Search(paginationParameters, cancellationToken);
+            var entity = await departmentRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -40,7 +32,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -50,7 +42,7 @@ public class DepartmentsController : ControllerBase
     {
         try
         {
-            var result = await _departmentRepository.GetByIdAsync(cancellationToken, id);
+            var result = await departmentRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -65,7 +57,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -75,7 +67,7 @@ public class DepartmentsController : ControllerBase
     {
         try
         {
-            var result = await _departmentRepository.GetAll(cancellationToken);
+            var result = await departmentRepository.GetAll(cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -90,7 +82,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -109,7 +101,7 @@ public class DepartmentsController : ControllerBase
                 });
             department.Title = department.Title.Trim();
 
-            var repetitiveDepartment = await _departmentRepository.GetByTitle(department.Title, cancellationToken);
+            var repetitiveDepartment = await departmentRepository.GetByTitle(department.Title, cancellationToken);
             if (repetitiveDepartment != null)
                 return Ok(new ApiResult
                 {
@@ -120,12 +112,12 @@ public class DepartmentsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _departmentRepository.AddAsync(department, cancellationToken)
+                ReturnData = await departmentRepository.AddAsync(department, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -136,15 +128,15 @@ public class DepartmentsController : ControllerBase
     {
         try
         {
-            var repetitiveDepartment = await _departmentRepository.GetByTitle(department.Title, cancellationToken);
+            var repetitiveDepartment = await departmentRepository.GetByTitle(department.Title, cancellationToken);
             if (repetitiveDepartment != null && repetitiveDepartment.Id != department.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام دپارتمان تکراری است" }
                 });
-            if (repetitiveDepartment != null) _departmentRepository.Detach(repetitiveDepartment);
-            await _departmentRepository.UpdateAsync(department, cancellationToken);
+            if (repetitiveDepartment != null) departmentRepository.Detach(repetitiveDepartment);
+            await departmentRepository.UpdateAsync(department, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -152,7 +144,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -163,7 +155,7 @@ public class DepartmentsController : ControllerBase
     {
         try
         {
-            await _departmentRepository.DeleteAsync(id, cancellationToken);
+            await departmentRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -171,7 +163,7 @@ public class DepartmentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

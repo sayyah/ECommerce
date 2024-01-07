@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Cities;
 
-public class IndexModel : PageModel
+public class IndexModel(ICityService cityService) : PageModel
 {
-    private readonly ICityService _cityService;
-
-    public IndexModel(ICityService cityService)
-    {
-        _cityService = cityService;
-    }
-
     public ServiceResult<List<City>> Cities { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _cityService.GetWithPagination(search, pageNumber, pageSize);
+        var result = await cityService.GetWithPagination(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

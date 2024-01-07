@@ -1,20 +1,13 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class HolooSarfaslRepository : HolooRepository<HolooSarfasl>, IHolooSarfaslRepository
+public class HolooSarfaslRepository(HolooDbContext context) : HolooRepository<HolooSarfasl>(context),
+    IHolooSarfaslRepository
 {
-    private readonly HolooDbContext _context;
-
-    public HolooSarfaslRepository(HolooDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<string> Add(string username, CancellationToken cancellationToken)
     {
-        var lastSarfaslCode = await _context.Sarfasl.Where(c => c.Col_Code == "103")
+        var lastSarfaslCode = await context.Sarfasl.Where(c => c.Col_Code == "103")
             .OrderByDescending(x => x.Moien_Code).FirstOrDefaultAsync();
         var lastMoeinCode = lastSarfaslCode == null ? "0000" : lastSarfaslCode.Moien_Code;
         var newMoeinCode = (Convert.ToInt32(lastMoeinCode) + 1).ToString("D4");
@@ -38,8 +31,8 @@ public class HolooSarfaslRepository : HolooRepository<HolooSarfasl>, IHolooSarfa
             Selected = false
         };
 
-        await _context.Sarfasl.AddAsync(sarfasl, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.Sarfasl.AddAsync(sarfasl, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return newMoeinCode;
     }
 }

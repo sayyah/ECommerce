@@ -1,14 +1,8 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ProductCommentService : EntityService<ProductComment>, IProductCommentService
+public class ProductCommentService(IHttpService http) : EntityService<ProductComment>(http), IProductCommentService
 {
     private const string Url = "api/ProductComments";
-    private readonly IHttpService _http;
-
-    public ProductCommentService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult> Add(ProductComment productComment)
     {
@@ -24,7 +18,7 @@ public class ProductCommentService : EntityService<ProductComment>, IProductComm
     {
         //var result = await Delete(Url, id);
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -70,7 +64,7 @@ public class ProductCommentService : EntityService<ProductComment>, IProductComm
 
     public async Task<ServiceResult<ProductComment>> GetById(int id)
     {
-        var result = await _http.GetAsync<ProductComment>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ProductComment>(Url, $"GetById?id={id}");
         return Return(result);
     }
 

@@ -2,26 +2,16 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class StarsController : ControllerBase
-{
-    private readonly ILogger<StarsController> _logger;
-    private readonly IProductRepository _productRepository;
-    private readonly IProductUserRankRepository _productUserRankRepository;
-
-    public StarsController(IProductUserRankRepository productUserRankRepository, ILogger<StarsController> logger,
+public class StarsController(IProductUserRankRepository productUserRankRepository, ILogger<StarsController> logger,
         IProductRepository productRepository)
-    {
-        _productUserRankRepository = productUserRankRepository;
-        _logger = logger;
-        _productRepository = productRepository;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     public async Task<IActionResult> GetByProductId(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
+            var result = await productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -36,7 +26,7 @@ public class StarsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -47,14 +37,14 @@ public class StarsController : ControllerBase
     {
         try
         {
-            var result = await _productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
+            var result = await productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
                 });
 
-            var average = await _productUserRankRepository.GetBySumProduct(id, cancellationToken);
+            var average = await productUserRankRepository.GetBySumProduct(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -63,7 +53,7 @@ public class StarsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -74,7 +64,7 @@ public class StarsController : ControllerBase
     {
         try
         {
-            var result = await _productUserRankRepository.Where(x => x.UserId == id, cancellationToken);
+            var result = await productUserRankRepository.Where(x => x.UserId == id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -89,7 +79,7 @@ public class StarsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -114,23 +104,23 @@ public class StarsController : ControllerBase
                     Messages = new List<string> { "مقدار وارد شده نادرست می‌باشد." }
                 });
 
-            var repetitiveProductUserRank = await _productUserRankRepository.GetByProductUser(productUserRank.ProductId,
+            var repetitiveProductUserRank = await productUserRankRepository.GetByProductUser(productUserRank.ProductId,
                 productUserRank.UserId, cancellationToken);
             if (repetitiveProductUserRank != null)
             {
                 repetitiveProductUserRank.Stars = productUserRank.Stars;
-                await _productUserRankRepository.UpdateAsync(repetitiveProductUserRank, cancellationToken);
+                await productUserRankRepository.UpdateAsync(repetitiveProductUserRank, cancellationToken);
             }
             else
             {
-                await _productUserRankRepository.AddAsync(productUserRank, cancellationToken);
+                await productUserRankRepository.AddAsync(productUserRank, cancellationToken);
             }
 
             var productUserRanks =
-                await _productUserRankRepository.GetBySumProduct(productUserRank.ProductId, cancellationToken);
-            var product = await _productRepository.GetByIdAsync(cancellationToken, productUserRank.ProductId);
+                await productUserRankRepository.GetBySumProduct(productUserRank.ProductId, cancellationToken);
+            var product = await productRepository.GetByIdAsync(cancellationToken, productUserRank.ProductId);
             product.Star = productUserRanks;
-            await _productRepository.UpdateAsync(product, cancellationToken);
+            await productRepository.UpdateAsync(product, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -139,7 +129,7 @@ public class StarsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -151,7 +141,7 @@ public class StarsController : ControllerBase
     {
         try
         {
-            await _productUserRankRepository.DeleteAsync(id, cancellationToken);
+            await productUserRankRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -159,7 +149,7 @@ public class StarsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

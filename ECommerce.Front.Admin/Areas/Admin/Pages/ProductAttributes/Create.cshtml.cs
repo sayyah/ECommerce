@@ -3,18 +3,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributes;
 
-public class CreateModel : PageModel
-{
-    private readonly IProductAttributeGroupService _productAttributeGroupService;
-    private readonly IProductAttributeService _productAttributeService;
-
-    public CreateModel(IProductAttributeService productAttributeService,
+public class CreateModel(IProductAttributeService productAttributeService,
         IProductAttributeGroupService productAttributeGroupService)
-    {
-        _productAttributeService = productAttributeService;
-        _productAttributeGroupService = productAttributeGroupService;
-    }
-
+    : PageModel
+{
     [BindProperty] public ProductAttribute ProductAttribute { get; set; }
     public SelectList AttributeGroup { get; set; }
 
@@ -24,7 +16,7 @@ public class CreateModel : PageModel
 
     public async Task OnGet()
     {
-        var attributeGroups = (await _productAttributeGroupService.GetAll()).ReturnData;
+        var attributeGroups = (await productAttributeGroupService.GetAll()).ReturnData;
         AttributeGroup = new SelectList(attributeGroups, nameof(ProductAttributeGroup.Id),
             nameof(ProductAttributeGroup.Name));
     }
@@ -33,7 +25,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _productAttributeService.Add(ProductAttribute);
+            var result = await productAttributeService.Add(ProductAttribute);
             if (result.Code == 0)
                 return RedirectToPage("/ProductAttributes/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

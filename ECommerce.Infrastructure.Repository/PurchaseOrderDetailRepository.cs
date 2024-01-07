@@ -1,19 +1,12 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class PurchaseOrderDetailRepository : AsyncRepository<PurchaseOrderDetail>, IPurchaseOrderDetailRepository
+public class PurchaseOrderDetailRepository
+    (SunflowerECommerceDbContext context) : AsyncRepository<PurchaseOrderDetail>(context),
+        IPurchaseOrderDetailRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public PurchaseOrderDetailRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<List<PurchaseOrderDetail>> GetByPurchaseOrderId(int id, CancellationToken cancellationToken)
     {
-        return await _context.PurchaseOrderDetails
+        return await context.PurchaseOrderDetails
             .Where(x => x.PurchaseOrderId == id)
             .Include(x => x.Price)
             .ToListAsync(cancellationToken);

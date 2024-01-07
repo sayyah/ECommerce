@@ -4,17 +4,9 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class StatesController : ControllerBase
+public class StatesController(IStateRepository stateRepository, ILogger<StatesController> logger)
+    : ControllerBase
 {
-    private readonly ILogger<StatesController> _logger;
-    private readonly IStateRepository _stateRepository;
-
-    public StatesController(IStateRepository stateRepository, ILogger<StatesController> logger)
-    {
-        _stateRepository = stateRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
@@ -23,7 +15,7 @@ public class StatesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _stateRepository.GetAll("Cities").OrderBy(x => x.Name).ToListAsync(cancellationToken)
+                ReturnData = await stateRepository.GetAll("Cities").OrderBy(x => x.Name).ToListAsync(cancellationToken)
             });
         }
         catch (Exception e)
@@ -40,7 +32,7 @@ public class StatesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = (await _stateRepository.GetAll(cancellationToken)).OrderBy(x => x.Name)
+                ReturnData = (await stateRepository.GetAll(cancellationToken)).OrderBy(x => x.Name)
             });
         }
         catch (Exception e)
@@ -56,7 +48,7 @@ public class StatesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _stateRepository.Search(paginationParameters, cancellationToken);
+            var entity = await stateRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -78,7 +70,7 @@ public class StatesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -89,7 +81,7 @@ public class StatesController : ControllerBase
     {
         try
         {
-            var result = await _stateRepository.GetByIdAsync(cancellationToken, id);
+            var result = await stateRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -104,7 +96,7 @@ public class StatesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -119,11 +111,11 @@ public class StatesController : ControllerBase
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
-                    ReturnData = await _stateRepository.GetAll(cancellationToken)
+                    ReturnData = await stateRepository.GetAll(cancellationToken)
                 });
             state.Name = state.Name.Trim();
 
-            var repetitiveState = await _stateRepository.GetByName(state.Name, cancellationToken);
+            var repetitiveState = await stateRepository.GetByName(state.Name, cancellationToken);
             if (repetitiveState != null)
                 return Ok(new ApiResult
                 {
@@ -134,12 +126,12 @@ public class StatesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _stateRepository.AddAsync(state, cancellationToken)
+                ReturnData = await stateRepository.AddAsync(state, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -150,15 +142,15 @@ public class StatesController : ControllerBase
     {
         try
         {
-            var repetitive = await _stateRepository.GetByName(state.Name, cancellationToken);
+            var repetitive = await stateRepository.GetByName(state.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != state.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام استان تکراری است" }
                 });
-            if (repetitive != null) _stateRepository.Detach(repetitive);
-            await _stateRepository.UpdateAsync(state, cancellationToken);
+            if (repetitive != null) stateRepository.Detach(repetitive);
+            await stateRepository.UpdateAsync(state, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -166,7 +158,7 @@ public class StatesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -177,7 +169,7 @@ public class StatesController : ControllerBase
     {
         try
         {
-            await _stateRepository.DeleteAsync(id, cancellationToken);
+            await stateRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -185,7 +177,7 @@ public class StatesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

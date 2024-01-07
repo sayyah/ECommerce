@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
-public class IndexModel : PageModel
+public class IndexModel(IBlogCommentService blogCommentService) : PageModel
 {
-    private readonly IBlogCommentService _blogCommentService;
-
-    public IndexModel(IBlogCommentService blogCommentService)
-    {
-        _blogCommentService = blogCommentService;
-    }
-
     public ServiceResult<List<BlogComment>> BlogComments { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -20,7 +13,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _blogCommentService.Load(search, pageNumber, pageSize);
+        var result = await blogCommentService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

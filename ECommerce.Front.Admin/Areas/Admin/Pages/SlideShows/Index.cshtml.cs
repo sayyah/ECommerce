@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.SlideShows;
 
-public class IndexModel : PageModel
+public class IndexModel(ISlideShowService slideShowService) : PageModel
 {
-    private readonly ISlideShowService _slideShowService;
-
-    public IndexModel(ISlideShowService slideShowService)
-    {
-        _slideShowService = slideShowService;
-    }
-
     public List<SlideShowViewModel> SlideShows { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -21,7 +14,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _slideShowService.Load();
+        var result = await slideShowService.Load();
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

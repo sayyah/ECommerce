@@ -4,19 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.SlideShows;
 
-public class EditModel : PageModel
+public class EditModel(ISlideShowService slideShowService, IHostEnvironment environment, IImageService imageService)
+    : PageModel
 {
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-    private readonly ISlideShowService _slideShowService;
-
-    public EditModel(ISlideShowService slideShowService, IHostEnvironment environment, IImageService imageService)
-    {
-        _slideShowService = slideShowService;
-        _environment = environment;
-        _imageService = imageService;
-    }
-
     [BindProperty] public IFormFile Upload { get; set; }
     [BindProperty] public SlideShowViewModel SlideShow { get; set; }
     [TempData] public string Message { get; set; }
@@ -24,7 +14,7 @@ public class EditModel : PageModel
 
     public async Task OnGet(int id)
     {
-        var result = await _slideShowService.GetById(id);
+        var result = await slideShowService.GetById(id);
         SlideShow = result.ReturnData;
     }
 
@@ -32,7 +22,7 @@ public class EditModel : PageModel
     {
         if (Upload != null)
         {
-            var fileName = (await _imageService.Upload(Upload, "Images/SlideShows", _environment.ContentRootPath))
+            var fileName = (await imageService.Upload(Upload, "Images/SlideShows", environment.ContentRootPath))
                 .ReturnData;
             if (fileName == null)
             {
@@ -53,7 +43,7 @@ public class EditModel : PageModel
         ModelState.Remove("Upload");
         if (ModelState.IsValid)
         {
-            var result = await _slideShowService.Edit(SlideShow);
+            var result = await slideShowService.Edit(SlideShow);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

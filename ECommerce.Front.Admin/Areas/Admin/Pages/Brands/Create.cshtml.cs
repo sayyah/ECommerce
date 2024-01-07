@@ -4,19 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Brands;
 
-public class CreateModel : PageModel
+public class CreateModel(IBrandService brandService, IImageService imageService, IHostEnvironment environment)
+    : PageModel
 {
-    private readonly IBrandService _brandService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-
-    public CreateModel(IBrandService brandService, IImageService imageService, IHostEnvironment environment)
-    {
-        _brandService = brandService;
-        _imageService = imageService;
-        _environment = environment;
-    }
-
     [BindProperty] public Brand Brand { get; set; }
 
     [BindProperty] public IFormFile Upload { get; set; }
@@ -38,7 +28,7 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        var fileName = (await _imageService.Upload(Upload, "Images/Brands", _environment.ContentRootPath))
+        var fileName = (await imageService.Upload(Upload, "Images/Brands", environment.ContentRootPath))
             .ReturnData;
         if (fileName == null)
         {
@@ -50,7 +40,7 @@ public class CreateModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _brandService.Add(Brand);
+            var result = await brandService.Add(Brand);
             if (result.Code == 0)
                 return RedirectToPage("/Brands/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

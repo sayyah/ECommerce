@@ -2,17 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class KeywordsController : ControllerBase
+public class KeywordsController(IKeywordRepository keywordRepository, ILogger<KeywordsController> logger)
+    : ControllerBase
 {
-    private readonly IKeywordRepository _keywordRepository;
-    private readonly ILogger<KeywordsController> _logger;
-
-    public KeywordsController(IKeywordRepository keywordRepository, ILogger<KeywordsController> logger)
-    {
-        _keywordRepository = keywordRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -20,7 +12,7 @@ public class KeywordsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _keywordRepository.Search(paginationParameters, cancellationToken);
+            var entity = await keywordRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -40,7 +32,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -53,12 +45,12 @@ public class KeywordsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _keywordRepository.GetAll(cancellationToken)
+                ReturnData = await keywordRepository.GetAll(cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -68,7 +60,7 @@ public class KeywordsController : ControllerBase
     {
         try
         {
-            var keywordList = await _keywordRepository.GetByProductId(id, cancellationToken);
+            var keywordList = await keywordRepository.GetByProductId(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -77,7 +69,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -87,7 +79,7 @@ public class KeywordsController : ControllerBase
     {
         try
         {
-            var result = await _keywordRepository.GetByIdAsync(cancellationToken, id);
+            var result = await keywordRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -102,7 +94,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -120,7 +112,7 @@ public class KeywordsController : ControllerBase
                 });
             keywords.KeywordText = keywords.KeywordText.Trim();
 
-            var repetitiveCategory = await _keywordRepository.GetByKeywordText(keywords.KeywordText, cancellationToken);
+            var repetitiveCategory = await keywordRepository.GetByKeywordText(keywords.KeywordText, cancellationToken);
             if (repetitiveCategory != null)
                 return Ok(new ApiResult
                 {
@@ -131,12 +123,12 @@ public class KeywordsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _keywordRepository.AddAsync(keywords, cancellationToken)
+                ReturnData = await keywordRepository.AddAsync(keywords, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -147,15 +139,15 @@ public class KeywordsController : ControllerBase
     {
         try
         {
-            var repetitive = await _keywordRepository.GetByKeywordText(keyword.KeywordText, cancellationToken);
+            var repetitive = await keywordRepository.GetByKeywordText(keyword.KeywordText, cancellationToken);
             if (repetitive != null && repetitive.Id != keyword.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "کلمه کلیدی تکراری است" }
                 });
-            if (repetitive != null) _keywordRepository.Detach(repetitive);
-            await _keywordRepository.UpdateAsync(keyword, cancellationToken);
+            if (repetitive != null) keywordRepository.Detach(repetitive);
+            await keywordRepository.UpdateAsync(keyword, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -163,7 +155,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -174,7 +166,7 @@ public class KeywordsController : ControllerBase
     {
         try
         {
-            await _keywordRepository.DeleteAsync(id, cancellationToken);
+            await keywordRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -182,7 +174,7 @@ public class KeywordsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

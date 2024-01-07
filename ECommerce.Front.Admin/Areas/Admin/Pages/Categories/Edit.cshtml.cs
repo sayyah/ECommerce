@@ -4,19 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Categories;
 
-public class EditModel : PageModel
+public class EditModel(ICategoryService categoryService, IHostEnvironment environment, IImageService imageService)
+    : PageModel
 {
-    private readonly ICategoryService _categoryService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-
-    public EditModel(ICategoryService categoryService, IHostEnvironment environment, IImageService imageService)
-    {
-        _categoryService = categoryService;
-        _environment = environment;
-        _imageService = imageService;
-    }
-
     [BindProperty] public Category Category { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -24,7 +14,7 @@ public class EditModel : PageModel
 
     public async Task OnGet(int id)
     {
-        var result = await _categoryService.GetById(id);
+        var result = await categoryService.GetById(id);
         Category = result.ReturnData;
     }
 
@@ -32,7 +22,7 @@ public class EditModel : PageModel
     {
         if (Upload != null)
         {
-            var fileName = (await _imageService.Upload(Upload, "Images/Categories", _environment.ContentRootPath))
+            var fileName = (await imageService.Upload(Upload, "Images/Categories", environment.ContentRootPath))
                 .ReturnData;
             if (fileName == null)
             {
@@ -55,7 +45,7 @@ public class EditModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _categoryService.Edit(Category);
+            var result = await categoryService.Edit(Category);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

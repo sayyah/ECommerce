@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.SlideShows;
 
-public class DetailModel : PageModel
+public class DetailModel(ISlideShowService slideShowService) : PageModel
 {
-    private readonly ISlideShowService _slideShowService;
-
-    public DetailModel(ISlideShowService slideShowService)
-    {
-        _slideShowService = slideShowService;
-    }
-
     public SlideShowViewModel SlideShow { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _slideShowService.GetById(id);
+        var result = await slideShowService.GetById(id);
         if (result.Code == 0)
         {
             SlideShow = result.ReturnData;

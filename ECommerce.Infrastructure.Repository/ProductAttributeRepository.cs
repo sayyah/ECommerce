@@ -1,26 +1,18 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class ProductAttributeRepository : AsyncRepository<ProductAttribute>, IProductAttributeRepository
+public class ProductAttributeRepository
+    (SunflowerECommerceDbContext context) : AsyncRepository<ProductAttribute>(context), IProductAttributeRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public ProductAttributeRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<ProductAttribute> GetByTitle(string title, CancellationToken cancellationToken)
     {
-        return await _context.ProductAttributes.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
+        return await context.ProductAttributes.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<ProductAttribute>> GetAll(int productId, CancellationToken cancellationToken)
     {
         //var productAttributes = await _context.ProductAttributes.Where(x => x.AttributeValue.Any(p => p.ProductId == productId)).Include(x=>x.AttributeValue).ToListAsync();
-        var productAttributes = await _context.ProductAttributes.ToListAsync(cancellationToken);
-        var productValues = await _context.ProductAttributeValues.Where(x => x.ProductId == productId)
+        var productAttributes = await context.ProductAttributes.ToListAsync(cancellationToken);
+        var productValues = await context.ProductAttributeValues.Where(x => x.ProductId == productId)
             .ToListAsync(cancellationToken);
         //foreach (var productValue in productValues)
         //{
@@ -33,7 +25,7 @@ public class ProductAttributeRepository : AsyncRepository<ProductAttribute>, IPr
     public async Task<IEnumerable<ProductAttribute>> GetAllAttributeWithGroupId(int groupId, int productId,
         CancellationToken cancellationToken)
     {
-        var productAttributes = await _context.ProductAttributes.Where(x => x.AttributeGroupId == groupId)
+        var productAttributes = await context.ProductAttributes.Where(x => x.AttributeGroupId == groupId)
             .Include(i => i.AttributeValue)
             .Select(s => new ProductAttribute
             {
@@ -52,7 +44,7 @@ public class ProductAttributeRepository : AsyncRepository<ProductAttribute>, IPr
         CancellationToken cancellationToken)
     {
         return PagedList<ProductAttribute>.ToPagedList(
-            await _context.ProductAttributes.Where(x => x.Title.Contains(paginationParameters.Search)).AsNoTracking()
+            await context.ProductAttributes.Where(x => x.Title.Contains(paginationParameters.Search)).AsNoTracking()
                 .OrderBy(on => on.Id).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);

@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Discounts;
 
-public class IndexModel : PageModel
+public class IndexModel(IDiscountService discountService) : PageModel
 {
-    private readonly IDiscountService _discountService;
-
-    public IndexModel(IDiscountService discountService)
-    {
-        _discountService = discountService;
-    }
-
     public ServiceResult<List<Discount>> Discounts { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _discountService.Load(search, pageNumber, pageSize);
+        var result = await discountService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

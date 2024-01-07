@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
-public class IndexModel : PageModel
+public class IndexModel(IBlogService blogService) : PageModel
 {
-    private readonly IBlogService _blogService;
-
-    public IndexModel(IBlogService blogService)
-    {
-        _blogService = blogService;
-    }
-
     public ServiceResult<List<Blog>> Blogs { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _blogService.Load(search, pageNumber, pageSize);
+        var result = await blogService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

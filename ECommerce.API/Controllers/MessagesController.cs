@@ -2,17 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class MessagesController : ControllerBase
+public class MessagesController(IMessageRepository messageRepository, ILogger<MessagesController> logger)
+    : ControllerBase
 {
-    private readonly ILogger<MessagesController> _logger;
-    private readonly IMessageRepository _messageRepository;
-
-    public MessagesController(IMessageRepository messageRepository, ILogger<MessagesController> logger)
-    {
-        _messageRepository = messageRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -20,7 +12,7 @@ public class MessagesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _messageRepository.Search(paginationParameters, cancellationToken);
+            var entity = await messageRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -40,7 +32,7 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -50,7 +42,7 @@ public class MessagesController : ControllerBase
     {
         try
         {
-            var result = await _messageRepository.GetByIdAsync(cancellationToken, id);
+            var result = await messageRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -65,7 +57,7 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -85,12 +77,12 @@ public class MessagesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _messageRepository.AddAsync(message, cancellationToken)
+                ReturnData = await messageRepository.AddAsync(message, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -101,7 +93,7 @@ public class MessagesController : ControllerBase
     {
         try
         {
-            await _messageRepository.UpdateAsync(message, cancellationToken);
+            await messageRepository.UpdateAsync(message, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -109,7 +101,7 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -120,7 +112,7 @@ public class MessagesController : ControllerBase
     {
         try
         {
-            await _messageRepository.DeleteAsync(id, cancellationToken);
+            await messageRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -128,7 +120,7 @@ public class MessagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

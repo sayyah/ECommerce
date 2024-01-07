@@ -2,16 +2,10 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
-public class EditModel : PageModel
+public class EditModel(IBlogCommentService blogCommentService, IBlogService blogService)
+    : PageModel
 {
-    private readonly IBlogCommentService _blogCommentService;
-    private readonly IBlogService _blogService;
-
-    public EditModel(IBlogCommentService blogCommentService, IBlogService blogService)
-    {
-        _blogCommentService = blogCommentService;
-        _blogService = blogService;
-    }
+    private readonly IBlogService _blogService = blogService;
 
     [BindProperty] public BlogComment BlogComment { get; set; }
     [TempData] public string Message { get; set; }
@@ -21,7 +15,7 @@ public class EditModel : PageModel
     {
         Message = message;
         Code = code;
-        var BlogCommentResult = await _blogCommentService.GetById(id);
+        var BlogCommentResult = await blogCommentService.GetById(id);
         BlogComment = BlogCommentResult.ReturnData;
     }
 
@@ -30,7 +24,7 @@ public class EditModel : PageModel
         try
         {
             if (BlogComment.Answer!.Text == null && BlogComment.AnswerId == null) BlogComment.Answer = null;
-            var result = await _blogCommentService.Edit(BlogComment);
+            var result = await blogCommentService.Edit(BlogComment);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

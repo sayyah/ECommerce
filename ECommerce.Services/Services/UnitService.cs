@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class UnitService : EntityService<Unit>, IUnitService
+public class UnitService(IHttpService http) : EntityService<Unit>(http), IUnitService
 {
     private const string Url = "api/Units";
-    private readonly IHttpService _http;
     private List<Unit> _units;
-
-    public UnitService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Unit>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -55,7 +49,7 @@ public class UnitService : EntityService<Unit>, IUnitService
         //var result = await Delete(Url, id);
         //_units = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         _units = null;
         if (result.Code == ResultCode.Success)
             return new ServiceResult
@@ -76,7 +70,7 @@ public class UnitService : EntityService<Unit>, IUnitService
 
     public async Task<ServiceResult<Unit>> GetById(int id)
     {
-        var result = await _http.GetAsync<Unit>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Unit>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

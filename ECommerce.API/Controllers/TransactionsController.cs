@@ -2,26 +2,17 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class TransactionsController : Controller
-{
-    private readonly ILogger<PurchaseOrdersController> _logger;
-    private readonly ITransactionRepository _transactionRepository;
-
-    public TransactionsController(
-        ILogger<PurchaseOrdersController> logger,
+public class TransactionsController(ILogger<PurchaseOrdersController> logger,
         ITransactionRepository transactionRepository)
-    {
-        _logger = logger;
-        _transactionRepository = transactionRepository;
-    }
-
+    : Controller
+{
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
     public async Task<ActionResult<PurchaseOrder>> GetById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _transactionRepository.GetByIdAsync(cancellationToken, id);
+            var result = await transactionRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -36,7 +27,7 @@ public class TransactionsController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -50,7 +41,7 @@ public class TransactionsController : Controller
         {
             if (string.IsNullOrEmpty(transactionFiltreViewModel.PaginationParameters.Search))
                 transactionFiltreViewModel.PaginationParameters.Search = "";
-            var entity = await _transactionRepository.Search(transactionFiltreViewModel, cancellationToken);
+            var entity = await transactionRepository.Search(transactionFiltreViewModel, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -71,7 +62,7 @@ public class TransactionsController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -85,12 +76,12 @@ public class TransactionsController : Controller
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _transactionRepository.GetAll(cancellationToken)
+                ReturnData = await transactionRepository.GetAll(cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

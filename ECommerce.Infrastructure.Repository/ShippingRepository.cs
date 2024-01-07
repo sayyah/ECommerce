@@ -1,13 +1,7 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class ShippingRepository : AsyncRepository<Shipping>, IShippingRepository
+public class ShippingRepository(SunflowerECommerceDbContext context) : AsyncRepository<Shipping>(context),
+    IShippingRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public ShippingRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly SunflowerECommerceDbContext _context = context;
 }

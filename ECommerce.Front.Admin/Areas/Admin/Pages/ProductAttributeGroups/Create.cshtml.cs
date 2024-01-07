@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributeGroups;
 
-public class CreateModel : PageModel
+public class CreateModel(IProductAttributeGroupService productAttributeGroupService) : PageModel
 {
-    private readonly IProductAttributeGroupService _productAttributeGroupService;
-
-    public CreateModel(IProductAttributeGroupService productAttributeGroupService)
-    {
-        _productAttributeGroupService = productAttributeGroupService;
-    }
-
     [BindProperty] public ProductAttributeGroup ProductAttributeGroup { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _productAttributeGroupService.Add(ProductAttributeGroup);
+            var result = await productAttributeGroupService.Add(ProductAttributeGroup);
             if (result.Code == 0)
                 return RedirectToPage("/ProductAttributeGroups/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

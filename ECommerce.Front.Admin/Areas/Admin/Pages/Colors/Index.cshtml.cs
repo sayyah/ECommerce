@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class IndexModel : PageModel
+public class IndexModel(IColorService colorService) : PageModel
 {
-    private readonly IColorService _colorService;
-
-    public IndexModel(IColorService colorService)
-    {
-        _colorService = colorService;
-    }
-
     public ServiceResult<List<Color>> Colors { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _colorService.GetAll(search, pageNumber, pageSize);
+        var result = await colorService.GetAll(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

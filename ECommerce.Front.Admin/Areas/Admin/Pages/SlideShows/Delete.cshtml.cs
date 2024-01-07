@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.SlideShows;
 
-public class DeleteModel : PageModel
+public class DeleteModel(ISlideShowService slideShowService) : PageModel
 {
-    private readonly ISlideShowService _slideShowService;
-
-    public DeleteModel(ISlideShowService slideShowService)
-    {
-        _slideShowService = slideShowService;
-    }
-
     public SlideShowViewModel SlideShow { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _slideShowService.GetById(id);
+        var result = await slideShowService.GetById(id);
         if (result.Code == 0)
         {
             SlideShow = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _slideShowService.Delete(id);
+            var result = await slideShowService.Delete(id);
             return RedirectToPage("/SlideShows/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

@@ -3,29 +3,20 @@ using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Services.Services;
 
-public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
+public class CartService(IHttpService http, ICookieService cookieService, IProductService productService,
+        IPriceService priceService)
+    : EntityService<PurchaseOrderViewModel>(http), ICartService
 {
     private const string Url = "api/PurchaseOrders";
-    private readonly ICookieService _cookieService;
-    private readonly IHttpService _http;
+    private readonly IHttpService _http = http;
     private readonly string _key = "Cart";
-    private readonly IPriceService _priceService;
-    private readonly IProductService _productService;
+    private readonly IPriceService _priceService = priceService;
 
-
-    public CartService(IHttpService http, ICookieService cookieService, IProductService productService,
-        IPriceService priceService) : base(http)
-    {
-        _http = http;
-        _cookieService = cookieService;
-        _productService = productService;
-        _priceService = priceService;
-    }
 
     public async Task<ServiceResult<List<PurchaseOrderViewModel>>> Load(HttpContext context,
         bool shouldUpdatePurchaseOrderDetails = false)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         var carts = await ReadFromCookies(context);
 
         if (currentUser.Id != 0)
@@ -56,7 +47,7 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
     public async Task<ServiceResult<List<PurchaseOrderViewModel>>> CartListFromServer(
         bool shouldUpdatePurchaseOrderDetails = false)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id != 0)
         {
             var result = await ReadList(Url,
@@ -72,17 +63,17 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
 
     public async Task<ServiceResult> Add(HttpContext context, int productId, int priceId, int count)
     {
-        var productResult = await _productService.ProductsWithIdsForCart(new List<int> { productId });
+        var productResult = await productService.ProductsWithIdsForCart(new List<int> { productId });
         var productFromServer = productResult.ReturnData[0];
 
         var exist = productFromServer.Prices.First(x => x.Id == priceId).Exist;
         var maxOrder = productFromServer.MaxOrder;
 
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
 
         if (currentUser.Id == 0)
         {
-            var product = _cookieService.GetCookie(context, $"{_key}-{productId}-{priceId}", false);
+            var product = cookieService.GetCookie(context, $"{_key}-{productId}-{priceId}", false);
             var newCount = product.FirstOrDefault()!.Value + count;
 
             if (newCount > exist)
@@ -99,7 +90,7 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
                     Message = "تعداد کالا بیشتر از حد مجاز است"
                 };
 
-            _cookieService.SetCookie(context, new CookieData($"{_key}-{productId}-{priceId}", newCount));
+            cookieService.SetCookie(context, new CookieData($"{_key}-{productId}-{priceId}", newCount));
             if (newCount > 1)
                 return new ServiceResult
                 {
@@ -134,16 +125,16 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
 
     public async Task<ServiceResult> Decrease(HttpContext context, int id, int productId, int priceId)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id == 0)
         {
-            var product = _cookieService.GetCookie(context, $"{_key}-{productId}-{priceId}", false);
+            var product = cookieService.GetCookie(context, $"{_key}-{productId}-{priceId}", false);
             if (product.Any())
             {
                 var count = product.FirstOrDefault()!.Value - 1;
                 if (count <= 0)
                 {
-                    _cookieService.Remove(context, new CookieData($"{_key}-{productId}-{priceId}", productId));
+                    cookieService.Remove(context, new CookieData($"{_key}-{productId}-{priceId}", productId));
                     return new ServiceResult
                     {
                         Code = ServiceCode.Success,
@@ -151,7 +142,7 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
                     };
                 }
 
-                _cookieService.SetCookie(context, new CookieData($"{_key}-{productId}-{priceId}", count));
+                cookieService.SetCookie(context, new CookieData($"{_key}-{productId}-{priceId}", count));
                 return new ServiceResult
                 {
                     Code = ServiceCode.Success,
@@ -167,13 +158,13 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
     public async Task<ServiceResult> Delete(HttpContext context, int id, int productId, int priceId,
         bool deleteFromCookie = false)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id == 0 || deleteFromCookie)
         {
-            var product = _cookieService.GetCookie(context, $"{_key}-{productId}-{priceId}", false);
+            var product = cookieService.GetCookie(context, $"{_key}-{productId}-{priceId}", false);
             if (product.Any())
             {
-                _cookieService.Remove(context, new CookieData($"{_key}-{productId}-{priceId}", productId));
+                cookieService.Remove(context, new CookieData($"{_key}-{productId}-{priceId}", productId));
                 return new ServiceResult
                 {
                     Code = ServiceCode.Success,
@@ -192,7 +183,7 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
 
         var productList = new List<CookiesProduct>();
 
-        var cookies = _cookieService.GetCookie(context, _key);
+        var cookies = cookieService.GetCookie(context, _key);
         foreach (var cookie in cookies.OrderBy(x => x.Key))
         {
             var temp = cookie.Key.Split("-");
@@ -209,7 +200,7 @@ public class CartService : EntityService<PurchaseOrderViewModel>, ICartService
         }
 
         var responseProduct =
-            await _productService.ProductsWithIdsForCart(productList.Select(x => x.ProductId).ToList());
+            await productService.ProductsWithIdsForCart(productList.Select(x => x.ProductId).ToList());
         if (responseProduct.Code > 0)
             return carts;
 

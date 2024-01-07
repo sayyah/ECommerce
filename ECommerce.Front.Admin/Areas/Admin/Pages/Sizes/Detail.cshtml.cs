@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Sizes;
 
-public class DetailModel : PageModel
+public class DetailModel(ISizeService sizeService) : PageModel
 {
-    private readonly ISizeService _sizeService;
-
-    public DetailModel(ISizeService sizeService)
-    {
-        _sizeService = sizeService;
-    }
-
     public Size Size { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _sizeService.GetById(id);
+        var result = await sizeService.GetById(id);
         if (result.Code == 0)
         {
             Size = result.ReturnData;

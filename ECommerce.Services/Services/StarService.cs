@@ -1,16 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class StarService : EntityService<ProductUserRank>, IStarService
+public class StarService(IHttpService http, ICookieService cookieService) : EntityService<ProductUserRank>(http),
+    IStarService
 {
     private const string Url = "api/Stars";
-    private readonly ICookieService _cookieService;
-    private readonly IHttpService _http;
-
-    public StarService(IHttpService http, ICookieService cookieService) : base(http)
-    {
-        _http = http;
-        _cookieService = cookieService;
-    }
 
     public int FillStars { get; set; }
     public int EmptyStars { get; set; }
@@ -18,14 +11,14 @@ public class StarService : EntityService<ProductUserRank>, IStarService
 
     public async Task<ApiResult<List<ProductUserRank>>> Load()
     {
-        var currentUser = _cookieService.GetCurrentUser();
-        var temp = await _http.GetAsync<List<ProductUserRank>>(Url, $"GetByUserId?id={currentUser.Id}");
+        var currentUser = cookieService.GetCurrentUser();
+        var temp = await http.GetAsync<List<ProductUserRank>>(Url, $"GetByUserId?id={currentUser.Id}");
         return temp;
     }
 
     public async Task<ServiceResult> SaveStars(int productId, int starNumber)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id == 0)
             return new ServiceResult
             {
@@ -52,7 +45,7 @@ public class StarService : EntityService<ProductUserRank>, IStarService
 
     public async Task<double> SumStarsByProductId(int productId)
     {
-        var result = await _http.GetAsync<double>(Url, $"GetBySumProductId?id={productId}");
+        var result = await http.GetAsync<double>(Url, $"GetBySumProductId?id={productId}");
         return result.Code == 0 ? result.ReturnData : 0;
     }
 }

@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Colors;
 
-public class DetailModel : PageModel
+public class DetailModel(IColorService colorService) : PageModel
 {
-    private readonly IColorService _colorService;
-
-    public DetailModel(IColorService colorService)
-    {
-        _colorService = colorService;
-    }
-
     public Color Color { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _colorService.GetById(id);
+        var result = await colorService.GetById(id);
         if (result.Code == 0)
         {
             Color = result.ReturnData;

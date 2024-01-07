@@ -1,15 +1,7 @@
-﻿using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
-using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class UserRepository : AsyncRepository<User>, IUserRepository
+public class UserRepository(SunflowerECommerceDbContext dbContext) : AsyncRepository<User>(dbContext), IUserRepository
 {
-    public UserRepository(SunflowerECommerceDbContext dbContext) : base(dbContext)
-    {
-    }
-
     public async Task<PagedList<UserListViewModel>> Search(UserFilterdParameters userFilteredParameters,
         CancellationToken cancellationToken)
     {

@@ -4,19 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Brands;
 
-public class EditModel : PageModel
+public class EditModel(IBrandService brandService, IHostEnvironment environment, IImageService imageService)
+    : PageModel
 {
-    private readonly IBrandService _brandService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-
-    public EditModel(IBrandService brandService, IHostEnvironment environment, IImageService imageService)
-    {
-        _brandService = brandService;
-        _environment = environment;
-        _imageService = imageService;
-    }
-
     [BindProperty] public Brand Brand { get; set; }
     [BindProperty] public IFormFile? Upload { get; set; }
     [TempData] public string Message { get; set; }
@@ -24,7 +14,7 @@ public class EditModel : PageModel
 
     public async Task OnGet(int id)
     {
-        var result = await _brandService.GetById(id);
+        var result = await brandService.GetById(id);
         Brand = result.ReturnData;
     }
 
@@ -32,7 +22,7 @@ public class EditModel : PageModel
     {
         if (Upload != null)
         {
-            var fileName = (await _imageService.Upload(Upload, "Images/Brands", _environment.ContentRootPath))
+            var fileName = (await imageService.Upload(Upload, "Images/Brands", environment.ContentRootPath))
                 .ReturnData;
             if (fileName == null)
             {
@@ -52,7 +42,7 @@ public class EditModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _brandService.Edit(Brand);
+            var result = await brandService.Edit(Brand);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

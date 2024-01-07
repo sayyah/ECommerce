@@ -2,18 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductAttributeValuesController : ControllerBase
-{
-    private readonly ILogger<ProductAttributeValuesController> _logger;
-    private readonly IProductAttributeValueRepository _productAttributeValueRepository;
-
-    public ProductAttributeValuesController(IProductAttributeValueRepository productAttributeValueRepository,
+public class ProductAttributeValuesController(IProductAttributeValueRepository productAttributeValueRepository,
         ILogger<ProductAttributeValuesController> logger)
-    {
-        _productAttributeValueRepository = productAttributeValueRepository;
-        _logger = logger;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -21,7 +13,7 @@ public class ProductAttributeValuesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _productAttributeValueRepository.Search(paginationParameters, cancellationToken);
+            var entity = await productAttributeValueRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -41,7 +33,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -51,7 +43,7 @@ public class ProductAttributeValuesController : ControllerBase
     {
         try
         {
-            var result = await _productAttributeValueRepository.GetByIdAsync(cancellationToken, id);
+            var result = await productAttributeValueRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -66,7 +58,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -78,7 +70,7 @@ public class ProductAttributeValuesController : ControllerBase
     {
         try
         {
-            await _productAttributeValueRepository.UpdateAsync(productAttributeValue, cancellationToken);
+            await productAttributeValueRepository.UpdateAsync(productAttributeValue, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -86,7 +78,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -97,7 +89,7 @@ public class ProductAttributeValuesController : ControllerBase
     {
         try
         {
-            await _productAttributeValueRepository.DeleteAsync(id, cancellationToken);
+            await productAttributeValueRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -105,7 +97,7 @@ public class ProductAttributeValuesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

@@ -2,20 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class PricesController : ControllerBase
-{
-    private readonly IHolooArticleRepository _holooArticleRepository;
-    private readonly ILogger<PricesController> _logger;
-    private readonly IPriceRepository _priceRepository;
-
-    public PricesController(IPriceRepository priceRepository, ILogger<PricesController> logger,
+public class PricesController(IPriceRepository priceRepository, ILogger<PricesController> logger,
         IHolooArticleRepository holooArticleRepository)
-    {
-        _priceRepository = priceRepository;
-        _logger = logger;
-        _holooArticleRepository = holooArticleRepository;
-    }
-
+    : ControllerBase
+{
     /// <summary>
     ///     Get All Price By Product Id with Pagination.
     /// </summary>
@@ -26,7 +16,7 @@ public class PricesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _priceRepository.Search(paginationParameters, cancellationToken);
+            var entity = await priceRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -47,7 +37,7 @@ public class PricesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -58,7 +48,7 @@ public class PricesController : ControllerBase
     {
         try
         {
-            var result = await _priceRepository.GetByIdAsync(cancellationToken, id);
+            var result = await priceRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -73,7 +63,7 @@ public class PricesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -84,7 +74,7 @@ public class PricesController : ControllerBase
     {
         try
         {
-            var result = await _priceRepository.PriceOfProduct(id, cancellationToken);
+            var result = await priceRepository.PriceOfProduct(id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -99,7 +89,7 @@ public class PricesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -123,7 +113,7 @@ public class PricesController : ControllerBase
 
             messages.AddRange(await CheckPrice(price, cancellationToken));
             var holooPrice =
-                await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
+                await holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
             if (holooPrice.price == 0)
                 messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
 
@@ -134,8 +124,8 @@ public class PricesController : ControllerBase
                     Code = ResultCode.BadRequest
                 });
 
-            var newPrice = await _priceRepository.AddAsync(price, cancellationToken);
-            await _holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer, newPrice.ProductId,
+            var newPrice = await priceRepository.AddAsync(price, cancellationToken);
+            await holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer, newPrice.ProductId,
                 cancellationToken);
             return Ok(new ApiResult
             {
@@ -145,7 +135,7 @@ public class PricesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -164,7 +154,7 @@ public class PricesController : ControllerBase
             messages.AddRange(await CheckPrice(price, cancellationToken));
 
             var HolooPrice =
-                await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
+                await holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
 
             if (HolooPrice.price == 0)
                 messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
@@ -176,7 +166,7 @@ public class PricesController : ControllerBase
                     Code = ResultCode.BadRequest
                 });
 
-            await _priceRepository.UpdateAsync(price, cancellationToken);
+            await priceRepository.UpdateAsync(price, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -184,7 +174,7 @@ public class PricesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -196,7 +186,7 @@ public class PricesController : ControllerBase
     {
         try
         {
-            await _priceRepository.DeleteAsync(id, cancellationToken);
+            await priceRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -204,7 +194,7 @@ public class PricesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -213,7 +203,7 @@ public class PricesController : ControllerBase
     private async Task<List<string>> CheckPrice(Price price, CancellationToken cancellationToken)
     {
         var messages = new List<string>();
-        var prices = await _priceRepository.PriceOfProduct(price.ProductId, cancellationToken);
+        var prices = await priceRepository.PriceOfProduct(price.ProductId, cancellationToken);
         var repetitive = prices.Where(x => x.Amount == price.Amount
                                            && x.IsColleague == price.IsColleague
                                            && x.ColorId == price.ColorId

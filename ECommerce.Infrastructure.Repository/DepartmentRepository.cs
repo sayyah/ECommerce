@@ -1,26 +1,18 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class DepartmentRepository : AsyncRepository<Department>, IDepartmentRepository
+public class DepartmentRepository(SunflowerECommerceDbContext context) : AsyncRepository<Department>(context),
+    IDepartmentRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public DepartmentRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<Department> GetByTitle(string name, CancellationToken cancellationToken)
     {
-        return await _context.Departments.Where(x => x.Title == name).FirstOrDefaultAsync(cancellationToken);
+        return await context.Departments.Where(x => x.Title == name).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<PagedList<Department>> Search(PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
     {
         return PagedList<Department>.ToPagedList(
-            await _context.Departments.Where(x => x.Title.Contains(paginationParameters.Search)).AsNoTracking()
+            await context.Departments.Where(x => x.Title.Contains(paginationParameters.Search)).AsNoTracking()
                 .OrderBy(on => on.Id).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);

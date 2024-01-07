@@ -2,15 +2,10 @@
 
 namespace ECommerce.Services.Services;
 
-public class ImageService : EntityService<Image>, IImageService
+public class ImageService(IHttpService http, HttpClient http1) : EntityService<Image>(http), IImageService
 {
     private const string Url = "api/Images";
-    private readonly HttpClient _http;
-
-    public ImageService(IHttpService http, HttpClient http1) : base(http)
-    {
-        _http = http1;
-    }
+    private readonly HttpClient _http = http1;
 
     public async Task<ServiceResult<List<string>>> Upload(IFormFile file, string path, string contentRootPath)
     {

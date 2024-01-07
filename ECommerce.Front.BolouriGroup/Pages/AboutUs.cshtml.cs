@@ -2,20 +2,13 @@
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class AboutUsModel : PageModel
+public class AboutUsModel(IBrandService brandService) : PageModel
 {
-    private readonly IBrandService _brandService;
-
-    public AboutUsModel(IBrandService brandService)
-    {
-        _brandService = brandService;
-    }
-
     public List<Brand> Brands { get; set; }
 
     public async Task OnGetAsync()
     {
-        Brands = (await _brandService.Load()).ReturnData;
+        Brands = (await brandService.Load()).ReturnData;
         Brands.RemoveAt(0);
     }
 }

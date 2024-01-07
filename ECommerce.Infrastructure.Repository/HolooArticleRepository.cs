@@ -1,37 +1,27 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArticleRepository
+public class HolooArticleRepository(HolooDbContext context,
+        IHolooABailRepository aBailRepository)
+    : HolooRepository<HolooArticle>(context), IHolooArticleRepository
 {
-    private readonly IHolooABailRepository _aBailRepository;
-    private readonly HolooDbContext _context;
-
-    public HolooArticleRepository(
-        HolooDbContext context,
-        IHolooABailRepository aBailRepository) : base(context)
-    {
-        _context = context;
-        _aBailRepository = aBailRepository;
-    }
-
     public async Task SyncHolooWebId(string aCodeC, int productId, CancellationToken cancellationToken)
     {
-        var articles = _context.ARTICLE.Where(x => x.A_Code_C == aCodeC);
+        var articles = context.ARTICLE.Where(x => x.A_Code_C == aCodeC);
         foreach (var article in articles)
         {
             article.WebId = productId;
-            _context.ARTICLE.Update(article);
+            context.ARTICLE.Update(article);
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice)
     {
-        var bolooryFlag = (await _context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
-        var article = await _context.ARTICLE
+        var bolooryFlag = (await context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
+        var article = await context.ARTICLE
             .Where(x => x.A_Code_C.Equals(aCodeC) && (Convert.ToInt32(x.A_Code) < 3400000 || !bolooryFlag))
             .ToListAsync();
         decimal price = 0;
@@ -112,7 +102,7 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
     public async Task<IEnumerable<HolooArticle>> GetAllArticleMCodeSCode(string code,
         CancellationToken cancellationToken, short sendToSite = 0)
     {
-        return await _context.ARTICLE.Where(x => x.A_Code.StartsWith(code)
+        return await context.ARTICLE.Where(x => x.A_Code.StartsWith(code)
                                                  && x.SendToSite == sendToSite && !x.Model.Equals("#*Not_Article*#"))
             .ToListAsync(cancellationToken);
     }
@@ -120,7 +110,7 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
     public async Task<IEnumerable<HolooArticle>> GetAllMCode(string mCode, CancellationToken cancellationToken,
         short sendToSite = 0)
     {
-        return await _context.ARTICLE
+        return await context.ARTICLE
             .Where(x => x.A_Code.StartsWith(mCode) && x.SendToSite == sendToSite && !x.Model.Equals("#*Not_Article*#"))
             .ToListAsync(cancellationToken);
     }
@@ -128,10 +118,10 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
     public async Task<IEnumerable<HolooArticle>> GetHolooArticles(List<string> aCodeCs,
         CancellationToken cancellationToken)
     {
-        var temp = _context.ARTICLE.Where(
+        var temp = context.ARTICLE.Where(
             x => aCodeCs.Any(
                 aCodeC => aCodeC == x.A_Code_C));
-        var bolooryFlag = (await _context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
+        var bolooryFlag = (await context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
         return await temp.Where(x => Convert.ToInt32(x.A_Code) < 3400000 || !bolooryFlag)
             .ToListAsync(cancellationToken);
     }
@@ -139,10 +129,10 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
     public async Task<IEnumerable<HolooArticle>> GetHolooArticlesDefaultWarehouse(List<string> aCodeCs,
         CancellationToken cancellationToken)
     {
-        var temp = _context.ARTICLE.Where(
+        var temp = context.ARTICLE.Where(
             x => aCodeCs.Any(
                 aCodeC => aCodeC == x.A_Code_C));
-        var bolooryFlag = (await _context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
+        var bolooryFlag = (await context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
         return await temp
             .Where(x => Convert.ToInt32(x.A_Code) < 3400000 && Convert.ToInt32(x.A_Code) > 2400000 || !bolooryFlag)
             .ToListAsync(cancellationToken);
@@ -151,10 +141,10 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
     public async Task<IEnumerable<HolooArticle>> GetHolooArticlesOthereWarehouse(List<string> aCodeCs,
         CancellationToken cancellationToken)
     {
-        var temp = _context.ARTICLE.Where(
+        var temp = context.ARTICLE.Where(
             x => aCodeCs.Any(
                 aCodeC => aCodeC == x.A_Code_C));
-        var bolooryFlag = (await _context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
+        var bolooryFlag = (await context.Customer.FirstAsync()).C_Name == "گروه تجهيزات صنعتي بلوري";
         return await temp.Where(x => Convert.ToInt32(x.A_Code) < 900000 || !bolooryFlag).ToListAsync(cancellationToken);
     }
 
@@ -229,7 +219,7 @@ public class HolooArticleRepository : HolooRepository<HolooArticle>, IHolooArtic
                         //int userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
                         var userCode = 15;
                         foreach (var item in a_code)
-                            soldExist += _aBailRepository.GetWithACode(userCode, item, cancellationToken);
+                            soldExist += aBailRepository.GetWithACode(userCode, item, cancellationToken);
                     }
 
                     productPrices.Exist = article.Sum(x => x.Exist) - soldExist ?? 0;

@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class LoginModel : PageModel
+public class LoginModel(IUserService userService) : PageModel
 {
-    private readonly IUserService _userService;
-
-    public LoginModel(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [BindProperty] public RegisterViewModel RegisterViewModel { get; set; }
 
     [BindProperty] public LoginViewModel LoginViewModel { get; set; }
@@ -35,7 +28,7 @@ public class LoginModel : PageModel
 
     private async Task<ServiceResult<int?>> CheckUsername(string username)
     {
-        var checkUsernameResult = await _userService.GetSecondsLeftConfirmCodeExpire(username);
+        var checkUsernameResult = await userService.GetSecondsLeftConfirmCodeExpire(username);
         if (checkUsernameResult.Code == ServiceCode.Error)
             return new ServiceResult<int?>
             {
@@ -67,7 +60,7 @@ public class LoginModel : PageModel
             return new JsonResult(smsResponsModel);
         }
 
-        smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
+        smsResponsModel = await userService.SendAuthenticationSms(username, code.ToString());
         smsResponsModel.Message = "خطای غیر منتظره. امکان ارسال پیامک وجود ندارد";
         if (smsResponsModel.Status == 1) smsResponsModel.Message = "پیامک با موفقیت ارسال شد";
         if (smsResponsModel.Status == 104) smsResponsModel.Message = "شماره موبایل وارد شده صحیح نمی باشد";
@@ -116,7 +109,7 @@ public class LoginModel : PageModel
             return new JsonResult("Error");
         }
         LoginViewModel _loginViewModel = new() {Username = username, Password = password};        
-        ServiceResult<LoginViewModel?> result = await _userService.Login(_loginViewModel);
+        ServiceResult<LoginViewModel?> result = await userService.Login(_loginViewModel);
         return new JsonResult(result);
     }
 
@@ -127,10 +120,10 @@ public class LoginModel : PageModel
         {
             var random = new Random();
             var code = random.Next(10000000, 99999999);
-            var result = await _userService.SetConfirmCodeByUsername(username, code + "");
+            var result = await userService.SetConfirmCodeByUsername(username, code + "");
             if (result == null) return new JsonResult(smsResponsModel);
             if (result.ReturnData == false) return new JsonResult(smsResponsModel);
-            smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
+            smsResponsModel = await userService.SendAuthenticationSms(username, code.ToString());
             smsResponsModel.Message = "خطای غیر منتظره. امکان ارسال پیامک وجود ندارد";
             if (smsResponsModel.Status == 1) smsResponsModel.Message = "پیامک با موفقیت ارسال شد";
             if (smsResponsModel.Status == 104) smsResponsModel.Message = "شماره موبایل وارد شده صحیح نمی باشد";

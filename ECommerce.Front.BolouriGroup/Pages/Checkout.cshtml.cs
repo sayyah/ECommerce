@@ -3,19 +3,19 @@ using System.Text;
 using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
 using PersianDate.Standard;
+using ZarinpalSandbox;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class CheckoutModel : PageModel
+public class CheckoutModel(ICartService cartService,
+        ICityService cityService,
+        ISendInformationService sendInformationService,
+        IStateService stateService,
+        IPurchaseOrderService purchaseOrderService,
+        IDiscountService discountService,
+        IConfiguration configuration)
+    : PageModel
 {
-    private readonly ICartService _cartService;
-    private readonly ICityService _cityService;
-    private readonly IDiscountService _discountService;
-    private readonly IPurchaseOrderService _purchaseOrderService;
-    private readonly ISendInformationService _sendInformationService;
-    private readonly IStateService _stateService;
-    private readonly IConfiguration _configuration;
-
     [BindProperty]
     public List<State> StateList { get; set; }
 
@@ -36,25 +36,6 @@ public class CheckoutModel : PageModel
     public int SumPrice { get; set; }
     public ServiceResult<Discount> DiscountResult { get; set; }
 
-    public CheckoutModel(
-        ICartService cartService,
-        ICityService cityService,
-        ISendInformationService sendInformationService,
-        IStateService stateService,
-        IPurchaseOrderService purchaseOrderService,
-        IDiscountService discountService,
-        IConfiguration configuration
-    )
-    {
-        _cityService = cityService;
-        _sendInformationService = sendInformationService;
-        _stateService = stateService;
-        _purchaseOrderService = purchaseOrderService;
-        _cartService = cartService;
-        _discountService = discountService;
-        _configuration = configuration;
-    }
-
     public async Task OnGet(string message, string code)
     {
         await Initial();
@@ -64,11 +45,11 @@ public class CheckoutModel : PageModel
 
     private async Task Initial()
     {
-        StateList = (await _stateService.Load()).ReturnData;
-        var cityServiceResponse = await _cityService.LoadAllCity();
+        StateList = (await stateService.Load()).ReturnData;
+        var cityServiceResponse = await cityService.LoadAllCity();
         CityList = cityServiceResponse.ReturnData;
-        SendInformationList = (await _sendInformationService.Load()).ReturnData;
-        var resultCart = await _cartService.CartListFromServer(true);
+        SendInformationList = (await sendInformationService.Load()).ReturnData;
+        var resultCart = await cartService.CartListFromServer(true);
         if (resultCart.Code > 0)
         {
             Message = resultCart.Message;
@@ -82,7 +63,7 @@ public class CheckoutModel : PageModel
 
     public async Task<JsonResult> OnGetSendInformationLoad(int id)
     {
-        var result = await _cityService.Load(id);
+        var result = await cityService.Load(id);
         var ret = "";
         foreach (var city in result.ReturnData)
             ret += $"<option value='{city.Id}'>{city.Name}</option>";
@@ -105,8 +86,8 @@ public class CheckoutModel : PageModel
 
     public async Task<JsonResult> OnPostEditAddress()
     {
-        var result = await _sendInformationService.Edit(SendInformation);
-        var list = (await _sendInformationService.Load()).ReturnData;
+        var result = await sendInformationService.Edit(SendInformation);
+        var list = (await sendInformationService.Load()).ReturnData;
         return new JsonResult(
             new
             {
@@ -119,7 +100,7 @@ public class CheckoutModel : PageModel
 
     private async Task<VerifyResultData> DiscountCalculate(string discountCode, int sumPrice)
     {
-        DiscountResult = await _discountService.GetByCode(discountCode);
+        DiscountResult = await discountService.GetByCode(discountCode);
         var discount = DiscountResult.ReturnData;
         VerifyResultData resultData = new();
         if (DiscountResult.Code > 0 || DiscountResult.Status != 200)
@@ -197,7 +178,7 @@ public class CheckoutModel : PageModel
             ModelState.Remove("SendInformation.Id");
             if (ModelState.IsValid)
             {
-                var result = await _sendInformationService.Add(SendInformation);
+                var result = await sendInformationService.Add(SendInformation);
                 resultSendInformation = result.Code;
                 Message = result.Message;
                 SendInformation = result.ReturnData;
@@ -211,11 +192,11 @@ public class CheckoutModel : PageModel
         }
         else
         {
-            var r = await _sendInformationService.Find(SendInformation.Id);
+            var r = await sendInformationService.Find(SendInformation.Id);
             SendInformation = r.ReturnData;
         }
 
-        var resultCart = await _cartService.CartListFromServer();
+        var resultCart = await cartService.CartListFromServer();
         if (resultCart.Code > 0)
         {
             Message = resultCart.Message;
@@ -234,7 +215,7 @@ public class CheckoutModel : PageModel
             return Page();
         }
 
-        var purchaseOrder = (await _purchaseOrderService.GetByUserId()).ReturnData;
+        var purchaseOrder = (await purchaseOrderService.GetByUserId()).ReturnData;
         purchaseOrder.Amount = tempSumPrice;
         purchaseOrder.SendInformationId = SendInformation.Id;
         if (
@@ -269,7 +250,7 @@ public class CheckoutModel : PageModel
                 //    var paymentZarinpal = await new Payment(SumPrice).PaymentRequest(description, url + returnAction + "?Factor=" + purchaseOrder.Id);
                 //    if (paymentZarinpal.Status == 100)
                 //    {
-                //        await _purchaseOrderService.Edit(purchaseOrder);
+                //        await purchaseOrderService.Edit(purchaseOrder);
                 //        return Redirect(paymentZarinpal.Link);
                 //    }
                 //    return RedirectToPage("Error");
@@ -280,14 +261,14 @@ public class CheckoutModel : PageModel
                     purchaseOrder.OrderId = BitConverter.ToInt64(gb, 0);
                     var date = DateTime.Now.ToString("yyyyMMdd");
                     var time = DateTime.Now.ToString("HHmmss");
-                    long merchantId = _configuration.GetValue<long>(
-                        "SiteSettings:SanadSettings:merchantId"
+                    long merchantId = configuration.GetValue<long>(
+                        "merchantId"
                     );
-                    string terminalId = _configuration.GetValue<string>(
-                        "SiteSettings:SanadSettings:terminalId"
+                    string terminalId = configuration.GetValue<string>(
+                        "terminalId"
                     );
-                    string terminalKey = _configuration.GetValue<string>(
-                        "SiteSettings:SanadSettings:terminalKey"
+                    string terminalKey = configuration.GetValue<string>(
+                        "terminalKey"
                     );
                     var dataBytes = Encoding
                         .UTF8
@@ -319,7 +300,7 @@ public class CheckoutModel : PageModel
 
                     if (res.ResCode == "0")
                     {
-                        await _purchaseOrderService.Edit(purchaseOrder);
+                        await purchaseOrderService.Edit(purchaseOrder);
                         return Redirect($"https://sadad.shaparak.ir/Purchase?Token={res.Token}");
                     }
 

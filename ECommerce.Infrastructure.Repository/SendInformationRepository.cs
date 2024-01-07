@@ -1,13 +1,7 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class SendInformationRepository : AsyncRepository<SendInformation>, ISendInformationRepository
+public class SendInformationRepository(SunflowerECommerceDbContext context) : AsyncRepository<SendInformation>(context),
+    ISendInformationRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public SendInformationRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly SunflowerECommerceDbContext _context = context;
 }

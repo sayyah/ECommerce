@@ -2,17 +2,9 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
-public class AcceptModel : PageModel
+public class AcceptModel(IBlogCommentService blogCommentService, IBlogService blogService)
+    : PageModel
 {
-    private readonly IBlogCommentService _blogCommentService;
-    private readonly IBlogService _blogService;
-
-    public AcceptModel(IBlogCommentService blogCommentService, IBlogService blogService)
-    {
-        _blogCommentService = blogCommentService;
-        _blogService = blogService;
-    }
-
     [BindProperty] public BlogComment BlogComment { get; set; }
     [TempData] public string? Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -22,10 +14,10 @@ public class AcceptModel : PageModel
     {
         Message = message;
         Code = code;
-        var BlogCommentResult = await _blogCommentService.GetById(id);
+        var BlogCommentResult = await blogCommentService.GetById(id);
         BlogComment = BlogCommentResult.ReturnData;
         var _blogId = BlogComment.BlogId ?? default(int);
-        var ProductResult = await _blogService.GetById(_blogId);
+        var ProductResult = await blogService.GetById(_blogId);
         Blog = ProductResult.ReturnData;
     }
 
@@ -34,7 +26,7 @@ public class AcceptModel : PageModel
         try
         {
             if (BlogComment.Answer!.Text == null && BlogComment.AnswerId == null) BlogComment.Answer = null;
-            var result = await _blogCommentService.Accept(BlogComment);
+            var result = await blogCommentService.Accept(BlogComment);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

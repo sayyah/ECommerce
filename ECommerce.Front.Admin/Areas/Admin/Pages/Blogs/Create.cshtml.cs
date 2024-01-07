@@ -5,29 +5,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
-public class CreateModel : PageModel
-{
-    private readonly IBlogAuthorService _blogAuthorService;
-    private readonly IBlogCategoryService _blogCategoryService;
-    private readonly IBlogService _blogService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-    private readonly IKeywordService _keywordService;
-    private readonly ITagService _tagService;
-
-    public CreateModel(IBlogService blogService, IImageService imageService, ITagService tagService,
+public class CreateModel(IBlogService blogService, IImageService imageService, ITagService tagService,
         IKeywordService keywordService, IHostEnvironment environment, IBlogAuthorService blogAuthorService,
         IBlogCategoryService blogCategoryService)
-    {
-        _blogService = blogService;
-        _imageService = imageService;
-        _environment = environment;
-        _keywordService = keywordService;
-        _tagService = tagService;
-        _blogAuthorService = blogAuthorService;
-        _blogCategoryService = blogCategoryService;
-    }
-
+    : PageModel
+{
     [BindProperty] public BlogViewModel Blog { get; set; }
 
     [BindProperty] public IFormFile? Upload { get; set; }
@@ -44,16 +26,16 @@ public class CreateModel : PageModel
     {
         Blog = new BlogViewModel();
 
-        var tags = (await _tagService.GetAll()).ReturnData;
+        var tags = (await tagService.GetAll()).ReturnData;
         Tags = new SelectList(tags, nameof(Tag.Id), nameof(Tag.TagText));
 
-        var keywords = (await _keywordService.GetAll()).ReturnData;
+        var keywords = (await keywordService.GetAll()).ReturnData;
         Keywords = new SelectList(keywords, nameof(Keyword.Id), nameof(Keyword.KeywordText));
 
-        var blogAuthors = (await _blogAuthorService.GetAll()).ReturnData;
+        var blogAuthors = (await blogAuthorService.GetAll()).ReturnData;
         BlogAuthors = new SelectList(blogAuthors, nameof(BlogAuthor.Id), nameof(BlogAuthor.Name));
 
-        var resultParent = await _blogCategoryService.GetParents();
+        var resultParent = await blogCategoryService.GetParents();
         Categories = resultParent.ReturnData;
     }
 
@@ -90,11 +72,11 @@ public class CreateModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _blogService.Add(Blog);
+            var result = await blogService.Add(Blog);
             if (result.Code == 0)
             {
-                var resultImage = await _imageService.Add(Upload, result.ReturnData.Id, "Images/Blogs",
-                    _environment.ContentRootPath);
+                var resultImage = await imageService.Add(Upload, result.ReturnData.Id, "Images/Blogs",
+                    environment.ContentRootPath);
 
                 if (resultImage.Code == 0)
                     return RedirectToPage("/Blogs/Index",

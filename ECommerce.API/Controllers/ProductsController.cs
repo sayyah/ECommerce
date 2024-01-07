@@ -6,40 +6,16 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductsController : ControllerBase
-{
-    private readonly IHolooArticleRepository _articleRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ILogger<ProductsController> _logger;
-    private readonly IHolooMGroupRepository _mGroupRepository;
-    private readonly IPriceRepository _priceRepository;
-    private readonly IProductRepository _productRepository;
-    private readonly IHolooSGroupRepository _sGroupRepository;
-    private readonly ITagRepository _tagRepository;
-    private readonly IUnitRepository _unitRepository;
-    private readonly IWishListRepository _wishListRepository;
-
-    public ProductsController(IProductRepository productRepository, IHolooArticleRepository articleRepository,
+public class ProductsController(IProductRepository productRepository, IHolooArticleRepository articleRepository,
         IHolooMGroupRepository mGroupRepository, IHolooSGroupRepository sGroupRepository,
         ICategoryRepository categoryRepository, IPriceRepository priceRepository, IUnitRepository unitRepository,
         ILogger<ProductsController> logger, ITagRepository tagRepository, IWishListRepository wishListRepository)
-    {
-        _productRepository = productRepository;
-        _articleRepository = articleRepository;
-        _mGroupRepository = mGroupRepository;
-        _sGroupRepository = sGroupRepository;
-        _categoryRepository = categoryRepository;
-        _priceRepository = priceRepository;
-        _unitRepository = unitRepository;
-        _logger = logger;
-        _tagRepository = tagRepository;
-        _wishListRepository = wishListRepository;
-    }
-
+    : ControllerBase
+{
     private async Task<Product> AddPriceAndExistFromHoloo(Product product, bool isWithoutBill, bool? isCheckExist,
         CancellationToken cancellationToken)
     {
-        var products = await _articleRepository.AddPriceAndExistFromHolooList(
+        var products = await articleRepository.AddPriceAndExistFromHolooList(
             new List<ProductIndexPageViewModel> { product },
             isWithoutBill,
             isCheckExist,
@@ -55,7 +31,7 @@ public class ProductsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _productRepository.Search(paginationParameters, cancellationToken);
+            var entity = await productRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -77,7 +53,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -89,7 +65,7 @@ public class ProductsController : ControllerBase
         try
         {
             var pagination = new PaginationViewModel { SearchText = pageViewModel.SearchText };
-            var query = _productRepository.TableNoTracking.OrderByDescending(x => x.Id);
+            var query = productRepository.TableNoTracking.OrderByDescending(x => x.Id);
 
             var cox = query.Count();
             if (string.IsNullOrEmpty(pageViewModel.SearchText))
@@ -153,7 +129,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -175,17 +151,17 @@ public class ProductsController : ControllerBase
             if (!string.IsNullOrEmpty(productListFilteredViewModel.PaginationParameters.TagText))
             {
                 var resultTags =
-                    await _tagRepository.GetByTagText(productListFilteredViewModel.PaginationParameters.TagText,
+                    await tagRepository.GetByTagText(productListFilteredViewModel.PaginationParameters.TagText,
                         cancellationToken);
                 productListFilteredViewModel.TagsId = new List<int> { resultTags.Id };
             }
 
             var categoriesId = new List<int>();
-            categoriesId = await _categoryRepository.ChildrenCategory(
+            categoriesId = await categoryRepository.ChildrenCategory(
                 productListFilteredViewModel.PaginationParameters.CategoryId,
                 cancellationToken);
             categoriesId.Add(productListFilteredViewModel.PaginationParameters.CategoryId);
-            var productQuery = _productRepository.GetProducts(categoriesId, productListFilteredViewModel.BrandsId,
+            var productQuery = productRepository.GetProducts(categoriesId, productListFilteredViewModel.BrandsId,
                 productListFilteredViewModel.StarsCount, productListFilteredViewModel.TagsId);
 
             var search = productListFilteredViewModel.PaginationParameters.Search?.Split('='); //name=ali
@@ -234,7 +210,7 @@ public class ProductsController : ControllerBase
                         var searchProducts = new List<string> { search[1].Trim() };
                         foreach (var searchProduct in searchProducts)
                         {
-                            var productsIds = _priceRepository.GetProductIdWithsArticleCodeCustomer(searchProduct);
+                            var productsIds = priceRepository.GetProductIdWithsArticleCodeCustomer(searchProduct);
                             productIndexPageViewModel.AddRange(await productQuery
                                 .Where(x => productsIds.Contains(x.Id))
                                 .Select(p => new ProductIndexPageViewModel
@@ -272,7 +248,7 @@ public class ProductsController : ControllerBase
 
             productIndexPageViewModel = productIndexPageViewModel.DistinctBy(x => x.Id).ToList();
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(
+                productIndexPageViewModel = await articleRepository.AddPriceAndExistFromHolooList(
                     productIndexPageViewModel, productListFilteredViewModel.isWithoutBill,
                     productListFilteredViewModel.isCheckExist, cancellationToken);
 
@@ -343,7 +319,7 @@ public class ProductsController : ControllerBase
                 foreach (var item in entity)
                 {
                     var price = item.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague);
-                    var wishLists = await _wishListRepository.Where(
+                    var wishLists = await wishListRepository.Where(
                         x => x.UserId == productListFilteredViewModel.UserId && x.PriceId == price.Id,
                         cancellationToken);
                     item.FirstPriceWichlist = wishLists.Any();
@@ -359,7 +335,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             {
                 PaginationDetails = new PaginationDetails(),
@@ -375,7 +351,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var productQuery = _productRepository.GetAllProducts();
+            var productQuery = productRepository.GetAllProducts();
             var productIndexPageViewModel = new List<ShopPageViewModel>();
             productIndexPageViewModel.AddRange(await productQuery
                 .Select(p => new ShopPageViewModel
@@ -397,7 +373,7 @@ public class ProductsController : ControllerBase
 
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         isCheckExist, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -409,7 +385,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             {
                 PaginationDetails = new PaginationDetails(),
@@ -424,9 +400,9 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var products = await _productRepository.TopNew(count, 0, null, cancellationToken);
+            var products = await productRepository.TopNew(count, 0, null, cancellationToken);
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                products = await _articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
+                products = await articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
                     cancellationToken);
 
             products = products.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
@@ -439,7 +415,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -450,14 +426,14 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var products = await _productRepository.TopPrices(count, 0, null, cancellationToken);
+            var products = await productRepository.TopPrices(count, 0, null, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => product));
 
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             products = products.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
             return Ok(new ApiResult
@@ -468,7 +444,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -479,13 +455,13 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var products = await _priceRepository.TopDiscounts(count, cancellationToken);
+            var products = await priceRepository.TopDiscounts(count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => (ProductIndexPageViewModel)product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -497,7 +473,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -509,13 +485,13 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var products = await _productRepository.TopRelatives(productId, count, cancellationToken);
+            var products = await productRepository.TopRelatives(productId, count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -527,7 +503,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -538,13 +514,13 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var products = await _productRepository.TopSells(count, cancellationToken);
+            var products = await productRepository.TopSells(count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -556,7 +532,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -567,11 +543,11 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var productIndexPageViewModel = await _productRepository.TopStars(count, 0, null, cancellationToken);
+            var productIndexPageViewModel = await productRepository.TopStars(count, 0, null, cancellationToken);
 
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -583,7 +559,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -597,12 +573,12 @@ public class ProductsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = _productRepository.GetCategoryProductCount(categoryId, cancellationToken)
+                ReturnData = productRepository.GetCategoryProductCount(categoryId, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -614,7 +590,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var product = await _productRepository.GetByUrl(productUrl, cancellationToken);
+            var product = await productRepository.GetByUrl(productUrl, cancellationToken);
             if (product == null)
                 return Ok(new ApiResult
                 {
@@ -623,7 +599,7 @@ public class ProductsController : ControllerBase
             if (product.Prices.Any(p => p.ArticleCode != null))
                 product = await AddPriceAndExistFromHoloo(product, isWithoutBill, isCheckExist, cancellationToken);
 
-            var wish = await _wishListRepository.GetByProductUser(product.Id, userId, cancellationToken);
+            var wish = await wishListRepository.GetByProductUser(product.Id, userId, cancellationToken);
             var result = new ProductViewModel
             {
                 Id = product.Id,
@@ -653,7 +629,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -666,7 +642,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var result = await _productRepository.GetProductByIdWithInclude(id).FirstOrDefaultAsync(cancellationToken);
+            var result = await productRepository.GetProductByIdWithInclude(id).FirstOrDefaultAsync(cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -681,7 +657,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -693,7 +669,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var product = await _productRepository.GetProductById(id, cancellationToken);
+            var product = await productRepository.GetProductById(id, cancellationToken);
 
             if (product == null)
                 return Ok(new ApiResult
@@ -724,7 +700,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -736,8 +712,8 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var resultFormRepository = _productRepository.GetProductListWithAttribute(productIdList);
-            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
+            var resultFormRepository = productRepository.GetProductListWithAttribute(productIdList);
+            var result = await articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
                 false, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
@@ -753,7 +729,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -765,9 +741,9 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var ProductsIds = _productRepository.GetProductsIdWithCategories(categoryId);
-            var resultFormRepository = _productRepository.GetProductListWithAttribute(ProductsIds);
-            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
+            var ProductsIds = productRepository.GetProductsIdWithCategories(categoryId);
+            var resultFormRepository = productRepository.GetProductListWithAttribute(ProductsIds);
+            var result = await articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
                 false, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
@@ -783,7 +759,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -795,8 +771,8 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var result = await _productRepository.GetProductList(productIdList, cancellationToken);
-            result = await _articleRepository.AddPriceAndExistFromHolooList(result, isWithoutBill, true,
+            var result = await productRepository.GetProductList(productIdList, cancellationToken);
+            result = await articleRepository.AddPriceAndExistFromHolooList(result, isWithoutBill, true,
                 cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
@@ -812,7 +788,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -831,7 +807,7 @@ public class ProductsController : ControllerBase
                 });
             productViewModel.Name = productViewModel.Name.Trim();
 
-            var repetitiveName = await _productRepository.GetByName(productViewModel.Name, cancellationToken);
+            var repetitiveName = await productRepository.GetByName(productViewModel.Name, cancellationToken);
             if (repetitiveName != null)
                 return Ok(new ApiResult
                 {
@@ -839,7 +815,7 @@ public class ProductsController : ControllerBase
                     Messages = new List<string> { "نام محصول تکراری است" }
                 });
 
-            var repetitiveUrl = await _productRepository.GetByUrl(productViewModel.Url, cancellationToken);
+            var repetitiveUrl = await productRepository.GetByUrl(productViewModel.Url, cancellationToken);
             if (repetitiveUrl != null)
                 return Ok(new ApiResult
                 {
@@ -850,12 +826,12 @@ public class ProductsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _productRepository.AddWithRelations(productViewModel, cancellationToken)
+                ReturnData = await productRepository.AddWithRelations(productViewModel, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -869,27 +845,27 @@ public class ProductsController : ControllerBase
         {
             if (productViewModel == null) return BadRequest();
 
-            var repetitiveName = await _productRepository.GetByName(productViewModel.Name, cancellationToken);
+            var repetitiveName = await productRepository.GetByName(productViewModel.Name, cancellationToken);
             if (repetitiveName != null && repetitiveName.Id != productViewModel.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام محصول تکراری است" }
                 });
-            if (repetitiveName != null) _productRepository.Detach(repetitiveName);
+            if (repetitiveName != null) productRepository.Detach(repetitiveName);
 
-            var repetitiveUrl = await _productRepository.GetByUrl(productViewModel.Url, cancellationToken);
+            var repetitiveUrl = await productRepository.GetByUrl(productViewModel.Url, cancellationToken);
             if (repetitiveUrl != null && repetitiveUrl.Id != productViewModel.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "آدرس محصول تکراری است" }
                 });
-            if (repetitiveUrl != null) _productRepository.Detach(repetitiveUrl);
+            if (repetitiveUrl != null) productRepository.Detach(repetitiveUrl);
 
-            var result = await _productRepository.EditWithRelations(productViewModel, cancellationToken);
+            var result = await productRepository.EditWithRelations(productViewModel, cancellationToken);
             if (productViewModel.Prices.Count > 0)
-                await _priceRepository.EditAll(productViewModel.Prices, result.Id, cancellationToken);
+                await priceRepository.EditAll(productViewModel.Prices, result.Id, cancellationToken);
 
             return Ok(new ApiResult
             {
@@ -899,7 +875,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -911,7 +887,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            await _productRepository.DeleteAsync(id, cancellationToken);
+            await productRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -919,7 +895,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -933,12 +909,12 @@ public class ProductsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _mGroupRepository.GetAll(cancellationToken)
+                ReturnData = await mGroupRepository.GetAll(cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -949,7 +925,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var result = await _sGroupRepository.GetSGroupByMCode(mCode, cancellationToken);
+            var result = await sGroupRepository.GetSGroupByMCode(mCode, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -964,7 +940,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -998,7 +974,7 @@ public class ProductsController : ControllerBase
             //            }
             //        }
             //    });
-            var products = await _articleRepository.GetAllArticleMCodeSCode(code, cancellationToken);
+            var products = await articleRepository.GetAllArticleMCodeSCode(code, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -1007,7 +983,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -1022,19 +998,19 @@ public class ProductsController : ControllerBase
         {
             var mCodeLis = new List<HolooMGroup>();
             if (mCode.Equals(""))
-                mCodeLis = (await _mGroupRepository.GetAll(cancellationToken))!.ToList();
+                mCodeLis = (await mGroupRepository.GetAll(cancellationToken))!.ToList();
             else
-                mCodeLis.Add(await _mGroupRepository.GetByCode(mCode, cancellationToken));
+                mCodeLis.Add(await mGroupRepository.GetByCode(mCode, cancellationToken));
             foreach (var mGroup in mCodeLis)
             {
-                var parentCategoryCode = await _categoryRepository.GetByName(mGroup.M_groupname, cancellationToken) ??
-                                         await _categoryRepository.AddAsync(new Category
+                var parentCategoryCode = await categoryRepository.GetByName(mGroup.M_groupname, cancellationToken) ??
+                                         await categoryRepository.AddAsync(new Category
                                          {
                                              Name = mGroup.M_groupname,
                                              Path = "/" + mGroup.M_groupname
                                          }, cancellationToken);
 
-                var sGroups = await _sGroupRepository.GetSGroupByMCode(mGroup.M_groupcode, cancellationToken);
+                var sGroups = await sGroupRepository.GetSGroupByMCode(mGroup.M_groupcode, cancellationToken);
 
                 var holooSGroups = sGroups.ToList();
                 if (!holooSGroups.Any())
@@ -1058,10 +1034,10 @@ public class ProductsController : ControllerBase
                 foreach (var sGroup in holooSGroups)
                 {
                     var articles =
-                        await _articleRepository.GetAllArticleMCodeSCode(sGroup.M_groupcode + sGroup.S_groupcode,
+                        await articleRepository.GetAllArticleMCodeSCode(sGroup.M_groupcode + sGroup.S_groupcode,
                             cancellationToken);
                     if (!articles.Any()) continue;
-                    var category = await _categoryRepository.AddAsync(new Category
+                    var category = await categoryRepository.AddAsync(new Category
                     {
                         Name = sGroup.S_groupname,
                         ParentId = parentCategoryCode.Id,
@@ -1088,7 +1064,7 @@ public class ProductsController : ControllerBase
                                 CurrencyId = 1,
                                 MinQuantity = 1,
                                 MaxQuantity = 0,
-                                UnitId = _unitRepository.GetId(x.VahedCode, cancellationToken),
+                                UnitId = unitRepository.GetId(x.VahedCode, cancellationToken),
                                 ArticleCode = x.A_Code,
                                 ArticleCodeCustomer = x.A_Code_C,
                                 Exist = x.Exist ?? 0,
@@ -1107,11 +1083,11 @@ public class ProductsController : ControllerBase
                     });
                     try
                     {
-                        await _productRepository.AddRangeAsync(products, cancellationToken);
+                        await productRepository.AddRangeAsync(products, cancellationToken);
                     }
                     catch (Exception e)
                     {
-                        _logger.LogCritical(e, e.Message);
+                        logger.LogCritical(e, e.Message);
                         return Ok(new ApiResult
                         {
                             Code = ResultCode.Error,
@@ -1137,7 +1113,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -1166,10 +1142,10 @@ public class ProductsController : ControllerBase
                         countFilled = 0;
                         while (countFilled < count)
                         {
-                            products = await _productRepository.TopNew(count, start, resultCount[0],
+                            products = await productRepository.TopNew(count, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
+                                products = await articleRepository.AddPriceAndExistFromHolooList(products,
                                     isWithoutBill, true,
                                     cancellationToken);
                             countFilled = selectedProducts.Count(x =>
@@ -1187,10 +1163,10 @@ public class ProductsController : ControllerBase
                         countFilled = 0;
                         while (countFilled < count)
                         {
-                            products = await _productRepository.TopPrices(count * 2, start, resultCount[0],
+                            products = await productRepository.TopPrices(count * 2, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
+                                products = await articleRepository.AddPriceAndExistFromHolooList(products,
                                     isWithoutBill, true,
                                     cancellationToken);
                             countFilled = selectedProducts.Count(x =>
@@ -1221,10 +1197,10 @@ public class ProductsController : ControllerBase
                         countFilled = 0;
                         while (countFilled < count)
                         {
-                            products = await _productRepository.TopStars(count * 2, start, resultCount[0],
+                            products = await productRepository.TopStars(count * 2, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
+                                products = await articleRepository.AddPriceAndExistFromHolooList(products,
                                     isWithoutBill, true,
                                     cancellationToken);
 
@@ -1244,7 +1220,7 @@ public class ProductsController : ControllerBase
                 foreach (var item in selectedProducts)
                 {
                     var price = item.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague);
-                    var wishlists = await _wishListRepository.Where(x => x.UserId == userid && x.PriceId == price.Id,
+                    var wishlists = await wishListRepository.Where(x => x.UserId == userid && x.PriceId == price.Id,
                         cancellationToken);
                     item.FirstPriceWichlist = wishlists.Any();
                 }
@@ -1257,7 +1233,7 @@ public class ProductsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
             { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

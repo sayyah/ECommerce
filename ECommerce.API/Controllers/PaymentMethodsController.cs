@@ -4,21 +4,10 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class PaymentMethodsController : ControllerBase
-{
-    private readonly IHolooAccountNumberRepository _accountNumberRepository;
-    private readonly ILogger<PaymentMethodsController> _logger;
-
-    private readonly IPaymentMethodRepository _paymentMethodRepository;
-
-    public PaymentMethodsController(IPaymentMethodRepository discountRepository,
+public class PaymentMethodsController(IPaymentMethodRepository discountRepository,
         IHolooAccountNumberRepository accountNumberRepository, ILogger<PaymentMethodsController> logger)
-    {
-        _paymentMethodRepository = discountRepository;
-        _accountNumberRepository = accountNumberRepository;
-        _logger = logger;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -26,7 +15,7 @@ public class PaymentMethodsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _paymentMethodRepository.Search(paginationParameters, cancellationToken);
+            var entity = await discountRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -46,7 +35,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -56,7 +45,7 @@ public class PaymentMethodsController : ControllerBase
     {
         try
         {
-            var result = await _paymentMethodRepository.GetByIdAsync(cancellationToken, id);
+            var result = await discountRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -71,7 +60,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -94,7 +83,7 @@ public class PaymentMethodsController : ControllerBase
             paymentMethod.AccountNumber = paymentMethod.AccountNumber.Trim();
 
             var repetitiveAccountNumber =
-                await _paymentMethodRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
+                await discountRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
             if (repetitiveAccountNumber != null)
                 return Ok(new ApiResult
                 {
@@ -105,12 +94,12 @@ public class PaymentMethodsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _paymentMethodRepository.AddAsync(paymentMethod, cancellationToken)
+                ReturnData = await discountRepository.AddAsync(paymentMethod, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -122,15 +111,15 @@ public class PaymentMethodsController : ControllerBase
         try
         {
             var repetitive =
-                await _paymentMethodRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
+                await discountRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
             if (repetitive != null && repetitive.Id != paymentMethod.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "شماره حساب تکراری است" }
                 });
-            if (repetitive != null) _paymentMethodRepository.Detach(repetitive);
-            await _paymentMethodRepository.UpdateAsync(paymentMethod, cancellationToken);
+            if (repetitive != null) discountRepository.Detach(repetitive);
+            await discountRepository.UpdateAsync(paymentMethod, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -138,7 +127,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -149,7 +138,7 @@ public class PaymentMethodsController : ControllerBase
     {
         try
         {
-            await _paymentMethodRepository.DeleteAsync(id, cancellationToken);
+            await discountRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -157,7 +146,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -170,12 +159,12 @@ public class PaymentMethodsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _accountNumberRepository.GetAll(cancellationToken)
+                ReturnData = await accountNumberRepository.GetAll(cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -186,7 +175,7 @@ public class PaymentMethodsController : ControllerBase
     {
         try
         {
-            var result = await _accountNumberRepository.GetByAccountNumberAndBankCode(key, cancellationToken);
+            var result = await accountNumberRepository.GetByAccountNumberAndBankCode(key, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -201,7 +190,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -212,7 +201,7 @@ public class PaymentMethodsController : ControllerBase
     {
         try
         {
-            var paymentMethods = (await _accountNumberRepository.GetAll(cancellationToken))!.Select(x =>
+            var paymentMethods = (await accountNumberRepository.GetAll(cancellationToken))!.Select(x =>
                 new PaymentMethod
                 {
                     AccountNumber = x.Account_N,
@@ -220,7 +209,7 @@ public class PaymentMethodsController : ControllerBase
                     BrunchName = x.Branch_Name,
                     BankName = x.Branch_Name
                 });
-            var result = await _paymentMethodRepository.AddAll(paymentMethods, cancellationToken);
+            var result = await discountRepository.AddAll(paymentMethods, cancellationToken);
             if (result == 0)
                 return Ok(new ApiResult
                 {
@@ -235,7 +224,7 @@ public class PaymentMethodsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

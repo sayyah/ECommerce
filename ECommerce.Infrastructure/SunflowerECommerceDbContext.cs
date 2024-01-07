@@ -8,19 +8,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace ECommerce.Infrastructure.DataContext;
 
-public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int>
+public class SunflowerECommerceDbContext(DbContextOptions<SunflowerECommerceDbContext> options,
+        IDataProtectionProvider dataProtectionProvider, IConfiguration configRoot)
+    : IdentityDbContext<User, UserRole, int>(options)
 {
-    private readonly IConfiguration _configRoot;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
-
-    public SunflowerECommerceDbContext(DbContextOptions<SunflowerECommerceDbContext> options,
-        IDataProtectionProvider dataProtectionProvider, IConfiguration configRoot) : base(options)
-    {
-        _dataProtectionProvider = dataProtectionProvider;
-        _configRoot = configRoot;
-    }
-
-
     public virtual DbSet<BlogAuthor> BlogAuthors { get; set; }
     public virtual DbSet<BlogCategory> BlogCategories { get; set; }
     public virtual DbSet<BlogComment> BlogComments { get; set; }
@@ -651,7 +642,7 @@ public class SunflowerECommerceDbContext : IdentityDbContext<User, UserRole, int
         modelBuilder.ConfigureIdentityTableName();
         modelBuilder.AddSequentialGuidForIdConvention();
         //modelBuilder.AddPluralizingTableNameConvention();
-        modelBuilder.AddColumnProtector(_dataProtectionProvider, _configRoot);
+        modelBuilder.AddColumnProtector(dataProtectionProvider, configRoot);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

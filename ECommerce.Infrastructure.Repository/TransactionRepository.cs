@@ -1,22 +1,12 @@
-﻿using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
-using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class TransactionRepository : AsyncRepository<Transaction>, ITransactionRepository
+public class TransactionRepository(SunflowerECommerceDbContext context) : AsyncRepository<Transaction>(context),
+    ITransactionRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public TransactionRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<PagedList<Transaction>> Search(TransactionFiltreViewModel transactionFiltreViewModel,
         CancellationToken cancellationToken)
     {
-        var query = _context.Transactions
+        var query = context.Transactions
             .Where(x => x.User.UserName.Contains(transactionFiltreViewModel.PaginationParameters.Search))
             .Include(d => d.PaymentMethod)
             .Include(x => x.User)

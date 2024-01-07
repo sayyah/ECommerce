@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Users;
 
-public class EditModel : PageModel
+public class EditModel(IUserService userService) : PageModel
 {
-    private readonly IUserService _userService;
-
-    public EditModel(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [BindProperty] public User User { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _userService.GetById(id);
+        var result = await userService.GetById(id);
         User = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var resultUser = await _userService.GetById(User.Id);
+            var resultUser = await userService.GetById(User.Id);
             var editUser = new User();
             if (resultUser.Code == ServiceCode.Success) editUser = resultUser.ReturnData;
             editUser.UserName = User.UserName;
@@ -37,7 +30,7 @@ public class EditModel : PageModel
             editUser.PhoneNumber = User.PhoneNumber;
             editUser.State = User.State;
             editUser.IsActive = User.IsActive;
-            var result = await _userService.Update(editUser);
+            var result = await userService.Update(editUser);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

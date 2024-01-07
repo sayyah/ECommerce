@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Departments;
 
-public class CreateModel : PageModel
+public class CreateModel(IDepartmentService departmentService) : PageModel
 {
-    private readonly IDepartmentService _departmentService;
-
-    public CreateModel(IDepartmentService departmentService)
-    {
-        _departmentService = departmentService;
-    }
-
     [BindProperty] public Department Department { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _departmentService.Add(Department);
+            var result = await departmentService.Add(Department);
             if (result.Code == 0)
                 return RedirectToPage("/Departments/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

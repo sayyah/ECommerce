@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class StateService : EntityService<State>, IStateService
+public class StateService(IHttpService http) : EntityService<State>(http), IStateService
 {
     private const string Url = "api/States";
-    private readonly IHttpService _http;
     private List<State> _states;
-
-    public StateService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<State>>> GetAll()
     {
@@ -69,7 +63,7 @@ public class StateService : EntityService<State>, IStateService
         //var result = await Delete(Url, id);
         //_states = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _states = null;
@@ -87,7 +81,7 @@ public class StateService : EntityService<State>, IStateService
 
     public async Task<ServiceResult<State>> GetById(int id)
     {
-        var result = await _http.GetAsync<State>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<State>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

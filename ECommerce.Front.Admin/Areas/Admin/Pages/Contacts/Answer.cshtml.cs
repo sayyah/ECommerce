@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Contacts;
 
-public class AnswerModel : PageModel
+public class AnswerModel(IContactService contactService) : PageModel
 {
-    private readonly IContactService _contactService;
-
-    public AnswerModel(IContactService contactService)
-    {
-        _contactService = contactService;
-    }
-
     [BindProperty] public Contact Contact { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -28,7 +21,7 @@ public class AnswerModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _contactService.Edit(Contact);
+            var result = await contactService.Edit(Contact);
             if (result.Code == 0)
                 return RedirectToPage("/Contacts/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
@@ -44,7 +37,7 @@ public class AnswerModel : PageModel
 
     private async Task<ServiceResult<Contact>> Initial(int id)
     {
-        var result = await _contactService.GetById(id);
+        var result = await contactService.GetById(id);
         if (result.Code > 0)
             return new ServiceResult<Contact>
             {

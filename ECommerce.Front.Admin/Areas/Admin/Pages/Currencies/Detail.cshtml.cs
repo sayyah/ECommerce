@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Currencies;
 
-public class DetailModel : PageModel
+public class DetailModel(ICurrencyService currencyService) : PageModel
 {
-    private readonly ICurrencyService _currencyService;
-
-    public DetailModel(ICurrencyService currencyService)
-    {
-        _currencyService = currencyService;
-    }
-
     public Currency Currency { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _currencyService.GetById(id);
+        var result = await currencyService.GetById(id);
         if (result.Code == 0)
         {
             Currency = result.ReturnData;

@@ -4,31 +4,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
-public class PriceModel : PageModel
-{
-    private readonly IColorService _colorService;
-    private readonly ICurrencyService _currencyService;
-    private readonly IHolooArticleService _holooArticleService;
-    private readonly IHolooMGroupService _holooMGroupService;
-    private readonly IHolooSGroupService _holooSGroupService;
-    private readonly IPriceService _priceService;
-    private readonly ISizeService _sizeService;
-    private readonly IUnitService _unitService;
-
-    public PriceModel(IPriceService priceService, IUnitService unitService, ISizeService sizeService,
+public class PriceModel(IPriceService priceService, IUnitService unitService, ISizeService sizeService,
         IColorService colorService, ICurrencyService currencyService, IHolooMGroupService holooMGroupService,
         IHolooSGroupService holooSGroupService, IHolooArticleService holooArticleService)
-    {
-        _priceService = priceService;
-        _unitService = unitService;
-        _sizeService = sizeService;
-        _colorService = colorService;
-        _currencyService = currencyService;
-        _holooMGroupService = holooMGroupService;
-        _holooSGroupService = holooSGroupService;
-        _holooArticleService = holooArticleService;
-    }
-
+    : PageModel
+{
     public SelectList Units { get; set; }
     public SelectList Sizes { get; set; }
     public SelectList Colors { get; set; }
@@ -57,9 +37,9 @@ public class PriceModel : PageModel
         {
             ServiceResult result;
             if (Price.Id > 0)
-                result = await _priceService.Edit(Price);
+                result = await priceService.Edit(Price);
             else
-                result = await _priceService.Add(Price);
+                result = await priceService.Add(Price);
             if (result.Code == 0)
                 return RedirectToPage("/Products/Price",
                     new
@@ -77,7 +57,7 @@ public class PriceModel : PageModel
 
     public async Task<IActionResult> OnPostDelete(int id, int productId)
     {
-        var result = await _priceService.Delete(id);
+        var result = await priceService.Delete(id);
         if (result.Code == 0)
             return RedirectToPage("/Products/Price",
                 new { area = "Admin", id = productId, message = result.Message, code = result.Code.ToString() });
@@ -96,7 +76,7 @@ public class PriceModel : PageModel
 
     public async Task<JsonResult> OnGetReturnSGroup(string mCode)
     {
-        var result = await _holooSGroupService.Load(mCode);
+        var result = await holooSGroupService.Load(mCode);
         if (result.Code == ServiceCode.Success) return new JsonResult(result.ReturnData);
 
         return new JsonResult(new List<HolooSGroup>());
@@ -104,7 +84,7 @@ public class PriceModel : PageModel
 
     public async Task<JsonResult> OnGetReturnArticle(string code)
     {
-        var result = await _holooArticleService.Load(code);
+        var result = await holooArticleService.Load(code);
         if (result.Code == ServiceCode.Success) return new JsonResult(result.ReturnData);
 
         return new JsonResult(new List<Product>());
@@ -114,23 +94,23 @@ public class PriceModel : PageModel
         string message = null, string code = null)
     {
         Price.ProductId = productId;
-        var units = (await _unitService.Load()).ReturnData;
+        var units = (await unitService.Load()).ReturnData;
         Units = new SelectList(units, nameof(Unit.Id), nameof(Unit.Name));
 
-        var sizes = (await _sizeService.Load()).ReturnData;
+        var sizes = (await sizeService.Load()).ReturnData;
         Sizes = new SelectList(sizes, nameof(Size.Id), nameof(Size.Name));
 
-        var colors = (await _colorService.Load()).ReturnData;
+        var colors = (await colorService.Load()).ReturnData;
         Colors = new SelectList(colors, nameof(Color.Id), nameof(Color.Name));
 
-        var currencies = (await _currencyService.Load()).ReturnData;
+        var currencies = (await currencyService.Load()).ReturnData;
         Currencies = new SelectList(currencies, nameof(Currency.Id), nameof(Currency.Name));
 
-        var result = await _priceService.Load(productId.ToString(), pageNumber, pageSize);
+        var result = await priceService.Load(productId.ToString(), pageNumber, pageSize);
         if (result.Code == ServiceCode.Success) Prices = result;
 
         HolooMGroups.Add(new HolooMGroup { M_groupname = "انتخاب گروه اصلی" });
-        HolooMGroups.AddRange((await _holooMGroupService.Load()).ReturnData);
+        HolooMGroups.AddRange((await holooMGroupService.Load()).ReturnData);
         HolooSGroups.Add(new HolooSGroup { S_groupname = "ابتدا گروه اصلی را انتخاب کنید" });
         HolooArticle.Add(new Product { Name = "ابتدا گروه فرعی را انتخاب کنید" });
     }

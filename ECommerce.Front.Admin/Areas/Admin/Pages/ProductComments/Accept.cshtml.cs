@@ -2,16 +2,10 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductComments;
 
-public class AcceptModel : PageModel
+public class AcceptModel(IProductCommentService productCommentService, IProductService productService)
+    : PageModel
 {
-    private readonly IProductCommentService _productComment;
-    private readonly IProductService _productService;
-
-    public AcceptModel(IProductCommentService productCommentService, IProductService productService)
-    {
-        _productComment = productCommentService;
-        _productService = productService;
-    }
+    private readonly IProductService _productService = productService;
 
     [BindProperty] public ProductComment ProductComment { get; set; }
     [TempData] public string? Message { get; set; }
@@ -21,7 +15,7 @@ public class AcceptModel : PageModel
     {
         Message = message;
         Code = code;
-        var ProductCommentResult = await _productComment.GetById(id);
+        var ProductCommentResult = await productCommentService.GetById(id);
         ProductComment = ProductCommentResult.ReturnData;
     }
 
@@ -30,7 +24,7 @@ public class AcceptModel : PageModel
         try
         {
             if (ProductComment.Answer!.Text == null && ProductComment.AnswerId == null) ProductComment.Answer = null;
-            var result = await _productComment.Accept(ProductComment);
+            var result = await productCommentService.Accept(ProductComment);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

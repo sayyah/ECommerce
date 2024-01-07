@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IBlogService blogService) : PageModel
 {
-    private readonly IBlogService _blogService;
-
-    public DeleteModel(IBlogService blogService)
-    {
-        _blogService = blogService;
-    }
-
     public Blog Blog { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _blogService.GetById(id);
+        var result = await blogService.GetById(id);
         if (result.Code == 0)
         {
             Blog = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _blogService.Delete(id);
+            var result = await blogService.Delete(id);
             return RedirectToPage("/Blogs/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

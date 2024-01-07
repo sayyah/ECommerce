@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
-public class IndexModel : PageModel
+public class IndexModel(IKeywordService keywordService) : PageModel
 {
-    private readonly IKeywordService _keywordService;
-
-    public IndexModel(IKeywordService keywordService)
-    {
-        _keywordService = keywordService;
-    }
-
     public ServiceResult<List<Keyword>> Keywords { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _keywordService.Load(search, pageNumber, pageSize);
+        var result = await keywordService.Load(search, pageNumber, pageSize);
 
         if (result.Code == ServiceCode.Success)
         {

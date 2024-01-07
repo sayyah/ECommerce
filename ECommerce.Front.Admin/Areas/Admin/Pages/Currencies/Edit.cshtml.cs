@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Currencies;
 
-public class EditModel : PageModel
+public class EditModel(ICurrencyService currencyService) : PageModel
 {
-    private readonly ICurrencyService _currencyService;
-
-    public EditModel(ICurrencyService currencyService)
-    {
-        _currencyService = currencyService;
-    }
-
     [BindProperty] public Currency Currency { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _currencyService.GetById(id);
+        var result = await currencyService.GetById(id);
         Currency = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _currencyService.Edit(Currency);
+            var result = await currencyService.Edit(Currency);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

@@ -1,14 +1,8 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class HolooUnitRepository : HolooRepository<HolooUnit>, IHolooUnitRepository
+public class HolooUnitRepository(HolooDbContext context) : HolooRepository<HolooUnit>(context), IHolooUnitRepository
 {
-    private readonly HolooDbContext _context;
-
-    public HolooUnitRepository(HolooDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly HolooDbContext _context = context;
 }

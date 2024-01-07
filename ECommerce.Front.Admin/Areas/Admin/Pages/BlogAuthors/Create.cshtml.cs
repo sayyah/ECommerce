@@ -4,19 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogAuthors;
 
-public class CreateModel : PageModel
+public class CreateModel(IBlogAuthorService blogAuthorService, IImageService imageService, IHostEnvironment environment)
+    : PageModel
 {
-    private readonly IBlogAuthorService _blogAuthorService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-
-    public CreateModel(IBlogAuthorService blogAuthorService, IImageService imageService, IHostEnvironment environment)
-    {
-        _blogAuthorService = blogAuthorService;
-        _imageService = imageService;
-        _environment = environment;
-    }
-
     [BindProperty] public BlogAuthor BlogAuthor { get; set; }
 
     [BindProperty] public IFormFile Upload { get; set; }
@@ -38,7 +28,7 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        var fileName = (await _imageService.Upload(Upload, "Images/BlogAuthors", _environment.ContentRootPath))
+        var fileName = (await imageService.Upload(Upload, "Images/BlogAuthors", environment.ContentRootPath))
             .ReturnData;
         if (fileName == null)
         {
@@ -50,7 +40,7 @@ public class CreateModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _blogAuthorService.Add(BlogAuthor);
+            var result = await blogAuthorService.Add(BlogAuthor);
             if (result.Code == 0)
                 return RedirectToPage("/BlogAuthors/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

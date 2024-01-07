@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Units;
 
-public class EditModel : PageModel
+public class EditModel(IUnitService unitService) : PageModel
 {
-    private readonly IUnitService _unitService;
-
-    public EditModel(IUnitService unitService)
-    {
-        _unitService = unitService;
-    }
-
     [BindProperty] public Unit Unit { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _unitService.GetById(id);
+        var result = await unitService.GetById(id);
         Unit = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _unitService.Edit(Unit);
+            var result = await unitService.Edit(Unit);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

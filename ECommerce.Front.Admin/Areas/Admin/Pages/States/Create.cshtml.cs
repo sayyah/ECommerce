@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.States;
 
-public class CreateModel : PageModel
+public class CreateModel(IStateService stateService) : PageModel
 {
-    private readonly IStateService _stateService;
-
-    public CreateModel(IStateService stateService)
-    {
-        _stateService = stateService;
-    }
-
     [BindProperty] public State State { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _stateService.Add(State);
+            var result = await stateService.Add(State);
             if (result.Code == 0)
                 return RedirectToPage("/States/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

@@ -1,14 +1,8 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BrandService : EntityService<Brand>, IBrandService
+public class BrandService(IHttpService http) : EntityService<Brand>(http), IBrandService
 {
     private const string Url = "api/Brands";
-    private readonly IHttpService _http;
-
-    public BrandService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Brand>>> Load()
     {
@@ -57,7 +51,7 @@ public class BrandService : EntityService<Brand>, IBrandService
     {
         //var result = await Delete(Url, id);
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -70,7 +64,7 @@ public class BrandService : EntityService<Brand>, IBrandService
 
     public async Task<ServiceResult<Brand>> GetById(int id)
     {
-        var result = await _http.GetAsync<Brand>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Brand>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

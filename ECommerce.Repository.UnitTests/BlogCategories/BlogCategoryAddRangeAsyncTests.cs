@@ -1,5 +1,4 @@
 using ECommerce.Domain.Entities;
-using ECommerce.Repository.UnitTests.Base;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;

@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Stores;
 
-public class CreateModel : PageModel
+public class CreateModel(IStoreService storeService) : PageModel
 {
-    private readonly IStoreService _storeService;
-
-    public CreateModel(IStoreService storeService)
-    {
-        _storeService = storeService;
-    }
-
     [BindProperty] public Store Store { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _storeService.Add(Store);
+            var result = await storeService.Add(Store);
             if (result.Code == 0)
                 return RedirectToPage("/Stores/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

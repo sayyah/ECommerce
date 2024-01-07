@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.States;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IStateService stateService) : PageModel
 {
-    private readonly IStateService _stateService;
-
-    public DeleteModel(IStateService stateService)
-    {
-        _stateService = stateService;
-    }
-
     public State State { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _stateService.GetById(id);
+        var result = await stateService.GetById(id);
         if (result.Code == 0)
         {
             State = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _stateService.Delete(id);
+            var result = await stateService.Delete(id);
             return RedirectToPage("/States/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

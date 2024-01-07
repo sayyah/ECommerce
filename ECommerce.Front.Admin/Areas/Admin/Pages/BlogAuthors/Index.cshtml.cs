@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogAuthors;
 
-public class IndexModel : PageModel
+public class IndexModel(IBlogAuthorService blogAuthorService) : PageModel
 {
-    private readonly IBlogAuthorService _blogAuthorService;
-
-    public IndexModel(IBlogAuthorService blogAuthorService)
-    {
-        _blogAuthorService = blogAuthorService;
-    }
-
     public ServiceResult<List<BlogAuthor>> BlogAuthors { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -20,7 +13,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _blogAuthorService.Load(search, pageNumber, pageSize);
+        var result = await blogAuthorService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

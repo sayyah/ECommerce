@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class DepartmentService : EntityService<Department>, IDepartmentService
+public class DepartmentService(IHttpService http) : EntityService<Department>(http), IDepartmentService
 {
     private const string Url = "api/Departments";
-    private readonly IHttpService _http;
     private List<Department> _departments;
-
-    public DepartmentService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Department>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -61,7 +55,7 @@ public class DepartmentService : EntityService<Department>, IDepartmentService
         //var result = await Delete(Url, id);
         //_departments = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _departments = null;
@@ -79,7 +73,7 @@ public class DepartmentService : EntityService<Department>, IDepartmentService
 
     public async Task<ServiceResult<Department>> GetById(int id)
     {
-        var result = await _http.GetAsync<Department>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Department>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

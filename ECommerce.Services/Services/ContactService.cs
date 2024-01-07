@@ -1,14 +1,8 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ContactService : EntityService<Contact>, IContactService
+public class ContactService(IHttpService http) : EntityService<Contact>(http), IContactService
 {
     private const string Url = "api/Contacts";
-    private readonly IHttpService _http;
-
-    public ContactService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Contact>>> GetAll(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -33,7 +27,7 @@ public class ContactService : EntityService<Contact>, IContactService
     {
         //var result = await Delete(Url, id);
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -46,19 +40,19 @@ public class ContactService : EntityService<Contact>, IContactService
 
     public async Task<ServiceResult<Contact>> GetById(int id)
     {
-        var result = await _http.GetAsync<Contact>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Contact>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
     public async Task<ServiceResult<Contact?>> GetByName(string name)
     {
-        var result = await _http.GetAsync<Contact>(Url, $"GetByName?name={name}");
+        var result = await http.GetAsync<Contact>(Url, $"GetByName?name={name}");
         return Return(result);
     }
 
     public async Task<ServiceResult<Contact?>> GetByEmail(string email)
     {
-        var result = await _http.GetAsync<Contact>(Url, $"GetByEmail?email={email}");
+        var result = await http.GetAsync<Contact>(Url, $"GetByEmail?email={email}");
         return Return(result);
     }
 

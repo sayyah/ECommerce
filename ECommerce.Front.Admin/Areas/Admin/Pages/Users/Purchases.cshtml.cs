@@ -2,17 +2,9 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Users;
 
-public class PurchaseModel : PageModel
+public class PurchaseModel(IPurchaseOrderService purchaseOrderService, IUserService userService)
+    : PageModel
 {
-    private readonly IPurchaseOrderService _purchaseOrderService;
-    private readonly IUserService _userService;
-
-    public PurchaseModel(IPurchaseOrderService purchaseOrderService, IUserService userService)
-    {
-        _purchaseOrderService = purchaseOrderService;
-        _userService = userService;
-    }
-
     [BindProperty] public ServiceResult<List<PurchaseListViewModel>> PurchaseOrders { get; set; } = new();
     [BindProperty] public decimal? MaximumAmount { get; set; } = null;
     [BindProperty] public decimal? MinimumAmount { get; set; } = null;
@@ -36,7 +28,7 @@ public class PurchaseModel : PageModel
         Message = message;
         Code = code;
         /*  Users = await _userService.UserList(pageSize: 200); */ // It should be corrected in the next task 
-        var result = await _purchaseOrderService.PurchaseList(userId, userName, pageNumber, pageSize,
+        var result = await purchaseOrderService.PurchaseList(userId, userName, pageNumber, pageSize,
             isPaied: isPaid, maximumAmount: maximumAmount, minimumAmount: minimumAmount, statusId: (int)status,
             purchaseSort: (int)purchaseSort);
         if (result.Code == ServiceCode.Success)
@@ -85,13 +77,13 @@ public class PurchaseModel : PageModel
 
     public async Task<JsonResult> OnGetEditPurchaseStatus(int id, Status status)
     {
-        var result = await _purchaseOrderService.SetStatusById(id, status);
+        var result = await purchaseOrderService.SetStatusById(id, status);
         return new JsonResult(result);
     }
 
     public async Task<JsonResult> OnGetUserListBySearch(string search)
     {
-        var result = await _userService.UserList(search);
+        var result = await userService.UserList(search);
         List<string> users = result.ReturnData.Select(x => x.Username).ToList();
         return new JsonResult(users);
     }

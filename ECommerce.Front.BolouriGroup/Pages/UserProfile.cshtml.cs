@@ -2,23 +2,10 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class UserProfileModel : PageModel
-{
-    private readonly ICityService _cityService;
-    private readonly IPurchaseOrderService _purchaseOrderService;
-    private readonly IStateService _stateService;
-    private readonly IUserService _userService;
-
-    public UserProfileModel(ICityService cityService, IStateService stateService, IUserService userService,
+public class UserProfileModel(ICityService cityService, IStateService stateService, IUserService userService,
         IPurchaseOrderService purchaseOrderService)
-    {
-        _stateService = stateService;
-        _userService = userService;
-        _purchaseOrderService = purchaseOrderService;
-        _cityService = cityService;
-    }
-
-
+    : PageModel
+{
     [BindProperty] public User UserInformation { get; set; }
     public List<PurchaseListViewModel> PurchaseOrders { get; set; }
     public ServiceResult<List<State>> StateList { get; set; }
@@ -33,7 +20,7 @@ public class UserProfileModel : PageModel
 
     public async Task<IActionResult> OnPostEdit()
     {
-        var resultUser = await _userService.GetUser();
+        var resultUser = await userService.GetUser();
         var editUser = new User();
         if (resultUser.Code == ServiceCode.Success) editUser = resultUser.ReturnData;
 
@@ -45,7 +32,7 @@ public class UserProfileModel : PageModel
         editUser.Email = UserInformation.Email;
         editUser.CompanyName = UserInformation.CompanyName;
         editUser.Mobile = UserInformation.Mobile;
-        var result = await _userService.Update(editUser);
+        var result = await userService.Update(editUser);
         Message = result.Message;
         Code = result.Code.ToString();
         await Initial();
@@ -54,18 +41,18 @@ public class UserProfileModel : PageModel
 
     public async Task<IActionResult> OnGetChangePassword(string oldPass, string newPass, string newConPass)
     {
-        var result = await _userService.ChangePassword(oldPass, newPass, newConPass);
+        var result = await userService.ChangePassword(oldPass, newPass, newConPass);
         return new JsonResult(result);
     }
 
     private async Task Initial()
     {
-        var resultUser = await _userService.GetUser();
+        var resultUser = await userService.GetUser();
         if (resultUser.Code == ServiceCode.Success) UserInformation = resultUser.ReturnData;
-        var resultPurchaseOrder = await _purchaseOrderService.PurchaseList(UserInformation.Id);
+        var resultPurchaseOrder = await purchaseOrderService.PurchaseList(UserInformation.Id);
         if (resultPurchaseOrder.Code == ServiceCode.Success) PurchaseOrders = resultPurchaseOrder.ReturnData;
-        StateList = await _stateService.Load();
-        var cityServiceResponse = await _cityService.LoadAllCity();
+        StateList = await stateService.Load();
+        var cityServiceResponse = await cityService.LoadAllCity();
         CityList = cityServiceResponse.ReturnData;
     }
 

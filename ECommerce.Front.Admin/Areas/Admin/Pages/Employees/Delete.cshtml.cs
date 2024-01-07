@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IEmployeeService employeeService) : PageModel
 {
-    private readonly IEmployeeService _employeeService;
-
-    public DeleteModel(IEmployeeService employeeService)
-    {
-        _employeeService = employeeService;
-    }
-
     public Employee Employee { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _employeeService.GetById(id);
+        var result = await employeeService.GetById(id);
         if (result.Code == 0)
         {
             Employee = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _employeeService.Delete(id);
+            var result = await employeeService.Delete(id);
             return RedirectToPage("/Employees/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }
