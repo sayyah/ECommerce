@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.PaymentMethods;
 
-public class DetailModel : PageModel
+public class DetailModel(IPaymentMethodService paymentMethodService) : PageModel
 {
-    private readonly IPaymentMethodService _paymentMethodService;
-
-    public DetailModel(IPaymentMethodService paymentMethodService)
-    {
-        _paymentMethodService = paymentMethodService;
-    }
-
     public PaymentMethod PaymentMethod { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _paymentMethodService.GetById(id);
+        var result = await paymentMethodService.GetById(id);
         if (result.Code == 0)
         {
             PaymentMethod = result.ReturnData;

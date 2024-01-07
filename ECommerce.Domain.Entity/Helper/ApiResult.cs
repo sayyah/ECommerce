@@ -3,18 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.Domain.Entities.Helper;
 
-public class CookieData : ActionResult
+public class CookieData(string key, int value, int days = 30) : ActionResult
 {
-    public CookieData(string key, int value, int days = 30)
-    {
-        Key = key;
-        Value = value;
-        Days = days;
-    }
-
-    public string Key { get; set; }
-    public int Value { get; set; }
-    public int Days { get; set; }
+    public string Key { get; set; } = key;
+    public int Value { get; set; } = value;
+    public int Days { get; set; } = days;
 }
 
 public class ServiceResult : ActionResult

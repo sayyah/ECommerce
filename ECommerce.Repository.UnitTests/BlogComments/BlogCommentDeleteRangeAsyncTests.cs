@@ -1,5 +1,4 @@
 using ECommerce.Domain.Entities;
-using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.BlogComments;

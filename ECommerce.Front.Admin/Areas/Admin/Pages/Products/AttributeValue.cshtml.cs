@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
-public class AttributeValueModel : PageModel
+public class AttributeValueModel(IProductAttributeGroupService attributeGroupService) : PageModel
 {
-    private readonly IProductAttributeGroupService _attributeGroupService;
-
-    public AttributeValueModel(IProductAttributeGroupService attributeGroupService)
-    {
-        _attributeGroupService = attributeGroupService;
-    }
-
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
@@ -23,13 +16,13 @@ public class AttributeValueModel : PageModel
         Message = message;
         Code = code;
         ProductId = id;
-        var result = await _attributeGroupService.GetByProductId(id);
+        var result = await attributeGroupService.GetByProductId(id);
         if (result.Code == ServiceCode.Success) AttributeGroups = result.ReturnData;
     }
 
     public async Task<IActionResult> OnPost(List<ProductAttributeGroup> attributeGroups)
     {
-        var result = await _attributeGroupService.AddWithAttributeValue(attributeGroups, ProductId);
+        var result = await attributeGroupService.AddWithAttributeValue(attributeGroups, ProductId);
         return RedirectToAction("/Products/AttributeValue", new { id = ProductId });
     }
 }

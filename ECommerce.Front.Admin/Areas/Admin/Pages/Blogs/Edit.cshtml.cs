@@ -4,29 +4,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
-public class EditModel : PageModel
-{
-    private readonly IBlogAuthorService _blogAuthorService;
-    private readonly IBlogCategoryService _blogCategoryService;
-    private readonly IBlogService _blogService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-    private readonly IKeywordService _keywordService;
-    private readonly ITagService _tagService;
-
-    public EditModel(IBlogService blogService, IImageService imageService, ITagService tagService,
+public class EditModel(IBlogService blogService, IImageService imageService, ITagService tagService,
         IKeywordService keywordService, IHostEnvironment environment, IBlogAuthorService blogAuthorService,
         IBlogCategoryService blogCategoryService)
-    {
-        _blogService = blogService;
-        _environment = environment;
-        _imageService = imageService;
-        _keywordService = keywordService;
-        _tagService = tagService;
-        _blogAuthorService = blogAuthorService;
-        _blogCategoryService = blogCategoryService;
-    }
-
+    : PageModel
+{
     [BindProperty] public BlogViewModel Blog { get; set; }
     [BindProperty] public IFormFile? Upload { get; set; }
     [TempData] public string Message { get; set; }
@@ -55,7 +37,7 @@ public class EditModel : PageModel
             return Page();
         }
 
-        var _image = await _imageService.GetImagesByBlogId(Blog.Id);
+        var _image = await imageService.GetImagesByBlogId(Blog.Id);
         Blog.Image = _image.ReturnData;
 
         if (Upload == null && Blog.Image.Id == 0)
@@ -77,15 +59,15 @@ public class EditModel : PageModel
 
         if (Upload != null && Blog.Image.Id != 0)
         {
-            await _imageService.Delete($"Images/Blogs/{Blog.Image?.Name}", Blog.Image.Id, _environment.ContentRootPath);
-            _image = await _imageService.GetImagesByBlogId(Blog.Id);
+            await imageService.Delete($"Images/Blogs/{Blog.Image?.Name}", Blog.Image.Id, environment.ContentRootPath);
+            _image = await imageService.GetImagesByBlogId(Blog.Id);
             Blog.Image = _image.ReturnData;
         }
 
         if (Upload != null && Blog.Image.Id == 0)
         {
-            var resultImage = await _imageService.Add(Upload, Blog.Id, "Images/Blogs",
-                _environment.ContentRootPath);
+            var resultImage = await imageService.Add(Upload, Blog.Id, "Images/Blogs",
+                environment.ContentRootPath);
             if (resultImage.Code > 0)
             {
                 Message = resultImage.Message;
@@ -93,14 +75,14 @@ public class EditModel : PageModel
                 ModelState.AddModelError("", resultImage.Message);
             }
 
-            _image = await _imageService.GetImagesByBlogId(Blog.Id);
+            _image = await imageService.GetImagesByBlogId(Blog.Id);
             Blog.Image = _image.ReturnData;
         }
 
 
         if (ModelState.IsValid)
         {
-            var result = await _blogService.Edit(Blog);
+            var result = await blogService.Edit(Blog);
             if (result.Code == 0)
                 return RedirectToPage("/Blogs/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
@@ -116,7 +98,7 @@ public class EditModel : PageModel
 
     private async Task<ServiceResult<BlogViewModel>> Initial(int id)
     {
-        var result = await _blogService.GetById(id);
+        var result = await blogService.GetById(id);
         if (result.Code > 0)
             return new ServiceResult<BlogViewModel>
             {
@@ -125,10 +107,10 @@ public class EditModel : PageModel
             };
         Blog = result.ReturnData;
 
-        Tags = (await _tagService.GetAll()).ReturnData;
-        Keywords = (await _keywordService.GetAll()).ReturnData;
-        Categories = (await _blogCategoryService.GetAll()).ReturnData;
-        BlogAuthors = (await _blogAuthorService.GetAll()).ReturnData;
+        Tags = (await tagService.GetAll()).ReturnData;
+        Keywords = (await keywordService.GetAll()).ReturnData;
+        Categories = (await blogCategoryService.GetAll()).ReturnData;
+        BlogAuthors = (await blogAuthorService.GetAll()).ReturnData;
         //BlogAuthors = new SelectList(blogAuthors, nameof(BlogAuthor.Id), nameof(BlogAuthor.Name));
 
 
@@ -137,7 +119,7 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnPostDeleteImage(string imageName, int id, int blogId)
     {
-        var result = await _imageService.Delete($"Images/Blogs/{imageName}", id, _environment.ContentRootPath);
+        var result = await imageService.Delete($"Images/Blogs/{imageName}", id, environment.ContentRootPath);
 
         if (result.Code == 0)
             //return RedirectToPage("/Blogs/Edit",

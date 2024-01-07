@@ -2,18 +2,10 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class BlogModel : PageModel
+public class BlogModel(IBlogService blogService, IBlogCategoryService blogCategoryService, ITagService tagService)
+    : PageModel
 {
-    private readonly IBlogCategoryService _blogCategoryService;
-    private readonly IBlogService _blogService;
-    private readonly ITagService _tagService;
-
-    public BlogModel(IBlogService blogService, IBlogCategoryService blogCategoryService, ITagService tagService)
-    {
-        _blogService = blogService;
-        _blogCategoryService = blogCategoryService;
-        _tagService = tagService;
-    }
+    private readonly IBlogCategoryService _blogCategoryService = blogCategoryService;
 
     public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
     [BindProperty] public ServiceResult<List<Tag>> Tags { get; set; }
@@ -24,16 +16,16 @@ public class BlogModel : PageModel
         string message = null, string code = null)
     {
         if (int.TryParse(blogCategoryId, out var intResult))
-            Blogs = await _blogService.TopBlogs(blogCategoryId, search, pageNumber, pageSize);
+            Blogs = await blogService.TopBlogs(blogCategoryId, search, pageNumber, pageSize);
         else
-            Blogs = await _blogService.TopBlogsByTagText(null, blogCategoryId, pageNumber, pageSize);
+            Blogs = await blogService.TopBlogsByTagText(null, blogCategoryId, pageNumber, pageSize);
 
-        Tags = await _tagService.GetAllBlogTags();
+        Tags = await tagService.GetAllBlogTags();
     }
 
     public async Task OnPost(string blogCategoryId, string search)
     {
-        Blogs = await _blogService.TopBlogs(blogCategoryId, search, 1, 3);
-        Tags = await _tagService.GetAllBlogTags();
+        Blogs = await blogService.TopBlogs(blogCategoryId, search, 1, 3);
+        Tags = await tagService.GetAllBlogTags();
     }
 }

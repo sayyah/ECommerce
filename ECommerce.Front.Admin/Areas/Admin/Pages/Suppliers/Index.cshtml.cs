@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Suppliers;
 
-public class IndexModel : PageModel
+public class IndexModel(ISupplierService supplierService) : PageModel
 {
-    private readonly ISupplierService _supplierService;
-
-    public IndexModel(ISupplierService supplierService)
-    {
-        _supplierService = supplierService;
-    }
-
     public ServiceResult<List<Supplier>> Suppliers { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _supplierService.Load(search, pageNumber, pageSize);
+        var result = await supplierService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

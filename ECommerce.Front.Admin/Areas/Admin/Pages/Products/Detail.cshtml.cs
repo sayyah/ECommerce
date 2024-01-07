@@ -3,22 +3,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
-public class DetailModel : PageModel
+public class DetailModel(IProductService productService) : PageModel
 {
-    private readonly IProductService _productService;
-
-
-    public DetailModel(IProductService productService)
-    {
-        _productService = productService;
-    }
-
     [BindProperty] public Product Product { get; set; }
     [BindProperty] public IFormFile Upload { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _productService.GetById(id);
+        var result = await productService.GetById(id);
         if (result.Code == 0)
         {
             Product = result.ReturnData;

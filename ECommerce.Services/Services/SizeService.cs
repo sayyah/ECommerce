@@ -1,16 +1,10 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class SizeService : EntityService<Size>, ISizeService
+public class SizeService(IHttpService http) : EntityService<Size>(http), ISizeService
 {
     private const string Url = "api/Sizes";
-    private readonly IHttpService _http;
     private List<Size> _sizes;
 
-
-    public SizeService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Size>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -56,7 +50,7 @@ public class SizeService : EntityService<Size>, ISizeService
         //var result = await Delete(Url, id);
         //_sizes = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _sizes = null;
@@ -74,7 +68,7 @@ public class SizeService : EntityService<Size>, ISizeService
 
     public async Task<ServiceResult<Size>> GetById(int id)
     {
-        var result = await _http.GetAsync<Size>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Size>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

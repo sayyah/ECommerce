@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BlogCommentService : EntityService<BlogComment>, IBlogCommentService
+public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(http), IBlogCommentService
 {
     private const string Url = "api/BlogComments";
-    private readonly IHttpService _http;
     private List<BlogComment> _blogComments;
-
-    public BlogCommentService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<BlogComment>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -102,7 +96,7 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
         //var result = await Delete(Url, id);
         //_blogComments = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _blogComments = null;
@@ -120,7 +114,7 @@ public class BlogCommentService : EntityService<BlogComment>, IBlogCommentServic
 
     public async Task<ServiceResult<BlogComment>> GetById(int id)
     {
-        var result = await _http.GetAsync<BlogComment>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<BlogComment>(Url, $"GetById?id={id}");
         return Return(result);
     }
 

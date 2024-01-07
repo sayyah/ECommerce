@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
-public class DeleteModel : PageModel
+public class DeleteModel(ITagService tagService) : PageModel
 {
-    private readonly ITagService _tagService;
-
-    public DeleteModel(ITagService tagService)
-    {
-        _tagService = tagService;
-    }
-
     public Tag Tag { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _tagService.GetById(id);
+        var result = await tagService.GetById(id);
         if (result.Code == 0)
         {
             Tag = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _tagService.Delete(id);
+            var result = await tagService.Delete(id);
             return RedirectToPage("/Tags/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

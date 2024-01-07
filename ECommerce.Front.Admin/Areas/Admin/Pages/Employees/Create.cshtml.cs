@@ -3,17 +3,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 
-public class CreateModel : PageModel
+public class CreateModel(IEmployeeService employeeService, IDepartmentService departmentService)
+    : PageModel
 {
-    private readonly IDepartmentService _departmentService;
-    private readonly IEmployeeService _employeeService;
-
-    public CreateModel(IEmployeeService employeeService, IDepartmentService departmentService)
-    {
-        _employeeService = employeeService;
-        _departmentService = departmentService;
-    }
-
     [BindProperty] public Employee Employee { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -28,7 +20,7 @@ public class CreateModel : PageModel
     }
 
     private async Task Init() {
-        var departments = (await _departmentService.GetAll()).ReturnData;
+        var departments = (await departmentService.GetAll()).ReturnData;
         Departments = new SelectList(departments, nameof(Department.Id), nameof(Department.Title));
     }
 
@@ -37,7 +29,7 @@ public class CreateModel : PageModel
         await Init();
         if (ModelState.IsValid)
         {
-            var result = await _employeeService.Add(Employee);
+            var result = await employeeService.Add(Employee);
             if (result.Code == 0)
                 return RedirectToPage("/Employees/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

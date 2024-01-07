@@ -2,23 +2,12 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class ShopModel : PageModel
-{
-    private readonly IBrandService _brandService;
-    private readonly ICartService _cartService;
-    private readonly ICategoryService _categoryService;
-    private readonly IProductService _productService;
-    private readonly ITagService _tagService;
-
-    public ShopModel(ICategoryService categoryService, IProductService productService, IBrandService brandService,
+public class ShopModel(ICategoryService categoryService, IProductService productService, IBrandService brandService,
         ICartService cartService, ITagService tagService)
-    {
-        _categoryService = categoryService;
-        _productService = productService;
-        _brandService = brandService;
-        _cartService = cartService;
-        _tagService = tagService;
-    }
+    : PageModel
+{
+    private readonly ICartService _cartService = cartService;
+    private readonly ITagService _tagService = tagService;
 
     public ServiceResult<List<ProductIndexPageViewModel>> Products { get; set; }
     public ServiceResult<List<Tag>> Tags { get; set; }
@@ -51,7 +40,7 @@ public class ShopModel : PageModel
         var categoryId = "0";
         if (!string.IsNullOrEmpty(path))
         {
-            var resultCategory = await _categoryService.GetByUrl(path);
+            var resultCategory = await categoryService.GetByUrl(path);
             if (resultCategory.Code == ServiceCode.Success)
             {
                 categoryId = resultCategory.ReturnData.Id.ToString();
@@ -65,12 +54,12 @@ public class ShopModel : PageModel
         else if (!string.IsNullOrEmpty(search) && !search.Contains('='))
             searchExpression = $"Name={search}";
         else if (searchExpression.Contains("BrandId")) Search = "";
-        Products = await _productService.TopProducts(categoryId, searchExpression, pageNumber, pageSize, productSort,
+        Products = await productService.TopProducts(categoryId, searchExpression, pageNumber, pageSize, productSort,
             maxprice, minprice, IsCheckExist, true, tagText);
 
-        if (Products.Code == 0)
+        if (Products.Code == 0 && Products.PaginationDetails!= null)
         {
-            var brandResult = await _brandService.LoadDictionary();
+            var brandResult = await brandService.LoadDictionary();
             if (brandResult.Code == ServiceCode.Success) Brands = brandResult.ReturnData;
 
             Products.PaginationDetails.isCheckExist = isCheckExist;
@@ -123,14 +112,14 @@ public class ShopModel : PageModel
         else
             SearchText = $"Name={request.SearchText}";
         var resultSearchProducts =
-            await _productService.TopProducts("", SearchText, request.Page, request.QuantityPerPage);
+            await productService.TopProducts("", SearchText, request.Page, request.QuantityPerPage);
         Search = request.SearchText;
         return new JsonResult(resultSearchProducts.ReturnData);
     }
 
     public async Task<IActionResult> OnGetSearchCategory([FromQuery] Request request)
     {
-        var resultSearchCategories = await _categoryService.Search(request.SearchText);
+        var resultSearchCategories = await categoryService.Search(request.SearchText);
         foreach (var resultSearchCategory in resultSearchCategories.ReturnData)
             if (string.IsNullOrEmpty(resultSearchCategory.ImagePath))
                 resultSearchCategory.ImagePath = "/img/BlueLogo.webp";

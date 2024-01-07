@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Categories;
 
-public class IndexModel : PageModel
+public class IndexModel(ICategoryService categoryService) : PageModel
 {
-    private readonly ICategoryService _categoryService;
-
-    public IndexModel(ICategoryService categoryService)
-    {
-        _categoryService = categoryService;
-    }
-
     public ServiceResult<List<Category>> Categories { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _categoryService.Load(search, pageNumber, pageSize);
+        var result = await categoryService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

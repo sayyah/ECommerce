@@ -3,34 +3,23 @@
 [Route("api/[controller]/[action]")]
 [ApiController]
 [Authorize(Roles = "Client,Admin,SuperAdmin")]
-public class WishListsController : ControllerBase
-{
-    private readonly IHolooArticleRepository _articleRepository;
-    private readonly ILogger<WishListsController> _logger;
-    private readonly IWishListRepository _wishListRepository;
-
-    public WishListsController(
-        IWishListRepository wishListRepository,
+public class WishListsController(IWishListRepository wishListRepository,
         ILogger<WishListsController> logger,
         IHolooArticleRepository articleRepository)
-    {
-        _wishListRepository = wishListRepository;
-        _logger = logger;
-        _articleRepository = articleRepository;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _wishListRepository.GetByIdWithInclude(id, cancellationToken);
+            var result = await wishListRepository.GetByIdWithInclude(id, cancellationToken);
             var prices = result.Select(x => x.Price).ToList();
             var aCodeCs = prices.Select(x => x.ArticleCodeCustomer).ToList();
-            var holooArticle = await _articleRepository.GetHolooArticles(aCodeCs, cancellationToken);
+            var holooArticle = await articleRepository.GetHolooArticles(aCodeCs, cancellationToken);
             foreach (var wishListViewModel in result)
             {
-                var holooPrices = await _articleRepository.AddPrice(
+                var holooPrices = await articleRepository.AddPrice(
                     new List<Price> { wishListViewModel.Price },
                     holooArticle,
                     false,
@@ -45,7 +34,7 @@ public class WishListsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -62,7 +51,7 @@ public class WishListsController : ControllerBase
                 });
 
             var repetitiveWishList =
-                await _wishListRepository.GetByProductUser(wishList.PriceId, wishList.UserId, cancellationToken);
+                await wishListRepository.GetByProductUser(wishList.PriceId, wishList.UserId, cancellationToken);
             if (repetitiveWishList != null)
                 return Ok(new ApiResult
                 {
@@ -73,12 +62,12 @@ public class WishListsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _wishListRepository.AddAsync(wishList, cancellationToken)
+                ReturnData = await wishListRepository.AddAsync(wishList, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -89,7 +78,7 @@ public class WishListsController : ControllerBase
     {
         try
         {
-            await _wishListRepository.DeleteAsync(id, cancellationToken);
+            await wishListRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -97,7 +86,7 @@ public class WishListsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -108,16 +97,16 @@ public class WishListsController : ControllerBase
         try
         {
             var result =
-                await _wishListRepository.Where(x => x.UserId == wishList.UserId && x.PriceId == wishList.PriceId,
+                await wishListRepository.Where(x => x.UserId == wishList.UserId && x.PriceId == wishList.PriceId,
                     cancellationToken);
             if (result != null && result.ToList().Count == 0)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Success,
-                    ReturnData = await _wishListRepository.AddAsync(wishList, cancellationToken),
+                    ReturnData = await wishListRepository.AddAsync(wishList, cancellationToken),
                     Messages = new List<string> { "به لیست علاقه مندی ها اضافه شد" }
                 });
-            await _wishListRepository.DeleteAsync(result.FirstOrDefault().Id, cancellationToken);
+            await wishListRepository.DeleteAsync(result.FirstOrDefault().Id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -126,7 +115,7 @@ public class WishListsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

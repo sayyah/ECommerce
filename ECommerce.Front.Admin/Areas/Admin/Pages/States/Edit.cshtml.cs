@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.States;
 
-public class EditModel : PageModel
+public class EditModel(IStateService stateService) : PageModel
 {
-    private readonly IStateService _stateService;
-
-    public EditModel(IStateService stateService)
-    {
-        _stateService = stateService;
-    }
-
     [BindProperty] public State State { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _stateService.GetById(id);
+        var result = await stateService.GetById(id);
         State = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _stateService.Edit(State);
+            var result = await stateService.Edit(State);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

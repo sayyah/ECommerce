@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Departments;
 
-public class DetailModel : PageModel
+public class DetailModel(IDepartmentService departmentService) : PageModel
 {
-    private readonly IDepartmentService _departmentService;
-
-    public DetailModel(IDepartmentService departmentService)
-    {
-        _departmentService = departmentService;
-    }
-
     public Department Department { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _departmentService.GetById(id);
+        var result = await departmentService.GetById(id);
         if (result.Code == 0)
         {
             Department = result.ReturnData;

@@ -2,22 +2,15 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Users;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IUserService userService) : PageModel
 {
-    private readonly IUserService _userService;
-
-    public DeleteModel(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     public User User { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _userService.GetById(id);
+        var result = await userService.GetById(id);
         if (result.Code == 0)
         {
             User = result.ReturnData;
@@ -32,7 +25,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _userService.Delete(id);
+            var result = await userService.Delete(id);
             return RedirectToPage("/Users/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

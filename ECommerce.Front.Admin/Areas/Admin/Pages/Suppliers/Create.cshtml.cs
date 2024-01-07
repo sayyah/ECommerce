@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Suppliers;
 
-public class CreateModel : PageModel
+public class CreateModel(ISupplierService supplierService) : PageModel
 {
-    private readonly ISupplierService _supplierService;
-
-    public CreateModel(ISupplierService supplierService)
-    {
-        _supplierService = supplierService;
-    }
-
     [BindProperty] public Supplier Supplier { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _supplierService.Add(Supplier);
+            var result = await supplierService.Add(Supplier);
             if (result.Code == 0)
                 return RedirectToPage("/Suppliers/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

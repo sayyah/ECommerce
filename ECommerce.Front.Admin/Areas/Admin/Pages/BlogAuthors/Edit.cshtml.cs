@@ -4,19 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogAuthors;
 
-public class EditModel : PageModel
+public class EditModel(IBlogAuthorService blogAuthorService, IHostEnvironment environment, IImageService imageService)
+    : PageModel
 {
-    private readonly IBlogAuthorService _blogAuthorService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-
-    public EditModel(IBlogAuthorService blogAuthorService, IHostEnvironment environment, IImageService imageService)
-    {
-        _blogAuthorService = blogAuthorService;
-        _environment = environment;
-        _imageService = imageService;
-    }
-
     [BindProperty] public IFormFile? Upload { get; set; }
     [BindProperty] public BlogAuthor BlogAuthor { get; set; }
     [TempData] public string Message { get; set; }
@@ -24,7 +14,7 @@ public class EditModel : PageModel
 
     public async Task OnGet(int id)
     {
-        var result = await _blogAuthorService.GetById(id);
+        var result = await blogAuthorService.GetById(id);
         BlogAuthor = result.ReturnData;
     }
 
@@ -32,7 +22,7 @@ public class EditModel : PageModel
     {
         if (Upload != null)
         {
-            var fileName = (await _imageService.Upload(Upload, "Images/BlogAuthors", _environment.ContentRootPath))
+            var fileName = (await imageService.Upload(Upload, "Images/BlogAuthors", environment.ContentRootPath))
                 .ReturnData;
             if (fileName == null)
             {
@@ -52,7 +42,7 @@ public class EditModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _blogAuthorService.Edit(BlogAuthor);
+            var result = await blogAuthorService.Edit(BlogAuthor);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

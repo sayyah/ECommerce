@@ -4,33 +4,16 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class ProductdetailsModel : PageModel
-{
-    private readonly IProductAttributeGroupService _attributeGroupService;
-    private readonly ICartService _cartService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IProductCommentService _productCommandService;
-    private readonly IProductService _productService;
-    private readonly IStarService _starService;
-    private readonly ITagService _tagService;
-    private readonly IUserService _userService;
-    private readonly IWishListService _wishListService;
-
-    public ProductdetailsModel(IProductService productService, IStarService starService, ICartService cartService,
+public class ProductdetailsModel(IProductService productService, IStarService starService, ICartService cartService,
         ITagService tagService, IProductAttributeGroupService attributeGroupService, IUserService userService
         , IProductCommentService productCommandService, IHttpContextAccessor httpContextAccessor,
         IWishListService wishListService)
-    {
-        _productService = productService;
-        _starService = starService;
-        _cartService = cartService;
-        _tagService = tagService;
-        _attributeGroupService = attributeGroupService;
-        _userService = userService;
-        _productCommandService = productCommandService;
-        _httpContextAccessor = httpContextAccessor;
-        _wishListService = wishListService;
-    }
+    : PageModel
+{
+    private readonly ICartService _cartService = cartService;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly ITagService _tagService = tagService;
+    private readonly IWishListService _wishListService = wishListService;
 
     public string siteUrl { get; set; }
     public ProductViewModel Product { get; set; }
@@ -46,24 +29,24 @@ public class ProductdetailsModel : PageModel
 
     private async Task Initial(string productUrl, int pageNumber = 1, int pageSize = 10)
     {
-        var user = await _userService.GetUser();
-        var resultProduct = await _productService.GetProduct(productUrl, user.ReturnData.Id);
+        var user = await userService.GetUser();
+        var resultProduct = await productService.GetProduct(productUrl, user.ReturnData.Id);
         if (resultProduct.Code > 0) return;
         Product = resultProduct.ReturnData;
         WishListPriceId = resultProduct.ReturnData.WishListPriceId;
-        var result = await _attributeGroupService.GetByProductId(Product.Id);
+        var result = await attributeGroupService.GetByProductId(Product.Id);
         if (result.Code == ServiceCode.Success)
             AttributeGroups = result.ReturnData.Where(x =>
                 x.Attribute.Any(a =>
                     a.AttributeValue.Any(i =>
                         i.Value != null))).ToList();
 
-        RelatedProducts = (await _productService.TopRelatives(Product.Id)).ReturnData;
+        RelatedProducts = (await productService.TopRelatives(Product.Id)).ReturnData;
 
-        Stars = await _starService.SumStarsByProductId(Product.Id);
+        Stars = await starService.SumStarsByProductId(Product.Id);
 
         ProductComments =
-            await _productCommandService.GetAllAccesptedComments(Convert.ToString(Product.Id), pageNumber, pageSize);
+            await productCommandService.GetAllAccesptedComments(Convert.ToString(Product.Id), pageNumber, pageSize);
 
         var url = HttpContext.Request.GetDisplayUrl().Split("/");
         siteUrl = string.Format("{0}//{1}", url[0], url[2]);
@@ -113,10 +96,10 @@ public class ProductdetailsModel : PageModel
             UserId = null
         };
 
-        var user = await _userService.GetUser();
+        var user = await userService.GetUser();
         if (user.Code == 0) productComment.UserId = user.ReturnData.Id;
 
-        var resultProduct = await _productService.GetProduct(productUrl, user.ReturnData.Id);
+        var resultProduct = await productService.GetProduct(productUrl, user.ReturnData.Id);
         if (resultProduct.Code > 0)
         {
             resultData.Succeed = false;
@@ -127,7 +110,7 @@ public class ProductdetailsModel : PageModel
         Product = resultProduct.ReturnData;
         productComment.ProductId = Product.Id;
 
-        var result = await _productCommandService.Add(productComment);
+        var result = await productCommandService.Add(productComment);
         if (result.Code == 0)
         {
             resultData.Description = "نظر شما ثبت شد، پس از تایید توسط ادمین سایت، نمایش داده می شود";

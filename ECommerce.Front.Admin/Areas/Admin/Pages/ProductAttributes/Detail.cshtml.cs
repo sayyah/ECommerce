@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributes;
 
-public class DetailModel : PageModel
+public class DetailModel(IProductAttributeService productAttributeService) : PageModel
 {
-    private readonly IProductAttributeService _productAttributeService;
-
-    public DetailModel(IProductAttributeService productAttributeService)
-    {
-        _productAttributeService = productAttributeService;
-    }
-
     public ProductAttribute ProductAttribute { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _productAttributeService.GetById(id);
+        var result = await productAttributeService.GetById(id);
         if (result.Code == 0)
         {
             ProductAttribute = result.ReturnData;

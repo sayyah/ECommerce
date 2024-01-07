@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class OldLoginModel : PageModel
+public class OldLoginModel(IUserService userService) : PageModel
 {
-    private readonly IUserService _userService;
-
-    public OldLoginModel(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [BindProperty] public RegisterViewModel RegisterViewModel { get; set; }
 
     [BindProperty] public LoginViewModel LoginViewModel { get; set; }
@@ -31,7 +24,7 @@ public class OldLoginModel : PageModel
     {
         var s = TempData["ReturnUrl"];
         //ReturnUrl = "/Shop/Coffee/shop/equipment/Hot.bar/Coffee.makers";
-        var result = await _userService.Login(LoginViewModel);
+        var result = await userService.Login(LoginViewModel);
         if (result.Code == 0)
             return RedirectToPage("/Index");
 
@@ -44,7 +37,7 @@ public class OldLoginModel : PageModel
     public async Task<IActionResult> OnPostRegister()
     {
         if (!ModelState.IsValid) return Page();
-        var result = await _userService.Register(RegisterViewModel);
+        var result = await userService.Register(RegisterViewModel);
         Message = result.Message;
         Code = result.Code.ToString();
         if (result.Code == 0) return RedirectToPage("/Index");
@@ -59,7 +52,7 @@ public class OldLoginModel : PageModel
 
     private async Task<ServiceResult<int?>> CheckUsername(string username)
     {
-        var checkUsernameResult = await _userService.GetSecondsLeftConfirmCodeExpire(username);
+        var checkUsernameResult = await userService.GetSecondsLeftConfirmCodeExpire(username);
 
         if (checkUsernameResult.Code == ServiceCode.Error)
             return new ServiceResult<int?>
@@ -91,7 +84,7 @@ public class OldLoginModel : PageModel
         var randomCode = new Random();
         var code = randomCode.Next(100000000);
         if (code < 10000000) code = code + 10000000;
-        var smsResponsModel = await _userService.SendAuthenticationSms(username, code.ToString());
+        var smsResponsModel = await userService.SendAuthenticationSms(username, code.ToString());
         if (smsResponsModel.Status != 1)
         {
             Message = smsResponsModel.Message;
@@ -99,7 +92,7 @@ public class OldLoginModel : PageModel
             return Page();
         }
 
-        var result = await _userService.SetConfirmCodeByUsername(username, code.ToString());
+        var result = await userService.SetConfirmCodeByUsername(username, code.ToString());
         if (!result.ReturnData)
         {
             Message = "نام کاربری صحیح نمی باشد";
@@ -117,7 +110,7 @@ public class OldLoginModel : PageModel
         var _loginViewModel = new LoginViewModel();
         _loginViewModel.Username = username;
         _loginViewModel.Password = password;
-        ServiceResult<LoginViewModel?> result = await _userService.Login(_loginViewModel);
+        ServiceResult<LoginViewModel?> result = await userService.Login(_loginViewModel);
         return new JsonResult(result);
     }
 }

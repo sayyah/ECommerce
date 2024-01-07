@@ -1,22 +1,15 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class HolooSanadListRepository : HolooRepository<HolooSndList>, IHolooSanadListRepository
+public class HolooSanadListRepository(HolooDbContext context) : HolooRepository<HolooSndList>(context),
+    IHolooSanadListRepository
 {
-    private readonly HolooDbContext _context;
-
-    public HolooSanadListRepository(HolooDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<bool> Add(HolooSndList sanadList, CancellationToken cancellationToken)
     {
         // _context.Entry(sanadList).State = EntityState.Detached;
-        await _context.Snd_List.AddAsync(sanadList, cancellationToken);
-        var result = await _context.SaveChangesAsync(cancellationToken);
+        await context.Snd_List.AddAsync(sanadList, cancellationToken);
+        var result = await context.SaveChangesAsync(cancellationToken);
         return result == 0;
     }
 }

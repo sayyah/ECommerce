@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class ContactModel : PageModel
+public class ContactModel(IContactService contactService) : PageModel
 {
-    private readonly IContactService _contactService;
-
-    public ContactModel(IContactService contactService)
-    {
-        _contactService = contactService;
-    }
-
     [BindProperty] public Contact Contact { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -28,7 +21,7 @@ public class ContactModel : PageModel
         {
             Contact.CreatedDate = DateTime.Now;
             Contact.UpdatedDate = DateTime.Now;
-            var result = await _contactService.Add(Contact);
+            var result = await contactService.Add(Contact);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code != 0) return Page();

@@ -1,19 +1,11 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCategoryRepository
+public class BlogCategoryRepository(SunflowerECommerceDbContext context) : AsyncRepository<BlogCategory>(context),
+    IBlogCategoryRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public BlogCategoryRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<BlogCategory?> GetByName(string name, int? parentId, CancellationToken cancellationToken)
     {
-        return await _context.BlogCategories.Where(x => x.Name == name && x.Parent!.Id == parentId)
+        return await context.BlogCategories.Where(x => x.Name == name && x.Parent!.Id == parentId)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -22,11 +14,11 @@ public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCatego
         var blogCategory = 0;
         if (blogId > 0)
         {
-            var temp = _context.Blogs.Where(x => x.Id == blogId).Include(x => x.BlogCategory);
+            var temp = context.Blogs.Where(x => x.Id == blogId).Include(x => x.BlogCategory);
             blogCategory = temp.First().BlogCategory.Id;
         }
 
-        var allCategory = await _context.BlogCategories.ToListAsync(cancellationToken);
+        var allCategory = await context.BlogCategories.ToListAsync(cancellationToken);
 
         var result = await Children(allCategory, blogCategory, null);
         return result.OrderBy(x => x.DisplayOrder).ToList();
@@ -36,7 +28,7 @@ public class BlogCategoryRepository : AsyncRepository<BlogCategory>, IBlogCatego
         CancellationToken cancellationToken)
     {
         return PagedList<BlogCategory>.ToPagedList(
-            await _context.BlogCategories.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+            await context.BlogCategories.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
                 .OrderBy(on => on.Id).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);

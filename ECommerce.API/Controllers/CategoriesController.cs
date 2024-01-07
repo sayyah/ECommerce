@@ -4,17 +4,9 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CategoriesController : ControllerBase
+public class CategoriesController(ICategoryRepository categoryRepository, ILogger<CategoriesController> logger)
+    : ControllerBase
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ILogger<CategoriesController> _logger;
-
-    public CategoriesController(ICategoryRepository categoryRepository, ILogger<CategoriesController> logger)
-    {
-        _categoryRepository = categoryRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -22,7 +14,7 @@ public class CategoriesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _categoryRepository.Search(paginationParameters, cancellationToken);
+            var entity = await categoryRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -42,7 +34,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -52,7 +44,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var result = await _categoryRepository.GetByIdAsync(cancellationToken, id);
+            var result = await categoryRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -67,7 +59,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -77,7 +69,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var result = await _categoryRepository.Parents(productId, cancellationToken);
+            var result = await categoryRepository.Parents(productId, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -92,7 +84,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -103,7 +95,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var result = await _categoryRepository.Search(searchKeyword, cancellationToken);
+            var result = await categoryRepository.Search(searchKeyword, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -118,7 +110,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -130,7 +122,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var result = await _categoryRepository.GetByUrl(url, cancellationToken);
+            var result = await categoryRepository.GetByUrl(url, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -145,7 +137,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -156,7 +148,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var categoryList = _categoryRepository.GetAll("Products")
+            var categoryList = categoryRepository.GetAll("Products")
                 .Where(x => x.Products.Any(p => p.Id == productId));
             return Ok(await categoryList.Select(x => new CategoryViewModel
             {
@@ -170,7 +162,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -189,7 +181,7 @@ public class CategoriesController : ControllerBase
             category.Name = category.Name.Trim();
 
             var repetitiveCategory =
-                await _categoryRepository.GetByName(category.Name, cancellationToken, category.ParentId);
+                await categoryRepository.GetByName(category.Name, cancellationToken, category.ParentId);
             if (repetitiveCategory != null)
                 return Ok(new ApiResult
                 {
@@ -200,12 +192,12 @@ public class CategoriesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _categoryRepository.AddAsync(category, cancellationToken)
+                ReturnData = await categoryRepository.AddAsync(category, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -216,7 +208,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            await _categoryRepository.UpdateAsync(category, cancellationToken);
+            await categoryRepository.UpdateAsync(category, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -224,7 +216,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -235,7 +227,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            await _categoryRepository.DeleteAsync(id, cancellationToken);
+            await categoryRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -243,7 +235,7 @@ public class CategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

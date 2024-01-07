@@ -2,26 +2,18 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 
-public class DetailModel : PageModel
+public class DetailModel(IEmployeeService employeeService, IDepartmentService departmentService)
+    : PageModel
 {
-    private readonly IEmployeeService _employeeService;
-    private readonly IDepartmentService _departmentService;
-
-    public DetailModel(IEmployeeService employeeService, IDepartmentService departmentService)
-    {
-        _employeeService = employeeService;
-        _departmentService = departmentService;
-    }
-
     public Employee Employee { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _employeeService.GetById(id);
+        var result = await employeeService.GetById(id);
         if (result.Code == 0)
         {
             Employee = result.ReturnData;
-            Employee.Department = _departmentService.GetById((int)result.ReturnData.DepartmentId).Result.ReturnData;
+            Employee.Department = departmentService.GetById((int)result.ReturnData.DepartmentId).Result.ReturnData;
             return Page();
         }
 

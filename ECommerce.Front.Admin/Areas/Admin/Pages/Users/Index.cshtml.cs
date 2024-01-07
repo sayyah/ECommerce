@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Users;
 
-public class IndexModel : PageModel
+public class IndexModel(IUserService userService) : PageModel
 {
-    private readonly IUserService _userService;
-
-    public IndexModel(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     public ServiceResult<List<UserListViewModel>> Users { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -25,7 +18,7 @@ public class IndexModel : PageModel
         IsCollegue = iscollegue;
         IsActive = isactive;
         var result =
-            await _userService.UserList(search, pageNumber, pageSize, isActive: isactive, isColleague: iscollegue);
+            await userService.UserList(search, pageNumber, pageSize, isActive: isactive, isColleague: iscollegue);
         if (result.Code == ServiceCode.Success)
         {
             result.PaginationDetails.Address = "/Users/Index";

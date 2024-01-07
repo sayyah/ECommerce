@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Discounts;
 
-public class EditModel : PageModel
+public class EditModel(IDiscountService discountService) : PageModel
 {
-    private readonly IDiscountService _discountService;
-
-    public EditModel(IDiscountService discountService)
-    {
-        _discountService = discountService;
-    }
-
     [BindProperty] public Discount Discount { get; set; }
     [BindProperty] public bool WithPrice { get; set; }
     [TempData] public string Message { get; set; }
@@ -18,7 +11,7 @@ public class EditModel : PageModel
 
     public async Task OnGet(int id)
     {
-        var result = await _discountService.GetById(id);
+        var result = await discountService.GetById(id);
         Discount = result.ReturnData;
         if (!Discount.Amount.HasValue) WithPrice = false;
         else if (!Discount.Percent.HasValue) WithPrice = true;
@@ -38,7 +31,7 @@ public class EditModel : PageModel
         {
             if (WithPrice) Discount.Percent = null;
             else Discount.Amount = null;
-            var result = await _discountService.Edit(Discount);
+            var result = await discountService.Edit(Discount);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
-public class CreateModel : PageModel
+public class CreateModel(IKeywordService keywordService) : PageModel
 {
-    private readonly IKeywordService _keywordService;
-
-    public CreateModel(IKeywordService keywordService)
-    {
-        _keywordService = keywordService;
-    }
-
     [BindProperty] public Keyword Keyword { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _keywordService.Add(Keyword);
+            var result = await keywordService.Add(Keyword);
             if (result.Code == 0)
                 return RedirectToPage("/Keywords/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

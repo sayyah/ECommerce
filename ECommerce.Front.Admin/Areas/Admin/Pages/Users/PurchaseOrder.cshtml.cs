@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Users;
 
-public class PurchaseOrderModel : PageModel
+public class PurchaseOrderModel(IPurchaseOrderService purchaseOrderService) : PageModel
 {
-    private readonly IPurchaseOrderService _purchaseOrderService;
-
-    public PurchaseOrderModel(IPurchaseOrderService purchaseOrderService)
-    {
-        _purchaseOrderService = purchaseOrderService;
-    }
-
     [BindProperty] public PurchaseOrder PurchaseOrder { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -19,7 +12,7 @@ public class PurchaseOrderModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _purchaseOrderService.GetPurchaseOrderWithIncludeById(id);
+        var result = await purchaseOrderService.GetPurchaseOrderWithIncludeById(id);
         if (result.Code == ServiceCode.Success)
         {
             Message = result.Message;

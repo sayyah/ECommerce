@@ -2,23 +2,15 @@
 
 namespace ECommerce.Services.Services;
 
-public class CategoryService : EntityService<Category>, ICategoryService
+public class CategoryService(IHttpService http, IEntityService<CategoryViewModel> categoryViewModelEntityService)
+    : EntityService<Category>(http), ICategoryService
 {
     private const string Url = "api/Categories";
-    private readonly IEntityService<CategoryViewModel> _categoryViewModelEntityService;
-    private readonly IHttpService _http;
 
-
-    public CategoryService(IHttpService http, IEntityService<CategoryViewModel> categoryViewModelEntityService) :
-        base(http)
-    {
-        _http = http;
-        _categoryViewModelEntityService = categoryViewModelEntityService;
-    }
 
     public async Task<ServiceResult<CategoryViewModel>> GetByUrl(string url)
     {
-        var result = await _http.GetAsync<CategoryViewModel>(Url, $"GetByUrl?url={url}");
+        var result = await http.GetAsync<CategoryViewModel>(Url, $"GetByUrl?url={url}");
         if (result.Code == ResultCode.Success)
             return new ServiceResult<CategoryViewModel>
             {
@@ -34,7 +26,7 @@ public class CategoryService : EntityService<Category>, ICategoryService
 
     public async Task<ServiceResult<List<CategoryParentViewModel>>> GetParents(int productId = 0)
     {
-        var result = await _http.GetAsync<List<CategoryParentViewModel>>(Url, $"GetParents?productId={productId}");
+        var result = await http.GetAsync<List<CategoryParentViewModel>>(Url, $"GetParents?productId={productId}");
         if (result.Code == ResultCode.Success)
             return new ServiceResult<List<CategoryParentViewModel>>
             {
@@ -96,7 +88,7 @@ public class CategoryService : EntityService<Category>, ICategoryService
 
     public async Task<ServiceResult> Delete(int id)
     {
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -110,19 +102,19 @@ public class CategoryService : EntityService<Category>, ICategoryService
     public async Task<ServiceResult<List<CategoryViewModel>>> GetCategoriesByProductId(int productId)
     {
         var result =
-            await _categoryViewModelEntityService.ReadList(Url, $"GetCategoriesByProduct?productId={productId}");
+            await categoryViewModelEntityService.ReadList(Url, $"GetCategoriesByProduct?productId={productId}");
         return Return(result);
     }
 
     public async Task<ServiceResult<Category>> GetById(int id)
     {
-        var result = await _http.GetAsync<Category>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Category>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
     public async Task<ServiceResult<List<Category>>> Search(string searchKeyword)
     {
-        var result = await _http.GetAsync<List<Category>>(Url, $"Search?searchKeyword={searchKeyword}");
+        var result = await http.GetAsync<List<Category>>(Url, $"Search?searchKeyword={searchKeyword}");
         return Return(result);
     }
 }

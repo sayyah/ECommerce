@@ -5,38 +5,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
-public class CreateModel : PageModel
-{
-    private readonly IBrandService _brandService;
-    private readonly ICategoryService _categoryService;
-    private readonly IDiscountService _discountService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-    private readonly IKeywordService _keywordService;
-    private readonly IProductService _productService;
-    private readonly IStoreService _storeService;
-    private readonly ISupplierService _supplierService;
-    private readonly ITagService _tagService;
-
-
-    public CreateModel(IProductService productService, ITagService tagService, ICategoryService categoryService,
+public class CreateModel(IProductService productService, ITagService tagService, ICategoryService categoryService,
         IHostEnvironment environment,
         IKeywordService keywordService, IBrandService brandService, IDiscountService discountService,
         IStoreService storeService,
         ISupplierService supplierService, IImageService imageService)
-    {
-        _productService = productService;
-        _tagService = tagService;
-        _categoryService = categoryService;
-        _environment = environment;
-        _keywordService = keywordService;
-        _brandService = brandService;
-        _discountService = discountService;
-        _storeService = storeService;
-        _supplierService = supplierService;
-        _imageService = imageService;
-    }
-
+    : PageModel
+{
     public SelectList Discounts { get; set; }
     public SelectList Stores { get; set; }
     public SelectList Suppliers { get; set; }
@@ -55,25 +30,25 @@ public class CreateModel : PageModel
     private async Task Initial()
     {
         //Product = new ProductViewModel();
-        var stores = (await _storeService.Load()).ReturnData;
+        var stores = (await storeService.Load()).ReturnData;
         Stores = new SelectList(stores, nameof(Store.Id), nameof(Store.Name));
 
-        var discounts = (await _discountService.Load()).ReturnData;
+        var discounts = (await discountService.Load()).ReturnData;
         Discounts = new SelectList(discounts, nameof(Discount.Id), nameof(Discount.Name));
 
-        var suppliers = (await _supplierService.Load()).ReturnData;
+        var suppliers = (await supplierService.Load()).ReturnData;
         Suppliers = new SelectList(suppliers, nameof(Supplier.Id), nameof(Supplier.Name));
 
-        var brands = (await _brandService.Load()).ReturnData;
+        var brands = (await brandService.Load()).ReturnData;
         Brands = new SelectList(brands, nameof(Brand.Id), nameof(Brand.Name));
 
-        var tags = (await _tagService.GetAll()).ReturnData;
+        var tags = (await tagService.GetAll()).ReturnData;
         Tags = new SelectList(tags, nameof(Tag.Id), nameof(Tag.TagText));
 
-        var keywords = (await _keywordService.GetAll()).ReturnData;
+        var keywords = (await keywordService.GetAll()).ReturnData;
         Keywords = new SelectList(keywords, nameof(Keyword.Id), nameof(Keyword.KeywordText));
 
-        CategoryParentViewModel = (await _categoryService.GetParents()).ReturnData;
+        CategoryParentViewModel = (await categoryService.GetParents()).ReturnData;
 
         //HolooSGroups.AddRange((await _holooSGroupService.Load(HolooMGroups.First().M_groupcode)).ReturnData);
         //HolooArticle = (await _holooArticleService.Load($"{HolooSGroups.First().M_groupcode}{HolooSGroups.First().S_groupcode}")).ReturnData;
@@ -111,13 +86,13 @@ public class CreateModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _productService.Add(Product);
+            var result = await productService.Add(Product);
             if (result.Code == 0)
             {
                 foreach (var upload in Uploads)
                 {
-                    var resultImage = await _imageService.Add(upload, result.ReturnData.Id, "Images/Products",
-                        _environment.ContentRootPath);
+                    var resultImage = await imageService.Add(upload, result.ReturnData.Id, "Images/Products",
+                        environment.ContentRootPath);
                     if (resultImage.Code > 0)
                     {
                         Message = resultImage.Message;

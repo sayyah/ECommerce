@@ -1,18 +1,13 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class SendInformationService : EntityService<SendInformation>, ISendInformationService
+public class SendInformationService
+    (IHttpService http, ICookieService cookieService) : EntityService<SendInformation>(http), ISendInformationService
 {
     private const string Url = "api/SendInformation";
-    private readonly ICookieService _cookieService;
-
-    public SendInformationService(IHttpService http, ICookieService cookieService) : base(http)
-    {
-        _cookieService = cookieService;
-    }
 
     public async Task<ServiceResult<List<SendInformation>>> Load()
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         var result = await ReadList(Url, $"GetByUserId?id={currentUser.Id}");
         return Return(result);
     }
@@ -25,7 +20,7 @@ public class SendInformationService : EntityService<SendInformation>, ISendInfor
 
     public async Task<ServiceResult<SendInformation>> Add(SendInformation sendInformation)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         sendInformation.UserId = currentUser.Id;
         var result = await Create<SendInformation>(Url, sendInformation);
         return Return(result);

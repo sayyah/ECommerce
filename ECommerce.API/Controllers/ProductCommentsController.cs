@@ -2,20 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductCommentsController : ControllerBase
-{
-    private readonly IImageRepository _imageRepository;
-    private readonly ILogger<ProductCommentsController> _logger;
-    private readonly IProductCommentRepository _productCommentRepository;
-
-    public ProductCommentsController(IProductCommentRepository productCommentRepository,
+public class ProductCommentsController(IProductCommentRepository productCommentRepository,
         ILogger<ProductCommentsController> logger, IImageRepository imageRepository)
-    {
-        _productCommentRepository = productCommentRepository;
-        _logger = logger;
-        _imageRepository = imageRepository;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -23,7 +13,7 @@ public class ProductCommentsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _productCommentRepository.Search(paginationParameters, cancellationToken);
+            var entity = await productCommentRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -43,7 +33,7 @@ public class ProductCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -53,8 +43,8 @@ public class ProductCommentsController : ControllerBase
     {
         try
         {
-            var result = _productCommentRepository.GetByIdWithInclude("Answer,Product", id);
-            result.Product.Images = await _imageRepository.GetByProductId(result.Product.Id, cancellationToken);
+            var result = productCommentRepository.GetByIdWithInclude("Answer,Product", id);
+            result.Product.Images = await imageRepository.GetByProductId(result.Product.Id, cancellationToken);
             if (result.Answer == null) result.Answer = new ProductComment();
             if (result == null)
                 return Ok(new ApiResult
@@ -70,7 +60,7 @@ public class ProductCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -94,12 +84,12 @@ public class ProductCommentsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _productCommentRepository.AddAsync(productComment, cancellationToken)
+                ReturnData = await productCommentRepository.AddAsync(productComment, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -114,10 +104,10 @@ public class ProductCommentsController : ControllerBase
             if (productComment.AnswerId != null)
             {
                 _commentAnswer =
-                    await _productCommentRepository.GetByIdAsync(cancellationToken, productComment.AnswerId);
+                    await productCommentRepository.GetByIdAsync(cancellationToken, productComment.AnswerId);
                 _commentAnswer.Text = productComment.Answer.Text;
                 _commentAnswer.DateTime = DateTime.Now;
-                await _productCommentRepository.UpdateAsync(_commentAnswer, cancellationToken);
+                await productCommentRepository.UpdateAsync(_commentAnswer, cancellationToken);
             }
             else
             {
@@ -128,7 +118,7 @@ public class ProductCommentsController : ControllerBase
                     productComment.Answer.IsRead = false;
                     productComment.Answer.IsAnswered = false;
                     productComment.Answer.DateTime = DateTime.Now;
-                    _commentAnswer = await _productCommentRepository.AddAsync(productComment.Answer, cancellationToken);
+                    _commentAnswer = await productCommentRepository.AddAsync(productComment.Answer, cancellationToken);
                     if (_commentAnswer != null)
                     {
                         productComment.Answer = _commentAnswer;
@@ -137,7 +127,7 @@ public class ProductCommentsController : ControllerBase
                 }
             }
 
-            await _productCommentRepository.UpdateAsync(productComment, cancellationToken);
+            await productCommentRepository.UpdateAsync(productComment, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -145,7 +135,7 @@ public class ProductCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -156,7 +146,7 @@ public class ProductCommentsController : ControllerBase
     {
         try
         {
-            await _productCommentRepository.DeleteAsync(id, cancellationToken);
+            await productCommentRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -164,7 +154,7 @@ public class ProductCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -177,7 +167,7 @@ public class ProductCommentsController : ControllerBase
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
             var entity =
-                await _productCommentRepository.GetAllAccesptedComments(paginationParameters, cancellationToken);
+                await productCommentRepository.GetAllAccesptedComments(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -197,7 +187,7 @@ public class ProductCommentsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

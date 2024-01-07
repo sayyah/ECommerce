@@ -1,15 +1,7 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class HolooService : IHolooService
+public class HolooService(IHttpService http) : IHolooService
 {
-    private readonly IHttpService _http;
-
-
-    public HolooService(IHttpService http)
-    {
-        _http = http;
-    }
-
     public async Task<string> ConvertHoloo(bool isAllMGroupConvert, string mGroupCode)
     {
         //var resultDialog = await _sweet.FireAsync(new SweetAlertOptions
@@ -23,7 +15,7 @@ public class HolooService : IHolooService
         //});
         //if (resultDialog.Dismiss == DismissReason.Cancel) return false;
         var mCode = isAllMGroupConvert == false ? mGroupCode : "";
-        var response = await _http.PostAsync("api/Products/ConvertHolooToSunflower", mCode);
+        var response = await http.PostAsync("api/Products/ConvertHolooToSunflower", mCode);
         if (response.Code == 0) return "با موفقیت تبدیل شد";
         return response.GetBody();
     }

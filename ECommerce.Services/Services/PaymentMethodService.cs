@@ -1,16 +1,10 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class PaymentMethodService : EntityService<PaymentMethod>, IPaymentMethodService
+public class PaymentMethodService(IHttpService http) : EntityService<PaymentMethod>(http), IPaymentMethodService
 
 {
     private const string Url = "api/PaymentMethods";
-    private readonly IHttpService _http;
     private List<PaymentMethod> _paymentMethods;
-
-    public PaymentMethodService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<PaymentMethod>>> Load(string search = "", int pageNumber = 0,
         int pageSize = 10)
@@ -57,7 +51,7 @@ public class PaymentMethodService : EntityService<PaymentMethod>, IPaymentMethod
         //var result = await Delete(Url, id);
         //_paymentMethods = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _paymentMethods = null;
@@ -75,7 +69,7 @@ public class PaymentMethodService : EntityService<PaymentMethod>, IPaymentMethod
 
     public async Task<ServiceResult<PaymentMethod>> GetById(int id)
     {
-        var result = await _http.GetAsync<PaymentMethod>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<PaymentMethod>(Url, $"GetById?id={id}");
         return Return(result);
     }
 

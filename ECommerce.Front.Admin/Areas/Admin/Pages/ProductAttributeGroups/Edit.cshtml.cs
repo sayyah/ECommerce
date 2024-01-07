@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributeGroups;
 
-public class EditModel : PageModel
+public class EditModel(IProductAttributeGroupService productAttributeGroupService) : PageModel
 {
-    private readonly IProductAttributeGroupService _productAttributeGroupService;
-
-    public EditModel(IProductAttributeGroupService productAttributeGroupService)
-    {
-        _productAttributeGroupService = productAttributeGroupService;
-    }
-
     [BindProperty] public ProductAttributeGroup ProductAttributeGroup { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _productAttributeGroupService.GetById(id);
+        var result = await productAttributeGroupService.GetById(id);
         ProductAttributeGroup = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _productAttributeGroupService.Edit(ProductAttributeGroup);
+            var result = await productAttributeGroupService.Edit(ProductAttributeGroup);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

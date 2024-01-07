@@ -2,15 +2,9 @@
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class CompareModel : PageModel
+public class CompareModel(ICompareService compareService) : PageModel
 {
-    private readonly ICompareService _compareService;
     public int CategoryId;
-
-    public CompareModel(ICompareService compareService)
-    {
-        _compareService = compareService;
-    }
 
     public List<ProductCompareViewModel>? ProductsList { get; set; }
     public ProductCompareViewModel? CompareProduct { get; set; }
@@ -19,11 +13,11 @@ public class CompareModel : PageModel
     public async Task<IActionResult> OnGetAsync(List<int> productListId)
     {
         Message = "";
-        var result = await _compareService.CompareList(productListId);
+        var result = await compareService.CompareList(productListId);
         if (result.ReturnData.First().ProductCategories.Count() > 0)
         {
             CategoryId = result.ReturnData.First().ProductCategories.First();
-            var CategoriesResult = await _compareService.GetProductsByCategories(CategoryId);
+            var CategoriesResult = await compareService.GetProductsByCategories(CategoryId);
             ProductsList = CategoriesResult.ReturnData;
         }
 

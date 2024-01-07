@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributeGroups;
 
-public class IndexModel : PageModel
+public class IndexModel(IProductAttributeGroupService productAttributeGroupService) : PageModel
 {
-    private readonly IProductAttributeGroupService _productAttributeGroupService;
-
-    public IndexModel(IProductAttributeGroupService productAttributeGroupService)
-    {
-        _productAttributeGroupService = productAttributeGroupService;
-    }
-
     public ServiceResult<List<ProductAttributeGroup>> ProductAttributeGroups { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _productAttributeGroupService.Load(search, pageNumber, pageSize);
+        var result = await productAttributeGroupService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             result.PaginationDetails.Address = "/ProductAttributeGroups/Index";

@@ -7,12 +7,11 @@ using ZarinpalSandbox;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
 
-public class InvoiceModel : PageModel
+public class InvoiceModel(IPurchaseOrderService purchaseOrderService,
+        IUserService userService,
+        IConfiguration configuration)
+    : PageModel
 {
-    private readonly IPurchaseOrderService _purchaseOrderService;
-    private readonly IUserService _userService;
-    private readonly IConfiguration _configuration;
-
     [BindProperty]
     public long OrderId { get; set; }
 
@@ -24,17 +23,6 @@ public class InvoiceModel : PageModel
     public PurchaseOrder PurchaseOrder { get; set; }
     public string Refid { get; set; }
     public string SystemTraceNo { get; set; }
-
-    public InvoiceModel(
-        IPurchaseOrderService purchaseOrderService,
-        IUserService userService,
-        IConfiguration configuration
-    )
-    {
-        _purchaseOrderService = purchaseOrderService;
-        _userService = userService;
-        _configuration = configuration;
-    }
 
     public async Task<ActionResult> OnGet(PurchaseResult result)
     {
@@ -50,7 +38,7 @@ public class InvoiceModel : PageModel
             && status.ToLower() == "ok"
         )
         {
-            var resultOrder = await _purchaseOrderService.GetByUserId();
+            var resultOrder = await purchaseOrderService.GetByUserId();
             PurchaseOrder = resultOrder.ReturnData;
             var amount = Convert.ToInt32(PurchaseOrder.Amount);
             if (PurchaseOrder.DiscountId != null && PurchaseOrder.Discount != null)
@@ -102,7 +90,7 @@ public class InvoiceModel : PageModel
                         Amount = amount,
                         UserId = resultOrder.ReturnData.UserId
                     };
-                    var result = await _purchaseOrderService.Pay(PurchaseOrder);
+                    var result = await purchaseOrderService.Pay(PurchaseOrder);
 
                     if (result.Code == ServiceCode.Error)
                     {
@@ -112,8 +100,8 @@ public class InvoiceModel : PageModel
                     }
                     else if (result.Code == ServiceCode.Success)
                     {
-                        string num1 = _configuration.GetValue<string>("InvoiceNumbers:num1");
-                        await _userService.SendInvocieSms(
+                        string num1 = configuration.GetValue<string>("InvoiceNumbers:num1");
+                        await userService.SendInvocieSms(
                             result.Message ?? "",
                             num1,
                             DateTime.Now.ToString("MM/dd/yyyy")
@@ -135,7 +123,7 @@ public class InvoiceModel : PageModel
         var symmetric = SymmetricAlgorithm.Create("TripleDes");
         symmetric.Mode = CipherMode.ECB;
         symmetric.Padding = PaddingMode.PKCS7;
-        string merchantKey = _configuration.GetValue<string>(
+        string merchantKey = configuration.GetValue<string>(
             "SiteSettings:SanadSettings:terminalKey"
         );
         var encryptor = symmetric.CreateEncryptor(
@@ -149,7 +137,7 @@ public class InvoiceModel : PageModel
 
         var data = new { token = result.Token, SignData = signedData };
 
-        var resultOrder = await _purchaseOrderService.GetByUserId();
+        var resultOrder = await purchaseOrderService.GetByUserId();
         PurchaseOrder = resultOrder.ReturnData;
         var amount = Convert.ToInt32(PurchaseOrder.Amount);
         if (PurchaseOrder.DiscountId != null && PurchaseOrder.Discount != null)
@@ -188,7 +176,7 @@ public class InvoiceModel : PageModel
                     Amount = amount,
                     UserId = resultOrder.ReturnData.UserId
                 };
-                var resulPay = await _purchaseOrderService.Pay(PurchaseOrder);
+                var resulPay = await purchaseOrderService.Pay(PurchaseOrder);
 
                 if (resulPay.Code == ServiceCode.Error)
                 {
@@ -197,26 +185,26 @@ public class InvoiceModel : PageModel
                 }
                 else if (resulPay.Code == ServiceCode.Success)
                 {
-                    string num1 = _configuration.GetValue<string>("InvoiceNumbers:num1");
-                    string num2 = _configuration.GetValue<string>("InvoiceNumbers:num2");
-                    string num3 = _configuration.GetValue<string>("InvoiceNumbers:num3");
-                    string num4 = _configuration.GetValue<string>("InvoiceNumbers:num4");
-                    await _userService.SendInvocieSms(
+                    string num1 = configuration.GetValue<string>("InvoiceNumbers:num1");
+                    string num2 = configuration.GetValue<string>("InvoiceNumbers:num2");
+                    string num3 = configuration.GetValue<string>("InvoiceNumbers:num3");
+                    string num4 = configuration.GetValue<string>("InvoiceNumbers:num4");
+                    await userService.SendInvocieSms(
                         resulPay.Message ?? "",
                         num1,
                         DateTime.Now.ToFa()
                     );
-                    await _userService.SendInvocieSms(
+                    await userService.SendInvocieSms(
                         resulPay.Message ?? "",
                         num2,
                         DateTime.Now.ToFa()
                     );
-                    await _userService.SendInvocieSms(
+                    await userService.SendInvocieSms(
                         resulPay.Message ?? "",
                         num3,
                         DateTime.Now.ToFa()
                     );
-                    await _userService.SendInvocieSms(
+                    await userService.SendInvocieSms(
                         resulPay.Message ?? "",
                         num4,
                         DateTime.Now.ToFa()

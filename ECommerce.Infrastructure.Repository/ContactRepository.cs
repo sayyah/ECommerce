@@ -1,29 +1,21 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class ContactRepository : AsyncRepository<Contact>, IContactRepository
+public class ContactRepository(SunflowerECommerceDbContext context) : AsyncRepository<Contact>(context),
+    IContactRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public ContactRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<Contact?> GetByName(string name, CancellationToken cancellationToken)
     {
-        return await _context.Contacts.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
+        return await context.Contacts.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Contact?> GetByEmail(string email, CancellationToken cancellationToken)
     {
-        return await _context.Contacts.Where(x => x.Email == email).FirstOrDefaultAsync(cancellationToken);
+        return await context.Contacts.Where(x => x.Email == email).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Contact?> GetRepetitive(Contact contact, CancellationToken cancellationToken)
     {
-        return await _context.Contacts
+        return await context.Contacts
             .Where(x => x.Email == contact.Email
                         && x.Name == contact.Name
                         && x.Subject == contact.Subject
@@ -35,7 +27,7 @@ public class ContactRepository : AsyncRepository<Contact>, IContactRepository
         CancellationToken cancellationToken)
     {
         return PagedList<Contact>.ToPagedList(
-            await _context.Contacts.Where(x => x.Email.Contains(paginationParameters.Search)).AsNoTracking()
+            await context.Contacts.Where(x => x.Email.Contains(paginationParameters.Search)).AsNoTracking()
                 .OrderBy(on => on.Id).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);

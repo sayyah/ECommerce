@@ -2,18 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class StoreController : ControllerBase
+public class StoreController(IStoreRepository storeRepository, ILogger<StoreController> logger)
+    : ControllerBase
 {
-    private readonly ILogger<StoreController> _logger;
-
-    private readonly IStoreRepository _storeRepository;
-
-    public StoreController(IStoreRepository storeRepository, ILogger<StoreController> logger)
-    {
-        _storeRepository = storeRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -21,7 +12,7 @@ public class StoreController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _storeRepository.Search(paginationParameters, cancellationToken);
+            var entity = await storeRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -41,7 +32,7 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -51,7 +42,7 @@ public class StoreController : ControllerBase
     {
         try
         {
-            var result = await _storeRepository.GetByIdAsync(cancellationToken, id);
+            var result = await storeRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -66,7 +57,7 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -84,7 +75,7 @@ public class StoreController : ControllerBase
                 });
             store.Name = store.Name.Trim();
 
-            var repetitiveStore = await _storeRepository.GetByName(store.Name, cancellationToken);
+            var repetitiveStore = await storeRepository.GetByName(store.Name, cancellationToken);
             if (repetitiveStore != null)
                 return Ok(new ApiResult
                 {
@@ -95,12 +86,12 @@ public class StoreController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _storeRepository.AddAsync(store, cancellationToken)
+                ReturnData = await storeRepository.AddAsync(store, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -111,15 +102,15 @@ public class StoreController : ControllerBase
     {
         try
         {
-            var repetitive = await _storeRepository.GetByName(store.Name, cancellationToken);
+            var repetitive = await storeRepository.GetByName(store.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != store.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام انبار تکراری است" }
                 });
-            if (repetitive != null) _storeRepository.Detach(repetitive);
-            await _storeRepository.UpdateAsync(store, cancellationToken);
+            if (repetitive != null) storeRepository.Detach(repetitive);
+            await storeRepository.UpdateAsync(store, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -127,7 +118,7 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -138,7 +129,7 @@ public class StoreController : ControllerBase
     {
         try
         {
-            await _storeRepository.DeleteAsync(id, cancellationToken);
+            await storeRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -146,7 +137,7 @@ public class StoreController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

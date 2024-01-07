@@ -2,16 +2,10 @@
 
 namespace ECommerce.Services.Services;
 
-public class BlogService : EntityService<Blog>, IBlogService
+public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogService
 {
     private const string Url = "api/Blogs";
-    private readonly IHttpService _http;
     private List<Blog> _blogs;
-
-    public BlogService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Blog>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -66,13 +60,13 @@ public class BlogService : EntityService<Blog>, IBlogService
     {
         //if (blogViewModel.BrandId == 0) blogViewModel.BrandId = null;
         //var result = await Create<BlogViewModel>(Url, blogViewModel);
-        var result = await _http.PostAsync<BlogViewModel, BlogViewModel>(Url, blogViewModel);
+        var result = await http.PostAsync<BlogViewModel, BlogViewModel>(Url, blogViewModel);
         return Return(result);
     }
 
     public async Task<ServiceResult> Edit(BlogViewModel blogViewModel)
     {
-        var result = await _http.PutAsync(Url, blogViewModel);
+        var result = await http.PutAsync(Url, blogViewModel);
         _blogs = null;
         return Return(result);
     }
@@ -82,7 +76,7 @@ public class BlogService : EntityService<Blog>, IBlogService
         //var result = await Delete(Url, id);
         //_blogs = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _blogs = null;
@@ -100,7 +94,7 @@ public class BlogService : EntityService<Blog>, IBlogService
 
     public async Task<ServiceResult<BlogViewModel>> GetById(int id)
     {
-        var result = await _http.GetAsync<BlogViewModel>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<BlogViewModel>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
@@ -114,7 +108,7 @@ public class BlogService : EntityService<Blog>, IBlogService
         if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
 
         command += $"BlogSort={blogSort}";
-        var result = await _http.GetAsync<List<BlogViewModel>>(Url, command);
+        var result = await http.GetAsync<List<BlogViewModel>>(Url, command);
         return Return(result);
     }
 
@@ -128,13 +122,13 @@ public class BlogService : EntityService<Blog>, IBlogService
         if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
 
         command += $"BlogSort={blogSort}";
-        var result = await _http.GetAsync<List<BlogViewModel>>(Url, command);
+        var result = await http.GetAsync<List<BlogViewModel>>(Url, command);
         return Return(result);
     }
 
     public async Task<ServiceResult<BlogDetailsViewModel>> GetByUrl(string blogUrl)
     {
-        var result = await _http.GetAsync<BlogDetailsViewModel>(Url, $"GetByUrl?blogUrl={blogUrl}");
+        var result = await http.GetAsync<BlogDetailsViewModel>(Url, $"GetByUrl?blogUrl={blogUrl}");
         return Return(result);
     }
 }

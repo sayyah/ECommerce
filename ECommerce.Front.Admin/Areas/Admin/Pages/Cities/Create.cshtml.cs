@@ -3,17 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Cities;
 
-public class CreateModel : PageModel
+public class CreateModel(ICityService cityService, IStateService stateService) : PageModel
 {
-    private readonly ICityService _cityService;
-    private readonly IStateService _stateService;
-
-    public CreateModel(ICityService cityService, IStateService stateService)
-    {
-        _cityService = cityService;
-        _stateService = stateService;
-    }
-
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
     public SelectList StateCity { get; set; }
@@ -21,7 +12,7 @@ public class CreateModel : PageModel
 
     public async Task OnGet()
     {
-        var stateCity = (await _stateService.GetAll()).ReturnData;
+        var stateCity = (await stateService.GetAll()).ReturnData;
         StateCity = new SelectList(stateCity, nameof(State.Id),
             nameof(State.Name));
     }
@@ -30,7 +21,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _cityService.Add(City);
+            var result = await cityService.Add(City);
             if (result.Code == 0)
                 return RedirectToPage("/Cities/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
@@ -39,7 +30,7 @@ public class CreateModel : PageModel
             ModelState.AddModelError("", result.Message);
         }
 
-        var stateCity = (await _stateService.GetAll()).ReturnData;
+        var stateCity = (await stateService.GetAll()).ReturnData;
         StateCity = new SelectList(stateCity, nameof(State.Id),
             nameof(State.Name));
         return Page();

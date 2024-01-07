@@ -1,5 +1,4 @@
-﻿using System.Data;
-using ECommerce.Domain.Entities;
+﻿using ECommerce.Domain.Entities;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;

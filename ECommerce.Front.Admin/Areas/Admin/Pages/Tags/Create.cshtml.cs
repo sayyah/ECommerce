@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
-public class CreateModel : PageModel
+public class CreateModel(ITagService tagService) : PageModel
 {
-    private readonly ITagService _tagService;
-
-    public CreateModel(ITagService tagService)
-    {
-        _tagService = tagService;
-    }
-
     [BindProperty] public Tag Tag { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -33,7 +26,7 @@ public class CreateModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _tagService.Add(Tag);
+            var result = await tagService.Add(Tag);
             if (result.Code == 0)
                 return RedirectToPage("/Tags/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

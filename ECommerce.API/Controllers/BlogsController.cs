@@ -1,21 +1,12 @@
-﻿using ECommerce.Application.ViewModels;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogsController : ControllerBase
+public class BlogsController(IBlogRepository blogRepository, ILogger<BlogsController> logger)
+    : ControllerBase
 {
-    private readonly IBlogRepository _blogRepository;
-    private readonly ILogger<BlogsController> _logger;
-
-    public BlogsController(IBlogRepository blogRepository, ILogger<BlogsController> logger)
-    {
-        _blogRepository = blogRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -23,7 +14,7 @@ public class BlogsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogRepository.Search(paginationParameters, cancellationToken);
+            var entity = await blogRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -43,7 +34,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -55,7 +46,7 @@ public class BlogsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.TagText)) paginationParameters.TagText = "";
-            var entity = await _blogRepository.GetByTagText(paginationParameters, cancellationToken);
+            var entity = await blogRepository.GetByTagText(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -75,7 +66,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -86,7 +77,7 @@ public class BlogsController : ControllerBase
     {
         try
         {
-            var result = await _blogRepository.GetBlogByIdWithInclude(id).FirstOrDefaultAsync(cancellationToken);
+            var result = await blogRepository.GetBlogByIdWithInclude(id).FirstOrDefaultAsync(cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -101,7 +92,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -119,14 +110,14 @@ public class BlogsController : ControllerBase
                 });
             blogViewModel.Title = blogViewModel.Title.Trim();
 
-            var repetitiveTitle = await _blogRepository.GetByTitle(blogViewModel.Title, cancellationToken);
+            var repetitiveTitle = await blogRepository.GetByTitle(blogViewModel.Title, cancellationToken);
             if (repetitiveTitle != null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "عنوان مقاله تکراری است" }
                 });
-            var repetitiveUrl = await _blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
+            var repetitiveUrl = await blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
             if (repetitiveUrl != null)
                 return Ok(new ApiResult
                 {
@@ -137,12 +128,12 @@ public class BlogsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _blogRepository.AddWithRelations(blogViewModel, cancellationToken)
+                ReturnData = await blogRepository.AddWithRelations(blogViewModel, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -156,23 +147,23 @@ public class BlogsController : ControllerBase
             if (blogViewModel == null) return BadRequest();
 
 
-            var repetitiveTitle = await _blogRepository.GetByTitle(blogViewModel.Title, cancellationToken);
+            var repetitiveTitle = await blogRepository.GetByTitle(blogViewModel.Title, cancellationToken);
             if (repetitiveTitle != null && repetitiveTitle.Id != blogViewModel.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "عنوان مقاله تکراری است" }
                 });
-            if (repetitiveTitle != null) _blogRepository.Detach(repetitiveTitle);
-            var repetitiveUrl = await _blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
+            if (repetitiveTitle != null) blogRepository.Detach(repetitiveTitle);
+            var repetitiveUrl = await blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
             if (repetitiveUrl != null && repetitiveUrl.Id != blogViewModel.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "آدرس مقاله تکراری است" }
                 });
-            if (repetitiveUrl != null) _blogRepository.Detach(repetitiveUrl);
-            await _blogRepository.EditWithRelations(blogViewModel, cancellationToken);
+            if (repetitiveUrl != null) blogRepository.Detach(repetitiveUrl);
+            await blogRepository.EditWithRelations(blogViewModel, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -180,7 +171,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -191,7 +182,7 @@ public class BlogsController : ControllerBase
     {
         try
         {
-            await _blogRepository.DeleteAsync(id, cancellationToken);
+            await blogRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -199,7 +190,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -212,12 +203,12 @@ public class BlogsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _blogRepository.GetWithInclude(id, cancellationToken)
+                ReturnData = await blogRepository.GetWithInclude(id, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -228,7 +219,7 @@ public class BlogsController : ControllerBase
     {
         try
         {
-            var result = await _blogRepository.GetBlogByUrlWithInclude(blogUrl).FirstOrDefaultAsync(cancellationToken);
+            var result = await blogRepository.GetBlogByUrlWithInclude(blogUrl).FirstOrDefaultAsync(cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -243,7 +234,7 @@ public class BlogsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }

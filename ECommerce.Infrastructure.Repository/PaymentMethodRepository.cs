@@ -1,25 +1,17 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class PaymentMethodRepository : AsyncRepository<PaymentMethod>, IPaymentMethodRepository
+public class PaymentMethodRepository(SunflowerECommerceDbContext context) : AsyncRepository<PaymentMethod>(context),
+    IPaymentMethodRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public PaymentMethodRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<PaymentMethod> GetByAccountNumber(string name, CancellationToken cancellationToken)
     {
-        return await _context.PaymentMethods.Where(x => x.AccountNumber == name).FirstOrDefaultAsync();
+        return await context.PaymentMethods.Where(x => x.AccountNumber == name).FirstOrDefaultAsync();
     }
 
     public async Task<int> AddAll(IEnumerable<PaymentMethod> paymentMethods, CancellationToken cancellationToken)
     {
-        await _context.PaymentMethods.AddRangeAsync(paymentMethods, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        await context.PaymentMethods.AddRangeAsync(paymentMethods, cancellationToken);
+        return await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<PagedList<PaymentMethod>> Search(PaginationParameters paginationParameters,
@@ -27,14 +19,14 @@ public class PaymentMethodRepository : AsyncRepository<PaymentMethod>, IPaymentM
     {
         if (!paginationParameters.Search.Equals(""))
             return PagedList<PaymentMethod>.ToPagedList(
-                await _context.PaymentMethods
+                await context.PaymentMethods
                     .Where(x => x.Transactions.Any(r => r.RefId.Contains(paginationParameters.Search))).AsNoTracking()
                     .OrderBy(on => on.Id).ToListAsync(cancellationToken),
                 paginationParameters.PageNumber,
                 paginationParameters.PageSize);
 
         return PagedList<PaymentMethod>.ToPagedList(
-            await _context.PaymentMethods.AsNoTracking().OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            await context.PaymentMethods.AsNoTracking().OrderBy(on => on.Id).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

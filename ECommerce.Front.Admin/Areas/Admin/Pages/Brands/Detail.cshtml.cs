@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Brands;
 
-public class DetailModel : PageModel
+public class DetailModel(IBrandService brandService) : PageModel
 {
-    private readonly IBrandService _brandService;
-
-    public DetailModel(IBrandService brandService)
-    {
-        _brandService = brandService;
-    }
-
     public Brand Brand { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _brandService.GetById(id);
+        var result = await brandService.GetById(id);
         if (result.Code == 0)
         {
             Brand = result.ReturnData;

@@ -3,15 +3,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IProductService productService) : PageModel
 {
-    private readonly IProductService _productService;
-
-    public DeleteModel(IProductService productService)
-    {
-        _productService = productService;
-    }
-
     [BindProperty] public Product Product { get; set; }
     [BindProperty] public IFormFile Upload { get; set; }
     [TempData] public string Message { get; set; }
@@ -20,7 +13,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _productService.GetById(id);
+        var result = await productService.GetById(id);
         if (result.Code == 0)
         {
             Product = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnPost(int id)
     {
-        var result = await _productService.Delete(id);
+        var result = await productService.Delete(id);
         return RedirectToPage("/Products/Index",
             new { area = "Admin", message = result.Message, code = result.Code.ToString() });
     }

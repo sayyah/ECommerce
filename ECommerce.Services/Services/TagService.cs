@@ -2,18 +2,11 @@
 
 namespace ECommerce.Services.Services;
 
-public class TagService : EntityService<Tag>, ITagService
+public class TagService(IHttpService http, IEntityService<TagProductId> tagViewModelEntityService)
+    : EntityService<Tag>(http), ITagService
 {
     private const string Url = "api/Tags";
-    private readonly IHttpService _http;
-    private readonly IEntityService<TagProductId> _tagViewModelEntityService;
     private List<Tag> _tags;
-
-    public TagService(IHttpService http, IEntityService<TagProductId> tagViewModelEntityService) : base(http)
-    {
-        _tagViewModelEntityService = tagViewModelEntityService;
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Tag>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -82,7 +75,7 @@ public class TagService : EntityService<Tag>, ITagService
         //var result = await Delete(Url, id);
         //_tags = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         _tags = null;
         if (result.Code == ResultCode.Success)
             return new ServiceResult
@@ -96,19 +89,19 @@ public class TagService : EntityService<Tag>, ITagService
 
     public async Task<ServiceResult<List<TagProductId>>> GetTagsByProductId(int productId)
     {
-        var result = await _tagViewModelEntityService.ReadList(Url, $"GetByProductId?id={productId}");
+        var result = await tagViewModelEntityService.ReadList(Url, $"GetByProductId?id={productId}");
         return Return(result);
     }
 
     public async Task<ServiceResult<Tag>> GetById(int id)
     {
-        var result = await _http.GetAsync<Tag>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Tag>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
     public async Task<ServiceResult<Tag>> GetByTagText(string TagText)
     {
-        var result = await _http.GetAsync<Tag>(Url, $"GetByTagText={TagText}");
+        var result = await http.GetAsync<Tag>(Url, $"GetByTagText={TagText}");
         return Return(result);
     }
 

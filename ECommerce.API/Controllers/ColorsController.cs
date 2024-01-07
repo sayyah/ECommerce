@@ -2,23 +2,15 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ColorsController : ControllerBase
+public class ColorsController(IColorRepository colorGroupRepository, ILogger<ColorsController> logger)
+    : ControllerBase
 {
-    private readonly IColorRepository _colorRepository;
-    private readonly ILogger<ColorsController> _logger;
-
-    public ColorsController(IColorRepository colorGroupRepository, ILogger<ColorsController> logger)
-    {
-        _colorRepository = colorGroupRepository;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
         {
-            var colors = await _colorRepository.GetAll(cancellationToken);
+            var colors = await colorGroupRepository.GetAll(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -27,7 +19,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -40,7 +32,7 @@ public class ColorsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _colorRepository.Search(paginationParameters, cancellationToken);
+            var entity = await colorGroupRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -60,7 +52,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -71,7 +63,7 @@ public class ColorsController : ControllerBase
     {
         try
         {
-            var result = await _colorRepository.GetByIdAsync(cancellationToken, id);
+            var result = await colorGroupRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -86,7 +78,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -105,7 +97,7 @@ public class ColorsController : ControllerBase
                 });
             color.Name = color.Name.Trim();
 
-            var repetitiveColor = await _colorRepository.GetByName(color.Name, cancellationToken);
+            var repetitiveColor = await colorGroupRepository.GetByName(color.Name, cancellationToken);
             if (repetitiveColor != null)
                 return Ok(new ApiResult
                 {
@@ -116,12 +108,12 @@ public class ColorsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _colorRepository.AddAsync(color, cancellationToken)
+                ReturnData = await colorGroupRepository.AddAsync(color, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -133,7 +125,7 @@ public class ColorsController : ControllerBase
     {
         try
         {
-            await _colorRepository.UpdateAsync(color, cancellationToken);
+            await colorGroupRepository.UpdateAsync(color, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -141,7 +133,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -153,7 +145,7 @@ public class ColorsController : ControllerBase
     {
         try
         {
-            await _colorRepository.DeleteAsync(id, cancellationToken);
+            await colorGroupRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -161,7 +153,7 @@ public class ColorsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

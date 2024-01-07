@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ColorService : EntityService<Color>, IColorService
+public class ColorService(IHttpService http) : EntityService<Color>(http), IColorService
 {
     private const string Url = "api/Colors";
-    private readonly IHttpService _http;
     private List<Color> _colors;
-
-    public ColorService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Color>>> Load()
     {
@@ -62,7 +56,7 @@ public class ColorService : EntityService<Color>, IColorService
         //var result = await Delete(Url, id);
         //_colors = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -75,7 +69,7 @@ public class ColorService : EntityService<Color>, IColorService
 
     public async Task<ServiceResult<Color>> GetById(int id)
     {
-        var result = await _http.GetAsync<Color>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Color>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

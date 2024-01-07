@@ -14,21 +14,10 @@ public static class CustomExceptionHandlerMiddlewareExtensions
     }
 }
 
-public class CustomExceptionHandlerMiddleware
+public class CustomExceptionHandlerMiddleware(RequestDelegate next,
+    IHostingEnvironment env,
+    ILogger<CustomExceptionHandlerMiddleware> logger)
 {
-    private readonly IHostingEnvironment _env;
-    private readonly ILogger<CustomExceptionHandlerMiddleware> _logger;
-    private readonly RequestDelegate _next;
-
-    public CustomExceptionHandlerMiddleware(RequestDelegate next,
-        IHostingEnvironment env,
-        ILogger<CustomExceptionHandlerMiddleware> logger)
-    {
-        _next = next;
-        _env = env;
-        _logger = logger;
-    }
-
     public async Task Invoke(HttpContext context)
     {
         string message = null;
@@ -37,15 +26,15 @@ public class CustomExceptionHandlerMiddleware
 
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (AppException exception)
         {
-            _logger.LogError(exception, exception.Message);
+            logger.LogError(exception, exception.Message);
             httpStatusCode = exception.HttpStatusCode;
             apiStatusCode = exception.ApiStatusCode;
 
-            if (_env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 var dic = new Dictionary<string, string>
                 {
@@ -72,21 +61,21 @@ public class CustomExceptionHandlerMiddleware
         }
         catch (SecurityTokenExpiredException exception)
         {
-            _logger.LogError(exception, exception.Message);
+            logger.LogError(exception, exception.Message);
             SetUnAuthorizeResponse(exception);
             await WriteToResponseAsync();
         }
         catch (UnauthorizedAccessException exception)
         {
-            _logger.LogError(exception, exception.Message);
+            logger.LogError(exception, exception.Message);
             SetUnAuthorizeResponse(exception);
             await WriteToResponseAsync();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, exception.Message);
+            logger.LogError(exception, exception.Message);
 
-            if (_env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 var dic = new Dictionary<string, string>
                 {
@@ -118,7 +107,7 @@ public class CustomExceptionHandlerMiddleware
             httpStatusCode = HttpStatusCode.Unauthorized;
             apiStatusCode = ResultCode.UnAuthorized;
 
-            if (_env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 var dic = new Dictionary<string, string>
                 {

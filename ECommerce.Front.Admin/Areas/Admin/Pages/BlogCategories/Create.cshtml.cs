@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogCategories;
 
-public class CreateModel : PageModel
+public class CreateModel(IBlogCategoryService blogCategoryService) : PageModel
 {
-    private readonly IBlogCategoryService _blogCategoryService;
-
-    public CreateModel(IBlogCategoryService blogCategoryService)
-    {
-        _blogCategoryService = blogCategoryService;
-    }
-
     [BindProperty] public BlogCategory BlogCategory { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _blogCategoryService.Add(BlogCategory);
+            var result = await blogCategoryService.Add(BlogCategory);
             if (result.Code == 0)
                 return RedirectToPage("/BlogCategories/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

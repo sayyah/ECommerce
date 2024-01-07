@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Sizes;
 
-public class EditModel : PageModel
+public class EditModel(ISizeService sizeService) : PageModel
 {
-    private readonly ISizeService _sizeService;
-
-    public EditModel(ISizeService sizeService)
-    {
-        _sizeService = sizeService;
-    }
-
     [BindProperty] public Size Size { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _sizeService.GetById(id);
+        var result = await sizeService.GetById(id);
         Size = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _sizeService.Edit(Size);
+            var result = await sizeService.Edit(Size);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

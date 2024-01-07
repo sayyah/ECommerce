@@ -1,43 +1,23 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooSndList
+public class HolooSndList(int sanad_Code, string col_Code, string moien_Code, string tafzili_Code, double? bed,
+    double? bes, string comment_Line)
 {
-    public HolooSndList(int sanad_Code, string col_Code, string moien_Code, string tafzili_Code, double? bed,
-        double? bes, string comment_Line)
-    {
-        Sanad_Code = sanad_Code;
-        Col_Code = col_Code;
-        Moien_Code = moien_Code;
-        Tafzili_Code = tafzili_Code;
-        Bed = bed;
-        Bes = bes;
-        Comment_Line = comment_Line;
-        Show_Daftar = true;
-        Joze = false;
-        Actions = 0;
-        OldSCode = 0;
-        Bed_Arz = 0;
-        Bes_Arz = 0;
-        ArzId = 1;
-        Money_Price = 1;
-        Money_change = 1;
-    }
-
-    public int Sanad_Code { get; set; }
+    public int Sanad_Code { get; set; } = sanad_Code;
     public int Index { get; set; }
-    public string Col_Code { get; set; }
-    public string Moien_Code { get; set; }
-    public string Tafzili_Code { get; set; }
-    public double? Bed { get; set; }
-    public double? Bes { get; set; }
-    public bool? Show_Daftar { get; set; }
-    public bool? Joze { get; set; }
-    public byte? Actions { get; set; }
-    public string Comment_Line { get; set; }
-    public int OldSCode { get; set; }
-    public double Bed_Arz { get; set; }
-    public double Bes_Arz { get; set; }
-    public int ArzId { get; set; }
-    public double Money_Price { get; set; }
-    public double Money_change { get; set; }
+    public string Col_Code { get; set; } = col_Code;
+    public string Moien_Code { get; set; } = moien_Code;
+    public string Tafzili_Code { get; set; } = tafzili_Code;
+    public double? Bed { get; set; } = bed;
+    public double? Bes { get; set; } = bes;
+    public bool? Show_Daftar { get; set; } = true;
+    public bool? Joze { get; set; } = false;
+    public byte? Actions { get; set; } = 0;
+    public string Comment_Line { get; set; } = comment_Line;
+    public int OldSCode { get; set; } = 0;
+    public double Bed_Arz { get; set; } = 0;
+    public double Bes_Arz { get; set; } = 0;
+    public int ArzId { get; set; } = 1;
+    public double Money_Price { get; set; } = 1;
+    public double Money_change { get; set; } = 1;
 }

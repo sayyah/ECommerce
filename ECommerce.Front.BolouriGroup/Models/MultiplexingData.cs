@@ -10,14 +10,9 @@ public class MultiplexingData
         Amount
     }
 
-    public MultiplexingData()
-    {
-        MultiplexingRows = new List<MultiplexingDataItem>();
-    }
-
     [Display(Name = @"نوع تسهیم")] public MultiplexingType? Type { get; set; }
 
-    public List<MultiplexingDataItem> MultiplexingRows { get; set; }
+    public List<MultiplexingDataItem> MultiplexingRows { get; set; } = new();
 
     public bool IsValid()
     {

@@ -2,18 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SendInformationController : ControllerBase
-{
-    private readonly ILogger<BrandsController> _logger;
-    private readonly ISendInformationRepository _sendInformationRepository;
-
-    public SendInformationController(ISendInformationRepository sendInformationRepository,
+public class SendInformationController(ISendInformationRepository sendInformationRepository,
         ILogger<BrandsController> logger)
-    {
-        _sendInformationRepository = sendInformationRepository;
-        _logger = logger;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
     public async Task<IActionResult> GetByUserId(int id, CancellationToken cancellationToken)
@@ -23,12 +15,12 @@ public class SendInformationController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _sendInformationRepository.Where(x => x.UserId == id, cancellationToken)
+                ReturnData = await sendInformationRepository.Where(x => x.UserId == id, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -40,7 +32,7 @@ public class SendInformationController : ControllerBase
     {
         try
         {
-            var result = await _sendInformationRepository.GetByIdAsync(cancellationToken, id);
+            var result = await sendInformationRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -55,7 +47,7 @@ public class SendInformationController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -74,7 +66,7 @@ public class SendInformationController : ControllerBase
                 });
             sendInformation.Address = sendInformation.Address.Trim();
 
-            var repetitive = await _sendInformationRepository.Where(
+            var repetitive = await sendInformationRepository.Where(
                 x => x.UserId == sendInformation.UserId && x.RecipientName.Equals(sendInformation.RecipientName) &&
                      x.Address.Equals(sendInformation.Address), cancellationToken);
             if (repetitive.Any())
@@ -87,12 +79,12 @@ public class SendInformationController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _sendInformationRepository.AddAsync(sendInformation, cancellationToken)
+                ReturnData = await sendInformationRepository.AddAsync(sendInformation, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -107,7 +99,7 @@ public class SendInformationController : ControllerBase
     {
         try
         {
-            var repetitive = await _sendInformationRepository.Where(
+            var repetitive = await sendInformationRepository.Where(
                 x =>
                     x.Id != sendInformation.Id
                     && x.UserId == sendInformation.UserId
@@ -128,12 +120,12 @@ public class SendInformationController : ControllerBase
                     }
                 );
 
-            await _sendInformationRepository.UpdateAsync(sendInformation, cancellationToken);
+            await sendInformationRepository.UpdateAsync(sendInformation, cancellationToken);
             return Ok(new ApiResult { Code = ResultCode.Success });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(
                 new ApiResult
                 {
@@ -150,7 +142,7 @@ public class SendInformationController : ControllerBase
     {
         try
         {
-            await _sendInformationRepository.DeleteAsync(id, cancellationToken);
+            await sendInformationRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -158,7 +150,7 @@ public class SendInformationController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

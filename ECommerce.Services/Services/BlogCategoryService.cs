@@ -2,15 +2,9 @@
 
 namespace ECommerce.Services.Services;
 
-public class BlogCategoryService : EntityService<BlogCategory>, IBlogCategoryService
+public class BlogCategoryService(IHttpService http) : EntityService<BlogCategory>(http), IBlogCategoryService
 {
     private const string Url = "api/BlogCategories";
-    private readonly IHttpService _http;
-
-    public BlogCategoryService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<BlogCategory>>> GetAll(string search = "", int pageNumber = 0,
         int pageSize = 10)
@@ -51,7 +45,7 @@ public class BlogCategoryService : EntityService<BlogCategory>, IBlogCategorySer
 
     public async Task<ServiceResult> Delete(int id)
     {
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -64,13 +58,13 @@ public class BlogCategoryService : EntityService<BlogCategory>, IBlogCategorySer
 
     public async Task<ServiceResult<BlogCategory>> GetById(int id)
     {
-        var result = await _http.GetAsync<BlogCategory>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<BlogCategory>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
     public async Task<ServiceResult<List<CategoryParentViewModel>>> GetParents(int blogId = 0)
     {
-        var result = await _http.GetAsync<List<CategoryParentViewModel>>(Url, $"GetParents?blogId={blogId}");
+        var result = await http.GetAsync<List<CategoryParentViewModel>>(Url, $"GetParents?blogId={blogId}");
         if (result.Code == ResultCode.Success)
             return new ServiceResult<List<CategoryParentViewModel>>
             {

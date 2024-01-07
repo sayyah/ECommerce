@@ -2,16 +2,10 @@
 
 namespace ECommerce.Services.Services;
 
-public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowService
+public class SlideShowService(IHttpService http) : EntityService<SlideShowViewModel>(http), ISlideShowService
 {
     private const string Url = "api/SlideShows";
-    private readonly IHttpService _http;
     private List<SlideShowViewModel> _slideShows;
-
-    public SlideShowService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<SlideShowViewModel>>> Load(int pageNumber = 1, int pageSize = 10)
     {
@@ -79,7 +73,7 @@ public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowSer
         //var result = await Delete(Url, id);
         //_slideShows = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         _slideShows = null;
         if (result.Code == ResultCode.Success)
             return new ServiceResult
@@ -93,7 +87,7 @@ public class SlideShowService : EntityService<SlideShowViewModel>, ISlideShowSer
 
     public async Task<ServiceResult<SlideShowViewModel>> GetById(int id)
     {
-        var result = await _http.GetAsync<SlideShowViewModel>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<SlideShowViewModel>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

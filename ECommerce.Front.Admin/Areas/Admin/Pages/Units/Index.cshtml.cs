@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Units;
 
-public class IndexModel : PageModel
+public class IndexModel(IUnitService unitService) : PageModel
 {
-    private readonly IUnitService _unitService;
-
-    public IndexModel(IUnitService unitService)
-    {
-        _unitService = unitService;
-    }
-
     public ServiceResult<List<Unit>> Units { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _unitService.Load(search, pageNumber, pageSize);
+        var result = await unitService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             result.PaginationDetails.Address = "/Units/Index";

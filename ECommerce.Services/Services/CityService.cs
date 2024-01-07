@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class CityService : EntityService<City>, ICityService
+public class CityService(IHttpService http) : EntityService<City>(http), ICityService
 {
     private const string Url = "api/Cities";
-    private readonly IHttpService _http;
     private List<City> _cities;
-
-    public CityService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<City>>> LoadAllCity()
     {
@@ -70,7 +64,7 @@ public class CityService : EntityService<City>, ICityService
         //var result = await Delete(Url, id);
         //_cities = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -83,13 +77,13 @@ public class CityService : EntityService<City>, ICityService
 
     public async Task<ServiceResult<City>> GetByStateId(int id)
     {
-        var result = await _http.GetAsync<City>(Url, $"GetByStateId?id={id}");
+        var result = await http.GetAsync<City>(Url, $"GetByStateId?id={id}");
         return Return(result);
     }
 
     public async Task<ServiceResult<City>> GetById(int id)
     {
-        var result = await _http.GetAsync<City>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<City>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

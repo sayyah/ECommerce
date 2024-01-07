@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class KeywordService : EntityService<Keyword>, IKeywordService
+public class KeywordService(IHttpService http) : EntityService<Keyword>(http), IKeywordService
 {
     private const string Url = "api/Keywords";
-    private readonly IHttpService _http;
     private List<Keyword> _keywords;
-
-    public KeywordService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Keyword>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -78,7 +72,7 @@ public class KeywordService : EntityService<Keyword>, IKeywordService
         //var result = await Delete(Url, id);
         //_keywords = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _keywords = null;
@@ -104,7 +98,7 @@ public class KeywordService : EntityService<Keyword>, IKeywordService
 
     public async Task<ServiceResult<Keyword>> GetById(int id)
     {
-        var result = await _http.GetAsync<Keyword>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Keyword>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

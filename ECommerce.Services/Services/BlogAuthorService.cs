@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class BlogAuthorService : EntityService<BlogAuthor>, IBlogAuthorService
+public class BlogAuthorService(IHttpService http) : EntityService<BlogAuthor>(http), IBlogAuthorService
 {
     private const string Url = "api/BlogAuthors";
-    private readonly IHttpService _http;
     private List<BlogAuthor> _blogAuthors;
-
-    public BlogAuthorService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<BlogAuthor>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -77,7 +71,7 @@ public class BlogAuthorService : EntityService<BlogAuthor>, IBlogAuthorService
     {
         //var result = await Delete(Url, id);
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -90,7 +84,7 @@ public class BlogAuthorService : EntityService<BlogAuthor>, IBlogAuthorService
 
     public async Task<ServiceResult<BlogAuthor>> GetById(int id)
     {
-        var result = await _http.GetAsync<BlogAuthor>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<BlogAuthor>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

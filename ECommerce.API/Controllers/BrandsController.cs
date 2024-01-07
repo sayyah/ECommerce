@@ -2,17 +2,9 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BrandsController : ControllerBase
+public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsController> logger)
+    : ControllerBase
 {
-    private readonly IBrandRepository _brandRepository;
-    private readonly ILogger<BrandsController> _logger;
-
-    public BrandsController(IBrandRepository brandRepository, ILogger<BrandsController> logger)
-    {
-        _brandRepository = brandRepository;
-        _logger = logger;
-    }
-
     /// <summary>
     ///     Get All Brands.
     /// </summary>
@@ -21,7 +13,7 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            var result = await _brandRepository.GetAll(cancellationToken);
+            var result = await brandRepository.GetAll(cancellationToken);
             var brands = result.ToList();
             brands.Insert(0, new Brand
             {
@@ -35,7 +27,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -48,7 +40,7 @@ public class BrandsController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _brandRepository.Search(paginationParameters, cancellationToken);
+            var entity = await brandRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -80,7 +72,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -92,7 +84,7 @@ public class BrandsController : ControllerBase
         try
         {
             var x = User.Identity.Name;
-            var result = await _brandRepository.GetByIdAsync(cancellationToken, id);
+            var result = await brandRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -107,7 +99,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -126,7 +118,7 @@ public class BrandsController : ControllerBase
                 });
             brand.Name = brand.Name.Trim();
 
-            var repetitiveBrand = await _brandRepository.GetByName(brand.Name, cancellationToken);
+            var repetitiveBrand = await brandRepository.GetByName(brand.Name, cancellationToken);
             if (repetitiveBrand != null)
                 return Ok(new ApiResult
                 {
@@ -137,12 +129,12 @@ public class BrandsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _brandRepository.AddAsync(brand, cancellationToken)
+                ReturnData = await brandRepository.AddAsync(brand, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -154,15 +146,15 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            var repetitive = await _brandRepository.GetByName(brand.Name, cancellationToken);
+            var repetitive = await brandRepository.GetByName(brand.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != brand.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام برند تکراری است" }
                 });
-            if (repetitive != null) _brandRepository.Detach(repetitive);
-            await _brandRepository.UpdateAsync(brand, cancellationToken);
+            if (repetitive != null) brandRepository.Detach(repetitive);
+            await brandRepository.UpdateAsync(brand, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -170,7 +162,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -182,7 +174,7 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            await _brandRepository.DeleteAsync(id, cancellationToken);
+            await brandRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -190,7 +182,7 @@ public class BrandsController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

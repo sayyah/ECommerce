@@ -2,20 +2,13 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Categories;
 
-public class DetailModel : PageModel
+public class DetailModel(ICategoryService categoryService) : PageModel
 {
-    private readonly ICategoryService _categoryService;
-
-    public DetailModel(ICategoryService categoryService)
-    {
-        _categoryService = categoryService;
-    }
-
     public Category Category { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _categoryService.GetById(id);
+        var result = await categoryService.GetById(id);
         if (result.Code == 0)
         {
             Category = result.ReturnData;

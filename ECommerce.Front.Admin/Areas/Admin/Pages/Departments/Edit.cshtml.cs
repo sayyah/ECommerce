@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Departments;
 
-public class EditModel : PageModel
+public class EditModel(IDepartmentService departmentService) : PageModel
 {
-    private readonly IDepartmentService _departmentService;
-
-    public EditModel(IDepartmentService departmentService)
-    {
-        _departmentService = departmentService;
-    }
-
     [BindProperty] public Department Department { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _departmentService.GetById(id);
+        var result = await departmentService.GetById(id);
         Department = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _departmentService.Edit(Department);
+            var result = await departmentService.Edit(Department);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

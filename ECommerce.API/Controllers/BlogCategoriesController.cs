@@ -2,18 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogCategoriesController : ControllerBase
-{
-    private readonly IBlogCategoryRepository _blogCategoryRepository;
-    private readonly ILogger<BlogCategoriesController> _logger;
-
-    public BlogCategoriesController(IBlogCategoryRepository blogCategoryRepository,
+public class BlogCategoriesController(IBlogCategoryRepository blogCategoryRepository,
         ILogger<BlogCategoriesController> logger)
-    {
-        _blogCategoryRepository = blogCategoryRepository;
-        _logger = logger;
-    }
-
+    : ControllerBase
+{
     [HttpGet]
     public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -21,7 +13,7 @@ public class BlogCategoriesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogCategoryRepository.Search(paginationParameters, cancellationToken);
+            var entity = await blogCategoryRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -41,7 +33,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -52,7 +44,7 @@ public class BlogCategoriesController : ControllerBase
     {
         try
         {
-            var result = await _blogCategoryRepository.GetByIdAsync(cancellationToken, id);
+            var result = await blogCategoryRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -67,7 +59,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -79,7 +71,7 @@ public class BlogCategoriesController : ControllerBase
     {
         try
         {
-            var result = await _blogCategoryRepository.Parents(blogId, cancellationToken);
+            var result = await blogCategoryRepository.Parents(blogId, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -94,7 +86,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -115,7 +107,7 @@ public class BlogCategoriesController : ControllerBase
             blogCategory.Name = blogCategory.Name.Trim();
 
             var repetitiveCategory =
-                await _blogCategoryRepository.GetByName(blogCategory.Name, blogCategory.Parent?.Id, cancellationToken);
+                await blogCategoryRepository.GetByName(blogCategory.Name, blogCategory.Parent?.Id, cancellationToken);
             if (repetitiveCategory != null)
                 return Ok(new ApiResult
                 {
@@ -126,12 +118,12 @@ public class BlogCategoriesController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _blogCategoryRepository.AddAsync(blogCategory, cancellationToken)
+                ReturnData = await blogCategoryRepository.AddAsync(blogCategory, cancellationToken)
             });
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -143,7 +135,7 @@ public class BlogCategoriesController : ControllerBase
     {
         try
         {
-            await _blogCategoryRepository.UpdateAsync(blogCategory, cancellationToken);
+            await blogCategoryRepository.UpdateAsync(blogCategory, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -151,7 +143,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
@@ -163,7 +155,7 @@ public class BlogCategoriesController : ControllerBase
     {
         try
         {
-            await _blogCategoryRepository.DeleteAsync(id, cancellationToken);
+            await blogCategoryRepository.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -171,7 +163,7 @@ public class BlogCategoriesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
                 { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }

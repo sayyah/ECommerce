@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Products;
 
-public class IndexModel : PageModel
+public class IndexModel(IProductService productService) : PageModel
 {
-    private readonly IProductService _productService;
-
-    public IndexModel(IProductService productService)
-    {
-        _productService = productService;
-    }
-
     //public PaginationViewModel PaginationViewModel { get; set; }
     public ServiceResult<List<ProductIndexPageViewModel>> Products { get; set; }
 
@@ -24,7 +17,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _productService.Search(search, pageNumber, pageSize);
+        var result = await productService.Search(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

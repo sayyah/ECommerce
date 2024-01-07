@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Currencies;
 
-public class CreateModel : PageModel
+public class CreateModel(ICurrencyService currencyService) : PageModel
 {
-    private readonly ICurrencyService _currencyService;
-
-    public CreateModel(ICurrencyService currencyService)
-    {
-        _currencyService = currencyService;
-    }
-
     [BindProperty] public Currency Currency { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -25,7 +18,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _currencyService.Add(Currency);
+            var result = await currencyService.Add(Currency);
             if (result.Code == 0)
                 return RedirectToPage("/Currencies/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

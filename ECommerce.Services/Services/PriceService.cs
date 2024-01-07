@@ -1,12 +1,8 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class PriceService : EntityService<Price>, IPriceService
+public class PriceService(IHttpService http) : EntityService<Price>(http), IPriceService
 {
     private const string Url = "api/Prices";
-
-    public PriceService(IHttpService http) : base(http)
-    {
-    }
 
     public async Task<ServiceResult<List<Price>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {

@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Sizes;
 
-public class IndexModel : PageModel
+public class IndexModel(ISizeService sizeService) : PageModel
 {
-    private readonly ISizeService _sizService;
-
-    public IndexModel(ISizeService sizeService)
-    {
-        _sizService = sizeService;
-    }
-
     public ServiceResult<List<Size>> Sizes { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _sizService.Load(search, pageNumber, pageSize);
+        var result = await sizeService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

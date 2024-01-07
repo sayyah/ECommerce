@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
-public class EditModel : PageModel
+public class EditModel(IKeywordService keywordService) : PageModel
 {
-    private readonly IKeywordService _keywordService;
-
-    public EditModel(IKeywordService keywordService)
-    {
-        _keywordService = keywordService;
-    }
-
     [BindProperty] public Keyword Keyword { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _keywordService.GetById(id);
+        var result = await keywordService.GetById(id);
         Keyword = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _keywordService.Edit(Keyword);
+            var result = await keywordService.Edit(Keyword);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

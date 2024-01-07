@@ -2,15 +2,8 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Sizes;
 
-public class CreateModel : PageModel
+public class CreateModel(ISizeService sizService) : PageModel
 {
-    private readonly ISizeService _sizService;
-
-    public CreateModel(ISizeService sizService)
-    {
-        _sizService = sizService;
-    }
-
     [BindProperty] public Size Size { get; set; }
 
 
@@ -26,7 +19,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _sizService.Add(Size);
+            var result = await sizService.Add(Size);
             if (result.Code == 0)
                 return RedirectToPage("/Sizes/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

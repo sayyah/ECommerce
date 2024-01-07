@@ -3,15 +3,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Contacts;
 
-public class IndexModel : PageModel
+public class IndexModel(IContactService contactService) : PageModel
 {
-    private readonly IContactService _contactService;
-
-    public IndexModel(IContactService contactService)
-    {
-        _contactService = contactService;
-    }
-
     public ServiceResult<List<Contact>> Contacts { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -23,7 +16,7 @@ public class IndexModel : PageModel
         Thread.CurrentThread.CurrentCulture = new CultureInfo("fa-IR");
         Message = message;
         Code = code;
-        var result = await _contactService.GetAll(search, pageNumber, pageSize);
+        var result = await contactService.GetAll(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

@@ -1,15 +1,10 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class MessageService : EntityService<Message>, IMessageService
+public class MessageService(IHttpService http, ICookieService cookieService) : EntityService<Message>(http),
+    IMessageService
 {
     private const string Url = "api/Messages";
-    private readonly ICookieService _cookieService;
     private List<Message> _messages;
-
-    public MessageService(IHttpService http, ICookieService cookieService) : base(http)
-    {
-        _cookieService = cookieService;
-    }
 
     public async Task<ServiceResult<List<Message>>> Load()
     {
@@ -38,7 +33,7 @@ public class MessageService : EntityService<Message>, IMessageService
 
     public async Task<ServiceResult> Add(Message message)
     {
-        var currentUser = _cookieService.GetCurrentUser();
+        var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id != 0) message.UserId = currentUser.Id;
         var result = await Create(Url, message);
         _messages = null;

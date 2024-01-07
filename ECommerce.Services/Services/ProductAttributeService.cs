@@ -1,18 +1,13 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ProductAttributeService : EntityService<ProductAttribute>, IProductAttributeService
+public class ProductAttributeService(IHttpService http) : EntityService<ProductAttribute>(http),
+    IProductAttributeService
 {
     private const string Url = "api/ProductAttributes";
 
     //private List<ProductAttribute> _productAttributes;
-    private readonly IHttpService _http;
 
     //public int ProductAttributeGroupsId { get; set; }
-
-    public ProductAttributeService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<ProductAttribute>>> Load(int productId = 0, int pageNumber = 0,
         int pageSize = 10)
@@ -39,7 +34,7 @@ public class ProductAttributeService : EntityService<ProductAttribute>, IProduct
     {
         //var result = await Delete(Url, id);
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -77,7 +72,7 @@ public class ProductAttributeService : EntityService<ProductAttribute>, IProduct
 
     public async Task<ServiceResult<ProductAttribute>> GetById(int id)
     {
-        var result = await _http.GetAsync<ProductAttribute>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ProductAttribute>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Categories;
 
-public class DeleteModel : PageModel
+public class DeleteModel(ICategoryService categoryService) : PageModel
 {
-    private readonly ICategoryService _categoryService;
-
-    public DeleteModel(ICategoryService categoryService)
-    {
-        _categoryService = categoryService;
-    }
-
     public Category Category { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _categoryService.GetById(id);
+        var result = await categoryService.GetById(id);
         if (result.Code == 0)
         {
             Category = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _categoryService.Delete(id);
+            var result = await categoryService.Delete(id);
             return RedirectToPage("/Categories/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

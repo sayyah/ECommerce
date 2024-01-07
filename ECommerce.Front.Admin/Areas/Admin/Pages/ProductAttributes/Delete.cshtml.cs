@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributes;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IProductAttributeService productAttributeService) : PageModel
 {
-    private readonly IProductAttributeService _productAttributeService;
-
-    public DeleteModel(IProductAttributeService productAttributeService)
-    {
-        _productAttributeService = productAttributeService;
-    }
-
     public ProductAttribute ProductAttribute { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _productAttributeService.GetById(id);
+        var result = await productAttributeService.GetById(id);
         if (result.Code == 0)
         {
             ProductAttribute = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _productAttributeService.Delete(id);
+            var result = await productAttributeService.Delete(id);
             return RedirectToPage("/ProductAttributes/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

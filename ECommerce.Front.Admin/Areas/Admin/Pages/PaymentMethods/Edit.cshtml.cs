@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.PaymentMethods;
 
-public class EditModel : PageModel
+public class EditModel(IPaymentMethodService paymentMethodService) : PageModel
 {
-    private readonly IPaymentMethodService _paymentMethodService;
-
-    public EditModel(IPaymentMethodService paymentMethodService)
-    {
-        _paymentMethodService = paymentMethodService;
-    }
-
     [BindProperty] public PaymentMethod PaymentMethod { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _paymentMethodService.GetById(id);
+        var result = await paymentMethodService.GetById(id);
         PaymentMethod = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _paymentMethodService.Edit(PaymentMethod);
+            var result = await paymentMethodService.Edit(PaymentMethod);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

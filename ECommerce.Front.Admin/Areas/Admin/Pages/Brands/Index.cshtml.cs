@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Brands;
 
-public class IndexModel : PageModel
+public class IndexModel(IBrandService brandService) : PageModel
 {
-    private readonly IBrandService _brandService;
-
-    public IndexModel(IBrandService brandService)
-    {
-        _brandService = brandService;
-    }
-
     public ServiceResult<List<Brand>> Brands { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _brandService.GetAll(search, pageNumber, pageSize);
+        var result = await brandService.GetAll(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

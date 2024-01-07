@@ -4,19 +4,11 @@ using Newtonsoft.Json;
 
 namespace ECommerce.API.Utilities;
 
-public class ExceptionHandler : IActionFilter
-{
-    private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _environment;
-    private readonly ILogger<ExceptionHandler> _logger;
-
-    public ExceptionHandler(IWebHostEnvironment environment, ILogger<ExceptionHandler> logger,
+public class ExceptionHandler(IWebHostEnvironment environment, ILogger<ExceptionHandler> logger,
         IConfiguration configuration)
-    {
-        _environment = environment;
-        _logger = logger;
-        _configuration = configuration;
-    }
+    : IActionFilter
+{
+    private readonly IConfiguration _configuration = configuration;
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
@@ -65,7 +57,7 @@ public class ExceptionHandler : IActionFilter
                     ? context.Exception.Message
                     : context.Exception.InnerException.Message;
 
-                if (_environment.IsDevelopment())
+                if (environment.IsDevelopment())
                     result = new ApiResult
                     {
                         Messages = new List<string> { message },
@@ -96,6 +88,6 @@ public class ExceptionHandler : IActionFilter
             Route = context.HttpContext.Request.Path
         };
 
-        _logger.LogError(JsonConvert.SerializeObject(logModel));
+        logger.LogError(JsonConvert.SerializeObject(logModel));
     }
 }

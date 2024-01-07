@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 
-public class IndexModel : PageModel
+public class IndexModel(IEmployeeService employeeService) : PageModel
 {
-    private readonly IEmployeeService _employeeService;
-
-    public IndexModel(IEmployeeService employeeService)
-    {
-        _employeeService = employeeService;
-    }
-
     public ServiceResult<List<Employee>> Employees { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _employeeService.GetAll(search, pageNumber, pageSize);
+        var result = await employeeService.GetAll(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

@@ -1,21 +1,13 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class ProductCommentRepository : AsyncRepository<ProductComment>, IProductCommentRepository
+public class ProductCommentRepository(SunflowerECommerceDbContext context) : AsyncRepository<ProductComment>(context),
+    IProductCommentRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public ProductCommentRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<PagedList<ProductComment>> Search(PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
     {
         return PagedList<ProductComment>.ToPagedList(
-            await _context.ProductComments
+            await context.ProductComments
                 .Where(x => x.ProductId != null && x.Name.Contains(paginationParameters.Search))
                 .AsNoTracking().OrderByDescending(on => on.Id).Include(x => x.Product).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
@@ -26,7 +18,7 @@ public class ProductCommentRepository : AsyncRepository<ProductComment>, IProduc
         CancellationToken cancellationToken)
     {
         return PagedList<ProductComment>.ToPagedList(
-            await _context.ProductComments.Where(x =>
+            await context.ProductComments.Where(x =>
                     x.IsAccepted && x.ProductId == Convert.ToInt32(paginationParameters.Search))
                 .AsNoTracking().OrderByDescending(on => on.Id).Include(x => x.Answer).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,

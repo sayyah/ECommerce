@@ -2,19 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ImagesController : ControllerBase
-{
-    private readonly IHostEnvironment _environment;
-    private readonly IImageRepository _imageRepository;
-    private readonly ILogger<ImagesController> _logger;
-
-    public ImagesController(IHostEnvironment environment, IImageRepository imageRepository,
+public class ImagesController(IHostEnvironment environment, IImageRepository imageRepository,
         ILogger<ImagesController> logger)
-    {
-        _environment = environment;
-        _imageRepository = imageRepository;
-        _logger = logger;
-    }
+    : ControllerBase
+{
+    private readonly IHostEnvironment _environment = environment;
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -23,7 +15,7 @@ public class ImagesController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _imageRepository.Search(paginationParameters, cancellationToken);
+            var entity = await imageRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -43,7 +35,7 @@ public class ImagesController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, e.Message);
+            logger.LogCritical(e, e.Message);
             return Ok(new ApiResult { Code = ResultCode.DatabaseError });
         }
     }
@@ -51,7 +43,7 @@ public class ImagesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetByProductId(int productId, CancellationToken cancellationToken)
     {
-        var result = await _imageRepository.GetByProductId(productId, cancellationToken);
+        var result = await imageRepository.GetByProductId(productId, cancellationToken);
         if (result == null)
             return Ok(new ApiResult
             {
@@ -71,7 +63,7 @@ public class ImagesController : ControllerBase
     {
         try
         {
-            var addedImage = await _imageRepository.AddAsync(image, cancellationToken);
+            var addedImage = await imageRepository.AddAsync(image, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -90,7 +82,7 @@ public class ImagesController : ControllerBase
     {
         try
         {
-            var addedImage = await _imageRepository.AddAsync(image, cancellationToken);
+            var addedImage = await imageRepository.AddAsync(image, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -107,8 +99,8 @@ public class ImagesController : ControllerBase
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var image = _imageRepository.GetById(id);
-        await _imageRepository.DeleteByName(image.Name, cancellationToken);
+        var image = imageRepository.GetById(id);
+        await imageRepository.DeleteByName(image.Name, cancellationToken);
 
         return Ok(new ApiResult
         {
@@ -119,7 +111,7 @@ public class ImagesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetByBlogId(int blogId, CancellationToken cancellationToken)
     {
-        var result = await _imageRepository.GetByBlogId(blogId, cancellationToken);
+        var result = await imageRepository.GetByBlogId(blogId, cancellationToken);
         if (result == null)
             return Ok(new ApiResult
             {

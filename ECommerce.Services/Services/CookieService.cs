@@ -7,15 +7,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace ECommerce.Services.Services;
 
-public class CookieService : ICookieService
+public class CookieService(IHttpContextAccessor httpContextAccessor) : ICookieService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public CookieService(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     public void SetCookie(HttpContext context, CookieData data)
     {
         var options = new CookieOptions
@@ -100,7 +93,7 @@ public class CookieService : ICookieService
         };
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-        await _httpContextAccessor.HttpContext.SignInAsync(
+        await httpContextAccessor.HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsPrincipal),
             authProperties);
@@ -108,12 +101,12 @@ public class CookieService : ICookieService
 
     public string GetToken()
     {
-        return _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value;
+        return httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value;
     }
 
     public async Task LogOut()
     {
-        await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     public LoginViewModel GetCurrentUser()

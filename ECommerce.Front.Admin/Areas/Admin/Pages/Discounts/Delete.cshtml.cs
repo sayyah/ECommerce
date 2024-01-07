@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Discounts;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IDiscountService discountService) : PageModel
 {
-    private readonly IDiscountService _discountService;
-
-    public DeleteModel(IDiscountService discountService)
-    {
-        _discountService = discountService;
-    }
-
     public Discount Discount { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _discountService.GetById(id);
+        var result = await discountService.GetById(id);
         if (result.Code == 0)
         {
             Discount = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _discountService.Delete(id);
+            var result = await discountService.Delete(id);
             return RedirectToPage("/Discounts/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

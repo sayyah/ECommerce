@@ -4,17 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Units;
 
-public class CreateModel : PageModel
+public class CreateModel(IUnitService unitService, IHolooUnitService holooUnitService)
+    : PageModel
 {
-    private readonly IHolooUnitService _holooUnitService;
-    private readonly IUnitService _unitService;
-
-    public CreateModel(IUnitService unitService, IHolooUnitService holooUnitService)
-    {
-        _unitService = unitService;
-        _holooUnitService = holooUnitService;
-    }
-
     [BindProperty] public Unit Unit { get; set; }
     public SelectList HolooUnits { get; set; }
     [TempData] public string Message { get; set; }
@@ -23,7 +15,7 @@ public class CreateModel : PageModel
 
     public async Task OnGet()
     {
-        var result = await _holooUnitService.Load();
+        var result = await holooUnitService.Load();
         HolooUnits = new SelectList(result.ReturnData, nameof(HolooUnit.Unit_Code), nameof(HolooUnit.Unit_Name));
     }
 
@@ -31,7 +23,7 @@ public class CreateModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _unitService.Add(Unit);
+            var result = await unitService.Add(Unit);
             if (result.Code == 0)
                 return RedirectToPage("/Units/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });

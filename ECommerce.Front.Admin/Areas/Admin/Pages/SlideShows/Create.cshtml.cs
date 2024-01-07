@@ -4,24 +4,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.SlideShows;
 
-public class CreateModel : PageModel
-{
-    private readonly ICategoryService _categoryService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-    private readonly IProductService _productService;
-    private readonly ISlideShowService _slideShowService;
-
-    public CreateModel(ISlideShowService slideShowService, IImageService imageService, IHostEnvironment environment,
+public class CreateModel(ISlideShowService slideShowService, IImageService imageService, IHostEnvironment environment,
         IProductService productService, ICategoryService categoryService)
-    {
-        _slideShowService = slideShowService;
-        _imageService = imageService;
-        _environment = environment;
-        _productService = productService;
-        _categoryService = categoryService;
-    }
-
+    : PageModel
+{
     [BindProperty] public SlideShow SlideShow { get; set; }
 
     [BindProperty] public IFormFile Upload { get; set; }
@@ -35,7 +21,7 @@ public class CreateModel : PageModel
 
     public async Task OnGet(string search)
     {
-        var result = await _productService.Search(search, 1, 30);
+        var result = await productService.Search(search, 1, 30);
         if (result.Code == ServiceCode.Success)
         {
             Message = result.Message;
@@ -43,7 +29,7 @@ public class CreateModel : PageModel
             Products = result;
         }
 
-        var resultCategory = await _categoryService.GetParents();
+        var resultCategory = await categoryService.GetParents();
         Categories = resultCategory.ReturnData;
     }
 
@@ -60,7 +46,7 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        var fileName = (await _imageService.Upload(Upload, "Images/SlideShows", _environment.ContentRootPath))
+        var fileName = (await imageService.Upload(Upload, "Images/SlideShows", environment.ContentRootPath))
             .ReturnData;
         if (fileName == null)
         {
@@ -75,7 +61,7 @@ public class CreateModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _slideShowService.Add(SlideShow);
+            var result = await slideShowService.Add(SlideShow);
             if (result.Code == 0)
                 return RedirectToPage("/SlideShows/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
@@ -91,14 +77,14 @@ public class CreateModel : PageModel
 
     private async Task Initial()
     {
-        Products = await _productService.Search("", 1, 30);
-        var resultCategory = await _categoryService.GetParents();
+        Products = await productService.Search("", 1, 30);
+        var resultCategory = await categoryService.GetParents();
         Categories = resultCategory.ReturnData;
     }
 
     public async Task<JsonResult> OnGetReturnProducts(string search = "")
     {
-        var result = await _productService.Search(search, 1, 30);
+        var result = await productService.Search(search, 1, 30);
         if (result.Code == ServiceCode.Success)
         {
             Message = result.Message;

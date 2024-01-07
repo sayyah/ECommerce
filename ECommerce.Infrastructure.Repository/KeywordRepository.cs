@@ -1,31 +1,23 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class KeywordRepository : AsyncRepository<Keyword>, IKeywordRepository
+public class KeywordRepository(SunflowerECommerceDbContext context) : AsyncRepository<Keyword>(context),
+    IKeywordRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public KeywordRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<Keyword> GetByKeywordText(string keywordText, CancellationToken cancellationToken)
     {
-        return await _context.Keywords.Where(x => x.KeywordText == keywordText)
+        return await context.Keywords.Where(x => x.KeywordText == keywordText)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<int> AddAll(IEnumerable<Keyword> keywords, CancellationToken cancellationToken)
     {
-        await _context.Keywords.AddRangeAsync(keywords, cancellationToken);
-        return await _context.SaveChangesAsync(cancellationToken);
+        await context.Keywords.AddRangeAsync(keywords, cancellationToken);
+        return await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<List<Keyword>> GetByProductId(int productId, CancellationToken cancellationToken)
     {
-        return await _context.Keywords.Where(x => x.Products.Any(y => y.Id == productId))
+        return await context.Keywords.Where(x => x.Products.Any(y => y.Id == productId))
             .ToListAsync(cancellationToken);
     }
 
@@ -33,7 +25,7 @@ public class KeywordRepository : AsyncRepository<Keyword>, IKeywordRepository
         CancellationToken cancellationToken)
     {
         return PagedList<Keyword>.ToPagedList(
-            await _context.Keywords.Where(x => x.KeywordText.Contains(paginationParameters.Search)).AsNoTracking()
+            await context.Keywords.Where(x => x.KeywordText.Contains(paginationParameters.Search)).AsNoTracking()
                 .OrderBy(on => on.Id).ToListAsync(cancellationToken),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);

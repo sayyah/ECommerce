@@ -3,18 +3,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.ProductAttributes;
 
-public class IndexModel : PageModel
-{
-    private readonly IProductAttributeGroupService _productAttributeGroupService;
-    private readonly IProductAttributeService _productAttributeService;
-
-    public IndexModel(IProductAttributeService productAttributeService,
+public class IndexModel(IProductAttributeService productAttributeService,
         IProductAttributeGroupService productAttributeGroupService)
-    {
-        _productAttributeService = productAttributeService;
-        _productAttributeGroupService = productAttributeGroupService;
-    }
-
+    : PageModel
+{
     public List<ProductAttribute> ProductAttributes { get; set; }
     public SelectList AttributeGroup { get; set; }
     [TempData] public string Message { get; set; }
@@ -25,12 +17,12 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var attributeGroups = (await _productAttributeGroupService.GetAll()).ReturnData;
+        var attributeGroups = (await productAttributeGroupService.GetAll()).ReturnData;
         AttributeGroup = new SelectList(attributeGroups, nameof(ProductAttributeGroup.Id),
             nameof(ProductAttributeGroup.Name));
         if (attributeGroupId == 0)
             attributeGroupId = attributeGroups.FirstOrDefault().Id;
-        var result = await _productAttributeService.GetAllAttributeWithGroupId(attributeGroupId, 10);
+        var result = await productAttributeService.GetAllAttributeWithGroupId(attributeGroupId, 10);
         ProductAttributes = result.ReturnData;
     }
 }

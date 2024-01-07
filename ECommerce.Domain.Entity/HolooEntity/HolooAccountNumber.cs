@@ -1,6 +1,4 @@
-﻿using ECommerce.Domain.Entities.HolooEntity;
-
-namespace ECommerce.Domain.Entities.HolooEntity;
+﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
 public class HolooAccountNumber
 {

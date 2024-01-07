@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
-public class DeleteModel : PageModel
+public class DeleteModel(IKeywordService keywordService) : PageModel
 {
-    private readonly IKeywordService _keywordService;
-
-    public DeleteModel(IKeywordService keywordService)
-    {
-        _keywordService = keywordService;
-    }
-
     public Keyword Keyword { get; set; }
     [TempData] public string Message { get; set; }
 
@@ -18,7 +11,7 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGet(int id)
     {
-        var result = await _keywordService.GetById(id);
+        var result = await keywordService.GetById(id);
         if (result.Code == 0)
         {
             Keyword = result.ReturnData;
@@ -33,7 +26,7 @@ public class DeleteModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _keywordService.Delete(id);
+            var result = await keywordService.Delete(id);
             return RedirectToPage("/Keywords/Index",
                 new { area = "Admin", message = result.Message, code = result.Code.ToString() });
         }

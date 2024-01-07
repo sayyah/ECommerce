@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogCategories;
 
-public class EditModel : PageModel
+public class EditModel(IBlogCategoryService blogcategoryService) : PageModel
 {
-    private readonly IBlogCategoryService _blogcategoryService;
-
-    public EditModel(IBlogCategoryService blogcategoryService)
-    {
-        _blogcategoryService = blogcategoryService;
-    }
-
     [BindProperty] public BlogCategory BlogCategory { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _blogcategoryService.GetById(id);
+        var result = await blogcategoryService.GetById(id);
         BlogCategory = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _blogcategoryService.Edit(BlogCategory);
+            var result = await blogcategoryService.Edit(BlogCategory);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

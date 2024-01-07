@@ -1,10 +1,11 @@
 ﻿using System.Net;
 using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Exceptions;
 
 namespace ECommerce.Domain.Exceptions;
 
-public class AppException : Exception
+public class AppException(ResultCode statusCode, string message, HttpStatusCode httpStatusCode, Exception exception,
+        object additionalData)
+    : Exception(message, exception)
 {
     public AppException()
         : this(ResultCode.Error)
@@ -76,16 +77,7 @@ public class AppException : Exception
     {
     }
 
-    public AppException(ResultCode statusCode, string message, HttpStatusCode httpStatusCode, Exception exception,
-        object additionalData)
-        : base(message, exception)
-    {
-        ApiStatusCode = statusCode;
-        HttpStatusCode = httpStatusCode;
-        AdditionalData = additionalData;
-    }
-
-    public HttpStatusCode HttpStatusCode { get; set; }
-    public ResultCode ApiStatusCode { get; set; }
-    public object AdditionalData { get; set; }
+    public HttpStatusCode HttpStatusCode { get; set; } = httpStatusCode;
+    public ResultCode ApiStatusCode { get; set; } = statusCode;
+    public object AdditionalData { get; set; } = additionalData;
 }

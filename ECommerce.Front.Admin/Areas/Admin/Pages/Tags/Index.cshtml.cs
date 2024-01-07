@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
-public class IndexModel : PageModel
+public class IndexModel(ITagService tagService) : PageModel
 {
-    private readonly ITagService _tagService;
-
-    public IndexModel(ITagService tagService)
-    {
-        _tagService = tagService;
-    }
-
     public ServiceResult<List<Tag>> Tags { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _tagService.Load(search, pageNumber, pageSize);
+        var result = await tagService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

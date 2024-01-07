@@ -3,17 +3,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Employees;
 
-public class EditModel : PageModel
+public class EditModel(IEmployeeService employeeService, IDepartmentService departmentService)
+    : PageModel
 {
-    private readonly IEmployeeService _employeeService;
-    private readonly IDepartmentService _departmentService;
-
-    public EditModel(IEmployeeService employeeService, IDepartmentService departmentService)
-    {
-        _employeeService = employeeService;
-        _departmentService = departmentService;
-    }
-
     [BindProperty] public Employee Employee { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -21,13 +13,13 @@ public class EditModel : PageModel
 
     public async Task OnGet(int id)
     {
-        var result = await _employeeService.GetById(id);
+        var result = await employeeService.GetById(id);
         Employee = result.ReturnData;
         await Init();
     }
 
     private async Task Init() {
-        var departments = (await _departmentService.GetAll()).ReturnData;
+        var departments = (await departmentService.GetAll()).ReturnData;
         Departments = new SelectList(departments, nameof(Department.Id), nameof(Department.Title));
     }
 
@@ -35,7 +27,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _employeeService.Edit(Employee);
+            var result = await employeeService.Edit(Employee);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

@@ -1,6 +1,4 @@
-﻿using ECommerce.Infrastructure.DataContext.Utilities;
-
-namespace ECommerce.Infrastructure.DataContext.Utilities;
+﻿namespace ECommerce.Infrastructure.DataContext.Utilities;
 
 public static class RangeUtility
 {
@@ -53,14 +51,8 @@ public static class RangeUtility
     }
 }
 
-public class Range<T>
+public class Range<T>(T min, T max)
 {
-    public Range(T min, T max)
-    {
-        Min = min;
-        Max = max;
-    }
-
-    public T Min { get; set; }
-    public T Max { get; set; }
+    public T Min { get; set; } = min;
+    public T Max { get; set; } = max;
 }

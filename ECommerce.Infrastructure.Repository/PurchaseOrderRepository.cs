@@ -1,19 +1,11 @@
-﻿using ECommerce.Infrastructure.DataContext;
+﻿namespace ECommerce.Infrastructure.Repository;
 
-namespace ECommerce.Infrastructure.Repository;
-
-public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchaseOrderRepository
+public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : AsyncRepository<PurchaseOrder>(context),
+    IPurchaseOrderRepository
 {
-    private readonly SunflowerECommerceDbContext _context;
-
-    public PurchaseOrderRepository(SunflowerECommerceDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<PurchaseOrder> GetByOrderIdWithInclude(long orderId, CancellationToken cancellationToken)
     {
-        var query = _context.PurchaseOrders.Where(x => x.OrderId == orderId)
+        var query = context.PurchaseOrders.Where(x => x.OrderId == orderId)
             .Include(d => d.PurchaseOrderDetails)
             .Include(d => d.PaymentMethod)
             .AsNoTracking();
@@ -23,7 +15,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
 
     public async Task<PurchaseOrder?> GetByUserAndOrderId(int userId, long orderId, CancellationToken cancellationToken)
     {
-        var query = _context.PurchaseOrders.Where(x => x.UserId == userId && x.OrderId == orderId)
+        var query = context.PurchaseOrders.Where(x => x.UserId == userId && x.OrderId == orderId)
             .Include(d => d.SendInformation).ThenInclude(c => c.City)
             .Include(d => d.SendInformation).ThenInclude(c => c.State)
             .Include(d => d.PurchaseOrderDetails)
@@ -34,7 +26,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
 
     public async Task<PurchaseOrder?> GetByUser(int id, Status status, CancellationToken cancellationToken)
     {
-        return await _context.PurchaseOrders
+        return await context.PurchaseOrders
             .Where(x => x.UserId == id && !x.IsPaid && x.Status == status)
             .Include(x => x.PurchaseOrderDetails)
             .Include(x => x.Discount)
@@ -47,7 +39,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
 
     public async Task<PurchaseOrder?> GetByOrderId(long id, CancellationToken cancellationToken)
     {
-        return await _context.PurchaseOrders.Where(x => x.OrderId == id && !x.IsPaid)
+        return await context.PurchaseOrders.Where(x => x.OrderId == id && !x.IsPaid)
             .Include(x => x.PurchaseOrderDetails).Include(a => a.SendInformation)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -57,7 +49,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
     {
         try
         {
-            var purchaseOrderViewModel = await _context.PurchaseOrderDetails
+            var purchaseOrderViewModel = await context.PurchaseOrderDetails
                 .Where(x => x.PurchaseOrder!.UserId == userId && !x.PurchaseOrder.IsPaid &&
                             x.PurchaseOrder.Status == Status.New)
                 .Select(p => new PurchaseOrderViewModel
@@ -94,7 +86,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
 
     public async Task<PurchaseOrder> GetPurchaseOrderWithIncludeById(int id, CancellationToken cancellationToken)
     {
-        var query = _context.PurchaseOrders.Where(x => x.Id == id)
+        var query = context.PurchaseOrders.Where(x => x.Id == id)
             .Include(d => d.PurchaseOrderDetails).ThenInclude(p => p.Price)
             .Include(d => d.PaymentMethod)
             .AsNoTracking();
@@ -107,7 +99,7 @@ public class PurchaseOrderRepository : AsyncRepository<PurchaseOrder>, IPurchase
         PurchaseFiltreOrderViewModel purchaseFiltreOrderViewModel,
         CancellationToken cancellationToken)
     {
-        var query = _context.PurchaseOrders.Where(x =>
+        var query = context.PurchaseOrders.Where(x =>
                 x.User.UserName.Contains(purchaseFiltreOrderViewModel.PaginationParameters.Search))
             .Include(d => d.PaymentMethod)
             .Include(d => d.SendInformation)

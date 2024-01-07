@@ -1,20 +1,12 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using ECommerce.Infrastructure.DataContext;
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepository
+public class HolooFBailRepository(HolooDbContext context) : HolooRepository<HolooFBail>(context), IHolooFBailRepository
 {
-    private readonly HolooDbContext _context;
-
-    public HolooFBailRepository(HolooDbContext context) : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<(string fCode, int fCodeC)> GetFactorCode(CancellationToken cancellationToken)
     {
-        var holooFBail = await _context.FBAILPRE.OrderByDescending(o => o.Fac_Code)
+        var holooFBail = await context.FBAILPRE.OrderByDescending(o => o.Fac_Code)
             .FirstOrDefaultAsync(x => x.Fac_Type.Equals("P"), cancellationToken);
         var fCode = 1;
         var fCodeC = 1;
@@ -29,15 +21,15 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
 
     public async Task<string> Add(HolooFBail bail, CancellationToken cancellationToken)
     {
-        var lastRow = await _context.FBAILPRE.OrderByDescending(o => o.Fac_Code)
+        var lastRow = await context.FBAILPRE.OrderByDescending(o => o.Fac_Code)
             .FirstOrDefaultAsync(x => x.Fac_Type.Equals("P"), cancellationToken);
         var lastFacCode = lastRow == null ? 1 : Convert.ToInt32(lastRow.Fac_Code) + 1;
         bail.Fac_Code_C = lastFacCode;
         bail.Fac_Code = lastFacCode.ToString("000000");
         try
         {
-            _context.Add(bail);
-            var result = await _context.SaveChangesAsync(cancellationToken);
+            context.Add(bail);
+            var result = await context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
         catch (Exception e)
@@ -45,8 +37,8 @@ public class HolooFBailRepository : HolooRepository<HolooFBail>, IHolooFBailRepo
             lastFacCode += 2;
             bail.Fac_Code_C = lastFacCode;
             bail.Fac_Code = lastFacCode.ToString("000000");
-            _context.Add(bail);
-            var result = await _context.SaveChangesAsync(cancellationToken);
+            context.Add(bail);
+            var result = await context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
     }

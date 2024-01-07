@@ -1,5 +1,4 @@
 ﻿using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Exceptions;
 
 namespace ECommerce.Domain.Exceptions;
 

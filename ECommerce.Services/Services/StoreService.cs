@@ -1,16 +1,10 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class StoreService : EntityService<Store>, IStoreService
+public class StoreService(IHttpService http) : EntityService<Store>(http), IStoreService
 {
     private const string Url = "api/Store";
-    private readonly IHttpService _http;
     private List<Store> _stores;
 
-
-    public StoreService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Store>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -73,7 +67,7 @@ public class StoreService : EntityService<Store>, IStoreService
         //var result = await Delete(Url, id);
         //_stores = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         _stores = null;
         if (result.Code == ResultCode.Success)
             return new ServiceResult
@@ -87,7 +81,7 @@ public class StoreService : EntityService<Store>, IStoreService
 
     public async Task<ServiceResult<Store>> GetById(int id)
     {
-        var result = await _http.GetAsync<Store>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Store>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

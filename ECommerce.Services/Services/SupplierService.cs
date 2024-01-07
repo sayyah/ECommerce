@@ -1,15 +1,9 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class SupplierService : EntityService<Supplier>, ISupplierService
+public class SupplierService(IHttpService http) : EntityService<Supplier>(http), ISupplierService
 {
     private const string Url = "api/Suppliers";
-    private readonly IHttpService _http;
     private List<Supplier> _supplier;
-
-    public SupplierService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     //
     public async Task<ServiceResult<List<Supplier>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
@@ -70,7 +64,7 @@ public class SupplierService : EntityService<Supplier>, ISupplierService
 
     public async Task<ServiceResult> Delete(int id)
     {
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         _supplier = null;
         if (result.Code == ResultCode.Success)
             return new ServiceResult
@@ -84,7 +78,7 @@ public class SupplierService : EntityService<Supplier>, ISupplierService
 
     public async Task<ServiceResult<Supplier>> GetById(int id)
     {
-        var result = await _http.GetAsync<Supplier>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Supplier>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

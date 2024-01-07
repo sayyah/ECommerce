@@ -1,16 +1,10 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class CurrencyService : EntityService<Currency>, ICurrencyService
+public class CurrencyService(IHttpService http) : EntityService<Currency>(http), ICurrencyService
 {
     private const string Url = "api/Currencies";
-    private readonly IHttpService _http;
     private List<Currency> _currencies;
 
-
-    public CurrencyService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<Currency>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
@@ -56,7 +50,7 @@ public class CurrencyService : EntityService<Currency>, ICurrencyService
         //var result = await Delete(Url, id);
         //_currencies = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
         {
             _currencies = null;
@@ -74,7 +68,7 @@ public class CurrencyService : EntityService<Currency>, ICurrencyService
 
     public async Task<ServiceResult<Currency>> GetById(int id)
     {
-        var result = await _http.GetAsync<Currency>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<Currency>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

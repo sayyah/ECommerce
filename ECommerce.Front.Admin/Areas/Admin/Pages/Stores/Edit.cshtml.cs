@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Stores;
 
-public class EditModel : PageModel
+public class EditModel(IStoreService storeService) : PageModel
 {
-    private readonly IStoreService _storeService;
-
-    public EditModel(IStoreService storeService)
-    {
-        _storeService = storeService;
-    }
-
     [BindProperty] public Store Store { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _storeService.GetById(id);
+        var result = await storeService.GetById(id);
         Store = result.ReturnData;
     }
 
@@ -25,7 +18,7 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await _storeService.Edit(Store);
+            var result = await storeService.Edit(Store);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

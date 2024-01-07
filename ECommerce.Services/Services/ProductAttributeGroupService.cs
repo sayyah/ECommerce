@@ -1,16 +1,11 @@
 ﻿namespace ECommerce.Services.Services;
 
-public class ProductAttributeGroupService : EntityService<ProductAttributeGroup>, IProductAttributeGroupService
+public class ProductAttributeGroupService(IHttpService http) : EntityService<ProductAttributeGroup>(http),
+    IProductAttributeGroupService
 {
     private const string Url = "api/ProductAttributeGroups";
-    private readonly IHttpService _http;
     private List<ProductAttributeGroup> _productAttributeGroups;
 
-
-    public ProductAttributeGroupService(IHttpService http) : base(http)
-    {
-        _http = http;
-    }
 
     public async Task<ServiceResult<List<ProductAttributeGroup>>> GetAll()
     {
@@ -40,7 +35,7 @@ public class ProductAttributeGroupService : EntityService<ProductAttributeGroup>
 
     public async Task<ServiceResult> AddWithAttributeValue(List<ProductAttributeGroup> attributeGroups, int productId)
     {
-        var result = await _http.PostAsync(Url, attributeGroups, $"AddWithAttributeValue?ProductId={productId}");
+        var result = await http.PostAsync(Url, attributeGroups, $"AddWithAttributeValue?ProductId={productId}");
         _productAttributeGroups = null;
         return Return(result);
     }
@@ -57,7 +52,7 @@ public class ProductAttributeGroupService : EntityService<ProductAttributeGroup>
         //var result = await Delete(Url, id);
         //_productAttributeGroups = null;
         //return Return(result);
-        var result = await _http.DeleteAsync(Url, id);
+        var result = await http.DeleteAsync(Url, id);
         if (result.Code == ResultCode.Success)
             return new ServiceResult
             {
@@ -70,7 +65,7 @@ public class ProductAttributeGroupService : EntityService<ProductAttributeGroup>
 
     public async Task<ServiceResult<ProductAttributeGroup>> GetById(int id)
     {
-        var result = await _http.GetAsync<ProductAttributeGroup>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ProductAttributeGroup>(Url, $"GetById?id={id}");
         return Return(result);
     }
 

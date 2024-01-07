@@ -2,22 +2,15 @@
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
-public class EditModel : PageModel
+public class EditModel(ITagService tagService) : PageModel
 {
-    private readonly ITagService _tagService;
-
-    public EditModel(ITagService tagService)
-    {
-        _tagService = tagService;
-    }
-
     [BindProperty] public Tag Tag { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
     public async Task OnGet(int id)
     {
-        var result = await _tagService.GetById(id);
+        var result = await tagService.GetById(id);
         Tag = result.ReturnData;
     }
 
@@ -33,7 +26,7 @@ public class EditModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _tagService.Edit(Tag);
+            var result = await tagService.Edit(Tag);
             Message = result.Message;
             Code = result.Code.ToString();
             if (result.Code == 0)

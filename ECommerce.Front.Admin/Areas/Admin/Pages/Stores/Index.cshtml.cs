@@ -2,15 +2,8 @@ using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Stores;
 
-public class IndexModel : PageModel
+public class IndexModel(IStoreService storeService) : PageModel
 {
-    private readonly IStoreService _storeService;
-
-    public IndexModel(IStoreService storeService)
-    {
-        _storeService = storeService;
-    }
-
     public ServiceResult<List<Store>> Stores { get; set; }
 
     [TempData] public string Message { get; set; }
@@ -22,7 +15,7 @@ public class IndexModel : PageModel
     {
         Message = message;
         Code = code;
-        var result = await _storeService.Load(search, pageNumber, pageSize);
+        var result = await storeService.Load(search, pageNumber, pageSize);
         if (result.Code == ServiceCode.Success)
         {
             if (Message != null)

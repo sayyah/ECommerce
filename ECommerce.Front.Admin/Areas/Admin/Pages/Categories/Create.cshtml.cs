@@ -4,19 +4,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Categories;
 
-public class CreateModel : PageModel
+public class CreateModel(ICategoryService categoryService, IImageService imageService, IHostEnvironment environment)
+    : PageModel
 {
-    private readonly ICategoryService _categoryService;
-    private readonly IHostEnvironment _environment;
-    private readonly IImageService _imageService;
-
-    public CreateModel(ICategoryService categoryService, IImageService imageService, IHostEnvironment environment)
-    {
-        _categoryService = categoryService;
-        _imageService = imageService;
-        _environment = environment;
-    }
-
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
     [BindProperty] public IFormFile Upload { get; set; }
@@ -27,7 +17,7 @@ public class CreateModel : PageModel
     public async Task OnGet()
     {
         Category = new Category();
-        var result = await _categoryService.GetParents();
+        var result = await categoryService.GetParents();
         Categories = result.ReturnData;
     }
 
@@ -48,7 +38,7 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        var fileName = (await _imageService.Upload(Upload, "Images/Categories", _environment.ContentRootPath))
+        var fileName = (await imageService.Upload(Upload, "Images/Categories", environment.ContentRootPath))
             .ReturnData;
         if (fileName == null)
         {
@@ -61,7 +51,7 @@ public class CreateModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _categoryService.Add(Category);
+            var result = await categoryService.Add(Category);
             if (result.Code == 0)
                 return RedirectToPage("/Categories/Index",
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
@@ -70,7 +60,7 @@ public class CreateModel : PageModel
             ModelState.AddModelError("", result.Message);
         }
 
-        var resultParent = await _categoryService.GetParents();
+        var resultParent = await categoryService.GetParents();
         Categories = resultParent.ReturnData;
         return Page();
     }
