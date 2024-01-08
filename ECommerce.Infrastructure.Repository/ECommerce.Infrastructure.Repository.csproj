@@ -5,6 +5,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MediatR" Version="12.2.0" />
+	</ItemGroup>
 	<ItemGroup>
 		<Using Include="ECommerce.Domain.Interfaces" />
 		<Using Include="ECommerce.Domain.Entities" />

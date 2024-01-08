@@ -1,4 +1,8 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.API.Commands;
+using ECommerce.API.Queries;
+using MediatR;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -6,11 +10,13 @@ public class BrandsController : ControllerBase
 {
     private readonly IBrandRepository _brandRepository;
     private readonly ILogger<BrandsController> _logger;
+    private readonly IMediator _mediator;
 
-    public BrandsController(IBrandRepository brandRepository, ILogger<BrandsController> logger)
+    public BrandsController(IBrandRepository brandRepository, ILogger<BrandsController> logger, IMediator mediator)
     {
         _brandRepository = brandRepository;
         _logger = logger;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -19,10 +25,11 @@ public class BrandsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
+        var query = new GetAllBrandsQuery();
+        var brands = await _mediator.Send(query, CancellationToken.None);
         try
         {
-            var result = await _brandRepository.GetAll(cancellationToken);
-            var brands = result.ToList();
+
             brands.Insert(0, new Brand
             {
                 Name = "بدون برند"
@@ -92,18 +99,11 @@ public class BrandsController : ControllerBase
         try
         {
             var x = User.Identity.Name;
-            var result = await _brandRepository.GetByIdAsync(cancellationToken, id);
+            var query = new GetByIDBrandQuery(id);
+            var result = await _mediator.Send(query, CancellationToken.None);
             if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success,
-                ReturnData = result
-            });
+                return NotFound();
+            return Ok(result);
         }
         catch (Exception e)
         {
@@ -124,10 +124,11 @@ public class BrandsController : ControllerBase
                 {
                     Code = ResultCode.BadRequest
                 });
-            brand.Name = brand.Name.Trim();
 
-            var repetitiveBrand = await _brandRepository.GetByName(brand.Name, cancellationToken);
-            if (repetitiveBrand != null)
+            var query = new PostBrandRequest(brand);
+            var result = await _mediator.Send(query);
+
+            if (result != null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
@@ -137,14 +138,14 @@ public class BrandsController : ControllerBase
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await _brandRepository.AddAsync(brand, cancellationToken)
+                ReturnData = result
             });
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -154,15 +155,14 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            var repetitive = await _brandRepository.GetByName(brand.Name, cancellationToken);
-            if (repetitive != null && repetitive.Id != brand.Id)
+            var query = new PutBrandRequest(brand);
+            var result = _mediator.Send(query);
+            if ( result != null )
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام برند تکراری است" }
                 });
-            if (repetitive != null) _brandRepository.Detach(repetitive);
-            await _brandRepository.UpdateAsync(brand, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -182,7 +182,8 @@ public class BrandsController : ControllerBase
     {
         try
         {
-            await _brandRepository.DeleteAsync(id, cancellationToken);
+            var query = new DeleteBrandRequest(id);
+            await _mediator.Send(query);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
