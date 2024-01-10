@@ -1,4 +1,5 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -547,8 +548,9 @@ public class UsersController(IUnitOfWork unitOfWork,
                            + "'>dsf</a></body></html>";
         await userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword",
             emailPasswordResetToken);
-        await emailRepository.SendEmailAsync(model.EmailOrPhoneNumber, "تغییر کلمه عبور", emailMessage,
-            cancellationToken);
+
+        BackgroundJob.Enqueue(
+            () => emailRepository.SendEmailAsync(model.EmailOrPhoneNumber, "تغییر کلمه عبور", emailMessage,cancellationToken,false));
 
         return Ok(new ApiResult
         {
