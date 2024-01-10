@@ -1,4 +1,6 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using Hangfire;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -169,11 +171,9 @@ public class ContactsController(IUnitOfWork unitOfWork, ILogger<ContactsControll
         try
         {
             _contactRepository.Update(contact);
-            await unitOfWork.SaveAsync(cancellationToken);
-
-            await emailRepository.SendEmailAsync(contact.Email, "پاسخ به تماس با ما", contact.ReplayMessage,
-                cancellationToken);
-
+            BackgroundJob.Enqueue(
+                () => emailRepository.SendEmailAsync(contact.Email, "پاسخ به تماس با ما", contact.ReplayMessage,
+                cancellationToken, false));
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
