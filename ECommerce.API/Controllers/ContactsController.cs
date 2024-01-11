@@ -2,10 +2,12 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ContactsController(IContactRepository contactRepository, ILogger<ContactsController> logger,
+public class ContactsController(IUnitOfWork unitOfWork, ILogger<ContactsController> logger,
         IEmailRepository emailRepository)
     : ControllerBase
 {
+    private readonly IContactRepository _contactRepository = unitOfWork.GetRepository<ContactRepository, Contact>();
+
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
@@ -14,7 +16,7 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await contactRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _contactRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -47,7 +49,7 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
     {
         try
         {
-            var result = await contactRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _contactRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -74,7 +76,7 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
     {
         try
         {
-            var result = await contactRepository.GetByName(name, cancellationToken);
+            var result = await _contactRepository.GetByName(name, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -102,7 +104,7 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
     {
         try
         {
-            var result = await contactRepository.GetByEmail(email, cancellationToken);
+            var result = await _contactRepository.GetByEmail(email, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -129,7 +131,7 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
     {
         try
         {
-            var result = await contactRepository.GetRepetitive(contact, cancellationToken);
+            var result = await _contactRepository.GetRepetitive(contact, cancellationToken);
             if (result != null)
                 return Ok(new ApiResult
                 {
@@ -144,10 +146,12 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
                     Messages = new List<string> { "ایمیل و متن باید وارد شود" }
                 });
 
+            _contactRepository.Add(contact);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await contactRepository.AddAsync(contact, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -164,9 +168,12 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
     {
         try
         {
-            await contactRepository.UpdateAsync(contact, cancellationToken);
+            _contactRepository.Update(contact);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             await emailRepository.SendEmailAsync(contact.Email, "پاسخ به تماس با ما", contact.ReplayMessage,
                 cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -186,7 +193,9 @@ public class ContactsController(IContactRepository contactRepository, ILogger<Co
     {
         try
         {
-            await contactRepository.DeleteAsync(id, cancellationToken);
+            await _contactRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

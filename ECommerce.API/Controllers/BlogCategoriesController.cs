@@ -2,10 +2,12 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogCategoriesController(IBlogCategoryRepository blogCategoryRepository,
+public class BlogCategoriesController(IUnitOfWork unitOfWork,
         ILogger<BlogCategoriesController> logger)
     : ControllerBase
 {
+    private readonly IBlogCategoryRepository _blogCategoryRepository = unitOfWork.GetRepository<BlogCategoryRepository,BlogCategory>();
+
     [HttpGet]
     public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -13,7 +15,7 @@ public class BlogCategoriesController(IBlogCategoryRepository blogCategoryReposi
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await blogCategoryRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _blogCategoryRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -44,7 +46,7 @@ public class BlogCategoriesController(IBlogCategoryRepository blogCategoryReposi
     {
         try
         {
-            var result = await blogCategoryRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _blogCategoryRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -71,7 +73,7 @@ public class BlogCategoriesController(IBlogCategoryRepository blogCategoryReposi
     {
         try
         {
-            var result = await blogCategoryRepository.Parents(blogId, cancellationToken);
+            var result = await _blogCategoryRepository.Parents(blogId, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -95,7 +97,7 @@ public class BlogCategoriesController(IBlogCategoryRepository blogCategoryReposi
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(BlogCategory blogCategory, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(BlogCategory? blogCategory, CancellationToken cancellationToken)
     {
         try
         {
@@ -107,18 +109,19 @@ public class BlogCategoriesController(IBlogCategoryRepository blogCategoryReposi
             blogCategory.Name = blogCategory.Name.Trim();
 
             var repetitiveCategory =
-                await blogCategoryRepository.GetByName(blogCategory.Name, blogCategory.Parent?.Id, cancellationToken);
+                await _blogCategoryRepository.GetByName(blogCategory.Name, blogCategory.Parent?.Id, cancellationToken);
             if (repetitiveCategory != null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام دسته تکراری است" }
                 });
+            _blogCategoryRepository.Add(blogCategory);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await blogCategoryRepository.AddAsync(blogCategory, cancellationToken)
             });
         }
         catch (Exception e)
@@ -135,7 +138,8 @@ public class BlogCategoriesController(IBlogCategoryRepository blogCategoryReposi
     {
         try
         {
-            await blogCategoryRepository.UpdateAsync(blogCategory, cancellationToken);
+            _blogCategoryRepository.Update(blogCategory);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -155,7 +159,8 @@ public class BlogCategoriesController(IBlogCategoryRepository blogCategoryReposi
     {
         try
         {
-            await blogCategoryRepository.DeleteAsync(id, cancellationToken);
+            await _blogCategoryRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

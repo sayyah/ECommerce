@@ -4,8 +4,8 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface ITransactionRepository : IAsyncRepository<Transaction>
+public interface ITransactionRepository : IRepositoryBase<Transaction>
 {
-    Task<PagedList<Transaction>> Search(TransactionFiltreViewModel transactionFiltreViewModel,
+    Task<PagedList<Transaction>> Search(transactionFilterViewModel transactionFilterViewModel,
         CancellationToken cancellationToken);
 }

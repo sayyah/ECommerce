@@ -2,7 +2,7 @@
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface ISettingRepository : IAsyncRepository<Setting>
+public interface ISettingRepository : IRepositoryBase<Setting>
 {
     string IsDollar();
 }

@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
 public class ProductAttributeValueRepository
-    (SunflowerECommerceDbContext context) : AsyncRepository<ProductAttributeValue>(context),
+    (SunflowerECommerceDbContext context) : RepositoryBase<ProductAttributeValue>(context),
         IProductAttributeValueRepository
 {
     public async Task<PagedList<ProductAttributeValue>> Search(PaginationParameters paginationParameters,

@@ -11,6 +11,11 @@ public class EditModel(IDiscountService discountService) : PageModel
 
     public async Task OnGet(int id)
     {
+       await Initial(id);
+    }
+
+    private async Task Initial(int id)
+    {
         var result = await discountService.GetById(id);
         Discount = result.ReturnData;
         if (!Discount.Amount.HasValue) WithPrice = false;
@@ -19,14 +24,13 @@ public class EditModel(IDiscountService discountService) : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        if (WithPrice && !Discount.Amount.HasValue) ModelState.AddModelError(string.Empty, "مبلغ نباید خالی باشد.");
-        if (!WithPrice && !Discount.Percent.HasValue) ModelState.AddModelError(string.Empty, "درصد نباید خالی باشد.");
         if (!Discount.StartDate.HasValue) ModelState.AddModelError(string.Empty, "تاریخ شروع نباید خالی باشد.");
         if (!Discount.EndDate.HasValue) ModelState.AddModelError(string.Empty, "تاریخ پایان نباید خالی باشد.");
         if (Discount.StartDate > Discount.EndDate)
             ModelState.AddModelError(string.Empty, "تاریخ پایان نباید قبل از تاریخ شروع باشد.");
         if (Discount.MinOrder > Discount.MaxOrder)
             ModelState.AddModelError(string.Empty, "حداقل تعداد سفارش باید کم تر از حداکثر آن باشد.");
+       
         if (ModelState.IsValid)
         {
             if (WithPrice) Discount.Percent = null;
@@ -41,7 +45,7 @@ public class EditModel(IDiscountService discountService) : PageModel
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
         }
-
+        await Initial(Discount.Id);
         return Page();
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class CityRepository(SunflowerECommerceDbContext context) : AsyncRepository<City>(context), ICityRepository
+public class CityRepository(SunflowerECommerceDbContext context) : RepositoryBase<City>(context), ICityRepository
 {
-    public async Task<City> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<City?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await context.Cities.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

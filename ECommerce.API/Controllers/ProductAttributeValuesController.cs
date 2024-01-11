@@ -2,10 +2,12 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductAttributeValuesController(IProductAttributeValueRepository productAttributeValueRepository,
+public class ProductAttributeValuesController(IUnitOfWork unitOfWork,
         ILogger<ProductAttributeValuesController> logger)
     : ControllerBase
 {
+    private readonly IProductAttributeValueRepository _productAttributeValueRepository = unitOfWork.GetRepository<ProductAttributeValueRepository, ProductAttributeValue>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -13,7 +15,7 @@ public class ProductAttributeValuesController(IProductAttributeValueRepository p
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await productAttributeValueRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _productAttributeValueRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -43,7 +45,7 @@ public class ProductAttributeValuesController(IProductAttributeValueRepository p
     {
         try
         {
-            var result = await productAttributeValueRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _productAttributeValueRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -70,7 +72,9 @@ public class ProductAttributeValuesController(IProductAttributeValueRepository p
     {
         try
         {
-            await productAttributeValueRepository.UpdateAsync(productAttributeValue, cancellationToken);
+            _productAttributeValueRepository.Update(productAttributeValue);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -89,7 +93,9 @@ public class ProductAttributeValuesController(IProductAttributeValueRepository p
     {
         try
         {
-            await productAttributeValueRepository.DeleteAsync(id, cancellationToken);
+            await _productAttributeValueRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

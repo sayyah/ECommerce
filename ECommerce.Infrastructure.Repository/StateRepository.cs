@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class StateRepository(SunflowerECommerceDbContext context) : AsyncRepository<State>(context), IStateRepository
+public class StateRepository(SunflowerECommerceDbContext context) : RepositoryBase<State>(context), IStateRepository
 {
     public async Task<State> GetByName(string name, CancellationToken cancellationToken)
     {

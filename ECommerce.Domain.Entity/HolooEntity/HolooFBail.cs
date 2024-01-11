@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooFBail
+public class HolooFBail : BaseHolooEntity
 {
     public string Fac_Code { get; set; }
     public string Fac_Type { get; set; } = "p";

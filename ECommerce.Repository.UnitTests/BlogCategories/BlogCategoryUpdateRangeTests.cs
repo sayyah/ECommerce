@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
@@ -6,51 +7,70 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "UpdateRange: Null BlogCategory")]
+    [Fact]
     public void UpdateRange_NullBlogCategory_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.UpdateRange([ null! ]);
+        void Actual() => _blogCategoryRepository.UpdateRange([ null! ]);
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        Assert.Throws<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Null Argument")]
+    [Fact]
     public void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.UpdateRange(null!);
+        void Actual() => _blogCategoryRepository.UpdateRange(null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
-    [Fact(DisplayName = "UpdateRange: Update blogCategorys")]
-    public void UpdateRange_UpdateEntities_EntitiesChange()
+    [Fact]
+    public async Task UpdateRange_UpdateEntities_EntitiesChangeAsync()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
-        DbContext.BlogCategories.AddRange(expected.Values);
+        BlogCategory root = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => null)
+            .With(p => p.ParentId, () => null)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child1 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child2 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        root.BlogCategories!.Add(child1);
+        root.BlogCategories.Add(child2);
+        List<BlogCategory> expected =  [ root, child1, child2 ];
+        DbContext.BlogCategories.AddRange(expected);
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
 
-        foreach (KeyValuePair<string, BlogCategory> entry in expected)
+        foreach (var entry in expected)
         {
-            expected[entry.Key] = DbContext.BlogCategories.Single(p => p.Id == entry.Value.Id)!;
-            expected[entry.Key].Name = Guid.NewGuid().ToString();
-            expected[entry.Key].Description = Guid.NewGuid().ToString();
+            entry.Name = Guid.NewGuid().ToString();
+            entry.Description = Guid.NewGuid().ToString();
         }
 
         // Act
-        _blogCategoryRepository.UpdateRange(expected.Values);
+        _blogCategoryRepository.UpdateRange(expected);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        List<BlogCategory?> actual =  [ ..DbContext.BlogCategories ];
 
         // Assert
-        Dictionary<string, BlogCategory?> actual =  [ ];
-        foreach (KeyValuePair<string, BlogCategory> entry in expected)
-        {
-            actual.Add(entry.Key, DbContext.BlogCategories.Single(p => p.Id == entry.Value.Id)!);
-        }
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        actual.Should().BeEquivalentTo(expected).And.HaveCount(3);
     }
 }

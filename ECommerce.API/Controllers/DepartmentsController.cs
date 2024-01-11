@@ -2,9 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class DepartmentsController(IDepartmentRepository departmentRepository, ILogger<DepartmentsController> logger)
+public class DepartmentsController(IUnitOfWork unitOfWork, ILogger<DepartmentsController> logger)
     : ControllerBase
 {
+    private readonly IDepartmentRepository _departmentRepository = unitOfWork.GetRepository<DepartmentRepository, Department>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +14,7 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await departmentRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _departmentRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -42,7 +44,7 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
     {
         try
         {
-            var result = await departmentRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _departmentRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -67,12 +69,7 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
     {
         try
         {
-            var result = await departmentRepository.GetAll(cancellationToken);
-            if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
+            var result = await _departmentRepository.GetAllAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
@@ -84,13 +81,13 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
         {
             logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Department department, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Department? department, CancellationToken cancellationToken)
     {
         try
         {
@@ -101,7 +98,7 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
                 });
             department.Title = department.Title.Trim();
 
-            var repetitiveDepartment = await departmentRepository.GetByTitle(department.Title, cancellationToken);
+            var repetitiveDepartment = await _departmentRepository.GetByTitle(department.Title, cancellationToken);
             if (repetitiveDepartment != null)
                 return Ok(new ApiResult
                 {
@@ -109,10 +106,12 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
                     Messages = new List<string> { "عنوان دپارتمان تکراری است" }
                 });
 
+            _departmentRepository.Add(department);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await departmentRepository.AddAsync(department, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -128,15 +127,17 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
     {
         try
         {
-            var repetitiveDepartment = await departmentRepository.GetByTitle(department.Title, cancellationToken);
+            var repetitiveDepartment = await _departmentRepository.GetByTitle(department.Title, cancellationToken);
             if (repetitiveDepartment != null && repetitiveDepartment.Id != department.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام دپارتمان تکراری است" }
                 });
-            if (repetitiveDepartment != null) departmentRepository.Detach(repetitiveDepartment);
-            await departmentRepository.UpdateAsync(department, cancellationToken);
+            if (repetitiveDepartment != null) _departmentRepository.Detach(repetitiveDepartment);
+            _departmentRepository.Update(department);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -155,7 +156,9 @@ public class DepartmentsController(IDepartmentRepository departmentRepository, I
     {
         try
         {
-            await departmentRepository.DeleteAsync(id, cancellationToken);
+            await _departmentRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

@@ -15,8 +15,8 @@ public class AcceptModel(IProductCommentService productCommentService, IProductS
     {
         Message = message;
         Code = code;
-        var ProductCommentResult = await productCommentService.GetById(id);
-        ProductComment = ProductCommentResult.ReturnData;
+        var productCommentResult = await productCommentService.GetById(id);
+        ProductComment = productCommentResult.ReturnData;
     }
 
     public async Task<IActionResult> OnPost()

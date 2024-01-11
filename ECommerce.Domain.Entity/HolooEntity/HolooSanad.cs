@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooSanad(string comment)
+public class HolooSanad(string comment) : BaseHolooEntity
 {
     public int Sanad_Code { get; set; }
     public int? Sanad_Code_C { get; set; }

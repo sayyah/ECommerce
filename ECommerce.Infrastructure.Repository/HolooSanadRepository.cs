@@ -9,8 +9,7 @@ public class HolooSanadRepository(HolooDbContext context) : HolooRepository<Holo
         var sanadCodeCustomer = await context.Sanad.OrderByDescending(s => s.Sanad_Code_C).Select(c => c.Sanad_Code_C)
             .FirstAsync(cancellationToken);
         sanad.Sanad_Code_C = sanadCodeCustomer ?? 1;
-        await context.Sanad.AddAsync(sanad, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
+        context.Sanad.Add(sanad);
         return (sanad.Sanad_Code.ToString(), sanad.Sanad_Code_C.ToString());
     }
 }

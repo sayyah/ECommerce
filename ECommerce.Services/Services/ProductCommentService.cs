@@ -54,11 +54,11 @@ public class ProductCommentService(IHttpService http) : EntityService<ProductCom
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<ProductComment>>> GetAllAccesptedComments(string search = "",
+    public async Task<ServiceResult<List<ProductComment>>> GetAllAcceptedComments(string search = "",
         int pageNumber = 0, int pageSize = 10)
     {
         var result = await ReadList(Url,
-            $"GetAllAccesptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
+            $"GetAllAcceptedComments?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
 

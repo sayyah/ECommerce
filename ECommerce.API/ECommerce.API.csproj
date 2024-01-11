@@ -13,6 +13,7 @@
 		<Using Include="Microsoft.AspNetCore.Mvc" />
 		<Using Include="ECommerce.Application.ViewModels" />
 		<Using Include="Microsoft.AspNetCore.Authorization" />
+		<Using Include="ECommerce.Infrastructure.Repository"/>
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="DotNetEnv" Version="2.5.0" />
@@ -21,6 +22,7 @@
 		<PackageReference Include="Moq" Version="4.20.70" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Hangfire.Core" Version="1.8.*" />
+		<PackageReference Include="Hangfire.NetCore" Version="1.8.*" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.*" />
 		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.*" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="*" />

@@ -1,16 +1,16 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
 public class ProductAttributeRepository
-    (SunflowerECommerceDbContext context) : AsyncRepository<ProductAttribute>(context), IProductAttributeRepository
+    (SunflowerECommerceDbContext context) : RepositoryBase<ProductAttribute>(context), IProductAttributeRepository
 {
-    public async Task<ProductAttribute> GetByTitle(string title, CancellationToken cancellationToken)
+    public async Task<ProductAttribute?> GetByTitle(string title, CancellationToken cancellationToken)
     {
         return await context.ProductAttributes.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<ProductAttribute>> GetAll(int productId, CancellationToken cancellationToken)
     {
-        //var productAttributes = await _context.ProductAttributes.Where(x => x.AttributeValue.Any(p => p.ProductId == productId)).Include(x=>x.AttributeValue).ToListAsync();
+        //var productAttributes = await context.ProductAttributes.Where(x => x.AttributeValue.Any(p => p.ProductId == productId)).Include(x=>x.AttributeValue).ToListAsync();
         var productAttributes = await context.ProductAttributes.ToListAsync(cancellationToken);
         var productValues = await context.ProductAttributeValues.Where(x => x.ProductId == productId)
             .ToListAsync(cancellationToken);

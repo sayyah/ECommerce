@@ -5,7 +5,7 @@ namespace ECommerce.Infrastructure.Repository;
 public class HolooAccountNumberRepository(HolooDbContext context) : HolooRepository<HolooAccountNumber>(context),
     IHolooAccountNumberRepository
 {
-    public async Task<HolooAccountNumber> GetByAccountNumberAndBankCode(string code,
+    public async Task<HolooAccountNumber?> GetByAccountNumberAndBankCode(string code,
         CancellationToken cancellationToken)
     {
         var temp = code.Split("-");

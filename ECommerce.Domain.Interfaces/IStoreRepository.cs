@@ -4,8 +4,8 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IStoreRepository : IAsyncRepository<Store>
+public interface IStoreRepository : IRepositoryBase<Store>
 {
     Task<PagedList<Store>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
-    Task<Store> GetByName(string name, CancellationToken cancellationToken);
+    Task<Store?> GetByName(string name, CancellationToken cancellationToken);
 }

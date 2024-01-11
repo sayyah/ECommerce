@@ -1,9 +1,9 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class DiscountRepository(SunflowerECommerceDbContext context) : AsyncRepository<Discount>(context),
+public class DiscountRepository(SunflowerECommerceDbContext context) : RepositoryBase<Discount>(context),
     IDiscountRepository
 {
-    public async Task<Discount> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Discount?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await context.Discounts.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
@@ -16,12 +16,12 @@ public class DiscountRepository(SunflowerECommerceDbContext context) : AsyncRepo
         return null;
     }
 
-    public async Task<Discount> GetByCode(string code, CancellationToken cancellationToken)
+    public async Task<Discount?> GetByCode(string code, CancellationToken cancellationToken)
     {
         return await context.Discounts.Where(x => x.Code == code).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<DiscountWithTimeViewModel> GetWithTime(CancellationToken cancellationToken)
+    public async Task<DiscountWithTimeViewModel?> GetWithTime(CancellationToken cancellationToken)
     {
         var discount = await context.Discounts.Where(x => x.EndDate < DateTime.Now).Include(x => x.Prices)
             .FirstOrDefaultAsync(cancellationToken);

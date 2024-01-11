@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using System.Security.Claims;
 using System.Security.Principal;
-using ClaimsIdentity = System.Security.Claims.ClaimsIdentity;
 
 namespace ECommerce.Infrastructure.DataContext.Utilities;
 

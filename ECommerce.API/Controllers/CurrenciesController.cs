@@ -2,9 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CurrenciesController(ICurrencyRepository currencyRepository, ILogger<CurrenciesController> logger)
+public class CurrenciesController(IUnitOfWork unitOfWork, ILogger<CurrenciesController> logger)
     : ControllerBase
 {
+    private readonly ICurrencyRepository _currencyRepository = unitOfWork.GetRepository<CurrencyRepository, Currency>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +14,7 @@ public class CurrenciesController(ICurrencyRepository currencyRepository, ILogge
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await currencyRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _currencyRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -43,7 +45,7 @@ public class CurrenciesController(ICurrencyRepository currencyRepository, ILogge
     {
         try
         {
-            var result = await currencyRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _currencyRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -65,7 +67,7 @@ public class CurrenciesController(ICurrencyRepository currencyRepository, ILogge
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Currency currency, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Currency? currency, CancellationToken cancellationToken)
     {
         try
         {
@@ -76,10 +78,12 @@ public class CurrenciesController(ICurrencyRepository currencyRepository, ILogge
                 });
             currency.Name = currency.Name.Trim();
 
+            _currencyRepository.Add(currency);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await currencyRepository.AddAsync(currency, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -101,15 +105,17 @@ public class CurrenciesController(ICurrencyRepository currencyRepository, ILogge
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "ارز پیشفرض قابل تغییر نیست" }
                 });
-            var repetitiveCurrency = await currencyRepository.GetByName(currency.Name, cancellationToken);
+            var repetitiveCurrency = await _currencyRepository.GetByName(currency.Name, cancellationToken);
             if (repetitiveCurrency != null && repetitiveCurrency.Id != currency.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام ارز تکراری است" }
                 });
-            if (repetitiveCurrency != null) currencyRepository.Detach(repetitiveCurrency);
-            await currencyRepository.UpdateAsync(currency, cancellationToken);
+            if (repetitiveCurrency != null) _currencyRepository.Detach(repetitiveCurrency);
+            _currencyRepository.Update(currency);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -134,7 +140,9 @@ public class CurrenciesController(ICurrencyRepository currencyRepository, ILogge
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "ارز پیشفرض قابل حذف نیست" }
                 });
-            await currencyRepository.DeleteAsync(id, cancellationToken);
+            await _currencyRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

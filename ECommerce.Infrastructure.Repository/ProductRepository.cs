@@ -3,7 +3,7 @@
 namespace ECommerce.Infrastructure.Repository;
 
 public class ProductRepository(SunflowerECommerceDbContext context, HolooDbContext holooDbContext)
-    : AsyncRepository<Product>(context), IProductRepository
+    : RepositoryBase<Product>(context), IProductRepository
 {
     public async Task<Product?> GetByName(string name, CancellationToken cancellationToken)
     {
@@ -23,15 +23,14 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<int> AddAll(IEnumerable<Product?> products, CancellationToken cancellationToken)
+    public Task AddAll(IEnumerable<Product?> products)
     {
-        await context.Products.AddRangeAsync(products, cancellationToken);
-        return await context.SaveChangesAsync(cancellationToken);
+        return context.Products.AddRangeAsync(products);
     }
 
-    //public async Task<IEnumerable<Product>> GetAllHolooProducts(CancellationToken cancellationToken) => await _context.Products.Where(x => x.ArticleCode != null).ToListAsync(cancellationToken);
+    //public async Task<IEnumerable<Product>> GetAllHolooProducts(CancellationToken cancellationToken) => await context.Products.Where(x => x.ArticleCode != null).ToListAsync(cancellationToken);
 
-    public async Task<Product?> AddWithRelations(ProductViewModel productViewModel, CancellationToken cancellationToken)
+    public async Task<Product> AddWithRelations(ProductViewModel productViewModel, CancellationToken cancellationToken)
     {
         Product? product = productViewModel;
         //product.Prices = productViewModel.Prices;
@@ -46,7 +45,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
         //product.AttributeGroupProducts = new List<ProductAttributeGroup>();
         //foreach (var id in productViewModel.Attributes.Select(x => x.AttributeGroupId).Distinct())
         //{
-        //    product.AttributeGroupProducts.Add(await _context.ProductAttributeGroups.FindAsync(id, cancellationToken));
+        //    product.AttributeGroupProducts.Add(await context.ProductAttributeGroups.FindAsync(id, cancellationToken));
         //}
 
         //product.AttributeValues = new List<ProductAttributeValue>();
@@ -55,9 +54,8 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
         //    product.AttributeValues.Add(productAttribute.FirstOrDefault());
         //}
 
-        await context.Products.AddAsync(product, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
-        return product;
+       var newProduct = await context.Products.AddAsync(product, cancellationToken);
+       return newProduct.Entity;
     }
 
     public async Task<Product?> EditWithRelations(ProductViewModel productViewModel,
@@ -113,7 +111,6 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
         //}
 
         context.Entry(product).State = EntityState.Modified;
-        await context.SaveChangesAsync(cancellationToken);
         return product;
     }
 
@@ -169,7 +166,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
 
         //foreach (var product in products)
         //{
-        //    product.AttributeValues = await _context.ProductAttributeValues.Where(x => x.ProductId == product.Id)
+        //    product.AttributeValues = await context.ProductAttributeValues.Where(x => x.ProductId == product.Id)
         //        .ToListAsync(cancellationToken);
         //}
 
@@ -421,12 +418,12 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
     //public async Task<List<ProductIndexPageViewModel?>> TopDiscounts(int count, CancellationToken cancellationToken)
     //{
     //    var products = new List<ProductIndexPageViewModel?>();
-    //    var discounts = _context.Discounts.OrderByDescending(x => x.Amount).Select(x => x.Products).Take(count);
+    //    var discounts = context.Discounts.OrderByDescending(x => x.Amount).Select(x => x.Products).Take(count);
     //    var i = 0;
     //    foreach (var discount in discounts)
     //        foreach (var product in discount)
     //        {
-    //            products.Add(await _context.Products
+    //            products.Add(await context.Products
     //                .Where(x => x.Id == product.Id && x.Images!.Count > 0 && x.Prices!.Any())
     //                .Select(p => new ProductIndexPageViewModel
     //                {
@@ -503,7 +500,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
     public async Task<List<ProductIndexPageViewModel>> TopRelatives(int productId, int count,
         CancellationToken cancellationToken)
     {
-        //var categories = await _context.Categories
+        //var categories = await context.Categories
         //    .Where(y => y.Products.Any(x => x.Id == productId && x.Prices.Any()))
         //    .ToListAsync(cancellationToken);
 

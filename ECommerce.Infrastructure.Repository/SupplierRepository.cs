@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class SupplierRepository(SunflowerECommerceDbContext context) : AsyncRepository<Supplier>(context),
+public class SupplierRepository(SunflowerECommerceDbContext context) : RepositoryBase<Supplier>(context),
     ISupplierRepository
 {
     public async Task<Supplier> GetByName(string name, CancellationToken cancellationToken)

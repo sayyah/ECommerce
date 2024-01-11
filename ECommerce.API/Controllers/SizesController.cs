@@ -2,9 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SizesController(ISizeRepository sizeRepository, ILogger<SizesController> logger)
-    : ControllerBase
+public class SizesController(IUnitOfWork unitOfWork, ILogger<SizesController> logger) : ControllerBase
 {
+    private readonly ISizeRepository _sizeRepository = unitOfWork.GetRepository<SizeRepository, Size>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +13,7 @@ public class SizesController(ISizeRepository sizeRepository, ILogger<SizesContro
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await sizeRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _sizeRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -42,7 +43,7 @@ public class SizesController(ISizeRepository sizeRepository, ILogger<SizesContro
     {
         try
         {
-            var result = await sizeRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _sizeRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -64,7 +65,7 @@ public class SizesController(ISizeRepository sizeRepository, ILogger<SizesContro
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Size size, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Size? size, CancellationToken cancellationToken)
     {
         try
         {
@@ -75,18 +76,20 @@ public class SizesController(ISizeRepository sizeRepository, ILogger<SizesContro
                 });
             size.Name = size.Name.Trim();
 
-            var repetitiveSize = await sizeRepository.GetByName(size.Name, cancellationToken);
+            var repetitiveSize = await _sizeRepository.GetByName(size.Name, cancellationToken);
             if (repetitiveSize != null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "سایز تکراری است" }
                 });
+            
+            _sizeRepository.Add(size);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await sizeRepository.AddAsync(size, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -102,7 +105,9 @@ public class SizesController(ISizeRepository sizeRepository, ILogger<SizesContro
     {
         try
         {
-            await sizeRepository.UpdateAsync(size, cancellationToken);
+             _sizeRepository.Update(size);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -121,7 +126,9 @@ public class SizesController(ISizeRepository sizeRepository, ILogger<SizesContro
     {
         try
         {
-            await sizeRepository.DeleteAsync(id, cancellationToken);
+            await _sizeRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

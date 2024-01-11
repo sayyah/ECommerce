@@ -1,21 +1,25 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SlideShowsController(ISlideShowRepository slideShowRepository, IHolooArticleRepository articleRepository,
-        ILogger<SlideShowsController> logger)
+public class SlideShowsController(IUnitOfWork unitOfWork, ILogger<SlideShowsController> logger)
     : ControllerBase
 {
+    private readonly IHolooArticleRepository _articleRepository = unitOfWork.GetHolooRepository<HolooArticleRepository, HolooArticle>();
+    private readonly ISlideShowRepository _slideShowRepository = unitOfWork.GetRepository<SlideShowRepository, SlideShow>();
+
     private async Task<Product> AddPriceAndExistFromHoloo(Product product)
     {
-        foreach (var productPrices in product.Prices)
-            if (productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی)
-            {
-                var article = await articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer,
-                    productPrices.SellNumber!.Value);
-                productPrices.Amount = article.price / 10;
-                productPrices.Exist = (double)article.exist;
-            }
+        if (product.Prices == null) return product;
+        foreach (var productPrices in product.Prices.Where(productPrices => productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی))
+        {
+            var article = await _articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer!,
+                productPrices.SellNumber!.Value);
+            productPrices.Amount = article.price / 10;
+            productPrices.Exist = article.exist?? 0;
+        }
 
         return product;
     }
@@ -25,7 +29,7 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
     {
         try
         {
-            var slideShowsList = await slideShowRepository.GetAllWithInclude(pageNumber, pageSize, cancellationToken);
+            var slideShowsList = await _slideShowRepository.GetAllWithInclude(pageNumber, pageSize, cancellationToken);
             var returnSlideShow = new List<SlideShowViewModel>();
             var slideShowViewModelList = slideShowsList.Select(s => new SlideShowViewModel
             {
@@ -43,9 +47,10 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
                 if (slideShow.Product != null)
                 {
                     var productTemp = await AddPriceAndExistFromHoloo(slideShow.Product);
-                    slideShow.Price = productTemp.Prices != null && productTemp.Prices.FirstOrDefault() == null
-                        ? 0
-                        : productTemp.Prices.FirstOrDefault().Amount;
+                    if (productTemp.Prices is { Count: > 0 })
+                        slideShow.Price = productTemp.Prices != null && productTemp.Prices.FirstOrDefault() == null
+                            ? 0
+                            : productTemp.Prices!.FirstOrDefault()!.Amount;
                 }
 
                 returnSlideShow.Add(slideShow);
@@ -70,7 +75,7 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
     {
         try
         {
-            var result = await slideShowRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _slideShowRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -93,14 +98,20 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(SlideShow slideShow, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(SlideShow? slideShow, CancellationToken cancellationToken)
     {
         try
         {
-            if (slideShow == null) return BadRequest();
+            if (slideShow == null)
+            {
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.BadRequest
+                });
+            }
             slideShow.Title = slideShow.Title.Trim();
 
-            var repetitiveTitle = await slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
+            var repetitiveTitle = await _slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
             if (repetitiveTitle != null)
                 return Ok(new ApiResult
                 {
@@ -109,7 +120,7 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
                 });
             if (slideShow.ProductId != null)
             {
-                var repetitiveProduct = slideShowRepository.IsRepetitiveProduct(0, slideShow.ProductId,
+                var repetitiveProduct = _slideShowRepository.IsRepetitiveProduct(0, slideShow.ProductId,
                     slideShow.CategoryId, cancellationToken);
                 if (repetitiveProduct)
                     return Ok(new ApiResult
@@ -119,7 +130,9 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
                     });
             }
 
-            await slideShowRepository.AddAsync(slideShow, cancellationToken);
+            _slideShowRepository.Add(slideShow);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -139,18 +152,18 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
     {
         try
         {
-            var repetitiveTitle = await slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
+            var repetitiveTitle = await _slideShowRepository.GetByTitle(slideShow.Title, cancellationToken);
             if (repetitiveTitle != null && repetitiveTitle.Id != slideShow.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "عنوان اسلاید شو تکراری است" }
                 });
-            if (repetitiveTitle != null) slideShowRepository.Detach(repetitiveTitle);
+            if (repetitiveTitle != null) _slideShowRepository.Detach(repetitiveTitle);
 
             if (slideShow.ProductId != null)
             {
-                var repetitiveProduct = slideShowRepository.IsRepetitiveProduct(slideShow.Id, slideShow.ProductId,
+                var repetitiveProduct = _slideShowRepository.IsRepetitiveProduct(slideShow.Id, slideShow.ProductId,
                     slideShow.CategoryId, cancellationToken);
                 if (repetitiveProduct)
                     return Ok(new ApiResult
@@ -160,7 +173,9 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
                     });
             }
 
-            await slideShowRepository.UpdateAsync(slideShow, cancellationToken);
+            _slideShowRepository.Update(slideShow);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -180,7 +195,9 @@ public class SlideShowsController(ISlideShowRepository slideShowRepository, IHol
     {
         try
         {
-            await slideShowRepository.DeleteAsync(id, cancellationToken);
+            await _slideShowRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
