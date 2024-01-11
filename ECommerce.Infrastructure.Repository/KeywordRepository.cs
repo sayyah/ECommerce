@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class KeywordRepository(SunflowerECommerceDbContext context) : RepositoryBase<Keyword>(context),
     IKeywordRepository
@@ -20,12 +22,11 @@ public class KeywordRepository(SunflowerECommerceDbContext context) : Repository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Keyword>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Keyword> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Keyword>.ToPagedList(
-            await context.Keywords.Where(x => x.KeywordText.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Keywords.Where(x => x.KeywordText.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

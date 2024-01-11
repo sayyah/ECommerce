@@ -1,249 +1,146 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using ECommerce.API.DataTransferObject.Blogs.Commands;
+using ECommerce.API.DataTransferObject.Blogs.Queris;
+using ECommerce.Application.Base.Services.Interfaces;
+using ECommerce.Application.Services.Blogs.Commands;
+using ECommerce.Application.Services.Blogs.Queries;
+using ECommerce.Application.Services.Blogs.Results;
 
 namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogsController(IUnitOfWork unitOfWork, ILogger<BlogsController> logger) : ControllerBase
+public class BlogsController(IMapper mapper) : ControllerBase
 {
-    private readonly IBlogRepository _blogRepository = unitOfWork.GetRepository<BlogRepository, Blog>();
+
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ICollection<ReadBlogDto>>> Get(
+        [FromQuery] GetBlogsQueryDto getBlogsQueryDto,
+        [FromServices] IQueryHandler<GetBlogsQuery, PagedList<BlogResult>> queryHandler)
     {
-        try
+        if (string.IsNullOrEmpty(getBlogsQueryDto.PaginationParameters.Search))
         {
-            if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogRepository.Search(paginationParameters, cancellationToken);
-            var paginationDetails = new PaginationDetails
-            {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = paginationParameters.Search
-            };
-            return Ok(new ApiResult
-            {
-                PaginationDetails = paginationDetails,
-                Code = ResultCode.Success,
-                ReturnData = entity
-            });
+            getBlogsQueryDto.PaginationParameters.Search = "";
         }
-        catch (Exception e)
+
+        GetBlogsQuery query = mapper.Map<GetBlogsQuery>(getBlogsQueryDto);
+        var blogs = await queryHandler.HandleAsync(query);
+        PagedList<ReadBlogDto> blogDto = mapper.Map<PagedList<ReadBlogDto>>(blogs);
+        return Ok(new ApiResult
         {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = blogDto
+        });
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetByTagText([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ReadBlogDto>> GetById(
+        [FromQuery] GetBlogByIdQueryDto getBlogByIdQueryDto,
+        [FromServices] IQueryHandler<GetBlogByIdQuery, BlogResult> queryHandler)
     {
-        try
+        GetBlogByIdQuery query = mapper.Map<GetBlogByIdQuery>(getBlogByIdQueryDto);
+        var blogs = await queryHandler.HandleAsync(query);
+        ReadBlogDto blogDto = mapper.Map<ReadBlogDto>(blogs);
+        return Ok(new ApiResult
         {
-            if (string.IsNullOrEmpty(paginationParameters.TagText)) paginationParameters.TagText = "";
-            var entity = await _blogRepository.GetByTagText(paginationParameters, cancellationToken);
-            var paginationDetails = new PaginationDetails
-            {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = paginationParameters.Search
-            };
-            return Ok(new ApiResult
-            {
-                PaginationDetails = paginationDetails,
-                Code = ResultCode.Success,
-                ReturnData = entity
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = blogDto
+        });
     }
 
     [HttpGet]
-    public async Task<ActionResult<BlogViewModel>> GetById(int id, bool isColleague,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ReadBlogDto>> GetByTagText(
+        [FromQuery] GetBlogByTagTextQueryDto getBlogByTagTextQueryDto,
+        [FromServices] IQueryHandler<GetBlogByTagTextQuery, PagedList<BlogResult>> queryHandler)
     {
-        try
+        if (string.IsNullOrEmpty(getBlogByTagTextQueryDto.TagText))
+            getBlogByTagTextQueryDto.TagText = "";
+        GetBlogByTagTextQuery query = mapper.Map<GetBlogByTagTextQuery>(getBlogByTagTextQueryDto);
+        var blogs = await queryHandler.HandleAsync(query);
+        PagedList<ReadBlogDto> blogDto = mapper.Map<PagedList<ReadBlogDto>>(blogs);
+        return Ok(new ApiResult
         {
-            var result = await _blogRepository.GetBlogByIdWithInclude(id).FirstOrDefaultAsync(cancellationToken);
-            if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
+            Code = ResultCode.Success,
+            ReturnData = blogDto
+        });
+    }
 
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success,
-                ReturnData = result
-            });
-        }
-        catch (Exception e)
+    [HttpGet]
+    public async Task<ActionResult<ReadBlogDto>> GetByCategory(
+        [FromQuery] GetBlogByCategoryQueryDto getBlogByCategoryQueryDto,
+        [FromServices] IQueryHandler<GetBlogByCategoryQuery, PagedList<BlogResult>> queryHandler)
+    {
+        GetBlogByCategoryQuery query = mapper.Map<GetBlogByCategoryQuery>(getBlogByCategoryQueryDto);
+        var blogs = await queryHandler.HandleAsync(query);
+        PagedList<ReadBlogDto> blogDto = mapper.Map<PagedList<ReadBlogDto>>(blogs);
+        return Ok(new ApiResult
         {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = blogDto
+        });
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ReadBlogDto>> GetByUrl(
+        [FromQuery] GetBlogByUrlQueryDto getBlogByUrlQueryDto,
+        [FromServices] IQueryHandler<GetBlogByUrlQuery, BlogResult> queryHandler)
+    {
+        GetBlogByUrlQuery query = mapper.Map<GetBlogByUrlQuery>(getBlogByUrlQueryDto);
+        var blogs = await queryHandler.HandleAsync(query);
+        ReadBlogDto blogDto = mapper.Map<ReadBlogDto>(blogs);
+        return Ok(new ApiResult
+        {
+            Code = ResultCode.Success,
+            ReturnData = blogDto
+        });
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(BlogViewModel? blogViewModel, CancellationToken cancellationToken)
+    public async Task<ActionResult<ReadBlogDto>> Post(
+        [FromQuery] CreateBlogDto createBlogDto,
+        [FromServices] ICommandHandler<CreateBlogCommand, bool> commandHandler,
+        CancellationToken cancellationToken)
     {
-        try
+        CreateBlogCommand command = mapper.Map<CreateBlogCommand>(createBlogDto);
+        bool isSuccess = await commandHandler.HandleAsync(command, cancellationToken);
+        return Ok(new ApiResult
         {
-            if (blogViewModel == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.BadRequest
-                });
-            blogViewModel.Title = blogViewModel.Title.Trim();
-
-            var repetitiveTitle = await _blogRepository.GetByTitle(blogViewModel.Title, cancellationToken);
-            if (repetitiveTitle != null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.Repetitive,
-                    Messages = new List<string> { "عنوان مقاله تکراری است" }
-                });
-            var repetitiveUrl = await _blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
-            if (repetitiveUrl != null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.Repetitive,
-                    Messages = new List<string> { "آدرس مقاله تکراری است" }
-                });
-
-            var newBlog = await _blogRepository.AddWithRelations(blogViewModel, cancellationToken);
-            await unitOfWork.SaveAsync(cancellationToken);
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success,
-                ReturnData = newBlog
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = isSuccess
+        });
     }
 
     [HttpPut]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<ActionResult<int>> Put(BlogViewModel? blogViewModel, CancellationToken cancellationToken)
+    public async Task<ActionResult<ReadBlogDto>> Put(
+        [FromQuery] EditBlogDto editeBlogDto,
+        [FromServices] ICommandHandler<EditBlogCommand, bool> commandHandler,
+        CancellationToken cancellationToken)
     {
-        try
+        EditBlogCommand command = mapper.Map<EditBlogCommand>(editeBlogDto);
+        bool isSuccess = await commandHandler.HandleAsync(command,cancellationToken);
+        return Ok(new ApiResult
         {
-            if (blogViewModel == null) return BadRequest();
-
-
-            var repetitiveTitle = await _blogRepository.GetByTitle(blogViewModel.Title, cancellationToken);
-            if (repetitiveTitle != null && repetitiveTitle.Id != blogViewModel.Id)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.Repetitive,
-                    Messages = new List<string> { "عنوان مقاله تکراری است" }
-                });
-            if (repetitiveTitle != null) _blogRepository.Detach(repetitiveTitle);
-            var repetitiveUrl = await _blogRepository.GetByUrl(blogViewModel.Url, cancellationToken);
-            if (repetitiveUrl != null && repetitiveUrl.Id != blogViewModel.Id)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.Repetitive,
-                    Messages = new List<string> { "آدرس مقاله تکراری است" }
-                });
-            if (repetitiveUrl != null) _blogRepository.Detach(repetitiveUrl);
-            await _blogRepository.EditWithRelations(blogViewModel, cancellationToken);
-            await unitOfWork.SaveAsync(cancellationToken);
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = isSuccess
+        });
     }
 
     [HttpDelete]
     [Authorize(Roles = "SuperAdmin")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _blogRepository.DeleteById(id, cancellationToken);
-            await unitOfWork.SaveAsync(cancellationToken);
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetByCategory(int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success,
-                ReturnData = await _blogRepository.GetWithInclude(id, cancellationToken)
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<BlogViewModel>> GetByUrl(string blogUrl, bool isColleague,
+    public async Task<ActionResult> Delete(
+        [FromQuery] DeleteBlogDto deleteBlogDto,
+        [FromServices] ICommandHandler<DeleteBlogCommand, bool> commandHandler,
         CancellationToken cancellationToken)
     {
-        try
+        DeleteBlogCommand command = mapper.Map<DeleteBlogCommand>(deleteBlogDto);
+        bool isSuccess = await commandHandler.HandleAsync(command, cancellationToken);
+        return Ok(new ApiResult
         {
-            var result = await _blogRepository.GetBlogByUrlWithInclude(blogUrl).FirstOrDefaultAsync(cancellationToken);
-            if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success,
-                ReturnData = result
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = isSuccess
+        });
     }
 }

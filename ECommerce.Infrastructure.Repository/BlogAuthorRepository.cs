@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class BlogAuthorRepository(SunflowerECommerceDbContext context) : RepositoryBase<BlogAuthor>(context),
     IBlogAuthorRepository
@@ -8,12 +10,11 @@ public class BlogAuthorRepository(SunflowerECommerceDbContext context) : Reposit
         return await context.BlogAuthors.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<BlogAuthor>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<BlogAuthor> Search(PaginationParameters paginationParameters)
     {
         return PagedList<BlogAuthor>.ToPagedList(
-            await context.BlogAuthors.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.BlogAuthors.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

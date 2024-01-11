@@ -7,13 +7,12 @@ public class StoreController(IUnitOfWork unitOfWork, ILogger<StoreController> lo
     private readonly IStoreRepository _storeRepository = unitOfWork.GetRepository<StoreRepository, Store>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _storeRepository.Search(paginationParameters, cancellationToken);
+            var entity = _storeRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class EmployeeRepository(SunflowerECommerceDbContext context) : RepositoryBase<Employee>(context),
     IEmployeeRepository
@@ -8,12 +10,11 @@ public class EmployeeRepository(SunflowerECommerceDbContext context) : Repositor
         return await context.Employees.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Employee>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Employee> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Employee>.ToPagedList(
-            await context.Employees.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Employees.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

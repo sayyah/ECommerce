@@ -11,7 +11,7 @@ public class IndexModel(ISlideShowService slideShowService, IProductService prod
     public List<SlideShowViewModel> SlideShowViewModels { get; set; }
     public List<ProductIndexPageViewModel> ExpensiveProducts { get; set; } = new();
     public List<ProductIndexPageViewModel> NewProducts { get; set; } = new();
-    public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
+    public ServiceResult<List<Blog>> Blogs { get; set; }
     public List<Brand> Brands { get; set; }
     public bool IsColleague { get; set; }
 

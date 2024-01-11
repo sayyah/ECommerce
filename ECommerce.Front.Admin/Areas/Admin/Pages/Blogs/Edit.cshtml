@@ -102,7 +102,7 @@
 
                         <div class="form-group">
                             <label>انتخاب تگ ها</label>
-                            <select asp-for="@Model.Blog.TagsId" class="col-md-12 js-example-basic-multiple  form-control" multiple="multiple">
+                            <select asp-for="@Model.Blog.Tags" class="col-md-12 js-example-basic-multiple  form-control" multiple="multiple">
                                 @foreach (var item in Model.Tags)
                                 {
                                     if (Model.Blog.Tags.Any(x => x.Id == item.Id))
@@ -118,7 +118,7 @@
                         </div>
                         <div class="form-group">
                             <label>انتخاب کلمات کلیدی</label>
-                            <select asp-for="@Model.Blog.KeywordsId" class="col-md-12 js-example-basic-multiple  form-control" multiple="multiple">
+                            <select asp-for="@Model.Blog.Keywords" class="col-md-12 js-example-basic-multiple  form-control" multiple="multiple">
                                 @foreach (var item in Model.Keywords)
                                 {
                                     if (Model.Blog.Keywords.Any(x => x.Id == item.Id))

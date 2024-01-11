@@ -1,26 +1,26 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class ProductCommentRepository(SunflowerECommerceDbContext context) : RepositoryBase<ProductComment>(context),
     IProductCommentRepository
 {
-    public async Task<PagedList<ProductComment>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<ProductComment> Search(PaginationParameters paginationParameters)
     {
         return PagedList<ProductComment>.ToPagedList(
-            await context.ProductComments
+            context.ProductComments
                 .Where(x => x.ProductId != null && x.Name.Contains(paginationParameters.Search))
-                .AsNoTracking().OrderByDescending(on => on.Id).Include(x => x.Product).ToListAsync(cancellationToken),
+                .AsNoTracking().OrderByDescending(on => on.Id).Include(x => x.Product),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }
 
-    public async Task<PagedList<ProductComment>> GetAllAcceptedComments(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<ProductComment> GetAllAcceptedComments(PaginationParameters paginationParameters)
     {
         return PagedList<ProductComment>.ToPagedList(
-            await context.ProductComments.Where(x =>
+            context.ProductComments.Where(x =>
                     x.IsAccepted && x.ProductId == Convert.ToInt32(paginationParameters.Search))
-                .AsNoTracking().OrderByDescending(on => on.Id).Include(x => x.Answer).ToListAsync(cancellationToken),
+                .AsNoTracking().OrderByDescending(on => on.Id).Include(x => x.Answer),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

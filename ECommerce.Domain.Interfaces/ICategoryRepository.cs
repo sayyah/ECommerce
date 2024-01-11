@@ -1,14 +1,11 @@
 ﻿using ECommerce.Application.ViewModels;
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface ICategoryRepository : IRepositoryBase<Category>
 {
-    Task<PagedList<Category>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken);
+    PagedList<Category> Search(PaginationParameters paginationParameters);
 
     Task<Category?> GetByName(string name, CancellationToken cancellationToken, int? parentId = null);
 

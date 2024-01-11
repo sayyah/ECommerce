@@ -1,13 +1,10 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface IProductAttributeGroupRepository : IRepositoryBase<ProductAttributeGroup>
 {
-    Task<PagedList<ProductAttributeGroup>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken);
+    PagedList<ProductAttributeGroup> Search(PaginationParameters paginationParameters);
 
     Task<ProductAttributeGroup?> GetByName(string name, CancellationToken cancellationToken);
 

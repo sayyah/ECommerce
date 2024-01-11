@@ -10,13 +10,12 @@ public class CategoriesController(IUnitOfWork unitOfWork, ILogger<CategoriesCont
     private readonly ICategoryRepository _categoryRepository = unitOfWork.GetRepository<CategoryRepository, Category>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _categoryRepository.Search(paginationParameters, cancellationToken);
+            var entity = _categoryRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
