@@ -15,4 +15,8 @@
     <Folder Include="Blogs\Commands\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Blogs\Commands\" />
+  </ItemGroup>
+
 </Project>

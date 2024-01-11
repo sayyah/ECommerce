@@ -1,9 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using ECommerce.API.DataTransferring.Blogs;
+﻿using ECommerce.API.DataTransferring.Blogs;
 using ECommerce.API.Utilities;
 using ECommerce.Application.Services.Blogs.Queries;
 using ECommerce.Application.Services.Interfaces;
-using ECommerce.Application.Services.Objects;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -17,20 +15,13 @@ public class BlogsController(IDtoMapper mapper,ILogger<BlogsController> logger) 
 
     [HttpGet]
     public async Task<ActionResult<ICollection<BlogDto>>> GetChartOfAccountsByCodesAsync(
-        [FromQuery] GetBlogsQueryDto getBlogsQueryDto,
-        [FromServices] IQueryHandler<GetBlogsQuery, PagedList<BlogViewModel>> queryHandler)
+        [FromQuery] GetBlogsQueryDto getChartOfAccountsByCodesQueryDto,
+        [FromServices] IQueryHandler<GetBlogsQuery, ICollection<Blog>> queryHandler)
     {
         try
         {
-            if (string.IsNullOrEmpty(getBlogsQueryDto.PaginationParameters.Search))
-            {
-                getBlogsQueryDto.PaginationParameters.Search = "";
-            }
-
-            GetBlogsQuery query = mapper.Map<GetBlogsQuery>(getBlogsQueryDto);
-            var blogs = await queryHandler.HandleAsync(query);
-            ICollection<BlogDto> currencyAccountDto = mapper
-                .Map<ICollection<CurrencyAccountDto>>(blogs);
+            if (string.IsNullOrEmpty(getChartOfAccountsByCodesQueryDto.PaginationParameters.Search)) getChartOfAccountsByCodesQueryDto.PaginationParameters.Search = "";
+           
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
