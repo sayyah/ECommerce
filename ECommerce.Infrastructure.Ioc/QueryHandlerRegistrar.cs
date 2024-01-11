@@ -10,6 +10,7 @@ namespace ECommerce.Infrastructure.Ioc
         public void RegisterIn(IServiceCollection services)
         {
             services.RegisterQueryHandlersFromAssemblyOf<GetBlogsQueryHandler>();
+            services.RegisterCommandHandlersFromAssemblyOf<CreateBlogCommandHandler>();
         }
     }
 }
