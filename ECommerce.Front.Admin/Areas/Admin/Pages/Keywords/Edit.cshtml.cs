@@ -1,12 +1,13 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Keywords;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
 public class EditModel(IKeywordService keywordService) : PageModel
 {
-    [BindProperty] public Keyword Keyword { get; set; }
-    [TempData] public string Message { get; set; }
-    [TempData] public string Code { get; set; }
+    [BindProperty] public ReadKeywordDto? Keyword { get; set; }
+    [TempData] public string? Message { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task OnGet(int id)
     {
@@ -18,15 +19,18 @@ public class EditModel(IKeywordService keywordService) : PageModel
     {
         if (ModelState.IsValid)
         {
-            var result = await keywordService.Edit(Keyword);
-            Message = result.Message;
-            Code = result.Code.ToString();
-            if (result.Code == 0)
-                return RedirectToPage("/Keywords/Index",
-                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
-            Message = result.Message;
-            Code = result.Code.ToString();
-            ModelState.AddModelError("", result.Message);
+            if (Keyword != null)
+            {
+                var result = await keywordService.Edit(Keyword);
+                Message = result.Message;
+                Code = result.Code.ToString();
+                if (result.Code == 0)
+                    return RedirectToPage("/Keywords/Index",
+                        new { area = "Admin", message = result.Message, code = result.Code.ToString() });
+                Message = result.Message;
+                Code = result.Code.ToString();
+                if (result.Message != null) ModelState.AddModelError("", result.Message);
+            }
         }
 
         return Page();

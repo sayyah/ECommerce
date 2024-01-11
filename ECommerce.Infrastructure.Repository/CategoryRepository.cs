@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class CategoryRepository(SunflowerECommerceDbContext context) : RepositoryBase<Category>(context),
     ICategoryRepository
@@ -94,12 +96,10 @@ public class CategoryRepository(SunflowerECommerceDbContext context) : Repositor
         return categoriesId;
     }
 
-    public async Task<PagedList<Category>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Category> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Category>.ToPagedList(
-            await context.Categories.Where(x => x.Name.Contains(paginationParameters.Search)).OrderBy(on => on.Id)
-                .ToListAsync(cancellationToken),
+            context.Categories.Where(x => x.Name.Contains(paginationParameters.Search)).OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

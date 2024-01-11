@@ -30,6 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ECommerce.API.DataTransferring\ECommerce.API.DataTransferObject.csproj" />
 		<ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
 		<ProjectReference Include="..\ECommerce.Services\ECommerce.Services.csproj" />
 	</ItemGroup>

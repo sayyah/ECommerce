@@ -2,16 +2,16 @@
 
 @foreach (var category in Model)
 {
-    var spcae = "";
+    var space = "";
     for (var i = 0; i < category.Depth; i++)
     {
-        spcae += "---";
+        space += "---";
     }
 
     if (!category.Children.Any())
     {
         <br>
-        @spcae
+        @space
         <input type="radio" id="@category.Id" name="Blog.BlogCategoryId" checked="@category.Checked" value="@category.Id">
         <label for="@category.Id">@category.Name</label>
         <input hidden="hidden" id="path_@category.Id" value="@category.Path"/>
@@ -20,7 +20,7 @@
     else
     {
         <br>
-        @spcae
+        @space
         <input type="radio" id="@category.Id" name="Blog.BlogCategoryId" checked="@category.Checked" value="@category.Id">
         <label for="@category.Id">@category.Name</label>
         <input hidden="hidden" id="path_@category.Id" value="@category.Path"/>

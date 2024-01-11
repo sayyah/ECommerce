@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class ContactRepository(SunflowerECommerceDbContext context) : RepositoryBase<Contact>(context),
     IContactRepository
@@ -23,12 +25,11 @@ public class ContactRepository(SunflowerECommerceDbContext context) : Repository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Contact>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Contact> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Contact>.ToPagedList(
-            await context.Contacts.Where(x => x.Email.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+           context.Contacts.Where(x => x.Email.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

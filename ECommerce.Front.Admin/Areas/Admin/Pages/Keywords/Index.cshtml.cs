@@ -1,14 +1,15 @@
+using ECommerce.API.DataTransferObject.Keywords;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
 public class IndexModel(IKeywordService keywordService) : PageModel
 {
-    public ServiceResult<List<Keyword>> Keywords { get; set; }
+    public ServiceResult<List<ReadKeywordDto>>? Keywords { get; set; }
 
-    [TempData] public string Message { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(string search = "", int pageNumber = 1, int pageSize = 10,
         string message = null, string code = null)

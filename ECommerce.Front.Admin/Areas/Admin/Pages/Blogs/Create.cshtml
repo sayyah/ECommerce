@@ -37,18 +37,18 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label>عنوان</label>
-                            <input asp-for="@Model.Blog.Title" class="form-control form-control-solid"/>
-                            <span asp-validation-for="@Model.Blog.Title" class="mt-5" style="color: red; margin-top: 10px"></span>
+                            <input asp-for="@Model.Blog!.Title" class="form-control form-control-solid"/>
+                            <span asp-validation-for="@Model.Blog!.Title" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
                             <label>متن مقاله</label>
-                            <textarea asp-for="@Model.Blog.Text" id="Description_Add" class="form-control form-control-solid" rows="6"></textarea>
-                            <span asp-validation-for="@Model.Blog.Text" class="mt-5" style="color: red; margin-top: 10px"></span>
+                            <textarea asp-for="@Model.Blog!.Text" id="Description_Add" class="form-control form-control-solid" rows="6"></textarea>
+                            <span asp-validation-for="@Model.Blog!.Text" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
                             <label>خلاصه</label>
-                            <input asp-for="@Model.Blog.Summary" class="form-control form-control-solid"/>
-                            <span asp-validation-for="@Model.Blog.Summary" class="mt-5" style="color: red; margin-top: 10px"></span>
+                            <input asp-for="@Model.Blog!.Summary" class="form-control form-control-solid"/>
+                            <span asp-validation-for="@Model.Blog!.Summary" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
                             <label>تاریخ ایجاد</label>
@@ -63,8 +63,8 @@
                         </div>
                         <div class="form-group">
                             <label>آدرس اینترنتی</label>
-                            <input asp-for="@Model.Blog.Url" class="form-control form-control-solid"/>
-                            <span asp-validation-for="@Model.Blog.Url" class="mt-5" style="color: red; margin-top: 10px"></span>
+                            <input asp-for="@Model.Blog!.Url" class="form-control form-control-solid"/>
+                            <span asp-validation-for="@Model.Blog!.Url" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div class="form-group">
                             <label>انتخاب دسته بندی مقاله</label>
@@ -76,15 +76,15 @@
                         </div>
                         <div class="form-group">
                             <label>نویسنده مقاله</label>
-                            <select asp-for="@Model.Blog.BlogAuthorId" asp-items="@Model.BlogAuthors" class="form-control js-example-basic-multiple col-md-12"></select>
+                            <select asp-for="@Model.Blog!.BlogAuthorId" asp-items="@Model.BlogAuthors" class="form-control js-example-basic-multiple col-md-12"></select>
                         </div>
                         <div class="form-group">
                             <label>کلمات کلیدی</label>
-                            <select asp-for="@Model.Blog.KeywordsId" asp-items="@Model.Keywords" class="form-control js-example-basic-multiple col-md-12"></select>
+                            <select asp-for="@Model.Blog!.Keywords" asp-items="@Model.Keywords" class="form-control js-example-basic-multiple col-md-12"></select>
                         </div>
                         <div class="form-group">
                             <label>تگ</label>
-                            <select asp-for="@Model.Blog.TagsId" asp-items="@Model.Tags" class="form-control js-example-basic-multiple col-md-12"></select>
+                            <select asp-for="@Model.Blog!.Tags" asp-items="@Model.Tags" class="form-control js-example-basic-multiple col-md-12"></select>
                         </div>
                         <div class="form-group">
                             <label>تصویر مقاله</label>

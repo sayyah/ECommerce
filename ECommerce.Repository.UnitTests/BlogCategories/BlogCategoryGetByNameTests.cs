@@ -12,10 +12,10 @@ public partial class BlogCategoryTests
         // Arrange
         BlogCategory root = Fixture
             .Build<BlogCategory>()
-            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.BlogCategories, () => [])
             .With(p => p.Parent, () => null)
             .With(p => p.ParentId, () => null)
-            .With(p => p.Blogs, () => [ ])
+            .With(p => p.Blogs, () => [])
             .Create();
         BlogCategory child1 = Fixture
             .Build<BlogCategory>()

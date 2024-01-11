@@ -1,3 +1,5 @@
+using ECommerce.API.DataTransferObject.Blogs.Queries;
+using ECommerce.API.DataTransferObject.Tags;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
@@ -7,8 +9,8 @@ public class BlogModel(IBlogService blogService, IBlogCategoryService blogCatego
 {
     private readonly IBlogCategoryService _blogCategoryService = blogCategoryService;
 
-    public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
-    [BindProperty] public ServiceResult<List<Tag>> Tags { get; set; }
+    public ServiceResult<List<ReadBlogDto>> Blogs { get; set; }
+    [BindProperty] public ServiceResult<List<ReadTagDto>> Tags { get; set; }
     public string? Search { get; set; }
 
     public async Task OnGet(string blogCategoryId, string search, int pageNumber = 1, int pageSize = 3,

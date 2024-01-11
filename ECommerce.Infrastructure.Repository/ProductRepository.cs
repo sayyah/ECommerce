@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Entities.HolooEntity;
+﻿using ECommerce.Application.Services.Objects;
+using ECommerce.Domain.Entities.HolooEntity;
 
 namespace ECommerce.Infrastructure.Repository;
 
@@ -296,11 +297,10 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<ProductIndexPageViewModel>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<ProductIndexPageViewModel> Search(PaginationParameters paginationParameters)
     {
         return PagedList<ProductIndexPageViewModel>.ToPagedList(
-            await context.Products.Where(x => x.Name.Contains(paginationParameters.Search))
+           context.Products.Where(x => x.Name.Contains(paginationParameters.Search))
                 .AsNoTracking()
                 .OrderByDescending(on => on.Id)
                 .Select(p => new ProductIndexPageViewModel
@@ -314,8 +314,7 @@ public class ProductRepository(SunflowerECommerceDbContext context, HolooDbConte
                     ImagePath = $"{p.Images!.First().Path}/{p.Images!.First().Name}",
                     Stars = p.Star,
                     Url = p.Url
-                })
-                .ToListAsync(cancellationToken),
+                }),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

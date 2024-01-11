@@ -1,17 +1,18 @@
+using ECommerce.API.DataTransferObject.Blogs.Queries;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
 public class IndexModel(IBlogService blogService) : PageModel
 {
-    public ServiceResult<List<Blog>> Blogs { get; set; }
+    public ServiceResult<List<ReadBlogDto>>? Blogs { get; set; }
 
-    [TempData] public string Message { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(string search = "", int pageNumber = 1, int pageSize = 10,
-        string message = null, string code = null)
+        string message = "", string code = "")
     {
         Message = message;
         Code = code;

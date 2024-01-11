@@ -9,13 +9,12 @@ public class ImagesController(IUnitOfWork unitOfWork,
     private readonly IImageRepository _imageRepository = unitOfWork.GetRepository<ImageRepository, Image>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _imageRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _imageRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

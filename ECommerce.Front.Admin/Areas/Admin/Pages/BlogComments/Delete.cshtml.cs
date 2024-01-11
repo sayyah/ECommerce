@@ -1,3 +1,4 @@
+using ECommerce.API.DataTransferObject.Blogs.Queries;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
@@ -6,7 +7,7 @@ public class DeleteModel(IBlogCommentService blogCommentService, IBlogService bl
     : PageModel
 {
     [BindProperty] public BlogComment BlogComment { get; set; }
-    public Blog Blog { get; set; }
+    public ReadBlogDto Blog { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 

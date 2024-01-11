@@ -7,13 +7,12 @@ public class TagsController(IUnitOfWork unitOfWork, ILogger<TagsController> logg
     private readonly ITagRepository _tagRepository = unitOfWork.GetRepository<TagRepository, Tag>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _tagRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _tagRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

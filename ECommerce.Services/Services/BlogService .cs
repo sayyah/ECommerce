@@ -1,13 +1,13 @@
-﻿using ECommerce.Application.ViewModels;
+﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
 
 namespace ECommerce.Services.Services;
 
-public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogService
+public class BlogService(IHttpService http) : EntityService<ReadBlogDto>(http), IBlogService
 {
     private const string Url = "api/Blogs";
-    private List<Blog> _blogs;
+    private List<ReadBlogDto> _blogs;
 
-    public async Task<ServiceResult<List<Blog>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<ReadBlogDto>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
         var result = await ReadList(Url, $"Get?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
@@ -30,7 +30,7 @@ public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogSe
         };
     }
 
-    public async Task<ServiceResult<List<Blog>>> Filtering(string filter)
+    public async Task<ServiceResult<List<ReadBlogDto>>> Filtering(string filter)
     {
         if (_blogs == null)
         {
@@ -41,8 +41,8 @@ public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogSe
 
         var result = _blogs.Where(x => x.Title.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Blog>> { Code = ServiceCode.Info, Message = "برندی یافت نشد" };
-        return new ServiceResult<List<Blog>>
+            return new ServiceResult<List<ReadBlogDto>> { Code = ServiceCode.Info, Message = "برندی یافت نشد" };
+        return new ServiceResult<List<ReadBlogDto>>
         {
             Code = ServiceCode.Success,
             ReturnData = result
@@ -56,17 +56,17 @@ public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogSe
     //    return Return(result);
     //}
 
-    public async Task<ServiceResult<BlogViewModel>> Add(BlogViewModel blogViewModel)
+    public async Task<ServiceResult<ReadBlogDto>> Add(ReadBlogDto blog)
     {
-        //if (blogViewModel.BrandId == 0) blogViewModel.BrandId = null;
-        //var result = await Create<BlogViewModel>(Url, blogViewModel);
-        var result = await http.PostAsync<BlogViewModel, BlogViewModel>(Url, blogViewModel);
+        //if (blog.BrandId == 0) blog.BrandId = null;
+        //var result = await Create<Blog>(Url, blog);
+        var result = await http.PostAsync<ReadBlogDto, ReadBlogDto>(Url, blog);
         return Return(result);
     }
 
-    public async Task<ServiceResult> Edit(BlogViewModel blogViewModel)
+    public async Task<ServiceResult> Edit(ReadBlogDto blog)
     {
-        var result = await http.PutAsync(Url, blogViewModel);
+        var result = await http.PutAsync(Url, blog);
         _blogs = null;
         return Return(result);
     }
@@ -92,13 +92,13 @@ public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogSe
             { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
-    public async Task<ServiceResult<BlogViewModel>> GetById(int id)
+    public async Task<ServiceResult<ReadBlogDto>> GetById(int id)
     {
-        var result = await http.GetAsync<BlogViewModel>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ReadBlogDto>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<BlogViewModel>>> TopBlogs(string CategoryId = null, string search = "",
+    public async Task<ServiceResult<List<ReadBlogDto>>> TopBlogs(string CategoryId = null, string search = "",
         int pageNumber = 0, int pageSize = 3, int blogSort = 1)
     {
         var command = "Get?" +
@@ -108,11 +108,11 @@ public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogSe
         if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
 
         command += $"BlogSort={blogSort}";
-        var result = await http.GetAsync<List<BlogViewModel>>(Url, command);
+        var result = await http.GetAsync<List<ReadBlogDto>>(Url, command);
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<BlogViewModel>>> TopBlogsByTagText(string CategoryId = "", string TagText = "",
+    public async Task<ServiceResult<List<ReadBlogDto>>> TopBlogsByTagText(string CategoryId = "", string TagText = "",
         int pageNumber = 0, int pageSize = 3, int blogSort = 1)
     {
         var command = "GetByTagText?" +
@@ -122,13 +122,13 @@ public class BlogService(IHttpService http) : EntityService<Blog>(http), IBlogSe
         if (!string.IsNullOrEmpty(CategoryId)) command += $"PaginationParameters.CategoryId={CategoryId}&";
 
         command += $"BlogSort={blogSort}";
-        var result = await http.GetAsync<List<BlogViewModel>>(Url, command);
+        var result = await http.GetAsync<List<ReadBlogDto>>(Url, command);
         return Return(result);
     }
 
-    public async Task<ServiceResult<BlogDetailsViewModel>> GetByUrl(string blogUrl)
+    public async Task<ServiceResult<ReadBlogDto>> GetByUrl(string blogUrl)
     {
-        var result = await http.GetAsync<BlogDetailsViewModel>(Url, $"GetByUrl?blogUrl={blogUrl}");
+        var result = await http.GetAsync<ReadBlogDto>(Url, $"GetByUrl?blogUrl={blogUrl}");
         return Return(result);
     }
 }

@@ -21,7 +21,7 @@ public class UserListViewModel
 
 public class userFilterParameters
 {
-    public PaginationParameters? PaginationParameters { get; set; }
+    //public PaginationParameters? PaginationParameters { get; set; }
     public UserSort UserSort { get; set; }
     public bool? IsColleauge { get; set; }
     public bool? HasBuying { get; set; }

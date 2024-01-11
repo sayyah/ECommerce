@@ -1,14 +1,15 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Keywords;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
 public class CreateModel(IKeywordService keywordService) : PageModel
 {
-    [BindProperty] public Keyword Keyword { get; set; }
+    [BindProperty] public ReadKeywordDto? Keyword { get; set; }
 
-    [TempData] public string Message { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public void OnGet()
     {

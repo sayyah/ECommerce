@@ -40,6 +40,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ECommerce.Application.Services\ECommerce.Application.Services.csproj" />
 		<ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
 		<ProjectReference Include="..\ECommerce.Services\ECommerce.Services.csproj" />
 		<ProjectReference Include="..\ECommerce.Front.Admin\ECommerce.Front.Admin.csproj" />

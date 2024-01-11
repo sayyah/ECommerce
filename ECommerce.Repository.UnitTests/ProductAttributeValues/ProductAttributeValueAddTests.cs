@@ -1,7 +1,6 @@
 ﻿using ECommerce.Domain.Entities;
 using ECommerce.Domain.Interfaces;
 using ECommerce.Infrastructure.Repository;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.ProductAttributeValues

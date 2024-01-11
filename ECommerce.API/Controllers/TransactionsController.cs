@@ -36,8 +36,7 @@ public class TransactionsController(IUnitOfWork unitOfWork,
 
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<IActionResult> Get([FromQuery] transactionFilterViewModel? transactionFilterViewModel,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] transactionFilterViewModel? transactionFilterViewModel)
     {
         try
         {
@@ -45,7 +44,7 @@ public class TransactionsController(IUnitOfWork unitOfWork,
                 string.IsNullOrEmpty(transactionFilterViewModel.PaginationParameters.Search))
             {
                 transactionFilterViewModel.PaginationParameters.Search = "";
-                var entity = await _transactionRepository.Search(transactionFilterViewModel, cancellationToken);
+                var entity =  _transactionRepository.Search(transactionFilterViewModel);
                 var paginationDetails = new PaginationDetails
                 {
                     TotalCount = entity.TotalCount,

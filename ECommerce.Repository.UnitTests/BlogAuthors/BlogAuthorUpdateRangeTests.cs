@@ -1,6 +1,5 @@
 using AutoFixture;
 using ECommerce.Domain.Entities;
-using ECommerce.Infrastructure.Repository;
 using FluentAssertions;
 using Xunit;
 

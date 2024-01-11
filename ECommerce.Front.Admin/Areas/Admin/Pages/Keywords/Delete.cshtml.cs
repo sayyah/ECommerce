@@ -1,13 +1,14 @@
+using ECommerce.API.DataTransferObject.Keywords;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
 public class DeleteModel(IKeywordService keywordService) : PageModel
 {
-    public Keyword Keyword { get; set; }
-    [TempData] public string Message { get; set; }
+    public ReadKeywordDto? Keyword { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {

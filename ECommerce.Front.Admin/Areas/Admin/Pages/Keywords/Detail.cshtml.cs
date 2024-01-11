@@ -1,10 +1,11 @@
+using ECommerce.API.DataTransferObject.Keywords;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Keywords;
 
 public class DetailModel(IKeywordService keywordService) : PageModel
 {
-    public Keyword Keyword { get; set; }
+    public ReadKeywordDto? Keyword { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {

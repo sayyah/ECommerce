@@ -1,14 +1,15 @@
+using ECommerce.API.DataTransferObject.Tags;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
 public class IndexModel(ITagService tagService) : PageModel
 {
-    public ServiceResult<List<Tag>> Tags { get; set; }
+    public ServiceResult<List<ReadTagDto>>? Tags { get; set; }
 
-    [TempData] public string Message { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(string search = "", int pageNumber = 1, int pageSize = 10,
         string message = null, string code = null)

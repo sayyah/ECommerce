@@ -1,13 +1,14 @@
+using ECommerce.API.DataTransferObject.Tags;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
 public class DeleteModel(ITagService tagService) : PageModel
 {
-    public Tag Tag { get; set; }
-    [TempData] public string Message { get; set; }
+    public ReadTagDto? Tag { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {

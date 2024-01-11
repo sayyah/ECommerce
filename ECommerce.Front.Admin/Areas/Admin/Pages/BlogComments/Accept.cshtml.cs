@@ -1,4 +1,5 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
@@ -8,7 +9,7 @@ public class AcceptModel(IBlogCommentService blogCommentService, IBlogService bl
     [BindProperty] public BlogComment BlogComment { get; set; }
     [TempData] public string? Message { get; set; }
     [TempData] public string Code { get; set; }
-    public Blog Blog { get; set; }
+    public ReadBlogDto Blog { get; set; }
 
     public async Task OnGet(int id, string message = null, string code = null)
     {

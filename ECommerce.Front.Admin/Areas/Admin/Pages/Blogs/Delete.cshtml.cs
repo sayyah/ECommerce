@@ -1,13 +1,14 @@
+using ECommerce.API.DataTransferObject.Blogs.Queries;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
 public class DeleteModel(IBlogService blogService) : PageModel
 {
-    public Blog Blog { get; set; }
-    [TempData] public string Message { get; set; }
+    public ReadBlogDto? Blog { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {
