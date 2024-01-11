@@ -3,6 +3,7 @@ using ECommerce.Application.Services.Interfaces;
 using ECommerce.Application.Services.Objects;
 using ECommerce.Application.ViewModels;
 using ECommerce.Domain.Entities;
+using ECommerce.Domain.Entities.Helper;
 using ECommerce.Domain.Interfaces;
 using ECommerce.Infrastructure.Repository;
 
@@ -17,7 +18,7 @@ namespace ECommerce.Infrastructure.Handlers.Blogs.Queries
         {
             IQueryable<Blog> entities = await _blogRepository.Search(query.PaginationParameters);
             PagedList<BlogViewModel> pagedList = PagedList<BlogViewModel>.ToPagedList(entities.Select(x => new BlogViewModel
-                {
+            {
                     BlogAuthor = x.BlogAuthor,
                     BlogAuthorId = x.BlogAuthorId,
                     BlogCategoryId = x.BlogCategoryId,
