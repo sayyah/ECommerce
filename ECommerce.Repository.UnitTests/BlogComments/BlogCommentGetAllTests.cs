@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
@@ -6,28 +7,28 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "GetAll: Get all blogComment")]
-    public async void GetAll_GetAllAddedEntities_EntityExistsInRepository()
+    [Fact]
+    public void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["simple_tests"];
-        DbContext.BlogComments.AddRange(expected.Values);
+        IEnumerable<BlogComment> expected = Fixture
+            .Build<BlogComment>()
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .CreateMany(5);
+        DbContext.BlogComments.AddRange(expected);
         DbContext.SaveChanges();
 
         // Act
-        var actuals = await _blogCommentRepository.GetAll(CancellationToken);
+        var actuals = _blogCommentRepository.GetAll("");
 
         // Assert
-        actuals
-            .Should()
-            .BeEquivalentTo(
-                expected.Values,
-                options =>
-                    options
-                        .Excluding(bc => bc.Answer)
-                        .Excluding(bc => bc.User)
-                        .Excluding(bc => bc.Blog)
-                        .Excluding(bc => bc.Employee)
-            );
+        actuals.Should().BeEquivalentTo(expected);
     }
 }

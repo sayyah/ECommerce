@@ -1,11 +1,14 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class PricesController(IPriceRepository priceRepository, ILogger<PricesController> logger,
-        IHolooArticleRepository holooArticleRepository)
-    : ControllerBase
+public class PricesController(IUnitOfWork unitOfWork, ILogger<PricesController> logger) : ControllerBase
 {
+    private readonly IHolooArticleRepository _holooArticleRepository = unitOfWork.GetHolooRepository<HolooArticleRepository, HolooArticle>();
+    private readonly IPriceRepository _priceRepository = unitOfWork.GetRepository<PriceRepository, Price>();
+
     /// <summary>
     ///     Get All Price By Product Id with Pagination.
     /// </summary>
@@ -16,7 +19,7 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await priceRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _priceRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -48,7 +51,7 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
     {
         try
         {
-            var result = await priceRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _priceRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -74,7 +77,7 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
     {
         try
         {
-            var result = await priceRepository.PriceOfProduct(id, cancellationToken);
+            var result = await _priceRepository.PriceOfProduct(id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -97,7 +100,7 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Price price, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Price? price, CancellationToken cancellationToken)
     {
         try
         {
@@ -112,10 +115,13 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
                 messages.Add("لطفا یا کد کالا وارد کنید یا مبلغ");
 
             messages.AddRange(await CheckPrice(price, cancellationToken));
-            var holooPrice =
-                await holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
-            if (holooPrice.price == 0)
-                messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
+            if (price is { ArticleCodeCustomer: not null, SellNumber: not null })
+            {
+                var holooPrice =
+                    await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
+                if (holooPrice.price == 0)
+                    messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
+            }
 
             if (messages.Count > 0)
                 return Ok(new ApiResult
@@ -124,9 +130,10 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
                     Code = ResultCode.BadRequest
                 });
 
-            var newPrice = await priceRepository.AddAsync(price, cancellationToken);
-            await holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer, newPrice.ProductId,
-                cancellationToken);
+            var newPrice = await _priceRepository.AddAsync(price, cancellationToken);
+            _holooArticleRepository.SyncHolooWebId(newPrice.ArticleCodeCustomer!, newPrice.ProductId);
+            await unitOfWork.SaveAsync(cancellationToken,true);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -153,11 +160,14 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
 
             messages.AddRange(await CheckPrice(price, cancellationToken));
 
-            var HolooPrice =
-                await holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
+            if (price is { ArticleCodeCustomer: not null, SellNumber: not null })
+            {
+                var holooPrice =
+                    await _holooArticleRepository.GetHolooPrice(price.ArticleCodeCustomer, price.SellNumber.Value);
 
-            if (HolooPrice.price == 0)
-                messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
+                if (holooPrice.price == 0)
+                    messages.Add("شماره قیمت انتخاب شده فاقد مقدار می باشد");
+            }
 
             if (messages.Count > 0)
                 return Ok(new ApiResult
@@ -166,7 +176,9 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
                     Code = ResultCode.BadRequest
                 });
 
-            await priceRepository.UpdateAsync(price, cancellationToken);
+            _priceRepository.Update(price);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -186,7 +198,9 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
     {
         try
         {
-            await priceRepository.DeleteAsync(id, cancellationToken);
+            await _priceRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -203,12 +217,14 @@ public class PricesController(IPriceRepository priceRepository, ILogger<PricesCo
     private async Task<List<string>> CheckPrice(Price price, CancellationToken cancellationToken)
     {
         var messages = new List<string>();
-        var prices = await priceRepository.PriceOfProduct(price.ProductId, cancellationToken);
+        var prices = await _priceRepository.PriceOfProduct(price.ProductId, cancellationToken);
+        if (prices == null) return messages;
         var repetitive = prices.Where(x => x.Amount == price.Amount
                                            && x.IsColleague == price.IsColleague
                                            && x.ColorId == price.ColorId
-                                           && x.SizeId == price.SizeId);
-        if (repetitive.Any() && !repetitive.Any(x => x.Id == price.Id)) messages.Add("مبلغ وارد شده تکراری است");
+                                           && x.SizeId == price.SizeId).ToList();
+        if (repetitive.Any() && repetitive.All(x => x.Id != price.Id)) messages.Add("مبلغ وارد شده تکراری است");
+
         if (prices.Any(x => x.MinQuantity <= price.MinQuantity
                             && x.MaxQuantity >= price.MinQuantity
                             && x.IsColleague == price.IsColleague

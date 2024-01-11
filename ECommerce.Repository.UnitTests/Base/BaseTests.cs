@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using ECommerce.Infrastructure.DataContext;
+using ECommerce.Infrastructure.Repository;
 
 namespace ECommerce.Repository.UnitTests.Base;
 
@@ -10,14 +11,16 @@ public abstract class BaseTests : IDisposable
     public readonly SunflowerECommerceDbContext DbContext;
     public readonly HolooDbContext HolooDbContext;
     protected readonly Fixture Fixture;
+    protected readonly UnitOfWork UnitOfWork;
 
     protected BaseTests()
     {
-        Fixture = new Fixture();
         Db = new DbContextFake();
-        CancellationToken = new CancellationToken();
         DbContext = Db.CreateDatabaseContext();
         HolooDbContext = Db.CreateHolooDatabaseContext();
+        UnitOfWork = new UnitOfWork(DbContext, HolooDbContext);
+        Fixture = new Fixture();
+        CancellationToken = new CancellationToken();
     }
 
     public void Dispose()

@@ -1,8 +1,8 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class BlogRepository(SunflowerECommerceDbContext context) : AsyncRepository<Blog>(context), IBlogRepository
+public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBase<Blog>(context), IBlogRepository
 {
-    public async Task<Blog> GetByTitle(string title, CancellationToken cancellationToken)
+    public async Task<Blog?> GetByTitle(string title, CancellationToken cancellationToken)
     {
         return await context.Blogs.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }
@@ -19,9 +19,8 @@ public class BlogRepository(SunflowerECommerceDbContext context) : AsyncReposito
         blog.BlogAuthor = new BlogAuthor();
         blog.BlogAuthor = await context.BlogAuthors.FindAsync(blogViewModel.BlogAuthorId);
 
-        await context.Blogs.AddAsync(blog, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
-        return blog;
+        var newBlog = await context.Blogs.AddAsync(blog, cancellationToken);
+        return newBlog.Entity;
     }
 
     public async Task<Blog> EditWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken)
@@ -45,7 +44,6 @@ public class BlogRepository(SunflowerECommerceDbContext context) : AsyncReposito
         foreach (var id in blogViewModel.TagsId) blog.Tags.Add(await context.Tags.FindAsync(id));
 
         context.Entry(blog).State = EntityState.Modified;
-        await context.SaveChangesAsync(cancellationToken);
         return blog;
     }
 
@@ -56,14 +54,14 @@ public class BlogRepository(SunflowerECommerceDbContext context) : AsyncReposito
         ;
     }
 
-    public async Task<Blog> GetByUrl(string url, CancellationToken cancellationToken)
+    public async Task<Blog?> GetByUrl(string url, CancellationToken cancellationToken)
     {
         return await context.Blogs.Where(x => x.Url == url).FirstOrDefaultAsync(cancellationToken);
     }
 
     public IQueryable<Blog> GetBlogByIdWithInclude(int blogId)
     {
-        //return _context.Blogs.AsNoTracking().Where(x => x.Id == blogId)
+        //return context.Blogs.AsNoTracking().Where(x => x.Id == blogId)
         //    .Include(c => c.Image)
         //    .Include(t => t.Tags)
         //    .Include(k => k.Keywords);

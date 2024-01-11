@@ -2,9 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogger<BlogAuthorsController> logger)
+public class BlogAuthorsController(IUnitOfWork unitOfWork, ILogger<BlogAuthorsController> logger)
     : ControllerBase
 {
+    private readonly IBlogAuthorRepository _blogAuthorRepository = unitOfWork.GetRepository<BlogAuthorRepository, BlogAuthor>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +14,7 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await brandRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _blogAuthorRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -44,13 +46,7 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
     {
         try
         {
-            var result = await brandRepository.GetAll(cancellationToken);
-            if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
-
+            var result = await _blogAuthorRepository.GetAllAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -70,7 +66,7 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
     {
         try
         {
-            var result = await brandRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _blogAuthorRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -93,7 +89,7 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(BlogAuthor blogAuthor, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(BlogAuthor? blogAuthor, CancellationToken cancellationToken)
     {
         try
         {
@@ -104,7 +100,7 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
                 });
             blogAuthor.Name = blogAuthor.Name.Trim();
 
-            var repetitiveAuthor = await brandRepository.GetByName(blogAuthor.Name, cancellationToken);
+            var repetitiveAuthor = await _blogAuthorRepository.GetByName(blogAuthor.Name, cancellationToken);
             if (repetitiveAuthor != null)
                 return Ok(new ApiResult
                 {
@@ -112,10 +108,11 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
                     Messages = new List<string> { "نام نویسنده تکراری است" }
                 });
 
+            _blogAuthorRepository.Add(blogAuthor);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await brandRepository.AddAsync(blogAuthor, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -132,7 +129,8 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
     {
         try
         {
-            await brandRepository.UpdateAsync(blogAuthor, cancellationToken);
+            _blogAuthorRepository.Update(blogAuthor);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -152,7 +150,9 @@ public class BlogAuthorsController(IBlogAuthorRepository brandRepository, ILogge
     {
         try
         {
-            await brandRepository.DeleteAsync(id, cancellationToken);
+            await _blogAuthorRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

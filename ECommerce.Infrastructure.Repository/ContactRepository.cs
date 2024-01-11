@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class ContactRepository(SunflowerECommerceDbContext context) : AsyncRepository<Contact>(context),
+public class ContactRepository(SunflowerECommerceDbContext context) : RepositoryBase<Contact>(context),
     IContactRepository
 {
     public async Task<Contact?> GetByName(string name, CancellationToken cancellationToken)

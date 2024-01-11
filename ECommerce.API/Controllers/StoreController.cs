@@ -2,9 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class StoreController(IStoreRepository storeRepository, ILogger<StoreController> logger)
-    : ControllerBase
+public class StoreController(IUnitOfWork unitOfWork, ILogger<StoreController> logger) : ControllerBase
 {
+    private readonly IStoreRepository _storeRepository = unitOfWork.GetRepository<StoreRepository, Store>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +13,7 @@ public class StoreController(IStoreRepository storeRepository, ILogger<StoreCont
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await storeRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _storeRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -42,7 +43,7 @@ public class StoreController(IStoreRepository storeRepository, ILogger<StoreCont
     {
         try
         {
-            var result = await storeRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _storeRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -64,7 +65,7 @@ public class StoreController(IStoreRepository storeRepository, ILogger<StoreCont
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Store store, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Store? store, CancellationToken cancellationToken)
     {
         try
         {
@@ -75,7 +76,7 @@ public class StoreController(IStoreRepository storeRepository, ILogger<StoreCont
                 });
             store.Name = store.Name.Trim();
 
-            var repetitiveStore = await storeRepository.GetByName(store.Name, cancellationToken);
+            var repetitiveStore = await _storeRepository.GetByName(store.Name, cancellationToken);
             if (repetitiveStore != null)
                 return Ok(new ApiResult
                 {
@@ -83,10 +84,12 @@ public class StoreController(IStoreRepository storeRepository, ILogger<StoreCont
                     Messages = new List<string> { "نام انبار تکراری است" }
                 });
 
+            _storeRepository.Add(store);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await storeRepository.AddAsync(store, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -102,15 +105,17 @@ public class StoreController(IStoreRepository storeRepository, ILogger<StoreCont
     {
         try
         {
-            var repetitive = await storeRepository.GetByName(store.Name, cancellationToken);
+            var repetitive = await _storeRepository.GetByName(store.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != store.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام انبار تکراری است" }
                 });
-            if (repetitive != null) storeRepository.Detach(repetitive);
-            await storeRepository.UpdateAsync(store, cancellationToken);
+            if (repetitive != null) _storeRepository.Detach(repetitive);
+            _storeRepository.Update(store);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -129,7 +134,9 @@ public class StoreController(IStoreRepository storeRepository, ILogger<StoreCont
     {
         try
         {
-            await storeRepository.DeleteAsync(id, cancellationToken);
+            await _storeRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

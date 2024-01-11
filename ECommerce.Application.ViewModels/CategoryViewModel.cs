@@ -8,7 +8,7 @@ public class CategoryViewModel
     public string Name { get; set; }
     public string ImagePath { get; set; }
     public int? ParentId { get; set; }
-    public Category Parent { get; set; }
+    public Category? Parent { get; set; }
     public List<int> Categories { get; set; }
     public List<int> ProductsId { get; set; }
     public int DisplayOrder { get; set; }

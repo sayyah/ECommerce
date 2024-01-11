@@ -4,10 +4,12 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class PaymentMethodsController(IPaymentMethodRepository discountRepository,
-        IHolooAccountNumberRepository accountNumberRepository, ILogger<PaymentMethodsController> logger)
+public class PaymentMethodsController(IUnitOfWork unitOfWork, ILogger<PaymentMethodsController> logger)
     : ControllerBase
 {
+    private readonly IHolooAccountNumberRepository _accountNumberRepository = unitOfWork.GetHolooRepository<HolooAccountNumberRepository, HolooAccountNumber>();
+    private readonly IPaymentMethodRepository _paymentMethodRepository = unitOfWork.GetRepository<PaymentMethodRepository, PaymentMethod>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -15,7 +17,7 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await discountRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _paymentMethodRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -45,7 +47,7 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
     {
         try
         {
-            var result = await discountRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _paymentMethodRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -67,7 +69,7 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(PaymentMethod paymentMethod, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(PaymentMethod? paymentMethod, CancellationToken cancellationToken)
     {
         try
         {
@@ -77,13 +79,12 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
                 {
                     Code = ResultCode.BadRequest
                 });
-                ;
             }
 
             paymentMethod.AccountNumber = paymentMethod.AccountNumber.Trim();
 
             var repetitiveAccountNumber =
-                await discountRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
+                await _paymentMethodRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
             if (repetitiveAccountNumber != null)
                 return Ok(new ApiResult
                 {
@@ -91,10 +92,12 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
                     Messages = new List<string> { "شماره حساب تکراری است" }
                 });
 
+            _paymentMethodRepository.Add(paymentMethod);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await discountRepository.AddAsync(paymentMethod, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -111,15 +114,17 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
         try
         {
             var repetitive =
-                await discountRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
+                await _paymentMethodRepository.GetByAccountNumber(paymentMethod.AccountNumber, cancellationToken);
             if (repetitive != null && repetitive.Id != paymentMethod.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "شماره حساب تکراری است" }
                 });
-            if (repetitive != null) discountRepository.Detach(repetitive);
-            await discountRepository.UpdateAsync(paymentMethod, cancellationToken);
+            if (repetitive != null) _paymentMethodRepository.Detach(repetitive);
+            _paymentMethodRepository.Update(paymentMethod);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -138,7 +143,9 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
     {
         try
         {
-            await discountRepository.DeleteAsync(id, cancellationToken);
+            await _paymentMethodRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -159,7 +166,7 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await accountNumberRepository.GetAll(cancellationToken)
+                ReturnData = await _accountNumberRepository.GetAll(cancellationToken)
             });
         }
         catch (Exception e)
@@ -175,7 +182,7 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
     {
         try
         {
-            var result = await accountNumberRepository.GetByAccountNumberAndBankCode(key, cancellationToken);
+            var result = await _accountNumberRepository.GetByAccountNumberAndBankCode(key, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -201,21 +208,28 @@ public class PaymentMethodsController(IPaymentMethodRepository discountRepositor
     {
         try
         {
-            var paymentMethods = (await accountNumberRepository.GetAll(cancellationToken))!.Select(x =>
+            var paymentMethods = (await _accountNumberRepository.GetAll(cancellationToken)).Select(x =>
                 new PaymentMethod
                 {
                     AccountNumber = x.Account_N,
                     BankCode = x.Bank_Code,
                     BrunchName = x.Branch_Name,
-                    BankName = x.Branch_Name
+                    BankName = x.Branch_Name??""
                 });
-            var result = await discountRepository.AddAll(paymentMethods, cancellationToken);
-            if (result == 0)
+            _paymentMethodRepository.AddAll(paymentMethods);
+
+            try
+            {
+                await unitOfWork.SaveAsync(cancellationToken);
+            }
+            catch
+            {
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
                     Messages = new List<string> { "افزودن اتوماتیک به مشکل برخورد کرد" }
                 });
+            }
 
             return Ok(new ApiResult
             {

@@ -4,9 +4,11 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CategoriesController(ICategoryRepository categoryRepository, ILogger<CategoriesController> logger)
+public class CategoriesController(IUnitOfWork unitOfWork, ILogger<CategoriesController> logger)
     : ControllerBase
 {
+    private readonly ICategoryRepository _categoryRepository = unitOfWork.GetRepository<CategoryRepository, Category>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -14,7 +16,7 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await categoryRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _categoryRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -44,7 +46,7 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
     {
         try
         {
-            var result = await categoryRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _categoryRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -69,7 +71,7 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
     {
         try
         {
-            var result = await categoryRepository.Parents(productId, cancellationToken);
+            var result = await _categoryRepository.Parents(productId, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -95,7 +97,7 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
     {
         try
         {
-            var result = await categoryRepository.Search(searchKeyword, cancellationToken);
+            var result = await _categoryRepository.Search(searchKeyword, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -122,7 +124,7 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
     {
         try
         {
-            var result = await categoryRepository.GetByUrl(url, cancellationToken);
+            var result = await _categoryRepository.GetByUrl(url, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -148,16 +150,16 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
     {
         try
         {
-            var categoryList = categoryRepository.GetAll("Products")
-                .Where(x => x.Products.Any(p => p.Id == productId));
+            var categoryList = _categoryRepository.GetAll("Products")
+                .Where(x => x.Products != null && x.Products.Any(p => p.Id == productId));
             return Ok(await categoryList.Select(x => new CategoryViewModel
             {
                 Id = x.Id,
                 Name = x.Name,
-                ProductsId = x.Products.Select(product => product.Id).ToList(),
+                ProductsId = x.Products!.Select(product => product.Id).ToList(),
                 ParentId = x.ParentId,
                 Parent = x.Parent,
-                Categories = x.Categories.Select(category => category.Id).ToList()
+                Categories = x.Categories!.Select(category => category.Id).ToList()
             }).ToListAsync(cancellationToken));
         }
         catch (Exception e)
@@ -169,7 +171,7 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Category category, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Category? category, CancellationToken cancellationToken)
     {
         try
         {
@@ -181,7 +183,7 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
             category.Name = category.Name.Trim();
 
             var repetitiveCategory =
-                await categoryRepository.GetByName(category.Name, cancellationToken, category.ParentId);
+                await _categoryRepository.GetByName(category.Name, cancellationToken, category.ParentId);
             if (repetitiveCategory != null)
                 return Ok(new ApiResult
                 {
@@ -189,10 +191,12 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
                     Messages = new List<string> { "نام دسته تکراری است" }
                 });
 
+            _categoryRepository.Add(category);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await categoryRepository.AddAsync(category, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -208,7 +212,9 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
     {
         try
         {
-            await categoryRepository.UpdateAsync(category, cancellationToken);
+            _categoryRepository.Update(category);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -227,7 +233,9 @@ public class CategoriesController(ICategoryRepository categoryRepository, ILogge
     {
         try
         {
-            await categoryRepository.DeleteAsync(id, cancellationToken);
+            await _categoryRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

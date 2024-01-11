@@ -29,7 +29,6 @@ public class HolooFBailRepository(HolooDbContext context) : HolooRepository<Holo
         try
         {
             context.Add(bail);
-            var result = await context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
         catch (Exception e)
@@ -38,7 +37,6 @@ public class HolooFBailRepository(HolooDbContext context) : HolooRepository<Holo
             bail.Fac_Code_C = lastFacCode;
             bail.Fac_Code = lastFacCode.ToString("000000");
             context.Add(bail);
-            var result = await context.SaveChangesAsync(cancellationToken);
             return bail.Fac_Code;
         }
     }

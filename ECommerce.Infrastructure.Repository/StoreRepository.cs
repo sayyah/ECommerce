@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class StoreRepository(SunflowerECommerceDbContext context) : AsyncRepository<Store>(context), IStoreRepository
+public class StoreRepository(SunflowerECommerceDbContext context) : RepositoryBase<Store>(context), IStoreRepository
 {
     public async Task<Store> GetByName(string name, CancellationToken cancellationToken)
     {

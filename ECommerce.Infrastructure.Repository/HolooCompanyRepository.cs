@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class HolooCompanyRepository(SunflowerECommerceDbContext context) : AsyncRepository<HolooCompany>(context),
+public class HolooCompanyRepository(SunflowerECommerceDbContext context) : RepositoryBase<HolooCompany>(context),
     IHolooCompanyRepository
 {
-    private readonly SunflowerECommerceDbContext _context = context;
+    private readonly SunflowerECommerceDbContext context = context;
 }

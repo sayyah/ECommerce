@@ -1,29 +1,36 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 [Authorize(Roles = "Client,Admin,SuperAdmin")]
-public class WishListsController(IWishListRepository wishListRepository,
-        ILogger<WishListsController> logger,
-        IHolooArticleRepository articleRepository)
+public class WishListsController(IUnitOfWork unitOfWork, ILogger<WishListsController> logger)
     : ControllerBase
 {
+    private readonly IHolooArticleRepository _articleRepository = unitOfWork.GetHolooRepository<HolooArticleRepository, HolooArticle>();
+    private readonly IWishListRepository _wishListRepository = unitOfWork.GetRepository<WishListRepository, WishList>();
+
     [HttpGet]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await wishListRepository.GetByIdWithInclude(id, cancellationToken);
-            var prices = result.Select(x => x.Price).ToList();
-            var aCodeCs = prices.Select(x => x.ArticleCodeCustomer).ToList();
-            var holooArticle = await articleRepository.GetHolooArticles(aCodeCs, cancellationToken);
-            foreach (var wishListViewModel in result)
+            var result = await _wishListRepository.GetByIdWithInclude(id, cancellationToken);
+            if (result != null)
             {
-                var holooPrices = await articleRepository.AddPrice(
-                    new List<Price> { wishListViewModel.Price },
-                    holooArticle,
-                    false,
-                    cancellationToken);
+                var prices = result.Select(x => x.Price).ToList();
+                var aCodeCs = prices.Select(x => x.ArticleCodeCustomer).ToList();
+                var holooArticle = await _articleRepository.GetHolooArticles(aCodeCs!, cancellationToken);
+                foreach (var wishListViewModel in result)
+                {
+                    await _articleRepository.AddPrice(
+                       new List<Price> { wishListViewModel.Price },
+                       holooArticle,
+                       false,
+                       cancellationToken);
+                }
+                await unitOfWork.SaveAsync(cancellationToken);
             }
 
             return Ok(new ApiResult
@@ -40,7 +47,7 @@ public class WishListsController(IWishListRepository wishListRepository,
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(WishList wishList, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(WishList? wishList, CancellationToken cancellationToken)
     {
         try
         {
@@ -51,7 +58,7 @@ public class WishListsController(IWishListRepository wishListRepository,
                 });
 
             var repetitiveWishList =
-                await wishListRepository.GetByProductUser(wishList.PriceId, wishList.UserId, cancellationToken);
+                await _wishListRepository.GetByProductUser(wishList.PriceId, wishList.UserId, cancellationToken);
             if (repetitiveWishList != null)
                 return Ok(new ApiResult
                 {
@@ -59,10 +66,12 @@ public class WishListsController(IWishListRepository wishListRepository,
                     Messages = new List<string> { repetitiveWishList.Id.ToString() }
                 });
 
+            _wishListRepository.Add(wishList);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await wishListRepository.AddAsync(wishList, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -78,7 +87,9 @@ public class WishListsController(IWishListRepository wishListRepository,
     {
         try
         {
-            await wishListRepository.DeleteAsync(id, cancellationToken);
+            await _wishListRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -97,16 +108,27 @@ public class WishListsController(IWishListRepository wishListRepository,
         try
         {
             var result =
-                await wishListRepository.Where(x => x.UserId == wishList.UserId && x.PriceId == wishList.PriceId,
+                await _wishListRepository.Where(x => x.UserId == wishList.UserId && x.PriceId == wishList.PriceId,
                     cancellationToken);
-            if (result != null && result.ToList().Count == 0)
-                return Ok(new ApiResult
+            if (result != null)
+            {
+                var wishLists = result.ToList();
+                if (!wishLists.Any())
                 {
-                    Code = ResultCode.Success,
-                    ReturnData = await wishListRepository.AddAsync(wishList, cancellationToken),
-                    Messages = new List<string> { "به لیست علاقه مندی ها اضافه شد" }
-                });
-            await wishListRepository.DeleteAsync(result.FirstOrDefault().Id, cancellationToken);
+                    _wishListRepository.Add(wishList);
+                    await unitOfWork.SaveAsync(cancellationToken);
+                    return Ok(new ApiResult
+                    {
+                        Code = ResultCode.Success,
+                        Messages = new List<string> { "به لیست علاقه مندی ها اضافه شد" }
+                    });
+                }
+                await _wishListRepository.DeleteById(wishLists.FirstOrDefault()!.Id, cancellationToken);
+                await unitOfWork.SaveAsync(cancellationToken);
+            }
+
+            
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,

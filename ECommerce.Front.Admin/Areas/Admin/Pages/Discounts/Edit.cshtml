@@ -36,7 +36,8 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label>نام</label>
-                            <input asp-for="Discount.Name" class="form-control form-control-solid"/>
+                            <label class="form-control form-control-solid">@Model.Discount.Name</label>
+                            <input hidden="hidden" asp-for="Discount.Name"/>
                             <span asp-validation-for="Discount.Name" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                         <div id="choose-either-container">
@@ -49,11 +50,13 @@
                         </div>
                         <div id="choose-false" style="@(Model.WithPrice ? "display: none;" : "")" class="form-group ch-ei">
                             <label>درصد</label>
-                            <input asp-for="Discount.Percent" id="kt_touchspin_4" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
+                            <input hidden="hidden" asp-for="Discount.Percent" />
+                            <label type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid">@Model.Discount.Percent</label>
                         </div>
                         <div id="choose-true" style="@(!Model.WithPrice ? "display: none;" : "")" class="form-group ch-ei">
                             <label>مبلغ</label>
-                            <input asp-for="Discount.Amount" min="0" type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid" placeholder="0"/>
+                            <input hidden="hidden" asp-for="Discount.Amount" />
+                            <label type="number" class="form-control bootstrap-touchspin-vertical-btn form-control-solid">@Model.Discount.Amount</label>
                         </div>
                         <div class="form-group">
                             <label>تاریخ شروع</label>
@@ -74,7 +77,8 @@
                         </div>
                         <div class="form-group">
                             <label>کد تخفیف</label>
-                            <input asp-for="Discount.Code" class="form-control form-control-solid"/>
+                            <input hidden="hidden" asp-for="Discount.Code" />
+                            <label class="form-control form-control-solid">@Model.Discount.Code</label>
                             <span asp-validation-for="Discount.Code" class="mt-5" style="color: red; margin-top: 10px"></span>
                         </div>
                     </div>

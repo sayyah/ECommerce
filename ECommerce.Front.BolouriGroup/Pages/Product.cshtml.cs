@@ -46,7 +46,7 @@ public class ProductdetailsModel(IProductService productService, IStarService st
         Stars = await starService.SumStarsByProductId(Product.Id);
 
         ProductComments =
-            await productCommandService.GetAllAccesptedComments(Convert.ToString(Product.Id), pageNumber, pageSize);
+            await productCommandService.GetAllAcceptedComments(Convert.ToString(Product.Id), pageNumber, pageSize);
 
         var url = HttpContext.Request.GetDisplayUrl().Split("/");
         siteUrl = string.Format("{0}//{1}", url[0], url[2]);

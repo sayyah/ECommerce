@@ -121,7 +121,10 @@ public class HttpService(HttpClient http, ICookieService cookieService) : IHttpS
     public async Task<ApiResult<TResponse>> GetAsync<TResponse>(string url, string apiName = "Get")
     {
         var loginResult = cookieService.GetToken();
-        http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResult);
+        if (!string.IsNullOrEmpty(loginResult))
+        {
+            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResult);
+        }
 
         var response = await http.GetAsync($"{url}/{apiName}");
 

@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Entities;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -7,49 +8,69 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "Add: Null value for required Fields")]
-    public void Add_RequiredFields_ThrowsException()
+    [Fact]
+    public async Task Add_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
 
         // Act
-        Dictionary<string, Action> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
+        async Task Action()
         {
-            actual.Add(entry.Key, () => _productRepository.Add(entry.Value));
+            _productRepository.Add(product);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.Throws<DbUpdateException>(action);
-        }
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Null product")]
-    public void Add_NullProduct_ThrowsException()
-    {
-        // Act
-        void action() => _productRepository.Add(null!);
-
-        // Assert
-        Assert.Throws<ArgumentNullException>(action);
-    }
-
-    [Fact(DisplayName = "Add: Add product")]
-    public void Add_AddEntity_EntityExistsInRepository()
+    [Fact]
+    public async Task Add_RequiredUrlField_ThrowsException()
     {
         // Arrange
-        AddCategories();
-        Product expected = TestSets["unique_url"]["test_1"];
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
+
+        // Act
+        async Task Action()
+        {
+            _productRepository.Add(product);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
+
+        // Assert
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
+    }
+
+    [Fact]
+    public async void Add_NullProduct_ThrowsException()
+    {
+        // Act
+        async Task Action()
+        {
+            _productRepository.Add(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
+
+        // Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
+    }
+
+    [Fact]
+    public async void Add_AddEntity_EntityExistsInRepository()
+    {
+        // Arrange
+        Product expected = Fixture.Create<Product>();
 
         // Act
         _productRepository.Add(expected);
-
-        // Assert
+        await UnitOfWork.SaveAsync(CancellationToken);
         var actual = DbContext.Products.FirstOrDefault(x => x.Id == expected.Id);
 
+        // Assert
+        DbContext.Products.Count().Should().Be(1);
         actual.Should().BeEquivalentTo(expected);
     }
 }

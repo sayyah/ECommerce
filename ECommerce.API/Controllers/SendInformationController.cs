@@ -2,10 +2,12 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SendInformationController(ISendInformationRepository sendInformationRepository,
+public class SendInformationController(IUnitOfWork unitOfWork,
         ILogger<BrandsController> logger)
     : ControllerBase
 {
+    private readonly ISendInformationRepository _sendInformationRepository = unitOfWork.GetRepository<SendInformationRepository, SendInformation>();
+
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
     public async Task<IActionResult> GetByUserId(int id, CancellationToken cancellationToken)
@@ -15,7 +17,7 @@ public class SendInformationController(ISendInformationRepository sendInformatio
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await sendInformationRepository.Where(x => x.UserId == id, cancellationToken)
+                ReturnData = await _sendInformationRepository.Where(x => x.UserId == id, cancellationToken)
             });
         }
         catch (Exception e)
@@ -32,7 +34,7 @@ public class SendInformationController(ISendInformationRepository sendInformatio
     {
         try
         {
-            var result = await sendInformationRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _sendInformationRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -55,7 +57,7 @@ public class SendInformationController(ISendInformationRepository sendInformatio
 
     [HttpPost]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(SendInformation sendInformation, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(SendInformation? sendInformation, CancellationToken cancellationToken)
     {
         try
         {
@@ -66,20 +68,21 @@ public class SendInformationController(ISendInformationRepository sendInformatio
                 });
             sendInformation.Address = sendInformation.Address.Trim();
 
-            var repetitive = await sendInformationRepository.Where(
+            var repetitive = await _sendInformationRepository.Where(
                 x => x.UserId == sendInformation.UserId && x.RecipientName.Equals(sendInformation.RecipientName) &&
                      x.Address.Equals(sendInformation.Address), cancellationToken);
-            if (repetitive.Any())
+            if (repetitive != null && repetitive.Any())
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "آدرس تکراری است" }
                 });
+            _sendInformationRepository.Add(sendInformation);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await sendInformationRepository.AddAsync(sendInformation, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -99,40 +102,33 @@ public class SendInformationController(ISendInformationRepository sendInformatio
     {
         try
         {
-            var repetitive = await sendInformationRepository.Where(
-                x =>
-                    x.Id != sendInformation.Id
-                    && x.UserId == sendInformation.UserId
-                    && x.RecipientName.Equals(sendInformation.RecipientName)
-                    && x.Mobile.Equals(sendInformation.Mobile)
-                    && x.Address.Equals(sendInformation.Address)
-                    && x.StateId == sendInformation.StateId
-                    && x.CityId == sendInformation.CityId
-                    && x.PostalCode!.Equals(sendInformation.PostalCode),
-                cancellationToken
-            );
-            if (repetitive.Any())
-                return Ok(
-                    new ApiResult
+            var repetitive = await _sendInformationRepository.Where(
+                x => x.UserId == sendInformation.UserId && x.RecipientName.Equals(sendInformation.RecipientName) &&
+                     x.Address.Equals(sendInformation.Address), cancellationToken);
+            if (repetitive != null)
+            {
+                var sendInformationList = repetitive.ToList();
+                if (sendInformationList.FirstOrDefault() != null && sendInformationList.FirstOrDefault()!.Id != sendInformation.Id)
+                    return Ok(new ApiResult
                     {
                         Code = ResultCode.Repetitive,
                         Messages = new List<string> { "آدرس تکراری است" }
-                    }
-                );
+                    });
+            }
 
-            await sendInformationRepository.UpdateAsync(sendInformation, cancellationToken);
-            return Ok(new ApiResult { Code = ResultCode.Success });
+            _sendInformationRepository.Update(sendInformation);
+            await unitOfWork.SaveAsync(cancellationToken);
+
+            return Ok(new ApiResult
+            {
+                Code = ResultCode.Success
+            });
         }
         catch (Exception e)
         {
             logger.LogCritical(e, e.Message);
-            return Ok(
-                new ApiResult
-                {
-                    Code = ResultCode.DatabaseError,
-                    Messages = new List<string> { "اشکال در سمت سرور" }
-                }
-            );
+            return Ok(new ApiResult
+                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -142,7 +138,9 @@ public class SendInformationController(ISendInformationRepository sendInformatio
     {
         try
         {
-            await sendInformationRepository.DeleteAsync(id, cancellationToken);
+            await _sendInformationRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

@@ -13,11 +13,9 @@ public class HolooABailRepository(HolooDbContext context) : HolooRepository<Holo
         return result;
     }
 
-    public async Task<bool> Add(List<HolooABail> aBails, CancellationToken cancellationToken)
+    public void Add(List<HolooABail> aBails)
     {
-        await context.AddRangeAsync(aBails, cancellationToken);
-        var result = await context.SaveChangesAsync(cancellationToken);
-        return result > 0;
+        context.AddRangeAsync(aBails);
     }
 
     public async Task<List<HolooABail>> GetAll(CancellationToken cancellationToken)

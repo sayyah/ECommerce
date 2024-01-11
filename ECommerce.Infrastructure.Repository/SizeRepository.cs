@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class SizeRepository(SunflowerECommerceDbContext context) : AsyncRepository<Size>(context), ISizeRepository
+public class SizeRepository(SunflowerECommerceDbContext context) : RepositoryBase<Size>(context), ISizeRepository
 {
     public async Task<Size> GetByName(string name, CancellationToken cancellationToken)
     {

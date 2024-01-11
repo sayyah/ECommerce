@@ -1,9 +1,9 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class UserRepository(SunflowerECommerceDbContext dbContext) : AsyncRepository<User>(dbContext), IUserRepository
+public class UserRepository(SunflowerECommerceDbContext dbContext) : RepositoryBase<User>(dbContext), IUserRepository
 {
-    public async Task<PagedList<UserListViewModel>> Search(UserFilterdParameters userFilteredParameters,
-        CancellationToken cancellationToken)
+
+    public async Task<PagedList<UserListViewModel>> Search(userFilterParameters userFilteredParameters, CancellationToken cancellationToken)
     {
         var query = TableNoTracking.Where(x => x.UserName.Contains(userFilteredParameters.PaginationParameters.Search))
             .AsNoTracking();
@@ -81,9 +81,9 @@ public class UserRepository(SunflowerECommerceDbContext dbContext) : AsyncReposi
         return await DbContext.Roles.ToListAsync(cancellationToken);
     }
 
-    public async Task AddLoginHistory(int userId, string token, string ipAddress, DateTime expirationDate)
+    public void AddLoginHistory(int userId, string token, string ipAddress, DateTime expirationDate)
     {
-        await DbContext.LoginHistories.AddAsync(new LoginHistory
+        DbContext.LoginHistories.Add(new LoginHistory
         {
             CreationDate = DateTime.Now,
             ExpirationDate = expirationDate,
@@ -91,24 +91,20 @@ public class UserRepository(SunflowerECommerceDbContext dbContext) : AsyncReposi
             Token = token.Trim(),
             UserId = userId
         });
-        await DbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> SetConfirmCodeByUsername(string username, int confirmCode, DateTime codeConfirmExpairDate,
-        CancellationToken cancellationToken)
+    public void SetConfirmCodeByUsername(string username, int confirmCode, DateTime codeConfirmExpireDate)
     {
-        var user = TableNoTracking.Where(x => x.UserName == username).FirstOrDefault();
-        if (user == null) return false;
+        var user = TableNoTracking.FirstOrDefault(x => x.UserName == username);
+        if (user == null) return;
         user.ConfirmCode = confirmCode;
-        user.ConfirmCodeExpirationDate = codeConfirmExpairDate;
-        var result = DbContext.Update(user);
-        if (result == null) return false;
-        return await DbContext.SaveChangesAsync() == 1;
+        user.ConfirmCodeExpirationDate = codeConfirmExpireDate;
+        DbContext.Update(user);
     }
 
     public async Task<int?> GetSecondsLeftConfirmCodeExpire(string username, CancellationToken cancellationToken)
     {
-        var user = await TableNoTracking.Where(x => x.UserName == username).FirstOrDefaultAsync();
+        var user = await TableNoTracking.Where(x => x.UserName == username).FirstOrDefaultAsync(cancellationToken);
         if (user == null) return null;
         if (user.ConfirmCodeExpirationDate == null) return 0;
         var result = (int)(user.ConfirmCodeExpirationDate - DateTime.Now).Value.TotalSeconds;

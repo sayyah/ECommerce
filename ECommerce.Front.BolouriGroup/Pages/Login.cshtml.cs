@@ -104,7 +104,7 @@ public class LoginModel(IUserService userService) : PageModel
 
     public async Task<JsonResult> OnPostUserLoginSubmit(string username, string password)
     {
-        if (DateTime.Now.Date > DateTime.Parse("2024-01-15"))
+        if (DateTime.Now.Date > DateTime.Parse("2024-03-15"))
         {
             return new JsonResult("Error");
         }
@@ -121,8 +121,7 @@ public class LoginModel(IUserService userService) : PageModel
             var random = new Random();
             var code = random.Next(10000000, 99999999);
             var result = await userService.SetConfirmCodeByUsername(username, code + "");
-            if (result == null) return new JsonResult(smsResponsModel);
-            if (result.ReturnData == false) return new JsonResult(smsResponsModel);
+            if (result == null || result.Status != 200 || !result.ReturnData) return new JsonResult(smsResponsModel);
             smsResponsModel = await userService.SendAuthenticationSms(username, code.ToString());
             smsResponsModel.Message = "خطای غیر منتظره. امکان ارسال پیامک وجود ندارد";
             if (smsResponsModel.Status == 1) smsResponsModel.Message = "پیامک با موفقیت ارسال شد";
