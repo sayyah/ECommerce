@@ -5,11 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ECommerce.Infrastructure.Ioc
 {
-    public class QueryHandlerRegistrar : IServiceCollectionRegistrar
+    public class CommandHandlerRegistrar : IServiceCollectionRegistrar
     {
         public void RegisterIn(IServiceCollection services)
         {
-            services.RegisterQueryHandlersFromAssemblyOf<GetBlogsQueryHandler>();
+            services.RegisterCommandHandlersFromAssemblyOf<CreateBlogCommandHandler>();
         }
     }
 }

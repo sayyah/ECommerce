@@ -72,16 +72,22 @@ public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBas
         //    .Include(t => t.Tags)
         //    .Include(k => k.Keywords);
 
-        var result = context.Blogs.Where(x => x.Id == blogId).Include(nameof(Blog.BlogAuthor))
-            .Include(nameof(Blog.Tags)).Include(nameof(Blog.Keywords)).Include(nameof(Blog.Image));
+        var result = context.Blogs.Where(x => x.Id == blogId)
+            .Include(nameof(Blog.BlogAuthor))
+            .Include(nameof(Blog.Tags))
+            .Include(nameof(Blog.Keywords))
+            .Include(nameof(Blog.Image));
 
         return result;
     }
 
     public IQueryable<Blog> GetBlogByUrlWithInclude(string blogUrl)
     {
-        var result = context.Blogs.Where(x => x.Url == blogUrl).Include(nameof(Blog.BlogAuthor))
-            .Include(nameof(Blog.Tags)).Include(nameof(Blog.Keywords)).Include(nameof(Blog.Image))
+        var result = context.Blogs.Where(x => x.Url == blogUrl)
+            .Include(nameof(Blog.BlogAuthor))
+            .Include(nameof(Blog.Tags))
+            .Include(nameof(Blog.Keywords))
+            .Include(nameof(Blog.Image))
             .Include(nameof(Blog.BlogComments));
 
         return result;

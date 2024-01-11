@@ -12,6 +12,14 @@ public static class ServiceCollectionExtensions
 
         //services.DecorateIfHasAny(typeof(IQueryHandler<,>), typeof(ValidatedQueryHandler<,>));
     }
+    public static void RegisterCommandHandlersFromAssemblyOf<TImplementation>(this IServiceCollection services)
+    {
+        services.RegisterAllAssignableToAnyOfTypesFromAssemblyOf<TImplementation>(
+            ServiceLifetime.Transient,
+            typeof(ICommandHandler<,>));
+
+        //services.DecorateIfHasAny(typeof(IQueryHandler<,>), typeof(ValidatedQueryHandler<,>));
+    }
 
     private static void RegisterAllAssignableToAnyOfTypesFromAssemblyOf<TImplementation>(
         this IServiceCollection services,
