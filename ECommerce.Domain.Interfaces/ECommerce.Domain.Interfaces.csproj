@@ -6,12 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<ItemGroup>
+		<Using Include="ECommerce.Application.Services.Objects" />
+		<Using Include="ECommerce.Application.ViewModels" />
+	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ECommerce.Application.ViewModels\ECommerce.Application.ViewModels.csproj" />
+    <ProjectReference Include="..\ECommerce.Application.Services\ECommerce.Application.Services.csproj" />
     <ProjectReference Include="..\ECommerce.Domain.Entity\ECommerce.Domain.Entities.csproj" />
   </ItemGroup>
 

@@ -229,7 +229,7 @@ public class ProductCompareViewModel : BaseProductPageViewModel
 
 public class ProductListFilteredViewModel
 {
-    public PaginationParameters PaginationParameters { get; set; }
+    //public PaginationParameters PaginationParameters { get; set; }
     public long StartPrice { get; set; }
     public long EndPrice { get; set; }
     public bool? isCheckExist { get; set; }

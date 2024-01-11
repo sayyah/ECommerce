@@ -9,7 +9,7 @@ public class EditModel(IBlogService blogService, IImageService imageService, ITa
         IBlogCategoryService blogCategoryService)
     : PageModel
 {
-    [BindProperty] public BlogViewModel Blog { get; set; }
+    [BindProperty] public Blog Blog { get; set; }
     [BindProperty] public IFormFile? Upload { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
@@ -96,11 +96,11 @@ public class EditModel(IBlogService blogService, IImageService imageService, ITa
         return Page();
     }
 
-    private async Task<ServiceResult<BlogViewModel>> Initial(int id)
+    private async Task<ServiceResult<Blog>> Initial(int id)
     {
         var result = await blogService.GetById(id);
         if (result.Code > 0)
-            return new ServiceResult<BlogViewModel>
+            return new ServiceResult<Blog>
             {
                 Code = result.Code,
                 Message = result.Message

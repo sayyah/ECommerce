@@ -1,11 +1,9 @@
 ﻿using ECommerce.Domain.Entities;
-using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface IBrandRepository : IRepositoryBase<Brand>
 {
-    Task<PagedList<Brand>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
+    PagedList<Brand> Search(PaginationParameters paginationParameters);
     Task<Brand?> GetByName(string name, CancellationToken cancellationToken);
 }

@@ -35,13 +35,12 @@ public class BrandsController(IUnitOfWork unitOfWork, ILogger<BrandsController> 
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult GetAllWithPagination([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _brandRepository.Search(paginationParameters, cancellationToken);
+            var entity = _brandRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

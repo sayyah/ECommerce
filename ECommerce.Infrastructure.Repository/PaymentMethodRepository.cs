@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class PaymentMethodRepository(SunflowerECommerceDbContext context) : RepositoryBase<PaymentMethod>(context),
     IPaymentMethodRepository
@@ -13,19 +15,18 @@ public class PaymentMethodRepository(SunflowerECommerceDbContext context) : Repo
         context.PaymentMethods.AddRangeAsync(paymentMethods);
     }
 
-    public async Task<PagedList<PaymentMethod>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<PaymentMethod> Search(PaginationParameters paginationParameters)
     {
         if (!paginationParameters.Search.Equals(""))
             return PagedList<PaymentMethod>.ToPagedList(
-                await context.PaymentMethods
+                context.PaymentMethods
                     .Where(x => x.Transactions.Any(r => r.RefId.Contains(paginationParameters.Search))).AsNoTracking()
-                    .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+                    .OrderBy(on => on.Id),
                 paginationParameters.PageNumber,
                 paginationParameters.PageSize);
 
         return PagedList<PaymentMethod>.ToPagedList(
-            await context.PaymentMethods.AsNoTracking().OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.PaymentMethods.AsNoTracking().OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

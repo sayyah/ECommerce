@@ -9,13 +9,12 @@ public class ProductAttributeValuesController(IUnitOfWork unitOfWork,
     private readonly IProductAttributeValueRepository _productAttributeValueRepository = unitOfWork.GetRepository<ProductAttributeValueRepository, ProductAttributeValue>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _productAttributeValueRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _productAttributeValueRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

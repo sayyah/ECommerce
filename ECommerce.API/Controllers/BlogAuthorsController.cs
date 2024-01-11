@@ -8,13 +8,12 @@ public class BlogAuthorsController(IUnitOfWork unitOfWork, ILogger<BlogAuthorsCo
     private readonly IBlogAuthorRepository _blogAuthorRepository = unitOfWork.GetRepository<BlogAuthorRepository, BlogAuthor>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogAuthorRepository.Search(paginationParameters, cancellationToken);
+            var entity = _blogAuthorRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

@@ -1,13 +1,14 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class UnitRepository(SunflowerECommerceDbContext context) : RepositoryBase<Unit>(context), IUnitRepository
 {
-    public async Task<PagedList<Unit>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Unit> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Unit>.ToPagedList(
-            await context.Units.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Units.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

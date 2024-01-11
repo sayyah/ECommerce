@@ -14,7 +14,8 @@ public interface IRepositoryBase<TEntity> where TEntity : class, IBaseEntity<int
     Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken);
     IQueryable<TEntity> GetAll(string includeProperties);
     TEntity? GetByIdWithInclude(string includeProperties, int ids);
-    Task<TEntity?> GetByIdAsync(CancellationToken cancellationToken, params object[] ids);
+    Task<TEntity?> GetByIdsAsync(CancellationToken cancellationToken, params object[] ids);
+    Task<TEntity?> GetByIdAsync(CancellationToken cancellationToken, int? id);
 
     Task<IEnumerable<TEntity>?> Where(Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken);

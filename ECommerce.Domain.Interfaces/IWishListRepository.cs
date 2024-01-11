@@ -1,5 +1,4 @@
-﻿using ECommerce.Application.ViewModels;
-using ECommerce.Domain.Entities;
+﻿using ECommerce.Domain.Entities;
 
 namespace ECommerce.Domain.Interfaces;
 

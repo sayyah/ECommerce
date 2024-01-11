@@ -27,9 +27,9 @@ public class PurchaseOrderViewModel
     public int UserId { get; set; }
 }
 
-public class PurchaseFiltreOrderViewModel
+public class PurchaseFilterOrderViewModel
 {
-    public PaginationParameters? PaginationParameters { get; set; }
+    //public PaginationParameters? PaginationParameters { get; set; }
 
     public int? UserId { get; set; }
 
