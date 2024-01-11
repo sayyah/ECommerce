@@ -1,4 +1,5 @@
 ﻿using ECommerce.Domain.Entities;
+using System.Xml.Linq;
 
 namespace ECommerce.API.DataTransferObject.Blogs.Queries
 {
