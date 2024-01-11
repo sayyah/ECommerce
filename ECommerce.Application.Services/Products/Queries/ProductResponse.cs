@@ -1,6 +1,6 @@
 ﻿using ECommerce.Domain.Entities;
 
-namespace ECommerce.Application.Services.Responses.Products;
+namespace ECommerce.Application.Services.Products.Queries;
 
 public class ProductResponse
 {

@@ -2,7 +2,7 @@
 
 namespace ECommerce.Application.ViewModels;
 
-public class BlogViewModel
+public class BlogResult
 {
     public int Id { get; set; }
     public string Text { get; set; }
@@ -65,26 +65,6 @@ public class BlogViewModel
         };
     }
 
-    public static implicit operator Blog(BlogViewModel x)
-    {
-        return new Blog
-        {
-            Id = x.Id,
-            Title = x.Title,
-            Summary = x.Summary,
-            Text = x.Text,
-            CreateDateTime = x.CreateDateTime,
-            EditDateTime = x.EditDateTime,
-            PublishDateTime = x.PublishDateTime,
-            Url = x.Url,
-            BlogAuthorId = x.BlogAuthorId,
-            BlogCategoryId = x.BlogCategoryId,
-            Tags = x.Tags?.ToList(),
-            Keywords = x.Keywords?.ToList(),
-            Image = x.Image,
-            BlogAuthor = x.BlogAuthor
-        };
-    }
 }
 
 public class BlogDetailsViewModel

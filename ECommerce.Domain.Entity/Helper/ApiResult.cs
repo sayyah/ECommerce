@@ -31,7 +31,6 @@ public class ApiResult : ActionResult
 {
     public int Status { get; set; } = 200;
     public string? StackTrace { get; set; }
-    public PaginationDetails? PaginationDetails { get; set; }
     public ResultCode Code { get; set; }
     public IEnumerable<string>? Messages { get; set; }
     public object? ReturnData { get; set; }
@@ -46,7 +45,6 @@ public class ApiResult<T>
 {
     public int Status { get; set; } = 200;
     public string? StackTrace { get; set; }
-    public PaginationDetails? PaginationDetails { get; set; }
     public ResultCode Code { get; set; }
     public IEnumerable<string>? Messages { get; set; }
     public T ReturnData { get; set; }

@@ -1,36 +1,40 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.ObjectModel;
+using ECommerce.API.DataTransferring.Blogs;
+using ECommerce.API.Utilities;
+using ECommerce.Application.Services.Blogs.Queries;
+using ECommerce.Application.Services.Interfaces;
+using ECommerce.Application.Services.Objects;
+using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogsController(IUnitOfWork unitOfWork, ILogger<BlogsController> logger) : ControllerBase
+public class BlogsController(IDtoMapper mapper,ILogger<BlogsController> logger) : ControllerBase
 {
-    private readonly IBlogRepository _blogRepository = unitOfWork.GetRepository<BlogRepository, Blog>();
+    
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ICollection<BlogDto>>> GetChartOfAccountsByCodesAsync(
+        [FromQuery] GetBlogsQueryDto getBlogsQueryDto,
+        [FromServices] IQueryHandler<GetBlogsQuery, PagedList<BlogViewModel>> queryHandler)
     {
         try
         {
-            if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogRepository.Search(paginationParameters, cancellationToken);
-            var paginationDetails = new PaginationDetails
+            if (string.IsNullOrEmpty(getBlogsQueryDto.PaginationParameters.Search))
             {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = paginationParameters.Search
-            };
+                getBlogsQueryDto.PaginationParameters.Search = "";
+            }
+
+            GetBlogsQuery query = mapper.Map<GetBlogsQuery>(getBlogsQueryDto);
+            var blogs = await queryHandler.HandleAsync(query);
+            ICollection<BlogDto> currencyAccountDto = mapper
+                .Map<ICollection<CurrencyAccountDto>>(blogs);
             return Ok(new ApiResult
             {
-                PaginationDetails = paginationDetails,
                 Code = ResultCode.Success,
-                ReturnData = entity
+                ReturnData = blogs.
             });
         }
         catch (Exception e)

@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ECommerce.Application.ViewModels;
+using ECommerce.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace ECommerce.API.Utilities;
+namespace ECommerce.Application.Services.Objects;
 
 public static class PagingExtension
 {
@@ -15,8 +17,9 @@ public static class PagingExtension
 
 public class PagedList<T> : List<T>
 {
-    public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+    public PagedList(List<T> items, int count, int pageNumber, int pageSize, string? search)
     {
+        Search= search;
         TotalCount = count;
         PageSize = pageSize;
         CurrentPage = pageNumber;
@@ -24,6 +27,7 @@ public class PagedList<T> : List<T>
         AddRange(items);
     }
 
+    public string? Search { get; }
     public int CurrentPage { get; }
     public int TotalPages { get; }
     public int PageSize { get; }
@@ -31,10 +35,10 @@ public class PagedList<T> : List<T>
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
 
-    public static PagedList<T> ToPagedList(List<T> source, int pageNumber, int pageSize)
+    public static PagedList<T> ToPagedList(IQueryable<T> source, int pageNumber, int pageSize, string? search)
     {
-        var count = source.Count;
+        var count = source.Count();
         var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-        return new PagedList<T>(items, count, pageNumber, pageSize);
+        return new PagedList<T>(items, count, pageNumber, pageSize, search);
     }
 }

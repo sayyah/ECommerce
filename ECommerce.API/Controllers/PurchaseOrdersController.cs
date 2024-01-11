@@ -1,4 +1,4 @@
-﻿using ECommerce.Application.Services.Commands.Purchase.Purchases;
+﻿using ECommerce.Application.Services.PurchaseOrders.Commands;
 using ECommerce.Domain.Entities.HolooEntity;
 
 namespace ECommerce.API.Controllers;
