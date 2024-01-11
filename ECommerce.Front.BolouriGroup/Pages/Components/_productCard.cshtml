@@ -27,9 +27,11 @@
                     </label>
                 }
             </div>
+            <div class="Image__Placeholder">
             <a class="product-image" asp-area="" asp-page="Product" asp-route-productUrl="@Model.Url.Trim()">
                 <img src="~/@Model.ImagePath" alt="@Model.Alt" width="177" height="177">
-            </a>
+                </a>
+            </div>
             <div class="product-widget">
                 <a title="نمای محصول" href="javascript:void(0)" onclick="OpenProductModal(@Model.Id)" class="far fa-eye" data-bs-toggle="modal" data-bs-target="#product-view"></a>
                 <a asp-area="" asp-page="Index" asp-page-handler="AddCompareList" asp-route-Id="@Model.Id" title="مقایسه محصول">
