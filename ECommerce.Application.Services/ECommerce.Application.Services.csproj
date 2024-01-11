@@ -10,4 +10,8 @@
     <ProjectReference Include="..\ECommerce.Domain.Entity\ECommerce.Domain.Entities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Blogs\Commands\" />
+  </ItemGroup>
+
 </Project>

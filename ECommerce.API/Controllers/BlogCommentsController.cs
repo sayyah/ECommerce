@@ -11,13 +11,12 @@ public class BlogCommentsController(IUnitOfWork unitOfWork, ILogger<BlogComments
     private readonly IImageRepository _imageRepository = unitOfWork.GetRepository <ImageRepository,Image>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogCommentRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _blogCommentRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -172,13 +171,12 @@ public class BlogCommentsController(IUnitOfWork unitOfWork, ILogger<BlogComments
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAcceptedComments([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult GetAllAcceptedComments([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _blogCommentRepository.GetAllAcceptedComments(paginationParameters, cancellationToken);
+            var entity = _blogCommentRepository.GetAllAcceptedComments(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

@@ -1,10 +1,11 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class TransactionRepository(SunflowerECommerceDbContext context) : RepositoryBase<Transaction>(context),
     ITransactionRepository
 {
-    public async Task<PagedList<Transaction>> Search(transactionFilterViewModel transactionFilterViewModel,
-        CancellationToken cancellationToken)
+    public PagedList<Transaction> Search(transactionFilterViewModel transactionFilterViewModel)
     {
         var query = context.Transactions
             .Where(x => x.User.UserName.Contains(transactionFilterViewModel.PaginationParameters.Search))
@@ -44,14 +45,14 @@ public class TransactionRepository(SunflowerECommerceDbContext context) : Reposi
                 break;
         }
 
-        var transactionList = await sortedQuery.Select(p => new Transaction
+        var transactionList = sortedQuery.Select(p => new Transaction
         {
             Id = p.Id,
             Amount = p.Amount,
             TransactionDate = p.TransactionDate,
             PaymentMethod = p.PaymentMethod,
             UserId = p.UserId
-        }).ToListAsync(cancellationToken);
+        });
 
         return PagedList<Transaction>.ToPagedList(transactionList,
             transactionFilterViewModel.PaginationParameters.PageNumber,

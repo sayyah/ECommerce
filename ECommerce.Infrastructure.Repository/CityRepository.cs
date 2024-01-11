@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class CityRepository(SunflowerECommerceDbContext context) : RepositoryBase<City>(context), ICityRepository
 {
@@ -7,12 +9,11 @@ public class CityRepository(SunflowerECommerceDbContext context) : RepositoryBas
         return await context.Cities.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<City>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<City> Search(PaginationParameters paginationParameters)
     {
         return PagedList<City>.ToPagedList(
-            await context.Cities.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Name).ToListAsync(cancellationToken),
+            context.Cities.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Name),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

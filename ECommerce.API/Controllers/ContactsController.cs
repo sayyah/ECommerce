@@ -10,13 +10,12 @@ public class ContactsController(IUnitOfWork unitOfWork, ILogger<ContactsControll
 
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult GetAllWithPagination([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _contactRepository.Search(paginationParameters, cancellationToken);
+            var entity = _contactRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

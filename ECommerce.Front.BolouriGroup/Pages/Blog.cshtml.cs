@@ -7,7 +7,7 @@ public class BlogModel(IBlogService blogService, IBlogCategoryService blogCatego
 {
     private readonly IBlogCategoryService _blogCategoryService = blogCategoryService;
 
-    public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
+    public ServiceResult<List<Blog>> Blogs { get; set; }
     [BindProperty] public ServiceResult<List<Tag>> Tags { get; set; }
     public string? Search { get; set; }
 

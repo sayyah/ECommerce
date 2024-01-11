@@ -27,13 +27,12 @@ public class ColorsController(IUnitOfWork unitOfWork, ILogger<ColorsController> 
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult GetAllWithPagination([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _colorRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _colorRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

@@ -1,4 +1,7 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Blogs.Results;
+using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBase<Blog>(context), IBlogRepository
 {
@@ -7,10 +10,13 @@ public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBas
         return await context.Blogs.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Blog> AddWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken)
+    public async Task<Blog> AddWithRelations(BlogResult blogViewModel, CancellationToken cancellationToken)
     {
-        Blog blog = blogViewModel;
-        blog.Keywords = new List<Keyword>();
+        //Blog blog = blogViewModel;
+        Blog blog = new()
+        {
+            Keywords = new List<Keyword>()
+        };
         foreach (var id in blogViewModel.KeywordsId) blog.Keywords.Add(await context.Keywords.FindAsync(id));
         blog.Tags = new List<Tag>();
         foreach (var id in blogViewModel.TagsId) blog.Tags.Add(await context.Tags.FindAsync(id));
@@ -23,7 +29,7 @@ public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBas
         return newBlog.Entity;
     }
 
-    public async Task<Blog> EditWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken)
+    public async Task<Blog> EditWithRelations(BlogResult blogViewModel, CancellationToken cancellationToken)
     {
         var blog = await context.Blogs.Where(x => x.Id == blogViewModel.Id).Include(nameof(Blog.Tags))
             .Include(nameof(Blog.Keywords)).FirstAsync(cancellationToken);
@@ -47,10 +53,10 @@ public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBas
         return blog;
     }
 
-    public async Task<IEnumerable<Blog>> GetWithInclude(int id, CancellationToken cancellationToken)
+    public IQueryable<Blog> GetWithInclude(int id)
     {
-        return await context.Blogs.Where(x => x.BlogCategoryId == id).Include(nameof(Blog.BlogAuthor))
-            .Include(nameof(Blog.Tags)).Include(nameof(Blog.Keywords)).ToListAsync(cancellationToken);
+        return context.Blogs.Where(x => x.BlogCategoryId == id).Include(nameof(Blog.BlogAuthor))
+            .Include(nameof(Blog.Tags)).Include(nameof(Blog.Keywords));
         ;
     }
 
@@ -81,55 +87,26 @@ public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBas
         return result;
     }
 
-    public async Task<PagedList<BlogViewModel>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IQueryable<Blog> Search(PaginationParameters paginationParameters)
     {
-        return PagedList<BlogViewModel>.ToPagedList(
-            await context.Blogs.Where(x => x.Title.Contains(paginationParameters.Search)
-                                            && (x.BlogCategoryId == paginationParameters.CategoryId ||
-                                                paginationParameters.CategoryId == 0))
-                .Include(x => x.Image)
-                .Include(x => x.Keywords)
-                .Include(x => x.Tags)
-                .Include(x => x.BlogComments)
-                .Include(x => x.BlogAuthor).AsNoTracking()
-                .OrderBy(on => on.Id)
-                .Select(x => new BlogViewModel
-                {
-                    BlogAuthor = x.BlogAuthor,
-                    BlogAuthorId = x.BlogAuthorId,
-                    BlogCategoryId = x.BlogCategoryId,
-                    CommentCount = x.BlogComments == null ? 0 : x.BlogComments.Count(),
-                    CreateDateTime = x.CreateDateTime,
-                    Dislike = x.Dislike,
-                    EditDateTime = x.EditDateTime,
-                    Id = x.Id,
-                    Url = x.Url,
-                    TagsId = x.Tags.Select(x => x.Id).ToList(),
-                    Tags = x.Tags.ToList(),
-                    Image = x.Image,
-                    Keywords = x.Keywords.ToList(),
-                    KeywordsId = x.Keywords.Select(x => x.Id).ToList(),
-                    Like = x.Like,
-                    PublishDateTime = x.PublishDateTime,
-                    Summary = x.Summary,
-                    Text = x.Text,
-                    Title = x.Title,
-                    Visit = x.Visit
-                })
-                .ToListAsync(cancellationToken),
-            paginationParameters.PageNumber,
-            paginationParameters.PageSize);
+        return context.Blogs.Where(x => x.Title.Contains(paginationParameters.Search)
+                                              && (x.BlogCategoryId == paginationParameters.CategoryId ||
+                                                  paginationParameters.CategoryId == 0))
+            .Include(x => x.Image)
+            .Include(x => x.Keywords)
+            .Include(x => x.Tags)
+            .Include(x => x.BlogComments)
+            .Include(x => x.BlogAuthor).AsNoTracking()
+            .OrderBy(on => on.Id);
     }
 
-    public async Task<PagedList<Blog>> GetByTagText(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Blog> GetByTagText(PaginationParameters paginationParameters)
     {
         var result = PagedList<Blog>.ToPagedList(
-            await context.Blogs.Where(x => x.Tags.Any(t => t.TagText == paginationParameters.TagText))
+            context.Blogs.Where(x => x.Tags.Any(t => t.TagText == paginationParameters.TagText))
                 .Include(x => x.Image)
                 .Include(x => x.Keywords).Include(x => x.Tags).Include(x => x.BlogAuthor).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
         return result;

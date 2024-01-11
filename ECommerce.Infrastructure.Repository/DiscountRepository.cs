@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class DiscountRepository(SunflowerECommerceDbContext context) : RepositoryBase<Discount>(context),
     IDiscountRepository
@@ -70,12 +72,11 @@ public class DiscountRepository(SunflowerECommerceDbContext context) : Repositor
         return discount.IsActive;
     }
 
-    public async Task<PagedList<Discount>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Discount> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Discount>.ToPagedList(
-            await context.Discounts.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Discounts.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

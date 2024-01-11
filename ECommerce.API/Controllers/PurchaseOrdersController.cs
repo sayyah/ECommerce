@@ -1,4 +1,4 @@
-﻿using ECommerce.Application.Services.Commands.Purchase.Purchases;
+﻿using ECommerce.Application.Services.PurchaseOrders.Commands;
 using ECommerce.Domain.Entities.HolooEntity;
 
 namespace ECommerce.API.Controllers;
@@ -67,14 +67,14 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
 
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PurchaseFiltreOrderViewModel purchaseFilterOrderViewModel,
+    public async Task<IActionResult> Get([FromQuery] PurchaseFilterOrderViewModel purchaseFilterOrderViewModel,
         CancellationToken cancellationToken)
     {
         try
         {
             if (string.IsNullOrEmpty(purchaseFilterOrderViewModel.PaginationParameters?.Search))
                 purchaseFilterOrderViewModel.PaginationParameters!.Search = "";
-            var entity = await _purchaseOrderRepository.Search(purchaseFilterOrderViewModel, cancellationToken);
+            var entity = _purchaseOrderRepository.Search(purchaseFilterOrderViewModel);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

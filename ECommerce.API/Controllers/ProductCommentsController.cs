@@ -9,13 +9,12 @@ public class ProductCommentsController(IUnitOfWork unitOfWork, ILogger<BlogAutho
     private readonly IImageRepository _imageRepository = unitOfWork.GetRepository<ImageRepository, Image>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _productCommentRepository.Search(paginationParameters, cancellationToken);
+            var entity = _productCommentRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -167,14 +166,13 @@ public class ProductCommentsController(IUnitOfWork unitOfWork, ILogger<BlogAutho
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAcceptedComments([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult GetAllAcceptedComments([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
             var entity =
-                await _productCommentRepository.GetAllAcceptedComments(paginationParameters, cancellationToken);
+                 _productCommentRepository.GetAllAcceptedComments(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

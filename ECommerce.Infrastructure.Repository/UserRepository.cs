@@ -1,9 +1,11 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class UserRepository(SunflowerECommerceDbContext dbContext) : RepositoryBase<User>(dbContext), IUserRepository
 {
 
-    public async Task<PagedList<UserListViewModel>> Search(userFilterParameters userFilteredParameters, CancellationToken cancellationToken)
+    public PagedList<UserListViewModel> Search(userFilterParameters userFilteredParameters)
     {
         var query = TableNoTracking.Where(x => x.UserName.Contains(userFilteredParameters.PaginationParameters.Search))
             .AsNoTracking();
@@ -35,7 +37,7 @@ public class UserRepository(SunflowerECommerceDbContext dbContext) : RepositoryB
                 break;
         }
 
-        var userList = await query.Select(u => new UserListViewModel
+        var userList = query.Select(u => new UserListViewModel
         {
             Id = u.Id,
             BuyingAmount = u.PurchaseOrders.Sum(s => s.Amount),
@@ -46,7 +48,7 @@ public class UserRepository(SunflowerECommerceDbContext dbContext) : RepositoryB
             RegisterDate = u.RegisterDate,
             Username = u.UserName,
             UserRole = u.UserRole.Name
-        }).ToListAsync(cancellationToken);
+        });
         return PagedList<UserListViewModel>.ToPagedList(userList,
             userFilteredParameters.PaginationParameters.PageNumber,
             userFilteredParameters.PaginationParameters.PageSize);

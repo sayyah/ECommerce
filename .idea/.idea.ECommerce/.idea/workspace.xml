@@ -15,6 +15,7 @@
     <projectFile profileName="ECommerce.Front.BolouriGroup">ECommerce.Front.BolouriGroup/ECommerce.Front.BolouriGroup.csproj</projectFile>
     <projectFile profileName="IIS Express">ECommerce.Front.BolouriGroup/ECommerce.Front.BolouriGroup.csproj</projectFile>
     <projectFile pubXmlPath="ECommerce.Front.BolouriGroup/Properties/PublishProfiles/FolderProfile.pubxml">ECommerce.Front.BolouriGroup/ECommerce.Front.BolouriGroup.csproj</projectFile>
+    <projectFile>Ecommerce.Benchmark/ECommerce.Benchmark.csproj</projectFile>
     <projectFile profileName="PersianTranslation">PersianTranslation/PersianTranslation.csproj</projectFile>
   </component>
   <component name="AutoImportSettings">
@@ -22,48 +23,94 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e865134a-ed35-461d-a8c8-1bab31f40fdd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.ECommerce/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.ECommerce/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.ECommerce/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.ECommerce/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ECommerce.Front.ArshaHamrah/Areas/Admin/Pages/Colors/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Front.ArshaHamrah/Areas/Admin/Pages/Colors/Index.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ECommerce.Front.ArshaHamrah/Pages/Error.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Front.ArshaHamrah/Pages/Error.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ECommerce.Front.BolouriGroup/Areas/Admin/Pages/Colors/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Front.BolouriGroup/Areas/Admin/Pages/Colors/Index.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ECommerce.Front.BolouriGroup/Areas/Admin/Pages/ProductComments/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Front.BolouriGroup/Areas/Admin/Pages/ProductComments/Index.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ECommerce.Front.BolouriGroup/Pages/Components/CartList/Default.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Front.BolouriGroup/Pages/Components/CartList/Default.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ECommerce/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ECommerce/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ECommerce/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/BlogAuthorsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/BlogAuthorsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/BlogCategoriesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/BlogCategoriesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/BlogCommentsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/BlogCommentsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/BrandsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/BrandsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/CategoriesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/CategoriesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/CitiesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/CitiesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ColorsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ColorsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ContactsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ContactsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/CurrenciesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/CurrenciesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/DepartmentsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/DepartmentsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/DiscountsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/DiscountsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/EmployeesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/EmployeesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ImagesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ImagesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/KeywordsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/KeywordsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/MessagesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/MessagesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/PaymentMethodsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/PaymentMethodsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/PricesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/PricesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductAttributeGroupsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductAttributeGroupsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductAttributeValuesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductAttributeValuesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductAttributesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductAttributesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductCommentsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductCommentsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/ProductsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/SizesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/SizesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/StatesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/StatesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/StoreController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/StoreController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/SuppliersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/SuppliersController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/TagsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/TagsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/TransactionsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/TransactionsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/UnitsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/UnitsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.API/Controllers/UsersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.API/Controllers/UsersController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Application.Services/Objects/PaginationParameters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Application.Services/Objects/PaginationParameters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Application.Services/Objects/PagingExtension.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Application.Services/Objects/PagingExtension.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Application.Services/ViewModels/PaginationViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Application.Services/ViewModels/PaginationViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Application.Services/ViewModels/ProductViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Application.Services/ViewModels/ProductViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Front.Admin/Areas/Admin/Pages/Users/Purchases.cshtml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Front.Admin/Areas/Admin/Pages/Users/Purchases.cshtml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryAddTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryAddTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryDeleteRangeTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryDeleteRangeTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryDeleteTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryDeleteTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryGetAllTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryGetAllTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryGetByIdAsyncTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryGetByIdAsyncTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryGetByNameTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryGetByNameTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryUpdateRangeTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryUpdateRangeTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryUpdateTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ECommerce.Repository.UnitTests/BlogCategories/BlogCategoryUpdateTests.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2V4bi2Wo11NXxaypW3dnyMSD9jp" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ID-663-implement-cqrs-for-the-blogscontroller&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\Alireza\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\DecompilerCache",
-      "C:\\Users\\Alireza\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\SourcesCache",
-      "C:\\Users\\Alireza\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\Administrator\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\Administrator\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\Administrator\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Compound.RunBoloori">
     <configuration name="RunBoloori" type="CompoundRunConfigurationType">
       <toRun name="ECommerce.API" type="LaunchSettings" />
@@ -81,6 +128,24 @@
     <configuration name="ECommerce.Front.BolouriGroup: FolderProfile" type="DotNetMsBuildPublish" factoryName="Publish to IIS">
       <riderPublish configuration="Release" platform="Any CPU" publish_profile="FolderProfile.pubxml" pubxml_path="$PROJECT_DIR$/ECommerce.Front.BolouriGroup/Properties/PublishProfiles/FolderProfile.pubxml" uuid_high="3478379626790013870" uuid_low="-9035958321036377232" />
       <method v="2" />
+    </configuration>
+    <configuration name="ECommerce.Benchmark" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/Ecommerce.Benchmark/ECommerce.Benchmark.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
     </configuration>
     <configuration name="ECommerce.API" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ECommerce.API/ECommerce.API.csproj" />
@@ -227,6 +292,7 @@
       <item itemvalue=".NET Launch Settings Profile.ECommerce.Front.BolouriGroup" />
       <item itemvalue=".NET Launch Settings Profile.ECommerce.Front.BolouriGroup: IIS Express" />
       <item itemvalue=".NET Launch Settings Profile.PersianTranslation" />
+      <item itemvalue=".NET Project.ECommerce.Benchmark" />
       <item itemvalue="Compound.RunBoloori" />
       <item itemvalue="Publish to IIS.ECommerce.API: FolderProfile" />
       <item itemvalue="Publish to IIS.ECommerce.Front.ArshaHamrah: FolderProfile" />
@@ -242,11 +308,27 @@
       <option name="presentableId" value="Default" />
       <updated>1694098423947</updated>
       <workItem from="1694098425141" duration="1211000" />
+      <workItem from="1705350982563" duration="239000" />
+      <workItem from="1705351469296" duration="805000" />
+      <workItem from="1705352672215" duration="570000" />
+      <workItem from="1705417950532" duration="1221000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />

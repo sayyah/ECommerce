@@ -1,4 +1,5 @@
-﻿using ECommerce.Front.BolouriGroup.Models;
+﻿using ECommerce.Application.Services.Blogs.Results;
+using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
@@ -9,7 +10,7 @@ public class BlogDetailsModel(IBlogService blogService, IBlogCategoryService blo
 {
     public BlogDetailsViewModel Blog { get; set; }
     public BlogCategory BlogCategory { get; set; }
-    public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
+    public ServiceResult<List<Blog>> Blogs { get; set; }
     public ServiceResult<List<BlogCategory>> Categories { get; set; }
     public ServiceResult<List<BlogComment>> BlogComments { get; set; }
     public BlogComment? BlogComment { get; set; }

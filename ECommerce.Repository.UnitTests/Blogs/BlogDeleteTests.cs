@@ -1,7 +1,6 @@
 using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Blogs;

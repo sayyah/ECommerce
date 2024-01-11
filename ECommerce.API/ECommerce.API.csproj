@@ -13,7 +13,8 @@
 		<Using Include="Microsoft.AspNetCore.Mvc" />
 		<Using Include="ECommerce.Application.ViewModels" />
 		<Using Include="Microsoft.AspNetCore.Authorization" />
-		<Using Include="ECommerce.Infrastructure.Repository"/>
+		<Using Include="ECommerce.Infrastructure.Repository" />
+		<Using Include="ECommerce.Application.Services.Objects" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="DotNetEnv" Version="2.5.0" />
@@ -45,6 +46,7 @@
 		<PackageReference Include="Serilog.Sinks.MSSqlServer" Version="6.5.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\ECommerce.API.DataTransferring\ECommerce.API.DataTransferObject.csproj" />
 		<ProjectReference Include="..\ECommerce.Application.PersianTranslations\ECommerce.Application.PersianTranslations.csproj" />
 		<ProjectReference Include="..\ECommerce.Application.Services\ECommerce.Application.Services.csproj" />
 		<ProjectReference Include="..\ECommerce.Domain.Exception\ECommerce.Domain.Exceptions.csproj" />
