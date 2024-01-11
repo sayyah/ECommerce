@@ -1,13 +1,10 @@
-﻿using ECommerce.Application.ViewModels;
-using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces.Utilities;
+﻿using ECommerce.Domain.Entities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface IPurchaseOrderRepository : IRepositoryBase<PurchaseOrder>
 {
-    Task<PagedList<PurchaseListViewModel>> Search(PurchaseFiltreOrderViewModel purchaseFiltreOrderViewModel,
-        CancellationToken cancellationToken);
+    PagedList<PurchaseListViewModel> Search(PurchaseFilterOrderViewModel purchaseFilterOrderViewModel);
 
     Task<PurchaseOrder?> GetByUser(int id, Status status, CancellationToken cancellationToken);
     Task<PurchaseOrder?> GetByOrderId(long id, CancellationToken cancellationToken);

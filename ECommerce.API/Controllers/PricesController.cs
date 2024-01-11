@@ -13,13 +13,12 @@ public class PricesController(IUnitOfWork unitOfWork, ILogger<PricesController> 
     ///     Get All Price By Product Id with Pagination.
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _priceRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _priceRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

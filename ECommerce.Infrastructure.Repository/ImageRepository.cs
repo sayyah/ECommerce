@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class ImageRepository(SunflowerECommerceDbContext context) : RepositoryBase<Image>(context), IImageRepository
 {
@@ -19,12 +21,11 @@ public class ImageRepository(SunflowerECommerceDbContext context) : RepositoryBa
         return await context.Images.Where(x => x.BlogId == blogId).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Image>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Image> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Image>.ToPagedList(
-            await context.Images.Where(x => x.Alt.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Images.Where(x => x.Alt.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

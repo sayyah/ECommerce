@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ECommerce.Application.Base.Services\ECommerce.Application.Base.Services.csproj" />
     <ProjectReference Include="..\ECommerce.Domain.Entity\ECommerce.Domain.Entities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Blogs\Commands\" />
   </ItemGroup>
 
 </Project>

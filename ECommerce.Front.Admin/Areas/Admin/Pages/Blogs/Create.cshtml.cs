@@ -10,7 +10,7 @@ public class CreateModel(IBlogService blogService, IImageService imageService, I
         IBlogCategoryService blogCategoryService)
     : PageModel
 {
-    [BindProperty] public BlogViewModel Blog { get; set; }
+    [BindProperty] public Blog Blog { get; set; }
 
     [BindProperty] public IFormFile? Upload { get; set; }
 
@@ -24,7 +24,7 @@ public class CreateModel(IBlogService blogService, IImageService imageService, I
 
     private async Task Initial()
     {
-        Blog = new BlogViewModel();
+        Blog = new Blog();
 
         var tags = (await tagService.GetAll()).ReturnData;
         Tags = new SelectList(tags, nameof(Tag.Id), nameof(Tag.TagText));

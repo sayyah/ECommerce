@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class PriceRepository(SunflowerECommerceDbContext context) : RepositoryBase<Price>(context), IPriceRepository
 {
@@ -66,12 +68,11 @@ public class PriceRepository(SunflowerECommerceDbContext context) : RepositoryBa
         return result;
     }
 
-    public async Task<PagedList<Price>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Price> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Price>.ToPagedList(
-            await context.Prices.Where(x => x.ProductId == Convert.ToInt32(paginationParameters.Search)).AsNoTracking()
-                .Include(i => i.Color).OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Prices.Where(x => x.ProductId == Convert.ToInt32(paginationParameters.Search)).AsNoTracking()
+                .Include(i => i.Color).OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

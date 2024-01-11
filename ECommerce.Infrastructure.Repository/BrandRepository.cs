@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class BrandRepository(SunflowerECommerceDbContext context) : RepositoryBase<Brand>(context), IBrandRepository
 {
@@ -7,12 +9,11 @@ public class BrandRepository(SunflowerECommerceDbContext context) : RepositoryBa
         return await context.Brands.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Brand>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Brand> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Brand>.ToPagedList(
-            await context.Brands.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Brands.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

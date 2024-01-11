@@ -8,13 +8,12 @@ public class DepartmentsController(IUnitOfWork unitOfWork, ILogger<DepartmentsCo
     private readonly IDepartmentRepository _departmentRepository = unitOfWork.GetRepository<DepartmentRepository, Department>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _departmentRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _departmentRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

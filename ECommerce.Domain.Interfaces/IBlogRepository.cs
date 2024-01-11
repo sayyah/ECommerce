@@ -1,23 +1,21 @@
-﻿using ECommerce.Application.ViewModels;
+﻿using ECommerce.Application.Services.Blogs.Results;
 using ECommerce.Domain.Entities;
-using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface IBlogRepository : IRepositoryBase<Blog>
 {
-    Task<PagedList<BlogViewModel>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken);
+    IQueryable<Blog> Search(PaginationParameters paginationParameters);
 
-    Task<PagedList<Blog>> GetByTagText(PaginationParameters paginationParameters, CancellationToken cancellationToken);
+    IQueryable<Blog> GetByTagText(PaginationParameters paginationParameters);
+
     Task<Blog?> GetByTitle(string title, CancellationToken cancellationToken);
 
-    Task<Blog> AddWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken);
+    Task<Blog> AddWithRelations(BlogResult blogViewModel, CancellationToken cancellationToken);
 
-    Task<Blog> EditWithRelations(BlogViewModel blogViewModel, CancellationToken cancellationToken);
+    Task<Blog> EditWithRelations(BlogResult blogViewModel, CancellationToken cancellationToken);
 
-    Task<IEnumerable<Blog>> GetWithInclude(int id, CancellationToken cancellationToken);
+    IQueryable<Blog> GetWithInclude(int id);
 
     Task<Blog?> GetByUrl(string url, CancellationToken cancellationToken);
     IQueryable<Blog> GetBlogByIdWithInclude(int blogId);

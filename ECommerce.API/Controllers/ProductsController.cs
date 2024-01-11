@@ -1,5 +1,4 @@
-﻿using ECommerce.API.Utilities;
-using ECommerce.Domain.Entities.HolooEntity;
+﻿using ECommerce.Domain.Entities.HolooEntity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers;
@@ -31,13 +30,12 @@ public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsControll
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllWithPagination([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult GetAllWithPagination([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _productRepository.Search(paginationParameters, cancellationToken);
+            var entity = _productRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -66,7 +64,7 @@ public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsControll
     }
 
     [HttpPost]
-    public async Task<IActionResult> Search([FromBody] PageViewModel pageViewModel, CancellationToken cancellationToken)
+    public  IActionResult Search([FromBody] PageViewModel pageViewModel)
     {
         try
         {
@@ -76,7 +74,7 @@ public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsControll
             var cox = query.Count();
             if (string.IsNullOrEmpty(pageViewModel.SearchText))
             {
-                pagination.Products = await query.Paginate(pageViewModel);
+                pagination.Products = query.Paginate(pageViewModel);
                 pagination.ProductsCount = query.Count();
                 pagination.Page = pageViewModel.Page;
                 pagination.QuantityPerPage = pageViewModel.QuantityPerPage;
@@ -97,7 +95,7 @@ public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsControll
             //if (pageViewModel.SearchText.StartsWith("@"))
             //{
             pagination.QuantityPerPage = pageViewModel.QuantityPerPage;
-            pagination.Products = await query.Where(x => x.Name.Contains(pageViewModel.SearchText.Substring(1)))
+            pagination.Products = query.Where(x => x.Name.Contains(pageViewModel.SearchText.Substring(1)))
                 .Paginate(pageViewModel);
             pagination.ProductsCount = query.Count(x => x.Name.Contains(pageViewModel.SearchText.Substring(1)));
             pagination.PagesQuantity =
@@ -306,7 +304,7 @@ public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsControll
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
 
-            var entity = PagedList<ProductIndexPageViewModel>.ToPagedList(productIndexPageViewModel,
+            var entity = PagedList<ProductIndexPageViewModel>.ToPagedList((IQueryable<ProductIndexPageViewModel>)productIndexPageViewModel,
                 productListFilteredViewModel.PaginationParameters.PageNumber,
                 productListFilteredViewModel.PaginationParameters.PageSize);
 

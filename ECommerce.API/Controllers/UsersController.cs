@@ -372,8 +372,7 @@ public class UsersController(IUnitOfWork unitOfWork,
 
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Get([FromQuery] userFilterParameters userFilterParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] userFilterParameters userFilterParameters)
     {
         try
         {
@@ -385,7 +384,7 @@ public class UsersController(IUnitOfWork unitOfWork,
 
             if (string.IsNullOrEmpty(userFilterParameters.PaginationParameters.Search))
                 userFilterParameters.PaginationParameters.Search = "";
-            var entity = await _userRepository.Search(userFilterParameters, cancellationToken);
+            var entity =  _userRepository.Search(userFilterParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

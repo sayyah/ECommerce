@@ -7,13 +7,12 @@ public class KeywordsController(IUnitOfWork unitOfWork, ILogger<KeywordsControll
     private readonly IKeywordRepository _keywordRepository = unitOfWork.GetRepository<KeywordRepository, Keyword>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _keywordRepository.Search(paginationParameters, cancellationToken);
+            var entity = _keywordRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

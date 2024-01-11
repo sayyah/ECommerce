@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class ColorRepository(SunflowerECommerceDbContext context) : RepositoryBase<Color>(context), IColorRepository
 {
@@ -7,12 +9,11 @@ public class ColorRepository(SunflowerECommerceDbContext context) : RepositoryBa
         return await context.Colors.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Color>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public  PagedList<Color> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Color>.ToPagedList(
-            await context.Colors.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Colors.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }
