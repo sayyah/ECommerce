@@ -1,4 +1,7 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+using ECommerce.Application.ViewModels;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : RepositoryBase<PurchaseOrder>(context),
     IPurchaseOrderRepository
@@ -95,9 +98,8 @@ public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : Repo
         return result;
     }
 
-    public async Task<PagedList<PurchaseListViewModel>> Search(
-        PurchaseFiltreOrderViewModel purchaseFiltreOrderViewModel,
-        CancellationToken cancellationToken)
+    public PagedList<PurchaseListViewModel> Search(
+        PurchaseFilterOrderViewModel purchaseFiltreOrderViewModel)
     {
         var query = context.PurchaseOrders.Where(x =>
                 x.User.UserName.Contains(purchaseFiltreOrderViewModel.PaginationParameters.Search))
@@ -151,7 +153,7 @@ public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : Repo
                 break;
         }
 
-        var purchaseList = await sortedQuery.Select(p => new PurchaseListViewModel
+        var purchaseList = sortedQuery.Select(p => new PurchaseListViewModel
         {
             Id = p.Id,
             Amount = p.Amount,
@@ -167,7 +169,7 @@ public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : Repo
             UserName = p.User.UserName,
             FBailCode = p.FBailCode,
             OrderId = p.OrderId
-        }).ToListAsync(cancellationToken);
+        });
 
         return PagedList<PurchaseListViewModel>.ToPagedList(purchaseList,
             purchaseFiltreOrderViewModel.PaginationParameters.PageNumber,

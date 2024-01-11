@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class ProductAttributeGroupRepository
     (SunflowerECommerceDbContext context) : RepositoryBase<ProductAttributeGroup>(context),
@@ -66,12 +68,11 @@ public class ProductAttributeGroupRepository
         return productAttributeGroups;
     }
 
-    public async Task<PagedList<ProductAttributeGroup>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<ProductAttributeGroup> Search(PaginationParameters paginationParameters)
     {
         return PagedList<ProductAttributeGroup>.ToPagedList(
-            await context.ProductAttributeGroups.Where(x => x.Name.Contains(paginationParameters.Search))
-                .AsNoTracking().OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.ProductAttributeGroups.Where(x => x.Name.Contains(paginationParameters.Search))
+                .AsNoTracking().OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

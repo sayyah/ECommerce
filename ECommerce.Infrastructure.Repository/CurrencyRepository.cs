@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class CurrencyRepository(SunflowerECommerceDbContext context) : RepositoryBase<Currency>(context),
     ICurrencyRepository
@@ -8,12 +10,11 @@ public class CurrencyRepository(SunflowerECommerceDbContext context) : Repositor
         return await context.Currencies.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Currency>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Currency> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Currency>.ToPagedList(
-            await context.Currencies.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Currencies.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class TagRepository(SunflowerECommerceDbContext context) : RepositoryBase<Tag>(context), ITagRepository
 {
@@ -26,12 +28,11 @@ public class TagRepository(SunflowerECommerceDbContext context) : RepositoryBase
         return result;
     }
 
-    public async Task<PagedList<Tag>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Tag> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Tag>.ToPagedList(
-            await context.Tags.Where(x => x.TagText.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Tags.Where(x => x.TagText.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

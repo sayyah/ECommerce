@@ -8,13 +8,12 @@ public class EmployeesController(IUnitOfWork unitOfWork, ILogger<EmployeesContro
     private readonly IEmployeeRepository _employeeRepository = unitOfWork.GetRepository<EmployeeRepository, Employee>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _employeeRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _employeeRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

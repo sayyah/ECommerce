@@ -45,7 +45,7 @@ public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : 
         return await Entities.AsNoTracking().OrderBy(on => on.Id).ToListAsync(cancellationToken);
     }
 
-    public virtual async Task<TEntity?> GetByIdAsync(CancellationToken cancellationToken, params object[] ids)
+    public virtual async Task<TEntity?> GetByIdsAsync(CancellationToken cancellationToken, params object[] ids)
     {
         return await Entities.FindAsync(ids, cancellationToken);
     }
@@ -54,6 +54,11 @@ public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : 
         CancellationToken cancellationToken)
     {
         return await Entities.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public virtual async Task<TEntity?> GetByIdAsync(CancellationToken cancellationToken, int? id)
+    {
+        return await Entities.FindAsync(id, cancellationToken);
     }
 
     #endregion

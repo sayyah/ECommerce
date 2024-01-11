@@ -1,11 +1,8 @@
-﻿using ECommerce.Application.ViewModels;
-using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces.Utilities;
+﻿using ECommerce.Domain.Entities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface ITransactionRepository : IRepositoryBase<Transaction>
 {
-    Task<PagedList<Transaction>> Search(transactionFilterViewModel transactionFilterViewModel,
-        CancellationToken cancellationToken);
+    PagedList<Transaction> Search(transactionFilterViewModel transactionFilterViewModel);
 }

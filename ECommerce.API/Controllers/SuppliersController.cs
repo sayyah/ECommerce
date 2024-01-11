@@ -8,13 +8,12 @@ public class SuppliersController(IUnitOfWork unitOfWork, ILogger<SuppliersContro
     private readonly ISupplierRepository _supplierRepository = unitOfWork.GetRepository<SupplierRepository, Supplier>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _supplierRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _supplierRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

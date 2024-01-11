@@ -7,13 +7,12 @@ public class SizesController(IUnitOfWork unitOfWork, ILogger<SizesController> lo
     private readonly ISizeRepository _sizeRepository = unitOfWork.GetRepository<SizeRepository, Size>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _sizeRepository.Search(paginationParameters, cancellationToken);
+            var entity = _sizeRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

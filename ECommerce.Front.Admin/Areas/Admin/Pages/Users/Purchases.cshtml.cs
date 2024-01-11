@@ -51,7 +51,7 @@ public class PurchaseModel(IPurchaseOrderService purchaseOrderService, IUserServ
         return RedirectToPage("/index", new { message = result.Message, code = result.Code.ToString() });
     }
 
-    public async Task<IActionResult> OnPost(ServiceResult<List<PurchaseListViewModel>> PurchaseOrders)
+    public IActionResult OnPost(ServiceResult<List<PurchaseListViewModel>> PurchaseOrders)
     {
         try
         {

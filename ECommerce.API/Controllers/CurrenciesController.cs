@@ -8,13 +8,12 @@ public class CurrenciesController(IUnitOfWork unitOfWork, ILogger<CurrenciesCont
     private readonly ICurrencyRepository _currencyRepository = unitOfWork.GetRepository<CurrencyRepository, Currency>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _currencyRepository.Search(paginationParameters, cancellationToken);
+            var entity = _currencyRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

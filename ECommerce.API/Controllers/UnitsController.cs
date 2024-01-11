@@ -10,13 +10,12 @@ public class UnitsController(IUnitOfWork unitOfWork, ILogger<UnitsController> lo
     private readonly IUnitRepository _unitRepository = unitOfWork.GetRepository<UnitRepository, Unit>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _unitRepository.Search(paginationParameters, cancellationToken);
+            var entity =  _unitRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

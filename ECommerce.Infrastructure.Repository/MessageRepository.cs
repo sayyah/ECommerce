@@ -1,14 +1,15 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class MessageRepository(SunflowerECommerceDbContext context) : RepositoryBase<Message>(context),
     IMessageRepository
 {
-    public async Task<PagedList<Message>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Message> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Message>.ToPagedList(
-            await context.Messages.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.Messages.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

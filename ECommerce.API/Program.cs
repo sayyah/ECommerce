@@ -1,3 +1,4 @@
+using AutoMapper;
 using ECommerce.API;
 using ECommerce.Application.PersianTranslations.Identity;
 using ECommerce.Infrastructure.DataContext;
@@ -13,6 +14,9 @@ using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using ECommerce.API.DataTransferObjectMappers;
+using ECommerce.Infrastructure.Ioc;
+using ECommerce.API.Ioc;
 
 DotNetEnv.Env.TraversePath().Load("../.env");
 
@@ -186,6 +190,9 @@ builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
 
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 builder.Services.AddRepositories(Assembly.GetExecutingAssembly());
+builder.Services.ExecuteRegistratorsFromAssemblyOf<ECommerce.Infrastructure.Ioc.DtoMappersRegistrar>();
+builder.Services.ExecuteRegistratorsFromAssemblyOf<ECommerce.API.Ioc.DtoMappersRegistrar>();
+builder.Services.ExecuteRegistratorsFromAssemblyOf<QueryHandlerRegistrar>();
 
 var app = builder.Build();
 
