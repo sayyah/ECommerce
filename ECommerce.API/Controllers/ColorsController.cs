@@ -2,15 +2,16 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ColorsController(IColorRepository colorGroupRepository, ILogger<ColorsController> logger)
-    : ControllerBase
+public class ColorsController(IUnitOfWork unitOfWork, ILogger<ColorsController> logger) : ControllerBase
 {
+    private readonly IColorRepository _colorRepository = unitOfWork.GetRepository<ColorRepository, Color>();
+
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
         {
-            var colors = await colorGroupRepository.GetAll(cancellationToken);
+            var colors = await _colorRepository.GetAllAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -32,7 +33,7 @@ public class ColorsController(IColorRepository colorGroupRepository, ILogger<Col
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await colorGroupRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _colorRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -63,7 +64,7 @@ public class ColorsController(IColorRepository colorGroupRepository, ILogger<Col
     {
         try
         {
-            var result = await colorGroupRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _colorRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -86,7 +87,7 @@ public class ColorsController(IColorRepository colorGroupRepository, ILogger<Col
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Color color, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Color? color, CancellationToken cancellationToken)
     {
         try
         {
@@ -97,7 +98,7 @@ public class ColorsController(IColorRepository colorGroupRepository, ILogger<Col
                 });
             color.Name = color.Name.Trim();
 
-            var repetitiveColor = await colorGroupRepository.GetByName(color.Name, cancellationToken);
+            var repetitiveColor = await _colorRepository.GetByName(color.Name, cancellationToken);
             if (repetitiveColor != null)
                 return Ok(new ApiResult
                 {
@@ -105,10 +106,12 @@ public class ColorsController(IColorRepository colorGroupRepository, ILogger<Col
                     Messages = new List<string> { "نام رنگ تکراری است" }
                 });
 
+            _colorRepository.Add(color);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await colorGroupRepository.AddAsync(color, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -125,7 +128,9 @@ public class ColorsController(IColorRepository colorGroupRepository, ILogger<Col
     {
         try
         {
-            await colorGroupRepository.UpdateAsync(color, cancellationToken);
+            _colorRepository.Update(color);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -145,7 +150,9 @@ public class ColorsController(IColorRepository colorGroupRepository, ILogger<Col
     {
         try
         {
-            await colorGroupRepository.DeleteAsync(id, cancellationToken);
+            await _colorRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

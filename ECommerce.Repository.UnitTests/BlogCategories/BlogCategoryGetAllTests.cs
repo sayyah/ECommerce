@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
@@ -6,23 +7,41 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "GetAll: Get all blogCategory")]
-    public async void GetAll_GetAllAddedEntities_EntityExistsInRepository()
+    [Fact]
+    public void GetAll_GetAllAddedEntities_EntityExistsInRepository()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
-        DbContext.BlogCategories.AddRange(expected.Values);
+        BlogCategory root = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => null)
+            .With(p => p.ParentId, () => null)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child1 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child2 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        root.BlogCategories!.Add(child1);
+        root.BlogCategories.Add(child2);
+        List<BlogCategory> expected =  [ root, child1, child2 ];
+        DbContext.BlogCategories.AddRange(expected);
         DbContext.SaveChanges();
 
         // Act
-        var actuals = await _blogCategoryRepository.GetAll(CancellationToken);
+        var actuals = _blogCategoryRepository.GetAll("");
 
         // Assert
-        actuals
-            .Should()
-            .BeEquivalentTo(
-                expected.Values,
-                options => options.Excluding(bc => bc.BlogCategories).Excluding(bc => bc.Parent)
-            );
+        actuals.Should().BeEquivalentTo(expected).And.HaveCount(3);
     }
 }

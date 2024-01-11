@@ -4,12 +4,12 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IPaymentMethodRepository : IAsyncRepository<PaymentMethod>
+public interface IPaymentMethodRepository : IRepositoryBase<PaymentMethod>
 {
     Task<PagedList<PaymentMethod>> Search(PaginationParameters paginationParameters,
         CancellationToken cancellationToken);
 
-    Task<PaymentMethod> GetByAccountNumber(string name, CancellationToken cancellationToken);
+    Task<PaymentMethod?> GetByAccountNumber(string name, CancellationToken cancellationToken);
 
-    Task<int> AddAll(IEnumerable<PaymentMethod> paymentMethods, CancellationToken cancellationToken);
+    void AddAll(IEnumerable<PaymentMethod> paymentMethods);
 }

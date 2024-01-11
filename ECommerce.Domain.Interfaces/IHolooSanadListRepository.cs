@@ -4,5 +4,5 @@ namespace ECommerce.Domain.Interfaces;
 
 public interface IHolooSanadListRepository : IHolooRepository<HolooSndList>
 {
-    Task<bool> Add(HolooSndList sanadList, CancellationToken cancellationToken);
+    void Add(HolooSndList sanadList);
 }

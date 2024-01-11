@@ -2,11 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class EmployeesController(IEmployeeRepository employeeRepository, ILogger<EmployeesController> logger,
-        IHolooArticleRepository articleRepository)
+public class EmployeesController(IUnitOfWork unitOfWork, ILogger<EmployeesController> logger)
     : ControllerBase
 {
-    private readonly IHolooArticleRepository _articleRepository = articleRepository;
+    private readonly IEmployeeRepository _employeeRepository = unitOfWork.GetRepository<EmployeeRepository, Employee>();
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -15,7 +14,7 @@ public class EmployeesController(IEmployeeRepository employeeRepository, ILogger
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await employeeRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _employeeRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -47,7 +46,7 @@ public class EmployeesController(IEmployeeRepository employeeRepository, ILogger
     {
         try
         {
-            var result = await employeeRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _employeeRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -71,7 +70,7 @@ public class EmployeesController(IEmployeeRepository employeeRepository, ILogger
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Employee employee, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Employee? employee, CancellationToken cancellationToken)
     {
         try
         {
@@ -82,7 +81,7 @@ public class EmployeesController(IEmployeeRepository employeeRepository, ILogger
                 });
             employee.Name = employee.Name.Trim();
 
-            var repetitiveName = await employeeRepository.GetByName(employee.Name, cancellationToken);
+            var repetitiveName = await _employeeRepository.GetByName(employee.Name, cancellationToken);
             if (repetitiveName != null)
                 return Ok(new ApiResult
                 {
@@ -90,11 +89,12 @@ public class EmployeesController(IEmployeeRepository employeeRepository, ILogger
                     Messages = new List<string> { "نام کارمند تکراری است" }
                 });
 
+            _employeeRepository.Add(employee);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await employeeRepository.AddAsync(employee, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -111,7 +111,9 @@ public class EmployeesController(IEmployeeRepository employeeRepository, ILogger
     {
         try
         {
-            await employeeRepository.UpdateAsync(employee, cancellationToken);
+            _employeeRepository.Update(employee);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -131,7 +133,9 @@ public class EmployeesController(IEmployeeRepository employeeRepository, ILogger
     {
         try
         {
-            await employeeRepository.DeleteAsync(id, cancellationToken);
+            await _employeeRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

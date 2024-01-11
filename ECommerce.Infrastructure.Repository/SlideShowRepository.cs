@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class SlideShowRepository(SunflowerECommerceDbContext context) : AsyncRepository<SlideShow>(context),
+public class SlideShowRepository(SunflowerECommerceDbContext context) : RepositoryBase<SlideShow>(context),
     ISlideShowRepository
 {
     public bool IsRepetitiveProduct(int id, int? productId, int? categoryId, CancellationToken cancellationToken)
@@ -12,7 +12,7 @@ public class SlideShowRepository(SunflowerECommerceDbContext context) : AsyncRep
         return repetitive;
     }
 
-    public async Task<SlideShow> GetByTitle(string title, CancellationToken cancellationToken)
+    public async Task<SlideShow?> GetByTitle(string title, CancellationToken cancellationToken)
     {
         return await context.SlideShows.Where(x => x.Title == title).FirstOrDefaultAsync(cancellationToken);
     }

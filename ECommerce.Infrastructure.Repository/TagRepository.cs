@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class TagRepository(SunflowerECommerceDbContext context) : AsyncRepository<Tag>(context), ITagRepository
+public class TagRepository(SunflowerECommerceDbContext context) : RepositoryBase<Tag>(context), ITagRepository
 {
     public async Task<Tag> GetByTagText(string tagText, CancellationToken cancellationToken)
     {

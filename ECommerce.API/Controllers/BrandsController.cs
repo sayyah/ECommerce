@@ -2,9 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsController> logger)
-    : ControllerBase
+public class BrandsController(IUnitOfWork unitOfWork, ILogger<BrandsController> logger) : ControllerBase
 {
+    private readonly IBrandRepository _brandRepository = unitOfWork.GetRepository<BrandRepository, Brand>();
+
     /// <summary>
     ///     Get All Brands.
     /// </summary>
@@ -13,7 +14,7 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
     {
         try
         {
-            var result = await brandRepository.GetAll(cancellationToken);
+            var result = await _brandRepository.GetAllAsync(cancellationToken);
             var brands = result.ToList();
             brands.Insert(0, new Brand
             {
@@ -40,7 +41,7 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await brandRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _brandRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -51,17 +52,6 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
                 HasPrevious = entity.HasPrevious,
                 Search = paginationParameters.Search
             };
-
-            //var metadata = new
-            //{
-            //    entity.TotalCount,
-            //    entity.PageSize,
-            //    entity.CurrentPage,
-            //    entity.TotalPages,
-            //    entity.HasNext,
-            //    entity.HasPrevious
-            //};
-            //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             return Ok(new ApiResult
             {
@@ -83,8 +73,7 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
     {
         try
         {
-            var x = User.Identity.Name;
-            var result = await brandRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _brandRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -107,7 +96,7 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Brand brand, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Brand? brand, CancellationToken cancellationToken)
     {
         try
         {
@@ -118,7 +107,7 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
                 });
             brand.Name = brand.Name.Trim();
 
-            var repetitiveBrand = await brandRepository.GetByName(brand.Name, cancellationToken);
+            var repetitiveBrand = await _brandRepository.GetByName(brand.Name, cancellationToken);
             if (repetitiveBrand != null)
                 return Ok(new ApiResult
                 {
@@ -126,10 +115,12 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
                     Messages = new List<string> { "نام برند تکراری است" }
                 });
 
+            _brandRepository.Add(brand);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await brandRepository.AddAsync(brand, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -146,15 +137,17 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
     {
         try
         {
-            var repetitive = await brandRepository.GetByName(brand.Name, cancellationToken);
+            var repetitive = await _brandRepository.GetByName(brand.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != brand.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام برند تکراری است" }
                 });
-            if (repetitive != null) brandRepository.Detach(repetitive);
-            await brandRepository.UpdateAsync(brand, cancellationToken);
+            if (repetitive != null) _brandRepository.Detach(repetitive);
+            _brandRepository.Update(brand);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -174,7 +167,9 @@ public class BrandsController(IBrandRepository brandRepository, ILogger<BrandsCo
     {
         try
         {
-            await brandRepository.DeleteAsync(id, cancellationToken);
+            await _brandRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

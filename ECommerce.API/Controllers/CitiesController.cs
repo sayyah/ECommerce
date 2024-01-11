@@ -2,9 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class CitiesController(ICityRepository cityRepository, ILogger<CitiesController> logger)
-    : ControllerBase
+public class CitiesController(IUnitOfWork unitOfWork, ILogger<CitiesController> logger) : ControllerBase
 {
+    private readonly ICityRepository _cityRepository = unitOfWork.GetRepository<CityRepository, City>();
+
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
@@ -13,7 +14,7 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = (await cityRepository.GetAll(cancellationToken)).OrderBy(x => x.Name)
+                ReturnData = (await _cityRepository.GetAllAsync(cancellationToken)).OrderBy(x => x.Name)
             });
         }
         catch (Exception e)
@@ -30,7 +31,7 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await cityRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _cityRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -63,10 +64,16 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
     {
         try
         {
+            var cities = await _cityRepository.Where(x => x.StateId == id, cancellationToken);
+            if (cities != null)
+                return Ok(new ApiResult
+                {
+                    Code = ResultCode.Success,
+                    ReturnData = cities.OrderBy(x => x.Name)
+                });
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = (await cityRepository.Where(x => x.StateId == id, cancellationToken)).OrderBy(x => x.Name)
+                Code = ResultCode.NotFound,
             });
         }
         catch (Exception e)
@@ -84,7 +91,7 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await cityRepository.GetByIdAsync(cancellationToken, id)
+                ReturnData = await _cityRepository.GetByIdAsync(cancellationToken, id)
             });
         }
         catch (Exception e)
@@ -96,7 +103,7 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(City city, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(City? city, CancellationToken cancellationToken)
     {
         try
         {
@@ -107,7 +114,7 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
                 });
             city.Name = city.Name.Trim();
 
-            var repetitiveCity = await cityRepository.GetByName(city.Name, cancellationToken);
+            var repetitiveCity = await _cityRepository.GetByName(city.Name, cancellationToken);
             if (repetitiveCity != null)
                 return Ok(new ApiResult
                 {
@@ -115,10 +122,12 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
                     Messages = new List<string> { "نام شهر تکراری است" }
                 });
 
+            _cityRepository.Add(city);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await cityRepository.AddAsync(city, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -134,7 +143,9 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
     {
         try
         {
-            await cityRepository.UpdateAsync(city, cancellationToken);
+            _cityRepository.Update(city);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -153,7 +164,9 @@ public class CitiesController(ICityRepository cityRepository, ILogger<CitiesCont
     {
         try
         {
-            await cityRepository.DeleteAsync(id, cancellationToken);
+            await _cityRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

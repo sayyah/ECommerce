@@ -2,9 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class KeywordsController(IKeywordRepository keywordRepository, ILogger<KeywordsController> logger)
-    : ControllerBase
+public class KeywordsController(IUnitOfWork unitOfWork, ILogger<KeywordsController> logger) : ControllerBase
 {
+    private readonly IKeywordRepository _keywordRepository = unitOfWork.GetRepository<KeywordRepository, Keyword>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +13,7 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await keywordRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _keywordRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -45,7 +46,7 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await keywordRepository.GetAll(cancellationToken)
+                ReturnData = await _keywordRepository.GetAllAsync(cancellationToken)
             });
         }
         catch (Exception e)
@@ -60,7 +61,7 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
     {
         try
         {
-            var keywordList = await keywordRepository.GetByProductId(id, cancellationToken);
+            var keywordList = await _keywordRepository.GetByProductId(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -79,7 +80,7 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
     {
         try
         {
-            var result = await keywordRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _keywordRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -101,7 +102,7 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Keyword keywords, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Keyword? keywords, CancellationToken cancellationToken)
     {
         try
         {
@@ -112,7 +113,7 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
                 });
             keywords.KeywordText = keywords.KeywordText.Trim();
 
-            var repetitiveCategory = await keywordRepository.GetByKeywordText(keywords.KeywordText, cancellationToken);
+            var repetitiveCategory = await _keywordRepository.GetByKeywordText(keywords.KeywordText, cancellationToken);
             if (repetitiveCategory != null)
                 return Ok(new ApiResult
                 {
@@ -120,10 +121,12 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
                     Messages = new List<string> { "کلمه کلیدی تکراری است" }
                 });
 
+            _keywordRepository.Add(keywords);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await keywordRepository.AddAsync(keywords, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -139,15 +142,17 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
     {
         try
         {
-            var repetitive = await keywordRepository.GetByKeywordText(keyword.KeywordText, cancellationToken);
+            var repetitive = await _keywordRepository.GetByKeywordText(keyword.KeywordText, cancellationToken);
             if (repetitive != null && repetitive.Id != keyword.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "کلمه کلیدی تکراری است" }
                 });
-            if (repetitive != null) keywordRepository.Detach(repetitive);
-            await keywordRepository.UpdateAsync(keyword, cancellationToken);
+            if (repetitive != null) _keywordRepository.Detach(repetitive);
+            _keywordRepository.Update(keyword);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -166,7 +171,9 @@ public class KeywordsController(IKeywordRepository keywordRepository, ILogger<Ke
     {
         try
         {
-            await keywordRepository.DeleteAsync(id, cancellationToken);
+            await _keywordRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

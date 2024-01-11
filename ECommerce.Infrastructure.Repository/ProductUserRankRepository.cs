@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class ProductUserRankRepository(SunflowerECommerceDbContext context) : AsyncRepository<ProductUserRank>(context),
+public class ProductUserRankRepository(SunflowerECommerceDbContext context) : RepositoryBase<ProductUserRank>(context),
     IProductUserRankRepository
 {
     public async Task<ProductUserRank?> GetByProductUser(int productId, int userId, CancellationToken cancellationToken)

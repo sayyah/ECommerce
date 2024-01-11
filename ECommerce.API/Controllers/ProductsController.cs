@@ -6,16 +6,22 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductsController(IProductRepository productRepository, IHolooArticleRepository articleRepository,
-        IHolooMGroupRepository mGroupRepository, IHolooSGroupRepository sGroupRepository,
-        ICategoryRepository categoryRepository, IPriceRepository priceRepository, IUnitRepository unitRepository,
-        ILogger<ProductsController> logger, ITagRepository tagRepository, IWishListRepository wishListRepository)
-    : ControllerBase
+public class ProductsController(IUnitOfWork unitOfWork, ILogger<ProductsController> logger) : ControllerBase
 {
+    private readonly IHolooArticleRepository _articleRepository = unitOfWork.GetHolooRepository<HolooArticleRepository, HolooArticle>();
+    private readonly ICategoryRepository _categoryRepository = unitOfWork.GetRepository<CategoryRepository, Category>();
+    private readonly IHolooMGroupRepository _mGroupRepository = unitOfWork.GetHolooRepository<HolooMGroupRepository, HolooMGroup>();
+    private readonly IPriceRepository _priceRepository = unitOfWork.GetRepository<PriceRepository, Price>();
+    private readonly IProductRepository _productRepository = unitOfWork.GetRepository<ProductRepository, Product>();
+    private readonly IHolooSGroupRepository _sGroupRepository = unitOfWork.GetHolooRepository<HolooSGroupRepository, HolooSGroup>();
+    private readonly ITagRepository _tagRepository = unitOfWork.GetRepository<TagRepository, Tag>();
+    private readonly IUnitRepository _unitRepository = unitOfWork.GetRepository<UnitRepository, Unit>();
+    private readonly IWishListRepository _wishListRepository = unitOfWork.GetRepository<WishListRepository, WishList>();
+
     private async Task<Product> AddPriceAndExistFromHoloo(Product product, bool isWithoutBill, bool? isCheckExist,
         CancellationToken cancellationToken)
     {
-        var products = await articleRepository.AddPriceAndExistFromHolooList(
+        var products = await _articleRepository.AddPriceAndExistFromHolooList(
             new List<ProductIndexPageViewModel> { product },
             isWithoutBill,
             isCheckExist,
@@ -31,7 +37,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await productRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _productRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -65,7 +71,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
         try
         {
             var pagination = new PaginationViewModel { SearchText = pageViewModel.SearchText };
-            var query = productRepository.TableNoTracking.OrderByDescending(x => x.Id);
+            var query = _productRepository.TableNoTracking.OrderByDescending(x => x.Id);
 
             var cox = query.Count();
             if (string.IsNullOrEmpty(pageViewModel.SearchText))
@@ -151,17 +157,17 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
             if (!string.IsNullOrEmpty(productListFilteredViewModel.PaginationParameters.TagText))
             {
                 var resultTags =
-                    await tagRepository.GetByTagText(productListFilteredViewModel.PaginationParameters.TagText,
+                    await _tagRepository.GetByTagText(productListFilteredViewModel.PaginationParameters.TagText,
                         cancellationToken);
                 productListFilteredViewModel.TagsId = new List<int> { resultTags.Id };
             }
 
             var categoriesId = new List<int>();
-            categoriesId = await categoryRepository.ChildrenCategory(
+            categoriesId = await _categoryRepository.ChildrenCategory(
                 productListFilteredViewModel.PaginationParameters.CategoryId,
                 cancellationToken);
             categoriesId.Add(productListFilteredViewModel.PaginationParameters.CategoryId);
-            var productQuery = productRepository.GetProducts(categoriesId, productListFilteredViewModel.BrandsId,
+            var productQuery = _productRepository.GetProducts(categoriesId, productListFilteredViewModel.BrandsId,
                 productListFilteredViewModel.StarsCount, productListFilteredViewModel.TagsId);
 
             var search = productListFilteredViewModel.PaginationParameters.Search?.Split('='); //name=ali
@@ -210,7 +216,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                         var searchProducts = new List<string> { search[1].Trim() };
                         foreach (var searchProduct in searchProducts)
                         {
-                            var productsIds = priceRepository.GetProductIdWithsArticleCodeCustomer(searchProduct);
+                            var productsIds = _priceRepository.GetProductIdWithsArticleCodeCustomer(searchProduct);
                             productIndexPageViewModel.AddRange(await productQuery
                                 .Where(x => productsIds.Contains(x.Id))
                                 .Select(p => new ProductIndexPageViewModel
@@ -248,7 +254,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
 
             productIndexPageViewModel = productIndexPageViewModel.DistinctBy(x => x.Id).ToList();
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                productIndexPageViewModel = await articleRepository.AddPriceAndExistFromHolooList(
+                productIndexPageViewModel = await _articleRepository.AddPriceAndExistFromHolooList(
                     productIndexPageViewModel, productListFilteredViewModel.isWithoutBill,
                     productListFilteredViewModel.isCheckExist, cancellationToken);
 
@@ -319,7 +325,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                 foreach (var item in entity)
                 {
                     var price = item.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague);
-                    var wishLists = await wishListRepository.Where(
+                    var wishLists = await _wishListRepository.Where(
                         x => x.UserId == productListFilteredViewModel.UserId && x.PriceId == price.Id,
                         cancellationToken);
                     item.FirstPriceWichlist = wishLists.Any();
@@ -351,7 +357,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var productQuery = productRepository.GetAllProducts();
+            var productQuery = _productRepository.GetAllProducts();
             var productIndexPageViewModel = new List<ShopPageViewModel>();
             productIndexPageViewModel.AddRange(await productQuery
                 .Select(p => new ShopPageViewModel
@@ -373,7 +379,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
 
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         isCheckExist, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -400,9 +406,9 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var products = await productRepository.TopNew(count, 0, null, cancellationToken);
+            var products = await _productRepository.TopNew(count, 0, null, cancellationToken);
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                products = await articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
+                products = await _articleRepository.AddPriceAndExistFromHolooList(products, isWithoutBill, true,
                     cancellationToken);
 
             products = products.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
@@ -426,14 +432,14 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var products = await productRepository.TopPrices(count, 0, null, cancellationToken);
+            var products = await _productRepository.TopPrices(count, 0, null, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => product));
 
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             products = products.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0)).ToList();
             return Ok(new ApiResult
@@ -455,13 +461,13 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var products = await priceRepository.TopDiscounts(count, cancellationToken);
+            var products = await _priceRepository.TopDiscounts(count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => (ProductIndexPageViewModel)product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -485,13 +491,13 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var products = await productRepository.TopRelatives(productId, count, cancellationToken);
+            var products = await _productRepository.TopRelatives(productId, count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -514,13 +520,13 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var products = await productRepository.TopSells(count, cancellationToken);
+            var products = await _productRepository.TopSells(count, cancellationToken);
 
             var productIndexPageViewModel = new List<ProductIndexPageViewModel>();
             productIndexPageViewModel.AddRange(products.Select(product => product));
             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -543,11 +549,11 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var productIndexPageViewModel = await productRepository.TopStars(count, 0, null, cancellationToken);
+            var productIndexPageViewModel = await _productRepository.TopStars(count, 0, null, cancellationToken);
 
             if (productIndexPageViewModel.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
                 productIndexPageViewModel =
-                    await articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
+                    await _articleRepository.AddPriceAndExistFromHolooList(productIndexPageViewModel, isWithoutBill,
                         true, cancellationToken);
             productIndexPageViewModel = productIndexPageViewModel.OrderByDescending(x => x.Prices.Any(e => e.Exist > 0))
                 .ToList();
@@ -573,7 +579,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = productRepository.GetCategoryProductCount(categoryId, cancellationToken)
+                ReturnData = _productRepository.GetCategoryProductCount(categoryId, cancellationToken)
             });
         }
         catch (Exception e)
@@ -590,7 +596,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var product = await productRepository.GetByUrl(productUrl, cancellationToken);
+            var product = await _productRepository.GetByUrl(productUrl, cancellationToken);
             if (product == null)
                 return Ok(new ApiResult
                 {
@@ -599,7 +605,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
             if (product.Prices.Any(p => p.ArticleCode != null))
                 product = await AddPriceAndExistFromHoloo(product, isWithoutBill, isCheckExist, cancellationToken);
 
-            var wish = await wishListRepository.GetByProductUser(product.Id, userId, cancellationToken);
+            var wish = await _wishListRepository.GetByProductUser(product.Id, userId, cancellationToken);
             var result = new ProductViewModel
             {
                 Id = product.Id,
@@ -642,7 +648,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var result = await productRepository.GetProductByIdWithInclude(id).FirstOrDefaultAsync(cancellationToken);
+            var result = await _productRepository.GetProductByIdWithInclude(id).FirstOrDefaultAsync(cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -669,7 +675,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var product = await productRepository.GetProductById(id, cancellationToken);
+            var product = await _productRepository.GetProductById(id, cancellationToken);
 
             if (product == null)
                 return Ok(new ApiResult
@@ -712,8 +718,8 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var resultFormRepository = productRepository.GetProductListWithAttribute(productIdList);
-            var result = await articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
+            var resultFormRepository = _productRepository.GetProductListWithAttribute(productIdList);
+            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
                 false, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
@@ -741,15 +747,10 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var ProductsIds = productRepository.GetProductsIdWithCategories(categoryId);
-            var resultFormRepository = productRepository.GetProductListWithAttribute(ProductsIds);
-            var result = await articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
+            var productsIds = _productRepository.GetProductsIdWithCategories(categoryId);
+            var resultFormRepository = _productRepository.GetProductListWithAttribute(productsIds);
+            var result = await _articleRepository.AddPriceAndExistFromHolooList(resultFormRepository.ToList(), true,
                 false, cancellationToken);
-            if (result == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
 
             return Ok(new ApiResult
             {
@@ -771,8 +772,8 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var result = await productRepository.GetProductList(productIdList, cancellationToken);
-            result = await articleRepository.AddPriceAndExistFromHolooList(result, isWithoutBill, true,
+            var result = await _productRepository.GetProductList(productIdList, cancellationToken);
+            result = await _articleRepository.AddPriceAndExistFromHolooList(result, isWithoutBill, true,
                 cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
@@ -796,7 +797,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(ProductViewModel productViewModel, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(ProductViewModel? productViewModel, CancellationToken cancellationToken)
     {
         try
         {
@@ -807,7 +808,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                 });
             productViewModel.Name = productViewModel.Name.Trim();
 
-            var repetitiveName = await productRepository.GetByName(productViewModel.Name, cancellationToken);
+            var repetitiveName = await _productRepository.GetByName(productViewModel.Name, cancellationToken);
             if (repetitiveName != null)
                 return Ok(new ApiResult
                 {
@@ -815,7 +816,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                     Messages = new List<string> { "نام محصول تکراری است" }
                 });
 
-            var repetitiveUrl = await productRepository.GetByUrl(productViewModel.Url, cancellationToken);
+            var repetitiveUrl = await _productRepository.GetByUrl(productViewModel.Url, cancellationToken);
             if (repetitiveUrl != null)
                 return Ok(new ApiResult
                 {
@@ -823,10 +824,13 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                     Messages = new List<string> { "آدرس محصول تکراری است" }
                 });
 
+            var newProduct = await _productRepository.AddWithRelations(productViewModel, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await productRepository.AddWithRelations(productViewModel, cancellationToken)
+                ReturnData = newProduct
             });
         }
         catch (Exception e)
@@ -839,33 +843,34 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
 
     [HttpPut]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<ActionResult<int>> Put(ProductViewModel productViewModel, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> Put(ProductViewModel? productViewModel, CancellationToken cancellationToken)
     {
         try
         {
             if (productViewModel == null) return BadRequest();
 
-            var repetitiveName = await productRepository.GetByName(productViewModel.Name, cancellationToken);
+            var repetitiveName = await _productRepository.GetByName(productViewModel.Name, cancellationToken);
             if (repetitiveName != null && repetitiveName.Id != productViewModel.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام محصول تکراری است" }
                 });
-            if (repetitiveName != null) productRepository.Detach(repetitiveName);
+            if (repetitiveName != null) _productRepository.Detach(repetitiveName);
 
-            var repetitiveUrl = await productRepository.GetByUrl(productViewModel.Url, cancellationToken);
+            var repetitiveUrl = await _productRepository.GetByUrl(productViewModel.Url, cancellationToken);
             if (repetitiveUrl != null && repetitiveUrl.Id != productViewModel.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "آدرس محصول تکراری است" }
                 });
-            if (repetitiveUrl != null) productRepository.Detach(repetitiveUrl);
+            if (repetitiveUrl != null) _productRepository.Detach(repetitiveUrl);
 
-            var result = await productRepository.EditWithRelations(productViewModel, cancellationToken);
+            var result = await _productRepository.EditWithRelations(productViewModel, cancellationToken);
             if (productViewModel.Prices.Count > 0)
-                await priceRepository.EditAll(productViewModel.Prices, result.Id, cancellationToken);
+                _priceRepository.EditAll(productViewModel.Prices, result.Id);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
@@ -887,7 +892,9 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            await productRepository.DeleteAsync(id, cancellationToken);
+            await _productRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -909,7 +916,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await mGroupRepository.GetAll(cancellationToken)
+                ReturnData = await _mGroupRepository.GetAll(cancellationToken)
             });
         }
         catch (Exception e)
@@ -925,7 +932,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
     {
         try
         {
-            var result = await sGroupRepository.GetSGroupByMCode(mCode, cancellationToken);
+            var result = await _sGroupRepository.GetSGroupByMCode(mCode, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -974,7 +981,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
             //            }
             //        }
             //    });
-            var products = await articleRepository.GetAllArticleMCodeSCode(code, cancellationToken);
+            var products = await _articleRepository.GetAllArticleMCodeSCode(code, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -998,19 +1005,19 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
         {
             var mCodeLis = new List<HolooMGroup>();
             if (mCode.Equals(""))
-                mCodeLis = (await mGroupRepository.GetAll(cancellationToken))!.ToList();
+                mCodeLis = (await _mGroupRepository.GetAll(cancellationToken))!.ToList();
             else
-                mCodeLis.Add(await mGroupRepository.GetByCode(mCode, cancellationToken));
+                mCodeLis.Add(await _mGroupRepository.GetByCode(mCode, cancellationToken));
             foreach (var mGroup in mCodeLis)
             {
-                var parentCategoryCode = await categoryRepository.GetByName(mGroup.M_groupname, cancellationToken) ??
-                                         await categoryRepository.AddAsync(new Category
+                var parentCategoryCode = await _categoryRepository.GetByName(mGroup.M_groupname, cancellationToken) ??
+                                         await _categoryRepository.AddAsync(new Category
                                          {
                                              Name = mGroup.M_groupname,
                                              Path = "/" + mGroup.M_groupname
                                          }, cancellationToken);
 
-                var sGroups = await sGroupRepository.GetSGroupByMCode(mGroup.M_groupcode, cancellationToken);
+                var sGroups = await _sGroupRepository.GetSGroupByMCode(mGroup.M_groupcode, cancellationToken);
 
                 var holooSGroups = sGroups.ToList();
                 if (!holooSGroups.Any())
@@ -1024,20 +1031,13 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                     });
                 }
 
-                var categories = holooSGroups.Select(x => new Category
-                {
-                    Name = x.S_groupname,
-                    ParentId = parentCategoryCode.Id,
-                    Path = parentCategoryCode.Path + "/" + x.S_groupname
-                }).ToList();
-
                 foreach (var sGroup in holooSGroups)
                 {
                     var articles =
-                        await articleRepository.GetAllArticleMCodeSCode(sGroup.M_groupcode + sGroup.S_groupcode,
+                        await _articleRepository.GetAllArticleMCodeSCode(sGroup.M_groupcode + sGroup.S_groupcode,
                             cancellationToken);
                     if (!articles.Any()) continue;
-                    var category = await categoryRepository.AddAsync(new Category
+                    var category = await _categoryRepository.AddAsync(new Category
                     {
                         Name = sGroup.S_groupname,
                         ParentId = parentCategoryCode.Id,
@@ -1064,7 +1064,7 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                                 CurrencyId = 1,
                                 MinQuantity = 1,
                                 MaxQuantity = 0,
-                                UnitId = unitRepository.GetId(x.VahedCode, cancellationToken),
+                                UnitId = _unitRepository.GetId(x.VahedCode, cancellationToken),
                                 ArticleCode = x.A_Code,
                                 ArticleCodeCustomer = x.A_Code_C,
                                 Exist = x.Exist ?? 0,
@@ -1083,7 +1083,8 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                     });
                     try
                     {
-                        await productRepository.AddRangeAsync(products, cancellationToken);
+                        _productRepository.AddRange(products);
+                        await unitOfWork.SaveAsync(cancellationToken);
                     }
                     catch (Exception e)
                     {
@@ -1142,10 +1143,10 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                         countFilled = 0;
                         while (countFilled < count)
                         {
-                            products = await productRepository.TopNew(count, start, resultCount[0],
+                            products = await _productRepository.TopNew(count, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                                products = await articleRepository.AddPriceAndExistFromHolooList(products,
+                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
                                     isWithoutBill, true,
                                     cancellationToken);
                             countFilled = selectedProducts.Count(x =>
@@ -1163,10 +1164,10 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                         countFilled = 0;
                         while (countFilled < count)
                         {
-                            products = await productRepository.TopPrices(count * 2, start, resultCount[0],
+                            products = await _productRepository.TopPrices(count * 2, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                                products = await articleRepository.AddPriceAndExistFromHolooList(products,
+                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
                                     isWithoutBill, true,
                                     cancellationToken);
                             countFilled = selectedProducts.Count(x =>
@@ -1197,10 +1198,10 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                         countFilled = 0;
                         while (countFilled < count)
                         {
-                            products = await productRepository.TopStars(count * 2, start, resultCount[0],
+                            products = await _productRepository.TopStars(count * 2, start, resultCount[0],
                                 cancellationToken);
                             if (products.Any(x => x.Prices.Any(p => p.ArticleCode != null)))
-                                products = await articleRepository.AddPriceAndExistFromHolooList(products,
+                                products = await _articleRepository.AddPriceAndExistFromHolooList(products,
                                     isWithoutBill, true,
                                     cancellationToken);
 
@@ -1220,9 +1221,9 @@ public class ProductsController(IProductRepository productRepository, IHolooArti
                 foreach (var item in selectedProducts)
                 {
                     var price = item.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague);
-                    var wishlists = await wishListRepository.Where(x => x.UserId == userid && x.PriceId == price.Id,
+                    var wishList = await _wishListRepository.Where(x => x.UserId == userid && x.PriceId == price.Id,
                         cancellationToken);
-                    item.FirstPriceWichlist = wishlists.Any();
+                    item.FirstPriceWichlist = wishList.Any();
                 }
 
             return Ok(new ApiResult

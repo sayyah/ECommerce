@@ -1,41 +1,45 @@
-﻿using ECommerce.Domain.Entities;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
+using FluentAssertions;
 using Xunit;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "Update: Null input")]
-    public void Update_NullInput_ThrowsException()
+    [Fact]
+    public async void Update_NullInput_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.Update(null!);
+        async Task Action()
+        {
+            _productRepository.Update(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Update: Update product")]
-    public void Update_UpdateEntity_EntityChanges()
+    [Fact]
+    public async void Update_UpdateEntity_EntityChanges()
     {
         // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
-        DbContext.Products.AddRange(expected.Values);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
+        var products = Fixture.CreateMany<Product>(2).ToList();
+        DbContext.Products.AddRange(products);
+        await DbContext.SaveChangesAsync(CancellationToken);
 
-        Product productToUpdate = expected["test_2"];
-        Product expectedProduct = DbContext.Products.Single(p => p.Id == productToUpdate.Id)!;
+        Product expectedProduct = products.ElementAt(1);
         expectedProduct.Url = Guid.NewGuid().ToString();
         expectedProduct.Name = Guid.NewGuid().ToString();
         expectedProduct.MinOrder = Random.Shared.Next();
 
         // Act
         _productRepository.Update(expectedProduct);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Products.Single(p => p.Id == expectedProduct.Id);
 
         // Assert
-        Product? actual = DbContext.Products.Single(p => p.Id == productToUpdate.Id);
-        Assert.Equivalent(expectedProduct, actual);
+        actual.Should().BeEquivalentTo(expectedProduct);
     }
 }

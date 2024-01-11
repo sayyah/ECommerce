@@ -21,18 +21,20 @@ public class CreateModel(ISlideShowService slideShowService, IImageService image
 
     public async Task OnGet(string search)
     {
+        await Initial(search);
+    }
+
+    private async Task Initial(string search)
+    {
         var result = await productService.Search(search, 1, 30);
         if (result.Code == ServiceCode.Success)
         {
-            Message = result.Message;
-            Code = result.Code.ToString();
             Products = result;
         }
 
         var resultCategory = await categoryService.GetParents();
         Categories = resultCategory.ReturnData;
     }
-
     public async Task<IActionResult> OnPost(int selectItem)
     {
         if (selectItem == 1)
@@ -43,6 +45,7 @@ public class CreateModel(ISlideShowService slideShowService, IImageService image
         {
             Message = "لطفا عکس را انتخاب کنید";
             Code = ServiceCode.Error.ToString();
+            await Initial(string.Empty);
             return Page();
         }
 
@@ -51,7 +54,7 @@ public class CreateModel(ISlideShowService slideShowService, IImageService image
         if (fileName == null)
         {
             ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
-            await Initial();
+            await Initial(string.Empty);
             return Page();
         }
 
@@ -70,16 +73,9 @@ public class CreateModel(ISlideShowService slideShowService, IImageService image
             ModelState.AddModelError("", result.Message);
         }
 
-        await Initial();
+        await Initial(string.Empty);
 
         return Page();
-    }
-
-    private async Task Initial()
-    {
-        Products = await productService.Search("", 1, 30);
-        var resultCategory = await categoryService.GetParents();
-        Categories = resultCategory.ReturnData;
     }
 
     public async Task<JsonResult> OnGetReturnProducts(string search = "")

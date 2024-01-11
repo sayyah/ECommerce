@@ -2,11 +2,10 @@
 
 namespace ECommerce.Infrastructure.Repository;
 
-public class HolooArticleRepository(HolooDbContext context,
-        IHolooABailRepository aBailRepository)
+public class HolooArticleRepository(HolooDbContext context)
     : HolooRepository<HolooArticle>(context), IHolooArticleRepository
 {
-    public async Task SyncHolooWebId(string aCodeC, int productId, CancellationToken cancellationToken)
+    public void SyncHolooWebId(string aCodeC, int productId)
     {
         var articles = context.ARTICLE.Where(x => x.A_Code_C == aCodeC);
         foreach (var article in articles)
@@ -14,8 +13,6 @@ public class HolooArticleRepository(HolooDbContext context,
             article.WebId = productId;
             context.ARTICLE.Update(article);
         }
-
-        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<(decimal price, double? exist, List<string> a_Code)> GetHolooPrice(string aCodeC, Price.HolooSellNumber sellPrice)
@@ -99,7 +96,7 @@ public class HolooArticleRepository(HolooDbContext context,
         return newProducts;
     }
 
-    public async Task<IEnumerable<HolooArticle>> GetAllArticleMCodeSCode(string code,
+    public async Task<List<HolooArticle>> GetAllArticleMCodeSCode(string code,
         CancellationToken cancellationToken, short sendToSite = 0)
     {
         return await context.ARTICLE.Where(x => x.A_Code.StartsWith(code)
@@ -107,7 +104,7 @@ public class HolooArticleRepository(HolooDbContext context,
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<HolooArticle>> GetAllMCode(string mCode, CancellationToken cancellationToken,
+    public async Task<List<HolooArticle>> GetAllMCode(string mCode, CancellationToken cancellationToken,
         short sendToSite = 0)
     {
         return await context.ARTICLE
@@ -115,7 +112,7 @@ public class HolooArticleRepository(HolooDbContext context,
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<HolooArticle>> GetHolooArticles(List<string> aCodeCs,
+    public async Task<List<HolooArticle>> GetHolooArticles(List<string> aCodeCs,
         CancellationToken cancellationToken)
     {
         var temp = context.ARTICLE.Where(
@@ -126,7 +123,7 @@ public class HolooArticleRepository(HolooDbContext context,
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<HolooArticle>> GetHolooArticlesDefaultWarehouse(List<string> aCodeCs,
+    public async Task<List<HolooArticle>> GetHolooArticlesDefaultWarehouse(List<string> aCodeCs,
         CancellationToken cancellationToken)
     {
         var temp = context.ARTICLE.Where(
@@ -138,7 +135,7 @@ public class HolooArticleRepository(HolooDbContext context,
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<HolooArticle>> GetHolooArticlesOthereWarehouse(List<string> aCodeCs,
+    public async Task<List<HolooArticle>> GetHolooArticlesOtherWarehouse(List<string> aCodeCs,
         CancellationToken cancellationToken)
     {
         var temp = context.ARTICLE.Where(
@@ -219,7 +216,7 @@ public class HolooArticleRepository(HolooDbContext context,
                         //int userCode = Convert.ToInt32(_configuration.GetValue<string>("UserCode"));
                         var userCode = 15;
                         foreach (var item in a_code)
-                            soldExist += aBailRepository.GetWithACode(userCode, item, cancellationToken);
+                            soldExist += GetWithACode(userCode, item, cancellationToken);
                     }
 
                     productPrices.Exist = article.Sum(x => x.Exist) - soldExist ?? 0;
@@ -233,5 +230,12 @@ public class HolooArticleRepository(HolooDbContext context,
             }
 
         return tempPriceList;
+    }
+
+    private double GetWithACode(int userCode, string aCode, CancellationToken cancellationToken)
+    {
+        return (from d in context.ABAILPRE.Where(c => c.A_Code == aCode)
+            join dr in context.FBAILPRE.Where(c => c.UserCode == userCode) on d.Fac_Code equals dr.Fac_Code
+            select d.First_Article).Sum();
     }
 }

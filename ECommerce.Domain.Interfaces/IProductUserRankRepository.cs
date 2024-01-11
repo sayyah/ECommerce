@@ -2,7 +2,7 @@
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IProductUserRankRepository : IAsyncRepository<ProductUserRank>
+public interface IProductUserRankRepository : IRepositoryBase<ProductUserRank>
 {
     Task<ProductUserRank?> GetByProductUser(int productId, int userId, CancellationToken cancellationToken);
 

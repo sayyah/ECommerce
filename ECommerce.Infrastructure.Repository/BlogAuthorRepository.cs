@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class BlogAuthorRepository(SunflowerECommerceDbContext context) : AsyncRepository<BlogAuthor>(context),
+public class BlogAuthorRepository(SunflowerECommerceDbContext context) : RepositoryBase<BlogAuthor>(context),
     IBlogAuthorRepository
 {
     public async Task<BlogAuthor> GetByName(string name, CancellationToken cancellationToken)

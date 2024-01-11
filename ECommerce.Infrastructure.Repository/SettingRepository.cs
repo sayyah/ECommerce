@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class SettingRepository(SunflowerECommerceDbContext context) : AsyncRepository<Setting>(context),
+public class SettingRepository(SunflowerECommerceDbContext context) : RepositoryBase<Setting>(context),
     ISettingRepository
 {
     public string IsDollar()

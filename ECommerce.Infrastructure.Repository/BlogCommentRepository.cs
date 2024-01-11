@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class BlogCommentRepository(SunflowerECommerceDbContext context) : AsyncRepository<BlogComment>(context),
+public class BlogCommentRepository(SunflowerECommerceDbContext context) : RepositoryBase<BlogComment>(context),
     IBlogCommentRepository
 {
     public async Task<PagedList<BlogComment>> Search(PaginationParameters paginationParameters,
@@ -14,7 +14,7 @@ public class BlogCommentRepository(SunflowerECommerceDbContext context) : AsyncR
             paginationParameters.PageSize);
     }
 
-    public async Task<PagedList<BlogComment>> GetAllAccesptedComments(PaginationParameters paginationParameters,
+    public async Task<PagedList<BlogComment>> GetAllAcceptedComments(PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
     {
         return PagedList<BlogComment>.ToPagedList(

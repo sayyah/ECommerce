@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class CategoryRepository(SunflowerECommerceDbContext context) : AsyncRepository<Category>(context),
+public class CategoryRepository(SunflowerECommerceDbContext context) : RepositoryBase<Category>(context),
     ICategoryRepository
 {
     public async Task<Category> GetByName(string name, CancellationToken cancellationToken, int? parentId = null)
@@ -10,17 +10,16 @@ public class CategoryRepository(SunflowerECommerceDbContext context) : AsyncRepo
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<Category>> Search(string searchKeyword, CancellationToken cancellationToken)
+    public async Task<List<Category>?> Search(string searchKeyword, CancellationToken cancellationToken)
     {
         return await context.Categories
             .Where(x => x.Name.Contains(searchKeyword) && x.IsActive)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> AddAll(IEnumerable<Category> categories, CancellationToken cancellationToken)
+    public async Task AddAll(IEnumerable<Category> categories, CancellationToken cancellationToken)
     {
         await context.Categories.AddRangeAsync(categories, cancellationToken);
-        return await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<int>> GetIdsByUrl(string categoryUrl, CancellationToken cancellationToken)
@@ -63,7 +62,7 @@ public class CategoryRepository(SunflowerECommerceDbContext context) : AsyncRepo
         return categoryViewModel;
     }
 
-    public async Task<List<CategoryParentViewModel>> Parents(int productId, CancellationToken cancellationToken)
+    public async Task<List<CategoryParentViewModel>?> Parents(int productId, CancellationToken cancellationToken)
     {
         var productCategory = new List<int>();
         if (productId > 0)

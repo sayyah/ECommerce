@@ -2,9 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class TagsController(ITagRepository tagRepository, ILogger<TagsController> logger)
-    : ControllerBase
+public class TagsController(IUnitOfWork unitOfWork, ILogger<TagsController> logger) : ControllerBase
 {
+    private readonly ITagRepository _tagRepository = unitOfWork.GetRepository<TagRepository, Tag>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +13,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await tagRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _tagRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -46,7 +47,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await tagRepository.GetAll(cancellationToken)
+                ReturnData = await _tagRepository.GetAllAsync(cancellationToken)
             });
         }
         catch (Exception e)
@@ -61,7 +62,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
     {
         try
         {
-            var tagList = await tagRepository.GetByProductId(id, cancellationToken);
+            var tagList = await _tagRepository.GetByProductId(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -80,7 +81,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
     {
         try
         {
-            var result = await tagRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _tagRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -102,7 +103,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Tag tag, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Tag? tag, CancellationToken cancellationToken)
     {
         try
         {
@@ -113,7 +114,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
                 });
             tag.TagText = tag.TagText.Trim();
 
-            var repetitiveTag = await tagRepository.GetByTagText(tag.TagText, cancellationToken);
+            var repetitiveTag = await _tagRepository.GetByTagText(tag.TagText, cancellationToken);
             if (repetitiveTag != null)
                 return Ok(new ApiResult
                 {
@@ -121,11 +122,12 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
                     Messages = new List<string> { "تگ تکراری است" }
                 });
 
+            _tagRepository.Add(tag);
+            await unitOfWork.SaveAsync(cancellationToken);
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await tagRepository.AddAsync(tag, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -141,15 +143,17 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
     {
         try
         {
-            var repetitive = await tagRepository.GetByTagText(tag.TagText, cancellationToken);
+            var repetitive = await _tagRepository.GetByTagText(tag.TagText, cancellationToken);
             if (repetitive != null && repetitive.Id != tag.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "تگ تکراری است" }
                 });
-            if (repetitive != null) tagRepository.Detach(repetitive);
-            await tagRepository.UpdateAsync(tag, cancellationToken);
+            if (repetitive != null) _tagRepository.Detach(repetitive);
+             _tagRepository.Update(tag);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -168,7 +172,9 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
     {
         try
         {
-            await tagRepository.DeleteAsync(id, cancellationToken);
+            await _tagRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -189,7 +195,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await tagRepository.GetAllProductTags(cancellationToken)
+                ReturnData = await _tagRepository.GetAllProductTags(cancellationToken)
             });
         }
         catch (Exception e)
@@ -207,7 +213,7 @@ public class TagsController(ITagRepository tagRepository, ILogger<TagsController
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await tagRepository.GetAllBlogTags(cancellationToken)
+                ReturnData = await _tagRepository.GetAllBlogTags(cancellationToken)
             });
         }
         catch (Exception e)

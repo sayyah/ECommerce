@@ -1,11 +1,14 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepository holooUnitRepository,
-        ILogger<UnitsController> logger)
-    : ControllerBase
+public class UnitsController(IUnitOfWork unitOfWork, ILogger<UnitsController> logger) : ControllerBase
 {
+    private readonly IHolooUnitRepository _holooUnitRepository = unitOfWork.GetHolooRepository<HolooUnitRepository, HolooUnit>();
+    private readonly IUnitRepository _unitRepository = unitOfWork.GetRepository<UnitRepository, Unit>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -13,7 +16,7 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await unitRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _unitRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -46,7 +49,7 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await holooUnitRepository.GetAll(cancellationToken)
+                ReturnData = await _holooUnitRepository.GetAll(cancellationToken)
             });
         }
         catch (Exception e)
@@ -61,7 +64,7 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
     {
         try
         {
-            var result = await unitRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _unitRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -83,7 +86,7 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Unit unit, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Unit? unit, CancellationToken cancellationToken)
     {
         try
         {
@@ -94,7 +97,7 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
                 });
             unit.Name = unit.Name.Trim();
 
-            var repetitiveUnit = await unitRepository.GetByName(unit.Name, cancellationToken);
+            var repetitiveUnit = await _unitRepository.GetByName(unit.Name, cancellationToken);
             if (repetitiveUnit != null)
                 return Ok(new ApiResult
                 {
@@ -102,10 +105,12 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
                     Messages = new List<string> { "نام واحد تکراری است" }
                 });
 
+            _unitRepository.Add(unit);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await unitRepository.AddAsync(unit, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -127,15 +132,17 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
                     Code = ResultCode.BadRequest,
                     Messages = new List<string> { "واحد پیشفرض قابل ویرایش نیست" }
                 });
-            var repetitive = await unitRepository.GetByName(unit.Name, cancellationToken);
+            var repetitive = await _unitRepository.GetByName(unit.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != unit.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام واحد تکراری است" }
                 });
-            if (repetitive != null) unitRepository.Detach(repetitive);
-            await unitRepository.UpdateAsync(unit, cancellationToken);
+            if (repetitive != null) _unitRepository.Detach(repetitive);
+            _unitRepository.Update(unit);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -160,7 +167,9 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
                     Code = ResultCode.BadRequest,
                     Messages = new List<string> { "واحد پیشفرض قابل حذف نیست" }
                 });
-            await unitRepository.DeleteAsync(id, cancellationToken);
+            await _unitRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -179,7 +188,7 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
     {
         try
         {
-            var units = (await holooUnitRepository.GetAll(cancellationToken))!.Select(x => new Unit
+            var units = (await _holooUnitRepository.GetAll(cancellationToken)).Select(x => new Unit
             {
                 Name = x.Unit_Name,
                 Few = x.Unit_Few,
@@ -190,7 +199,8 @@ public class UnitsController(IUnitRepository unitRepository, IHolooUnitRepositor
 
             try
             {
-                await unitRepository.AddRangeAsync(units, cancellationToken);
+                _unitRepository.AddRange(units);
+                await unitOfWork.SaveAsync(cancellationToken);
             }
             catch (Exception e)
             {

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class MessageRepository(SunflowerECommerceDbContext context) : AsyncRepository<Message>(context),
+public class MessageRepository(SunflowerECommerceDbContext context) : RepositoryBase<Message>(context),
     IMessageRepository
 {
     public async Task<PagedList<Message>> Search(PaginationParameters paginationParameters,
