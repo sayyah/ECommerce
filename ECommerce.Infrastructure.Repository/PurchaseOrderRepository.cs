@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : AsyncRepository<PurchaseOrder>(context),
+public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : RepositoryBase<PurchaseOrder>(context),
     IPurchaseOrderRepository
 {
     public async Task<PurchaseOrder> GetByOrderIdWithInclude(long orderId, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ public class PurchaseOrderRepository(SunflowerECommerceDbContext context) : Asyn
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<PurchaseOrderViewModel>> GetProductListByUserId(int userId,
+    public async Task<List<PurchaseOrderViewModel>?> GetProductListByUserId(int userId,
         CancellationToken cancellationToken)
     {
         try

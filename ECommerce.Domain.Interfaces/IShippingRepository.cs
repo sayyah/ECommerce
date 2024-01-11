@@ -2,6 +2,6 @@
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IShippingRepository : IAsyncRepository<Shipping>
+public interface IShippingRepository : IRepositoryBase<Shipping>
 {
 }

@@ -2,9 +2,11 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SuppliersController(ISupplierRepository discountRepository, ILogger<SuppliersController> logger)
+public class SuppliersController(IUnitOfWork unitOfWork, ILogger<SuppliersController> logger)
     : ControllerBase
 {
+    private readonly ISupplierRepository _supplierRepository = unitOfWork.GetRepository<SupplierRepository, Supplier>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +14,7 @@ public class SuppliersController(ISupplierRepository discountRepository, ILogger
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await discountRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _supplierRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -42,7 +44,7 @@ public class SuppliersController(ISupplierRepository discountRepository, ILogger
     {
         try
         {
-            var result = await discountRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _supplierRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -64,7 +66,7 @@ public class SuppliersController(ISupplierRepository discountRepository, ILogger
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Supplier supplier, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Supplier? supplier, CancellationToken cancellationToken)
     {
         try
         {
@@ -75,7 +77,7 @@ public class SuppliersController(ISupplierRepository discountRepository, ILogger
                 });
             supplier.Name = supplier.Name.Trim();
 
-            var repetitiveSupplier = await discountRepository.GetByName(supplier.Name, cancellationToken);
+            var repetitiveSupplier = await _supplierRepository.GetByName(supplier.Name, cancellationToken);
             if (repetitiveSupplier != null)
                 return Ok(new ApiResult
                 {
@@ -83,10 +85,12 @@ public class SuppliersController(ISupplierRepository discountRepository, ILogger
                     Messages = new List<string> { "نام تامین کننده تکراری است" }
                 });
 
+            _supplierRepository.Add(supplier);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await discountRepository.AddAsync(supplier, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -102,15 +106,16 @@ public class SuppliersController(ISupplierRepository discountRepository, ILogger
     {
         try
         {
-            var repetitive = await discountRepository.GetByName(supplier.Name, cancellationToken);
+            var repetitive = await _supplierRepository.GetByName(supplier.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != supplier.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام تامین کننده تکراری است" }
                 });
-            if (repetitive != null) discountRepository.Detach(repetitive);
-            await discountRepository.UpdateAsync(supplier, cancellationToken);
+            if (repetitive != null) _supplierRepository.Detach(repetitive);
+             _supplierRepository.Update(supplier);
+             await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -129,7 +134,9 @@ public class SuppliersController(ISupplierRepository discountRepository, ILogger
     {
         try
         {
-            await discountRepository.DeleteAsync(id, cancellationToken);
+            await _supplierRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

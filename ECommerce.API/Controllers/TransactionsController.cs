@@ -2,17 +2,19 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class TransactionsController(ILogger<PurchaseOrdersController> logger,
-        ITransactionRepository transactionRepository)
+public class TransactionsController(IUnitOfWork unitOfWork,
+        ILogger<PurchaseOrdersController> logger)
     : Controller
 {
+    private readonly ITransactionRepository _transactionRepository = unitOfWork.GetRepository<TransactionRepository, Transaction>();
+
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
     public async Task<ActionResult<PurchaseOrder>> GetById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await transactionRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _transactionRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -34,30 +36,37 @@ public class TransactionsController(ILogger<PurchaseOrdersController> logger,
 
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<IActionResult> Get([FromQuery] TransactionFiltreViewModel transactionFiltreViewModel,
+    public async Task<IActionResult> Get([FromQuery] transactionFilterViewModel? transactionFilterViewModel,
         CancellationToken cancellationToken)
     {
         try
         {
-            if (string.IsNullOrEmpty(transactionFiltreViewModel.PaginationParameters.Search))
-                transactionFiltreViewModel.PaginationParameters.Search = "";
-            var entity = await transactionRepository.Search(transactionFiltreViewModel, cancellationToken);
-            var paginationDetails = new PaginationDetails
+            if (transactionFilterViewModel is { PaginationParameters: not null } &&
+                string.IsNullOrEmpty(transactionFilterViewModel.PaginationParameters.Search))
             {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = transactionFiltreViewModel.PaginationParameters.Search
-            };
+                transactionFilterViewModel.PaginationParameters.Search = "";
+                var entity = await _transactionRepository.Search(transactionFilterViewModel, cancellationToken);
+                var paginationDetails = new PaginationDetails
+                {
+                    TotalCount = entity.TotalCount,
+                    PageSize = entity.PageSize,
+                    CurrentPage = entity.CurrentPage,
+                    TotalPages = entity.TotalPages,
+                    HasNext = entity.HasNext,
+                    HasPrevious = entity.HasPrevious,
+                    Search = transactionFilterViewModel.PaginationParameters.Search
+                };
 
+                return Ok(new ApiResult
+                {
+                    PaginationDetails = paginationDetails,
+                    Code = ResultCode.Success,
+                    ReturnData = entity
+                });
+            }
             return Ok(new ApiResult
             {
-                PaginationDetails = paginationDetails,
-                Code = ResultCode.Success,
-                ReturnData = entity
+                Code = ResultCode.NotFound
             });
         }
         catch (Exception e)
@@ -76,7 +85,7 @@ public class TransactionsController(ILogger<PurchaseOrdersController> logger,
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await transactionRepository.GetAll(cancellationToken)
+                ReturnData = await _transactionRepository.GetAllAsync(cancellationToken)
             });
         }
         catch (Exception e)

@@ -2,10 +2,12 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductCommentsController(IProductCommentRepository productCommentRepository,
-        ILogger<ProductCommentsController> logger, IImageRepository imageRepository)
+public class ProductCommentsController(IUnitOfWork unitOfWork, ILogger<BlogAuthorsController> logger)
     : ControllerBase
 {
+    private readonly IProductCommentRepository _productCommentRepository = unitOfWork.GetRepository<ProductCommentRepository, ProductComment>();
+    private readonly IImageRepository _imageRepository = unitOfWork.GetRepository<ImageRepository, Image>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -13,7 +15,7 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await productCommentRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _productCommentRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -43,19 +45,21 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
     {
         try
         {
-            var result = productCommentRepository.GetByIdWithInclude("Answer,Product", id);
-            result.Product.Images = await imageRepository.GetByProductId(result.Product.Id, cancellationToken);
-            if (result.Answer == null) result.Answer = new ProductComment();
-            if (result == null)
+            var result = _productCommentRepository.GetByIdWithInclude("Answer,Product", id);
+            if (result is { Product: not null })
+            {
+                    result.Product.Images = await _imageRepository.GetByProductId(result.Product.Id, cancellationToken);
+                result.Answer ??= new ProductComment();
+               await unitOfWork.SaveAsync(cancellationToken);
                 return Ok(new ApiResult
                 {
-                    Code = ResultCode.NotFound
+                    Code = ResultCode.Success,
+                    ReturnData = result
                 });
-
+            }
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = result
+                Code = ResultCode.NotFound
             });
         }
         catch (Exception e)
@@ -66,7 +70,7 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(ProductComment productComment, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(ProductComment? productComment, CancellationToken cancellationToken)
     {
         try
         {
@@ -81,10 +85,11 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
             productComment.IsAnswered = false;
             productComment.DateTime = DateTime.Now;
 
+            _productCommentRepository.Add(productComment);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await productCommentRepository.AddAsync(productComment, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -100,14 +105,17 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
     {
         try
         {
-            ProductComment? _commentAnswer;
+            ProductComment? commentAnswer;
             if (productComment.AnswerId != null)
             {
-                _commentAnswer =
-                    await productCommentRepository.GetByIdAsync(cancellationToken, productComment.AnswerId);
-                _commentAnswer.Text = productComment.Answer.Text;
-                _commentAnswer.DateTime = DateTime.Now;
-                await productCommentRepository.UpdateAsync(_commentAnswer, cancellationToken);
+                commentAnswer =
+                    await _productCommentRepository.GetByIdAsync(cancellationToken, productComment.AnswerId);
+                if (commentAnswer != null)
+                {
+                    commentAnswer.Text = productComment.Answer!.Text;
+                    commentAnswer.DateTime = DateTime.Now;
+                    _productCommentRepository.Update(commentAnswer);
+                }
             }
             else
             {
@@ -118,16 +126,14 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
                     productComment.Answer.IsRead = false;
                     productComment.Answer.IsAnswered = false;
                     productComment.Answer.DateTime = DateTime.Now;
-                    _commentAnswer = await productCommentRepository.AddAsync(productComment.Answer, cancellationToken);
-                    if (_commentAnswer != null)
-                    {
-                        productComment.Answer = _commentAnswer;
-                        productComment.AnswerId = _commentAnswer.Id;
-                    }
+                    commentAnswer = await _productCommentRepository.AddAsync(productComment.Answer, cancellationToken);
+                    productComment.Answer = commentAnswer;
+                    productComment.AnswerId = commentAnswer.Id;
                 }
             }
 
-            await productCommentRepository.UpdateAsync(productComment, cancellationToken);
+            _productCommentRepository.Update(productComment);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -146,7 +152,8 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
     {
         try
         {
-            await productCommentRepository.DeleteAsync(id, cancellationToken);
+            await _productCommentRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -160,14 +167,14 @@ public class ProductCommentsController(IProductCommentRepository productCommentR
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAccesptedComments([FromQuery] PaginationParameters paginationParameters,
+    public async Task<IActionResult> GetAllAcceptedComments([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
             var entity =
-                await productCommentRepository.GetAllAccesptedComments(paginationParameters, cancellationToken);
+                await _productCommentRepository.GetAllAcceptedComments(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

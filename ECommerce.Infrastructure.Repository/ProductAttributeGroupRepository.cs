@@ -1,10 +1,10 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
 public class ProductAttributeGroupRepository
-    (SunflowerECommerceDbContext context) : AsyncRepository<ProductAttributeGroup>(context),
+    (SunflowerECommerceDbContext context) : RepositoryBase<ProductAttributeGroup>(context),
         IProductAttributeGroupRepository
 {
-    public async Task<ProductAttributeGroup> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<ProductAttributeGroup?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await context.ProductAttributeGroups.Where(x => x.Name == name)
             .FirstOrDefaultAsync(cancellationToken);
@@ -17,7 +17,7 @@ public class ProductAttributeGroupRepository
         ;
     }
 
-    public async Task<IEnumerable<ProductAttributeGroup>> GetAllAttributeWithProductId(int productId,
+    public async Task<List<ProductAttributeGroup>?> GetAllAttributeWithProductId(int productId,
         CancellationToken cancellationToken)
     {
         var group = await context.ProductAttributeGroups
@@ -41,8 +41,7 @@ public class ProductAttributeGroupRepository
         return group;
     }
 
-    public async Task<List<ProductAttributeGroup>> AddWithAttributeValue(
-        List<ProductAttributeGroup> productAttributeGroups, int productId, CancellationToken cancellationToken)
+    public List<ProductAttributeGroup> AddWithAttributeValue(List<ProductAttributeGroup> productAttributeGroups, int productId)
     {
         foreach (var productAttributeGroup in productAttributeGroups)
             foreach (var productAttribute in productAttributeGroup.Attribute)
@@ -64,7 +63,6 @@ public class ProductAttributeGroupRepository
                         });
                 }
 
-        await context.SaveChangesAsync(cancellationToken);
         return productAttributeGroups;
     }
 

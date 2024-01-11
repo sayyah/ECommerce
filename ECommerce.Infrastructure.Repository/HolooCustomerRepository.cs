@@ -23,9 +23,4 @@ public class HolooCustomerRepository(HolooDbContext context) : HolooRepository<H
     {
         return await context.Customer.FirstAsync(x => x.C_Code == customerCode);
     }
-
-    public async Task SaveAddedCustomer(CancellationToken cancellationToken)
-    {
-        await context.SaveChangesAsync(cancellationToken);
-    }
 }

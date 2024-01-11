@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
 public class PurchaseOrderDetailRepository
-    (SunflowerECommerceDbContext context) : AsyncRepository<PurchaseOrderDetail>(context),
+    (SunflowerECommerceDbContext context) : RepositoryBase<PurchaseOrderDetail>(context),
         IPurchaseOrderDetailRepository
 {
     public async Task<List<PurchaseOrderDetail>> GetByPurchaseOrderId(int id, CancellationToken cancellationToken)
@@ -24,6 +24,6 @@ public class PurchaseOrderDetailRepository
             purchaseOrders.Add(purchaseOrderDetail);
         }
 
-        await UpdateRangeAsync(purchaseOrders, cancellationToken);
+        UpdateRange(purchaseOrders);
     }
 }

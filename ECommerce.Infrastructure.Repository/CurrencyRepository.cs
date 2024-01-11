@@ -1,9 +1,9 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class CurrencyRepository(SunflowerECommerceDbContext context) : AsyncRepository<Currency>(context),
+public class CurrencyRepository(SunflowerECommerceDbContext context) : RepositoryBase<Currency>(context),
     ICurrencyRepository
 {
-    public async Task<Currency> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Currency?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await context.Currencies.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

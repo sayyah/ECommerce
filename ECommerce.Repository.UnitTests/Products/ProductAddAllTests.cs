@@ -1,55 +1,91 @@
-﻿using ECommerce.Domain.Entities;
+﻿using FluentAssertions;
+using ECommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using AutoFixture;
 
 namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "AddAll: Null value for required Fields")]
-    public async Task AddAll_RequiredFields_ThrowsException()
+    [Fact]
+    public async void AddAll_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, Product> expected = TestSets["required_fields"];
+        var product = Fixture.Create<Product>();
+        product.Name = null!;
+        var products = new List<Product> { product };
 
         // Act
-        Task<int> actual() => _productRepository.AddAll(expected.Values, CancellationToken);
+        async Task Action()
+        {
+            await _productRepository.AddAll(products);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        await Assert.ThrowsAsync<DbUpdateException>(actual);
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "AddAll: Null product")]
-    public async Task AddAll_NullProduct_ThrowsException()
+    [Fact]
+    public async void AddAll_RequiredUrlField_ThrowsException()
+    {
+        // Arrange
+        var product = Fixture.Create<Product>();
+        product.Url = null!;
+        var products = new List<Product> { product };
+
+        // Act
+        async Task Action()
+        {
+            await _productRepository.AddAll(products);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
+
+        // Assert
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
+    }
+
+    [Fact]
+    public async void AddAll_NullProduct_ThrowsException()
     {
         // Act
-        Task<int> actual() => _productRepository.AddAll([ null! ], CancellationToken);
+        async Task Action()
+        {
+            await _productRepository.AddAll(new List<Product>() { null! });
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
     }
 
-    [Fact(DisplayName = "AddAll: Null Argument")]
-    public async Task AddAll_NullArgument_ThrowsException()
+    [Fact]
+    public async void AddAll_NullArgument_ThrowsException()
     {
         // Act
-        Task<int> actual() => _productRepository.AddAll(null!, CancellationToken);
+        async Task Action()
+        {
+            await _productRepository.AddAll(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
     }
 
-    [Fact(DisplayName = "AddAll: Add products all together")]
+    [Fact]
     public async void AddAll_AddEntities_ReturnsAddedEntitiesCount()
     {
         // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
+        var expected = Fixture.CreateMany<Product>(2).ToList();
 
         // Act
-        await _productRepository.AddAll(expected.Values, CancellationToken);
+        await _productRepository.AddAll(expected);
+        await UnitOfWork.SaveAsync(CancellationToken);
+        var actual = DbContext.Products.ToList();
 
         // Assert
-        Assert.Equal(expected.Count, DbContext.Products.Count());
+        actual.Should().BeEquivalentTo(expected);
     }
 }

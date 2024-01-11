@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooSarfasl
+public class HolooSarfasl : BaseHolooEntity
 {
     public string Col_Code { get; set; }
     public string Moien_Code { get; set; }

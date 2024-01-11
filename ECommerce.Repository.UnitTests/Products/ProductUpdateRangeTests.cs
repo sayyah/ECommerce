@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Entities;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 
@@ -6,53 +7,53 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "UpdateRange: Null Product")]
-    public void UpdateRange_NullProduct_ThrowsException()
+    [Fact]
+    public async void UpdateRange_NullProduct_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.UpdateRange([ null! ]);
+        async Task Action()
+        {
+            _productRepository.UpdateRange(new List<Product> { null! });
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Action);
     }
 
-    [Fact(DisplayName = "UpdateRange: Null Argument")]
-    public void UpdateRange_NullArgument_ThrowsException()
+    [Fact]
+    public async void UpdateRange_NullArgument_ThrowsException()
     {
         // Act
-        void actual() => _productRepository.UpdateRange(null!);
+        async Task Action()
+        {
+            _productRepository.UpdateRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "UpdateRange: Update products")]
-    public void UpdateRange_UpdateEntities_EntitiesChange()
+    [Fact]
+    public async void UpdateRange_UpdateEntities_EntitiesChange()
     {
         // Arrange
-        AddCategories();
-        Dictionary<string, Product> expected = TestSets["unique_url"];
-        DbContext.Products.AddRange(expected.Values);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
-
-        foreach (KeyValuePair<string, Product> entry in expected)
+        var expected = Fixture.CreateMany<Product>(2).ToList();
+        DbContext.Products.AddRange(expected);
+        await DbContext.SaveChangesAsync();
+        foreach (var product in expected)
         {
-            expected[entry.Key] = DbContext.Products.Single(p => p.Id == entry.Value.Id)!;
-            expected[entry.Key].Url = Guid.NewGuid().ToString();
-            expected[entry.Key].Name = Guid.NewGuid().ToString();
-            expected[entry.Key].MinOrder = Random.Shared.Next();
+            product.Url = Fixture.Create<string>();
+            product.Name = Fixture.Create<string>();
+            product.MinOrder = Fixture.Create<int>();
         }
 
         // Act
-        _productRepository.UpdateRange(expected.Values);
+        _productRepository.UpdateRange(expected);
+        await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        Dictionary<string, Product?> actual =  [ ];
-        foreach (KeyValuePair<string, Product> entry in expected)
-        {
-            actual.Add(entry.Key, DbContext.Products.Single(p => p.Id == entry.Value.Id)!);
-        }
-        actual.Values.Should().BeEquivalentTo(expected.Values);
+        DbContext.Products.Should().BeEquivalentTo(expected);
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
 public class HolooSndList(int sanad_Code, string col_Code, string moien_Code, string tafzili_Code, double? bed,
-    double? bes, string comment_Line)
+    double? bes, string comment_Line) : BaseHolooEntity
 {
     public int Sanad_Code { get; set; } = sanad_Code;
     public int Index { get; set; }

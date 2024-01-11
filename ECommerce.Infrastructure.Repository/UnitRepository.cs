@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class UnitRepository(SunflowerECommerceDbContext context) : AsyncRepository<Unit>(context), IUnitRepository
+public class UnitRepository(SunflowerECommerceDbContext context) : RepositoryBase<Unit>(context), IUnitRepository
 {
     public async Task<PagedList<Unit>> Search(PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,15 +12,14 @@ public class UnitRepository(SunflowerECommerceDbContext context) : AsyncReposito
             paginationParameters.PageSize);
     }
 
-    public async Task<Unit> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Unit?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await context.Units.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<int> AddAll(IEnumerable<Unit> units, CancellationToken cancellationToken)
+    public void AddAll(IEnumerable<Unit> units)
     {
-        await context.Units.AddRangeAsync(units, cancellationToken);
-        return await context.SaveChangesAsync(cancellationToken);
+        context.Units.AddRange(units);
     }
 
     public int? GetId(int? unitCode, CancellationToken cancellationToken)

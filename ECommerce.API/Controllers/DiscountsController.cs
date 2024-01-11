@@ -1,11 +1,16 @@
-﻿namespace ECommerce.API.Controllers;
+﻿using ECommerce.Domain.Entities.HolooEntity;
+using System.Threading;
+
+namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class DiscountsController(IDiscountRepository discountRepository, ILogger<DiscountsController> logger,
-        IHolooArticleRepository articleRepository)
+public class DiscountsController(IUnitOfWork unitOfWork, ILogger<DiscountsController> logger)
     : ControllerBase
 {
+    private readonly IHolooArticleRepository _articleRepository = unitOfWork.GetHolooRepository<HolooArticleRepository, HolooArticle>();
+    private readonly IDiscountRepository _discountRepository = unitOfWork.GetRepository<DiscountRepository, Discount>();
+
     [HttpGet]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
@@ -14,7 +19,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await discountRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _discountRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -47,7 +52,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
     {
         try
         {
-            var result = await discountRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _discountRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -74,7 +79,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
     {
         try
         {
-            var result = await discountRepository.GetByCode(code, cancellationToken);
+            var result = await _discountRepository.GetByCode(code, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -101,21 +106,22 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
     {
         try
         {
-            var result = await discountRepository.GetLast(cancellationToken);
-            if (result == null)
+            var result = await _discountRepository.GetLast(cancellationToken);
+            if (result == null && result?.Prices == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
                 });
-            foreach (var productPrices in result.Prices)
+
+            foreach (var productPrices in result.Prices!)
                 if (productPrices.SellNumber != null && productPrices.SellNumber != Price.HolooSellNumber.خالی &&
-                    productPrices.ArticleCode != null)
+                    productPrices is { ArticleCode: not null, ArticleCodeCustomer: not null })
                 {
-                    var article = await articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer,
+                    var article = await _articleRepository.GetHolooPrice(productPrices.ArticleCodeCustomer,
                         productPrices.SellNumber!.Value);
 
                     productPrices.Amount = article.price / 10;
-                    productPrices.Exist = (double)article.exist;
+                    productPrices.Exist = article.exist ?? 0;
                 }
 
             return Ok(new ApiResult
@@ -139,7 +145,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
     {
         try
         {
-            var result = await discountRepository.GetWithTime(cancellationToken);
+            var result = await _discountRepository.GetWithTime(cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -162,12 +168,12 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
 
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public ActionResult<bool> ActiveDiscount(int id)
+    public async Task<ActionResult<bool>> ActiveDiscount(int id,CancellationToken cancellationToken)
     {
         try
         {
-            var result = discountRepository.Active(id);
-
+            var result = _discountRepository.Active(id);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -184,7 +190,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Discount discount, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Discount? discount, CancellationToken cancellationToken)
     {
         try
         {
@@ -195,7 +201,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
                 });
             discount.Name = discount.Name.Trim();
 
-            var repetitiveName = await discountRepository.GetByName(discount.Name, cancellationToken);
+            var repetitiveName = await _discountRepository.GetByName(discount.Name, cancellationToken);
             if (repetitiveName != null)
                 return Ok(new ApiResult
                 {
@@ -203,7 +209,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
                     Messages = new List<string> { "نام تخفیف تکراری است" }
                 });
 
-            var repetitiveCode = await discountRepository.GetByCode(discount.Code, cancellationToken);
+            var repetitiveCode = await _discountRepository.GetByCode(discount.Code, cancellationToken);
             if (repetitiveCode != null)
                 return Ok(new ApiResult
                 {
@@ -211,10 +217,12 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
                     Messages = new List<string> { "کد تخفیف تکراری است" }
                 });
 
+            _discountRepository.Add(discount);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await discountRepository.AddAsync(discount, cancellationToken)
             });
         }
         catch (Exception e)
@@ -231,9 +239,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
     {
         try
         {
-            await discountRepository.UpdateAsync(discount, cancellationToken);
-
-            var repetitiveCode = await discountRepository.GetByCode(discount.Code, cancellationToken);
+            var repetitiveCode = await _discountRepository.GetByCode(discount.Code, cancellationToken);
             if (repetitiveCode != null && repetitiveCode.Id != discount.Id)
                 return Ok(new ApiResult
                 {
@@ -241,13 +247,17 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
                     Messages = new List<string> { "کد تخفیف تکراری است" }
                 });
 
-            var repetitiveName = await discountRepository.GetByName(discount.Name, cancellationToken);
-            if (repetitiveName != null && repetitiveCode.Id != discount.Id)
+            var repetitiveName = await _discountRepository.GetByName(discount.Name, cancellationToken);
+            if (repetitiveName != null && repetitiveCode?.Id != discount.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام تخفیف تکراری است" }
                 });
+
+            _discountRepository.Update(discount);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -267,7 +277,9 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
     {
         try
         {
-            await discountRepository.DeleteAsync(id, cancellationToken);
+            await _discountRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

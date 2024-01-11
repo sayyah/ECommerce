@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Entities;
+﻿using AutoFixture;
+using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 
@@ -6,16 +7,14 @@ namespace ECommerce.Repository.UnitTests.Products;
 
 public partial class ProductTests
 {
-    [Fact(DisplayName = "GetByIdAsync: Get products by Id")]
+    [Fact]
     public async void GetByIdAsync_GetAddedEntityById_EntityExistsInRepository()
     {
         // Arrange
-        AddCategories();
-        var set = TestSets["unique_url"];
-        DbContext.Products.AddRange(set.Values);
-        DbContext.SaveChanges();
-
-        Product expected = set["test_2"];
+        var products = Fixture.CreateMany<Product>(2).ToList();
+        DbContext.Products.AddRange(products);
+        await DbContext.SaveChangesAsync(CancellationToken);
+        Product expected = products.ElementAt(1);
 
         // Act
         var actual = await _productRepository.GetByIdAsync(CancellationToken, expected.Id);

@@ -5,13 +5,13 @@ using ECommerce.Domain.Interfaces.Utilities;
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface IProductRepository : IAsyncRepository<Product>
+public interface IProductRepository : IRepositoryBase<Product>
 {
     Task<Product?> GetByName(string name, CancellationToken cancellationToken);
 
     Task<Product?> GetByUrl(string url, CancellationToken cancellationToken);
 
-    Task<int> AddAll(IEnumerable<Product?> products, CancellationToken cancellationToken);
+    Task AddAll(IEnumerable<Product?> products);
 
     //Task<IEnumerable<Product?>> GetAllHolooProducts(CancellationToken cancellationToken);
 

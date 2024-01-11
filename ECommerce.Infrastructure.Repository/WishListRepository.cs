@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class WishListRepository(SunflowerECommerceDbContext context) : AsyncRepository<WishList>(context),
+public class WishListRepository(SunflowerECommerceDbContext context) : RepositoryBase<WishList>(context),
     IWishListRepository
 {
     public Task<WishList> GetByProductUser(int productId, int userId, CancellationToken cancellationToken)
@@ -9,7 +9,7 @@ public class WishListRepository(SunflowerECommerceDbContext context) : AsyncRepo
             .Where(x => x.Price.ProductId == productId && x.UserId == userId).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<WishListViewModel>> GetByIdWithInclude(int userId, CancellationToken cancellationToken)
+    public async Task<List<WishListViewModel>?> GetByIdWithInclude(int userId, CancellationToken cancellationToken)
     {
         return await context.WishLists.Where(x => x.UserId == userId)
             .Include(x => x.Price.Product)

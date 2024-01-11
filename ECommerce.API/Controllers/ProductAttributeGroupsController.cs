@@ -2,10 +2,12 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class ProductAttributeGroupsController(IProductAttributeGroupRepository productAttributeGroupRepository,
+public class ProductAttributeGroupsController(IUnitOfWork unitOfWork,
         ILogger<ProductAttributeGroupsController> logger)
     : ControllerBase
 {
+    private readonly IProductAttributeGroupRepository _productAttributeGroupRepository = unitOfWork.GetRepository<ProductAttributeGroupRepository, ProductAttributeGroup>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -13,7 +15,7 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await productAttributeGroupRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _productAttributeGroupRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -46,7 +48,7 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await productAttributeGroupRepository.GetAll(cancellationToken)
+                ReturnData = await _productAttributeGroupRepository.GetAllAsync(cancellationToken)
             });
         }
         catch (Exception e)
@@ -63,7 +65,7 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
         try
         {
             var result =
-                await productAttributeGroupRepository.GetAllAttributeWithProductId(productId, cancellationToken);
+                await _productAttributeGroupRepository.GetAllAttributeWithProductId(productId, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -88,7 +90,7 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
     {
         try
         {
-            var result = await productAttributeGroupRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _productAttributeGroupRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -110,7 +112,7 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(ProductAttributeGroup productAttributeGroup,
+    public async Task<IActionResult> Post(ProductAttributeGroup? productAttributeGroup,
         CancellationToken cancellationToken)
     {
         try
@@ -123,7 +125,7 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
             productAttributeGroup.Name = productAttributeGroup.Name.Trim();
 
             var repetitiveName =
-                await productAttributeGroupRepository.GetByName(productAttributeGroup.Name, cancellationToken);
+                await _productAttributeGroupRepository.GetByName(productAttributeGroup.Name, cancellationToken);
             if (repetitiveName != null)
                 return Ok(new ApiResult
                 {
@@ -131,10 +133,12 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
                     Messages = new List<string> { "نام خصوصیت تکراری است" }
                 });
 
+            _productAttributeGroupRepository.Add(productAttributeGroup);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await productAttributeGroupRepository.AddAsync(productAttributeGroup, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -146,8 +150,8 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> AddWithAttributeValue(List<ProductAttributeGroup> productAttributeGroups,
-        [FromQuery] int ProductId, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddWithAttributeValue(List<ProductAttributeGroup>? productAttributeGroups,
+        [FromQuery] int productId, CancellationToken cancellationToken)
     {
         try
         {
@@ -157,12 +161,11 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
                     Code = ResultCode.BadRequest
                 });
 
+            _productAttributeGroupRepository.AddWithAttributeValue(productAttributeGroups, productId);
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData =
-                    await productAttributeGroupRepository.AddWithAttributeValue(productAttributeGroups, ProductId,
-                        cancellationToken)
+                Code = ResultCode.Success                    
             });
         }
         catch (Exception e)
@@ -180,15 +183,17 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
         try
         {
             var repetitive =
-                await productAttributeGroupRepository.GetByName(productAttributeGroup.Name, cancellationToken);
+                await _productAttributeGroupRepository.GetByName(productAttributeGroup.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != productAttributeGroup.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام خصوصیت تکراری است" }
                 });
-            if (repetitive != null) productAttributeGroupRepository.Detach(repetitive);
-            await productAttributeGroupRepository.UpdateAsync(productAttributeGroup, cancellationToken);
+            if (repetitive != null) _productAttributeGroupRepository.Detach(repetitive);
+            _productAttributeGroupRepository.Update(productAttributeGroup);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -207,7 +212,9 @@ public class ProductAttributeGroupsController(IProductAttributeGroupRepository p
     {
         try
         {
-            await productAttributeGroupRepository.DeleteAsync(id, cancellationToken);
+            await _productAttributeGroupRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

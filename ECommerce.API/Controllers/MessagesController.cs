@@ -2,9 +2,10 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class MessagesController(IMessageRepository messageRepository, ILogger<MessagesController> logger)
-    : ControllerBase
+public class MessagesController(IUnitOfWork unitOfWork, ILogger<MessagesController> logger) : ControllerBase
 {
+    private readonly IMessageRepository _messageRepository = unitOfWork.GetRepository<MessageRepository, Message>();
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
         CancellationToken cancellationToken)
@@ -12,7 +13,7 @@ public class MessagesController(IMessageRepository messageRepository, ILogger<Me
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await messageRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _messageRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -42,7 +43,7 @@ public class MessagesController(IMessageRepository messageRepository, ILogger<Me
     {
         try
         {
-            var result = await messageRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _messageRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -63,7 +64,7 @@ public class MessagesController(IMessageRepository messageRepository, ILogger<Me
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(Message message, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(Message? message, CancellationToken cancellationToken)
     {
         try
         {
@@ -74,10 +75,13 @@ public class MessagesController(IMessageRepository messageRepository, ILogger<Me
                 });
 
             message.DateTime = DateTime.Now;
+            _messageRepository.Add(message);
+            await unitOfWork.SaveAsync(cancellationToken);
+
+           
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await messageRepository.AddAsync(message, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -93,7 +97,9 @@ public class MessagesController(IMessageRepository messageRepository, ILogger<Me
     {
         try
         {
-            await messageRepository.UpdateAsync(message, cancellationToken);
+            _messageRepository.Update(message);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -112,7 +118,9 @@ public class MessagesController(IMessageRepository messageRepository, ILogger<Me
     {
         try
         {
-            await messageRepository.DeleteAsync(id, cancellationToken);
+            await _messageRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

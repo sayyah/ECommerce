@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Domain.Entities.HolooEntity;
 
-public class HolooCustomer
+public class HolooCustomer : BaseHolooEntity
 {
     public string C_Code { get; set; }
     public string? C_Name { get; set; }

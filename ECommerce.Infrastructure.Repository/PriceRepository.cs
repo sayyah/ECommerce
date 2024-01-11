@@ -1,27 +1,24 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class PriceRepository(SunflowerECommerceDbContext context) : AsyncRepository<Price>(context), IPriceRepository
+public class PriceRepository(SunflowerECommerceDbContext context) : RepositoryBase<Price>(context), IPriceRepository
 {
-    public async Task<int> AddAll(IEnumerable<Price> prices, CancellationToken cancellationToken)
+    public void AddAll(IEnumerable<Price> prices)
     {
-        await context.Prices.AddRangeAsync(prices, cancellationToken);
-        return await context.SaveChangesAsync(cancellationToken);
+        context.Prices.AddRange(prices);
     }
 
-    public async Task<int> EditAll(IEnumerable<Price> prices, int id, CancellationToken cancellationToken)
+    public void EditAll(IEnumerable<Price> prices, int id)
     {
         context.Prices.RemoveRange(context.Prices.Where(x => x.ProductId == prices.FirstOrDefault().ProductId));
         foreach (var price in prices)
         {
             price.Id = 0;
             price.ProductId = id;
-            await context.Prices.AddAsync(price, cancellationToken);
+            context.Prices.Add(price);
         }
-
-        return await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Price>> PriceOfProduct(int id, CancellationToken cancellationToken)
+    public async Task<List<Price>?> PriceOfProduct(int id, CancellationToken cancellationToken)
     {
         return await context.Prices.AsNoTracking().Where(x => x.ProductId == id).Include(x => x.Currency)
             .Include(c => c.Color)

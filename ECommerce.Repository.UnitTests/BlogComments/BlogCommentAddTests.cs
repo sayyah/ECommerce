@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -7,49 +8,71 @@ namespace ECommerce.Repository.UnitTests.BlogComments;
 
 public partial class BlogCommentTests
 {
-    [Fact(DisplayName = "Add: Null value for required Fields")]
-    public void Add_RequiredFields_ThrowsException()
+    [Fact]
+    public async Task Add_RequiredFields_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogComment> expected = TestSets["required_fields"];
+        BlogComment blogComment = Fixture
+            .Build<BlogComment>()
+            .With(p => p.Text, () => null!)
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .Create();
 
         // Act
-        Dictionary<string, Action> actual =  [ ];
-        foreach (KeyValuePair<string, BlogComment> entry in expected)
+        async Task Action()
         {
-            actual.Add(entry.Key, () => _blogCommentRepository.Add(entry.Value));
+            _blogCommentRepository.Add(blogComment);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.Throws<DbUpdateException>(action);
-        }
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Null BlogComment value")]
-    public void Add_NullValue_ThrowsException()
+    [Fact]
+    public async Task Add_NullArgument_ThrowsException()
     {
         // Act
-        Dictionary<string, Action> actual =  [ ];
-        void action() => _blogCommentRepository.Add(null!);
+        async Task Action()
+        {
+            _blogCommentRepository.Add(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Add BlogComment")]
-    public void Add_AddEntity_EntityExistsInRepository()
+    [Fact]
+    public async Task Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange
-        BlogComment expected = TestSets["simple_tests"]["test_1"];
+        BlogComment expected = Fixture
+            .Build<BlogComment>()
+            .Without(p => p.User)
+            .Without(p => p.UserId)
+            .Without(p => p.Answer)
+            .Without(p => p.AnswerId)
+            .Without(p => p.Blog)
+            .Without(p => p.BlogId)
+            .Without(p => p.Employee)
+            .Without(p => p.EmployeeId)
+            .Create();
 
         // Act
         _blogCommentRepository.Add(expected);
-
-        // Assert
+        await UnitOfWork.SaveAsync(CancellationToken);
         var actual = DbContext.BlogComments.FirstOrDefault(x => x.Id == expected.Id);
 
+        // Assert
+        DbContext.BlogComments.Should().HaveCount(1);
         actual.Should().BeEquivalentTo(expected);
     }
 }

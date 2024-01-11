@@ -1,5 +1,5 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -7,48 +7,62 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "Add: Null value for required Fields")]
-    public void Add_RequiredFields_ThrowsException()
+    [Fact]
+    public async Task Add_RequiredNameField_ThrowsException()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["required_fields"];
+        BlogCategory blogCategory = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.Name, () => null!)
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => null!)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
 
         // Act
-        Dictionary<string, Action> actual =  [ ];
-        foreach (KeyValuePair<string, BlogCategory> entry in expected)
+        async Task Action()
         {
-            actual.Add(entry.Key, () => _blogCategoryRepository.Add(entry.Value));
+            _blogCategoryRepository.Add(blogCategory);
+            await UnitOfWork.SaveAsync(CancellationToken);
         }
 
         // Assert
-        foreach (var action in actual.Values)
-        {
-            Assert.Throws<DbUpdateException>(action);
-        }
+        await Assert.ThrowsAsync<DbUpdateException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Null BlogCategory value")]
-    public void Add_NullValue_ThrowsException()
+    [Fact]
+    public async Task Add_NullValue_ThrowsExceptionAsync()
     {
         // Act
-        void action() => _blogCategoryRepository.Add(null!);
+        async Task Action()
+        {
+            _blogCategoryRepository.Add(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(action);
+        await Assert.ThrowsAsync<ArgumentNullException>(Action);
     }
 
-    [Fact(DisplayName = "Add: Add BlogCategory")]
-    public void Add_AddEntity_EntityExistsInRepository()
+    [Fact]
+    public async void Add_AddEntity_EntityExistsInRepository()
     {
         // Arrange
-        BlogCategory expected = TestSets["simple_tests"]["test_1"];
+        BlogCategory expected = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => null)
+            .With(p => p.Parent, () => null)
+            .With(p => p.ParentId, () => null)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
 
         // Act
         _blogCategoryRepository.Add(expected);
-
-        // Assert
+        await UnitOfWork.SaveAsync(CancellationToken);
         var actual = DbContext.BlogCategories.FirstOrDefault(x => x.Id == expected.Id);
 
-        actual.Should().BeEquivalentTo(expected);
+        // Assert
+        Assert.Equal(1, DbContext.BlogCategories.Count());
+        Assert.Equivalent(expected, actual);
     }
 }

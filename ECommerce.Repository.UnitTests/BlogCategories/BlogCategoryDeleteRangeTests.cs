@@ -1,3 +1,4 @@
+using AutoFixture;
 using ECommerce.Domain.Entities;
 using Xunit;
 
@@ -5,102 +6,76 @@ namespace ECommerce.Repository.UnitTests.BlogCategories;
 
 public partial class BlogCategoryTests
 {
-    [Fact(DisplayName = "DeleteRange: Null blogCategory")]
-    public void DeleteRange_NullBlogCategory_ThrowsException()
+    [Fact]
+    public async Task DeleteRange_NullBlogCategory_ThrowsException()
     {
         // Act
-        void actual() => _blogCategoryRepository.DeleteRange([ null! ]);
+        async Task Actual()
+        {
+            _blogCategoryRepository.DeleteRange([ null! ]);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<NullReferenceException>(actual);
+        await Assert.ThrowsAsync<NullReferenceException>(Actual);
     }
 
-    [Fact(DisplayName = "DeleteRange: Null argument")]
-    public void DeleteRange_NullArgument_ThrowsException()
+    [Fact]
+    public async Task DeleteRange_NullArgument_ThrowsExceptionAsync()
     {
         // Act
-        void actual() => _blogCategoryRepository.DeleteRange(null!);
+        async Task ActualAsync()
+        {
+            _blogCategoryRepository.DeleteRange(null!);
+            await UnitOfWork.SaveAsync(CancellationToken);
+        }
 
         // Assert
-        Assert.Throws<ArgumentNullException>(actual);
+        await Assert.ThrowsAsync<ArgumentNullException>(ActualAsync);
     }
 
-    [Fact(DisplayName = "DeleteRange: Delete range of blogCategorys from repository")]
-    public void DeleteRange_DeleteBlogCategories_EntityNotInRepository()
+    [Fact]
+    public async Task DeleteRange_DeleteBlogCategories_EntityNotInRepositoryAsync()
     {
         // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
-        DbContext.BlogCategories.AddRange(expected.Values);
+        BlogCategory root = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => null)
+            .With(p => p.ParentId, () => null)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child1 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        BlogCategory child2 = Fixture
+            .Build<BlogCategory>()
+            .With(p => p.BlogCategories, () => [ ])
+            .With(p => p.Parent, () => root)
+            .With(p => p.ParentId, () => root.Id)
+            .With(p => p.Blogs, () => [ ])
+            .Create();
+        root.BlogCategories!.Add(child1);
+        root.BlogCategories.Add(child2);
+        List<BlogCategory> expected =  [ root, child1, child2 ];
+        DbContext.BlogCategories.AddRange(expected);
         DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
 
-        string blogCategoryNotToDeleteSetKey = "test_1";
-        BlogCategory blogCategoryNotToDelete = expected[blogCategoryNotToDeleteSetKey];
-        IEnumerable<BlogCategory> blogCategorysToDelete = expected
-            .Values
-            .Where(x => x.Id != blogCategoryNotToDelete.Id);
+        BlogCategory blogCategoryNotToDelete = root;
+        IEnumerable<BlogCategory> blogCategorysToDelete = expected.Where(
+            x => x.Id != blogCategoryNotToDelete.Id
+        );
 
         // Act
         _blogCategoryRepository.DeleteRange(blogCategorysToDelete);
+        await UnitOfWork.SaveAsync(CancellationToken);
 
         // Assert
-        List<BlogCategory?> actual =  [ ];
-        foreach (var blogCategory in blogCategorysToDelete)
-        {
-            actual.Add(DbContext.BlogCategories.FirstOrDefault(x => x.Id == blogCategory.Id));
-        }
-
         Assert.Equal(1, DbContext.BlogCategories.Count());
-        foreach (var blogCategory in actual)
-        {
-            Assert.Null(blogCategory);
-        }
-    }
-
-    [Fact(
-        DisplayName = "DeleteRange: (No Save) Entites are in repository and are deleted after SaveChanges is called"
-    )]
-    public void DeleteRange_NoSave_EntitiesAreInRepository()
-    {
-        // Arrange
-        Dictionary<string, BlogCategory> expected = TestSets["simple_tests"];
-        DbContext.BlogCategories.AddRange(expected.Values);
-        DbContext.SaveChanges();
-        DbContext.ChangeTracker.Clear();
-
-        string blogCategoryNotToDeleteSetKey = "test_1";
-        BlogCategory blogCategoryNotToDelete = expected[blogCategoryNotToDeleteSetKey];
-        IEnumerable<BlogCategory> blogCategorysToDelete = expected
-            .Values
-            .Where(x => x.Id != blogCategoryNotToDelete.Id);
-
-        // Act
-        _blogCategoryRepository.DeleteRange(blogCategorysToDelete, false);
-
-        // Assert
-        List<BlogCategory?> actual =  [ ];
-        foreach (var blogCategory in blogCategorysToDelete)
-        {
-            actual.Add(DbContext.BlogCategories.FirstOrDefault(x => x.Id == blogCategory.Id));
-        }
-
-        Assert.Equal(expected.Count, DbContext.BlogCategories.Count());
-        foreach (var blogCategory in actual)
-        {
-            Assert.NotNull(blogCategory);
-        }
-
-        DbContext.SaveChanges();
-        actual.Clear();
-        foreach (var blogCategory in blogCategorysToDelete)
-        {
-            actual.Add(DbContext.BlogCategories.FirstOrDefault(x => x.Id == blogCategory.Id));
-        }
-
-        Assert.Equal(1, DbContext.BlogCategories.Count());
-        foreach (var blogCategory in actual)
-        {
-            Assert.Null(blogCategory);
-        }
+        Assert.Equivalent(blogCategoryNotToDelete, DbContext.BlogCategories.FirstOrDefault());
     }
 }

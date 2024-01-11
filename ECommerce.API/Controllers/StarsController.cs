@@ -2,16 +2,17 @@
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class StarsController(IProductUserRankRepository productUserRankRepository, ILogger<StarsController> logger,
-        IProductRepository productRepository)
-    : ControllerBase
+public class StarsController(IUnitOfWork unitOfWork, ILogger<StarsController> logger) : ControllerBase
 {
+    private readonly IProductRepository _productRepository = unitOfWork.GetRepository<ProductRepository, Product>();
+    private readonly IProductUserRankRepository _productUserRankRepository = unitOfWork.GetRepository<ProductUserRankRepository, ProductUserRank>();
+
     [HttpGet]
     public async Task<IActionResult> GetByProductId(int id, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
+            var result = await _productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -28,7 +29,7 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
         {
             logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -37,14 +38,14 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
     {
         try
         {
-            var result = await productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
+            var result = await _productUserRankRepository.Where(x => x.ProductId == id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.NotFound
                 });
 
-            var average = await productUserRankRepository.GetBySumProduct(id, cancellationToken);
+            var average = await _productUserRankRepository.GetBySumProduct(id, cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -55,7 +56,7 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
         {
             logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -64,7 +65,7 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
     {
         try
         {
-            var result = await productUserRankRepository.Where(x => x.UserId == id, cancellationToken);
+            var result = await _productUserRankRepository.Where(x => x.UserId == id, cancellationToken);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -81,13 +82,13 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
         {
             logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(ProductUserRank productUserRank, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(ProductUserRank? productUserRank, CancellationToken cancellationToken)
     {
         try
         {
@@ -104,23 +105,28 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
                     Messages = new List<string> { "مقدار وارد شده نادرست می‌باشد." }
                 });
 
-            var repetitiveProductUserRank = await productUserRankRepository.GetByProductUser(productUserRank.ProductId,
+            var repetitiveProductUserRank = await _productUserRankRepository.GetByProductUser(productUserRank.ProductId,
                 productUserRank.UserId, cancellationToken);
             if (repetitiveProductUserRank != null)
             {
                 repetitiveProductUserRank.Stars = productUserRank.Stars;
-                await productUserRankRepository.UpdateAsync(repetitiveProductUserRank, cancellationToken);
+                _productUserRankRepository.Update(repetitiveProductUserRank);
             }
             else
             {
-                await productUserRankRepository.AddAsync(productUserRank, cancellationToken);
+                _productUserRankRepository.Add(productUserRank);
             }
 
             var productUserRanks =
-                await productUserRankRepository.GetBySumProduct(productUserRank.ProductId, cancellationToken);
-            var product = await productRepository.GetByIdAsync(cancellationToken, productUserRank.ProductId);
-            product.Star = productUserRanks;
-            await productRepository.UpdateAsync(product, cancellationToken);
+                await _productUserRankRepository.GetBySumProduct(productUserRank.ProductId, cancellationToken);
+            var product = await _productRepository.GetByIdAsync(cancellationToken, productUserRank.ProductId);
+            if (product != null)
+            {
+                product.Star = productUserRanks;
+                _productRepository.Update(product);
+            }
+
+            await unitOfWork.SaveAsync(cancellationToken);
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
@@ -131,7 +137,7 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
         {
             logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 
@@ -141,7 +147,9 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
     {
         try
         {
-            await productUserRankRepository.DeleteAsync(id, cancellationToken);
+            await _productUserRankRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -151,7 +159,7 @@ public class StarsController(IProductUserRankRepository productUserRankRepositor
         {
             logger.LogCritical(e, e.Message);
             return Ok(new ApiResult
-                { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
+            { Code = ResultCode.DatabaseError, Messages = new List<string> { "اشکال در سمت سرور" } });
         }
     }
 }

@@ -4,9 +4,10 @@ namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class StatesController(IStateRepository stateRepository, ILogger<StatesController> logger)
-    : ControllerBase
+public class StatesController(IUnitOfWork unitOfWork, ILogger<StatesController> logger) : ControllerBase
 {
+    private readonly IStateRepository _stateRepository = unitOfWork.GetRepository<StateRepository, State>();
+
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
@@ -15,7 +16,7 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = await stateRepository.GetAll("Cities").OrderBy(x => x.Name).ToListAsync(cancellationToken)
+                ReturnData = await _stateRepository.GetAll("Cities").OrderBy(x => x.Name).ToListAsync(cancellationToken)
             });
         }
         catch (Exception e)
@@ -32,7 +33,7 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
-                ReturnData = (await stateRepository.GetAll(cancellationToken)).OrderBy(x => x.Name)
+                ReturnData = (await _stateRepository.GetAllAsync(cancellationToken)).OrderBy(x => x.Name)
             });
         }
         catch (Exception e)
@@ -48,7 +49,7 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await stateRepository.Search(paginationParameters, cancellationToken);
+            var entity = await _stateRepository.Search(paginationParameters, cancellationToken);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,
@@ -81,7 +82,7 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
     {
         try
         {
-            var result = await stateRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _stateRepository.GetByIdAsync(cancellationToken, id);
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -103,7 +104,7 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(State state, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(State? state, CancellationToken cancellationToken)
     {
         try
         {
@@ -111,11 +112,11 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.BadRequest,
-                    ReturnData = await stateRepository.GetAll(cancellationToken)
+                    ReturnData = await _stateRepository.GetAllAsync(cancellationToken)
                 });
             state.Name = state.Name.Trim();
 
-            var repetitiveState = await stateRepository.GetByName(state.Name, cancellationToken);
+            var repetitiveState = await _stateRepository.GetByName(state.Name, cancellationToken);
             if (repetitiveState != null)
                 return Ok(new ApiResult
                 {
@@ -123,10 +124,12 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
                     Messages = new List<string> { "نام استان تکراری است" }
                 });
 
+            _stateRepository.Add(state);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success,
-                ReturnData = await stateRepository.AddAsync(state, cancellationToken)
+                Code = ResultCode.Success
             });
         }
         catch (Exception e)
@@ -142,15 +145,17 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
     {
         try
         {
-            var repetitive = await stateRepository.GetByName(state.Name, cancellationToken);
+            var repetitive = await _stateRepository.GetByName(state.Name, cancellationToken);
             if (repetitive != null && repetitive.Id != state.Id)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
                     Messages = new List<string> { "نام استان تکراری است" }
                 });
-            if (repetitive != null) stateRepository.Detach(repetitive);
-            await stateRepository.UpdateAsync(state, cancellationToken);
+            if (repetitive != null) _stateRepository.Detach(repetitive);
+            _stateRepository.Update(state);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success
@@ -169,7 +174,9 @@ public class StatesController(IStateRepository stateRepository, ILogger<StatesCo
     {
         try
         {
-            await stateRepository.DeleteAsync(id, cancellationToken);
+            await _stateRepository.DeleteById(id, cancellationToken);
+            await unitOfWork.SaveAsync(cancellationToken);
+
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success

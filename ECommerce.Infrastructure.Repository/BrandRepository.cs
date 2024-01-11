@@ -1,8 +1,8 @@
 ﻿namespace ECommerce.Infrastructure.Repository;
 
-public class BrandRepository(SunflowerECommerceDbContext context) : AsyncRepository<Brand>(context), IBrandRepository
+public class BrandRepository(SunflowerECommerceDbContext context) : RepositoryBase<Brand>(context), IBrandRepository
 {
-    public async Task<Brand> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Brand?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await context.Brands.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }

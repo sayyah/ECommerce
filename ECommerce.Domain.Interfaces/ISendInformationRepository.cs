@@ -2,6 +2,6 @@
 
 namespace ECommerce.Domain.Interfaces;
 
-public interface ISendInformationRepository : IAsyncRepository<SendInformation>
+public interface ISendInformationRepository : IRepositoryBase<SendInformation>
 {
 }
