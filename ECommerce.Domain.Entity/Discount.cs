@@ -30,6 +30,7 @@ public class Discount : BaseEntity
     public string Code { get; set; }
 
     [Display(Name = "تعداد کوپن")] public int? CouponQty { get; set; }
+    [Display(Name = "نوع تخفیف")] public DiscountType? DiscountType { get; set; }
 
     //ForeignKey
 
@@ -38,4 +39,11 @@ public class Discount : BaseEntity
     public ICollection<Category>? Categories { get; set; }
     public ICollection<PurchaseOrder>? PurchaseOrders { get; set; }
     public ICollection<PurchaseOrderDetail>? PurchaseOrderDetails { get; set; }
+}
+
+public enum DiscountType
+{
+    Coupon = 0,
+    Category = 1,
+    Price = 2,
 }
