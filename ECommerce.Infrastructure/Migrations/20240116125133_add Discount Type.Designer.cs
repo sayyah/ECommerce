@@ -4,6 +4,7 @@ using ECommerce.Infrastructure.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Infrastructure.DataContext.Migrations
 {
     [DbContext(typeof(SunflowerECommerceDbContext))]
-    partial class SunflowerECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240116125133_add Discount Type")]
+    partial class addDiscountType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5713,7 +5716,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             Birthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "3a4fb53b-31d1-4fd1-9bd6-db6d78e4ca6a",
+                            ConcurrencyStamp = "5cd1d907-7698-40e2-8516-e7fc4aea20f6",
                             Email = "sayyah.alireza@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Alireza",
@@ -5728,10 +5731,10 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                             Mobile = "No Mobile",
                             NormalizedEmail = "SAYYAH.ALIREZA@GMAIL.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGoqvyXXS1U9KCLJrSWdDU6/z1BHiG6lGaAf3lUq05s2WVnCfuuKkqYW5kwz3WbZEw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMH5lh4+DdnbK5Ggk1XIuClDSu/kC4QLnpwBuJBHEfCJbDn+u9dzTqEZQFBIHGHbTQ==",
                             PhoneNumber = "0911307006",
                             PhoneNumberConfirmed = true,
-                            RegisterDate = new DateTime(2024, 1, 18, 9, 25, 58, 215, DateTimeKind.Local).AddTicks(1111),
+                            RegisterDate = new DateTime(2024, 1, 16, 16, 21, 32, 736, DateTimeKind.Local).AddTicks(3523),
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "superadmin",

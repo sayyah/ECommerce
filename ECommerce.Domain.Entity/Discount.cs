@@ -26,8 +26,7 @@ public class Discount : BaseEntity
 
     [StringLength(40)]
     [Display(Name = "کد تخفیف")]
-    [Required(ErrorMessage = @"{0} را وارد کنید")]
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
     [Display(Name = "تعداد کوپن")] public int? CouponQty { get; set; }
     [Display(Name = "نوع تخفیف")] public DiscountType? DiscountType { get; set; }

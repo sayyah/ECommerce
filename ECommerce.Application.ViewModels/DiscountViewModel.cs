@@ -13,8 +13,9 @@ public class DiscountViewModel
     public int? MinOrder { get; set; }
     public int? MaxOrder { get; set; }
     public bool IsActive { get; set; } = false;
-    public string Code { get; set; }
+    public string? Code { get; set; }
     public int? CouponQty { get; set; }
+    public DiscountType? DiscountType { get; set; }
 
     //ForeignKey
     public List<int>? ProductsId { get; set; } = new List<int>();
@@ -53,7 +54,8 @@ public class DiscountViewModel
             Prices = x.Prices.ToList(),
             Categories = x.Categories.ToList(),
             PurchaseOrders = x.PurchaseOrders.ToList(),
-            PurchaseOrderDetails = x.PurchaseOrderDetails.ToList()
+            PurchaseOrderDetails = x.PurchaseOrderDetails.ToList(),
+            DiscountType = x.DiscountType
         };
     }
     public static implicit operator Discount(DiscountViewModel x)
@@ -75,7 +77,8 @@ public class DiscountViewModel
             Prices = x.Prices?.ToList(),
             Categories = x.Categories?.ToList(),
             PurchaseOrders = x.PurchaseOrders?.ToList(),
-            PurchaseOrderDetails = x.PurchaseOrderDetails?.ToList()
+            PurchaseOrderDetails = x.PurchaseOrderDetails?.ToList(),
+            DiscountType = x.DiscountType
         };
     }
 }

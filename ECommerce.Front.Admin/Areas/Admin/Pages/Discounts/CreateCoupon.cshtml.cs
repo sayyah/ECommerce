@@ -43,7 +43,7 @@ public class CreateCouponModel : PageModel
         if (!Discount.EndDate.HasValue) ModelState.AddModelError(string.Empty, "تاریخ پایان نباید خالی باشد.");
         if (Discount.StartDate > Discount.EndDate) ModelState.AddModelError(string.Empty, "تاریخ پایان نباید قبل از تاریخ شروع باشد.");
         if (Discount.MinOrder > Discount.MaxOrder) ModelState.AddModelError(string.Empty, "حداقل تعداد سفارش باید کم تر از حداکثر آن باشد.");
-
+        Discount.DiscountType = DiscountType.Coupon;
         if (ModelState.IsValid)
         {
             if (WithPrice) Discount.Percent = null;

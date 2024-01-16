@@ -31,7 +31,7 @@ public class CreateModel(IDiscountService discountService, ICategoryService cate
             ModelState.AddModelError(string.Empty, "تاریخ پایان نباید قبل از تاریخ شروع باشد.");
         if (Discount.MinOrder > Discount.MaxOrder)
             ModelState.AddModelError(string.Empty, "حداقل تعداد سفارش باید کم تر از حداکثر آن باشد.");
-        Discount.Code = Guid.NewGuid().ToString();
+        Discount.DiscountType = DiscountType.Category;
         if (ModelState.IsValid)
         {
             if (WithPrice) Discount.Percent = null;

@@ -48,7 +48,7 @@ public class PriceModel : PageModel
         if (!Discount.EndDate.HasValue) ModelState.AddModelError(string.Empty, "تاریخ پایان نباید خالی باشد.");
         if (Discount.StartDate > Discount.EndDate) ModelState.AddModelError(string.Empty, "تاریخ پایان نباید قبل از تاریخ شروع باشد.");
         if (Discount.PricesId.Count == 0) ModelState.AddModelError(string.Empty, "حداقل یک کالا را انتخاب نمایید.");
-        Discount.Code = Guid.NewGuid().ToString();
+        Discount.DiscountType = DiscountType.Price;
         if (ModelState.IsValid)
         {
             if (WithPrice) Discount.Percent = null;

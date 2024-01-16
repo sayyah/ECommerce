@@ -10,6 +10,14 @@ public class DiscountRepository(SunflowerECommerceDbContext context) : AsyncRepo
         return await context.Discounts.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<Discount> GetByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        return await context.Discounts.Where(x => x.Id == id)
+            .Include(d=>d.Categories)
+            .Include(d=>d.Prices).ThenInclude(p=>p.Product)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<Discount?> GetLast(CancellationToken cancellationToken)
     {
         var result = await context.Discounts.Include(i => i.Prices).ThenInclude(x => x.Product)
@@ -22,10 +30,18 @@ public class DiscountRepository(SunflowerECommerceDbContext context) : AsyncRepo
     public async Task<Discount> AddWithRelations(DiscountViewModel discountViewModel, CancellationToken cancellationToken)
     {
         Discount discount = discountViewModel;
-        discount.Categories = new List<Category>();
-        foreach (var id in discountViewModel.CategoriesId) discount.Categories.Add(await context.Categories.FindAsync(id));
-        discount.Prices = new List<Price>();
-        foreach (var id in discountViewModel.PricesId) discount.Prices.Add(await context.Prices.FindAsync(id));
+        if (discount.DiscountType == DiscountType.Category)
+        {
+            discount.Code = null;
+            discount.Categories = new List<Category>();
+            foreach (var id in discountViewModel.CategoriesId) discount.Categories.Add(await context.Categories.FindAsync(id));
+        }
+        if (discount.DiscountType == DiscountType.Price)
+        {
+            discount.Code = null;
+            discount.Prices = new List<Price>();
+            foreach (var id in discountViewModel.PricesId) discount.Prices.Add(await context.Prices.FindAsync(id));
+        }
         await context.Discounts.AddAsync(discount, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         return discount;

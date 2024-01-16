@@ -11,6 +11,7 @@ public class EditModel(IDiscountService discountService) : PageModel
 
     public async Task OnGet(int id)
     {
+        return;
         var result = await discountService.GetById(id);
         Discount = result.ReturnData;
         if (!Discount.Amount.HasValue) WithPrice = false;

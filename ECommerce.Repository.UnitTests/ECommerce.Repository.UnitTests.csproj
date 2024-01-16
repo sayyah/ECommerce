@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\ECommerce.Infrastructure.DataContext\ECommerce.Infrastructure.DataContext.csproj" />
     <ProjectReference Include="..\ECommerce.Infrastructure.Repository\ECommerce.Infrastructure.Repository.csproj" />
     <ProjectReference Include="..\ECommerce.Infrastructure\ECommerce.Infrastructure.DataContext.csproj" />
   </ItemGroup>

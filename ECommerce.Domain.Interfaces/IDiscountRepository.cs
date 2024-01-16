@@ -11,6 +11,7 @@ public interface IDiscountRepository : IAsyncRepository<Discount>
     Task<PagedList<Discount>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
 
     Task<Discount> GetByName(string name, CancellationToken cancellationToken);
+    Task<Discount> GetByIdAsync(int id, CancellationToken cancellationToken);
 
     Task<Discount> GetByCode(string code, CancellationToken cancellationToken);
 

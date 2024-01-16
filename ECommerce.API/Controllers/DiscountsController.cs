@@ -49,7 +49,8 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
     {
         try
         {
-            var result = await discountRepository.GetByIdAsync(cancellationToken, id);
+            var result = await discountRepository.GetByIdAsync(id, cancellationToken);
+
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -206,7 +207,7 @@ public class DiscountsController(IDiscountRepository discountRepository, ILogger
                 });
 
             var repetitiveCode = await discountRepository.GetByCode(discount.Code, cancellationToken);
-            if (repetitiveCode != null)
+            if (repetitiveCode != null && discount.DiscountType==DiscountType.Coupon)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
