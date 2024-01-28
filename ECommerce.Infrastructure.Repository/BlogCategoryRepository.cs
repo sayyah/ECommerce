@@ -27,13 +27,11 @@ public class BlogCategoryRepository(SunflowerECommerceDbContext context) : Repos
         return result.OrderBy(x => x.DisplayOrder).ToList();
     }
 
-    public PagedList<BlogCategory> Search(PaginationParameters paginationParameters)
+    public IQueryable<BlogCategory> Search(PaginationParameters paginationParameters)
     {
-        return PagedList<BlogCategory>.ToPagedList(
+        return
             context.BlogCategories.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id),
-            paginationParameters.PageNumber,
-            paginationParameters.PageSize);
+                .OrderBy(on => on.Id);
     }
 
     private async Task<List<CategoryParentViewModel>> Children(List<BlogCategory> allCategory,
