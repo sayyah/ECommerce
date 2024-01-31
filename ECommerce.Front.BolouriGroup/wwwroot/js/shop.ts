@@ -12,7 +12,7 @@ const shopPaginationHandler = (e: Event, isClickable?: boolean) => {
   e.preventDefault();
 
   const url = new URL((e.target as Element).getAttribute("href"), window.location.origin);
-  updatePage(url, false, true);
+  updatePage(url, false);
   if (!window.history.state) window.history.replaceState(window.location.pathname, "", window.location.pathname + window.location.search);
   window.history.pushState(url.href, "", url);
 };
@@ -25,7 +25,7 @@ const shopRecordsCountHandler = (e: Event) => {
   const url = new URL(window.location.href);
   url.searchParams.set("pageSize", count);
   url.searchParams.set("pageNumber", "1");
-  updatePage(url, false, true);
+  updatePage(url, false);
   if (!window.history.state) window.history.replaceState(window.location.pathname, "", window.location.pathname + window.location.search);
   window.history.pushState(url.href, "", url);
 };
@@ -52,17 +52,11 @@ if (isShopPage) {
  * @param hasQuery If url already has query string attached on it?
  * @returns
  */
-const getShopHandler = async (url: URL, handler: "products" | "counts" | "pagination", firstPage?: boolean, hasQuery?: boolean) => {
+const getShopHandler = async (url: URL, handler: "products" | "counts" | "pagination", firstPage?: boolean) => {
   if (!isShopPage) return;
-
-  if (!hasQuery)
-    new URLSearchParams(window.location.search).forEach((value, key) => {
-      url.searchParams.set(key, value);
-    });
 
   url.searchParams.set("handler", handler);
   if (firstPage) url.searchParams.set("pageNumber", "1");
-  url.searchParams.delete("search");
   return await $.get(url.href);
 };
 
@@ -95,7 +89,7 @@ const categoryChangeHandler = async (e: Event | string) => {
   const currentPageUrl = new URL(window.location.pathname + window.location.search, window.location.origin);
   currentPageUrl.searchParams.delete("search");
   if (!window.history.state) {
-    window.history.replaceState(currentPageUrl.pathname, "", currentPageUrl.pathname + currentPageUrl.search);
+    window.history.replaceState(currentPageUrl.pathname, "", currentPageUrl);
   }
   if (!isState) {
     const searchParams = new URLSearchParams(window.location.search);
@@ -113,16 +107,16 @@ const categoryChangeHandler = async (e: Event | string) => {
  * @param firstPage Should try loading first page?
  * @param noSearch Should use window.history.search?
  */
-const updatePage = async (url: URL, firstPage?: boolean, noSearch?: boolean) => {
+const updatePage = async (url: URL, firstPage?: boolean) => {
   const container = $("#productsContainer");
   const currentItems = $(".category-item-selected");
   const copyOfUrl = new URL(url);
 
   container.before(linearProgress);
   const [shopList, shopCount, shopPagination] = await Promise.all([
-    getShopHandler(copyOfUrl, "products", firstPage, noSearch),
-    getShopHandler(copyOfUrl, "counts", firstPage, noSearch),
-    getShopHandler(copyOfUrl, "pagination", firstPage, noSearch),
+    getShopHandler(copyOfUrl, "products", firstPage),
+    getShopHandler(copyOfUrl, "counts", firstPage),
+    getShopHandler(copyOfUrl, "pagination", firstPage),
   ]);
 
   container.prev().remove();
