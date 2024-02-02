@@ -238,22 +238,21 @@ public class CheckoutModel(ICartService cartService,
 
         if (resultSendInformation == 0)
         {
-            var description = "";
             switch (Portal)
             {
-                //case "zarinpal":
-                //    returnAction = "ZarinPalSuccess";
-                //    description = "خرید تستی ";
-                //    purchaseOrder.OrderGuid = Guid.NewGuid();
-                //    byte[] gb1 = purchaseOrder.OrderGuid.ToByteArray();
-                //    purchaseOrder.OrderId = BitConverter.ToInt64(gb1, 0);
-                //    var paymentZarinpal = await new Payment(SumPrice).PaymentRequest(description, url + returnAction + "?Factor=" + purchaseOrder.Id);
-                //    if (paymentZarinpal.Status == 100)
-                //    {
-                //        await purchaseOrderService.Edit(purchaseOrder);
-                //        return Redirect(paymentZarinpal.Link);
-                //    }
-                //    return RedirectToPage("Error");
+                // case "zarinpal":
+                //     returnAction = "ZarinPalSuccess";
+                //     var description = "خرید تستی ";
+                //     purchaseOrder.OrderGuid = Guid.NewGuid();
+                //     byte[] gb1 = purchaseOrder.OrderGuid.ToByteArray();
+                //     purchaseOrder.OrderId = BitConverter.ToInt64(gb1, 0);
+                //     var paymentZarinpal = await new Payment(SumPrice).PaymentRequest(description, url + returnAction + "?Factor=" + purchaseOrder.Id);
+                //     if (paymentZarinpal.Status == 100)
+                //     {
+                //         await purchaseOrderService.Edit(purchaseOrder);
+                //         return Redirect(paymentZarinpal.Link);
+                //     }
+                //     return RedirectToPage("Error");
                 case "sadad":
                     SumPrice *= 10;
                     purchaseOrder.OrderGuid = Guid.NewGuid();
@@ -264,16 +263,16 @@ public class CheckoutModel(ICartService cartService,
                     long merchantId = configuration.GetValue<long>(
                         "merchantId"
                     );
-                    string terminalId = configuration.GetValue<string>(
+                    string? terminalId = configuration.GetValue<string>(
                         "terminalId"
                     );
-                    string terminalKey = configuration.GetValue<string>(
+                    string? terminalKey = configuration.GetValue<string>(
                         "terminalKey"
                     );
                     var dataBytes = Encoding
                         .UTF8
                         .GetBytes($"{terminalId};{purchaseOrder.OrderId};{SumPrice}");
-                    var symmetric = SymmetricAlgorithm.Create("TripleDes");
+                    var symmetric = TripleDES.Create();
                     symmetric.Mode = CipherMode.ECB;
                     symmetric.Padding = PaddingMode.PKCS7;
                     var encryptor = symmetric.CreateEncryptor(

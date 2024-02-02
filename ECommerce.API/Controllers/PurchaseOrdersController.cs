@@ -327,8 +327,11 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                     await _purchaseOrderRepository.GetByUser(createPurchaseCommand.UserId, Status.New, cancellationToken);
 
                 var repetitivePurchaseOrderDetails =
-                    repetitivePurchaseOrder?.PurchaseOrderDetails?.FirstOrDefault(x =>
-                        x.ProductId == createPurchaseCommand.ProductId);
+                    repetitivePurchaseOrder?.PurchaseOrderDetails?.FirstOrDefault(
+                        x =>
+                            x.ProductId == createPurchaseCommand.ProductId &&
+                            x.PriceId == createPurchaseCommand.PriceId
+                    );
 
                 var repetitiveQuantity = repetitivePurchaseOrderDetails?.Quantity ?? 0;
 
@@ -415,24 +418,24 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                         });
                     }
 
-                    var purchaseOrder = await _purchaseOrderRepository.AddAsync(new PurchaseOrder
+                    var purchaseOrder = new PurchaseOrder
                     {
                         Amount = sumPrice,
                         Status = 0,
                         UserId = createPurchaseCommand.UserId,
                         DiscountAmount = createPurchaseCommand.DiscountAmount
-                    }, cancellationToken);
-                    var purchaseOrderDetail = await _purchaseOrderDetailRepository.AddAsync(new PurchaseOrderDetail
+                    };
+                    var purchaseOrderDetail = new PurchaseOrderDetail
                     {
-                        PurchaseOrderId = purchaseOrder.Id,
                         Name = product.Name,
                         UnitPrice = unitPrice,
                         ProductId = product.Id,
                         PriceId = price!.Id,
                         Quantity = createPurchaseCommand.Quantity,
                         SumPrice = sumPrice
-                    }, cancellationToken);
+                    };
                     purchaseOrder.PurchaseOrderDetails?.Add(purchaseOrderDetail);
+                    _purchaseOrderRepository.Add(purchaseOrder);
                 }
             }
 
@@ -491,6 +494,7 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                                     (int)purchaseOrderDetails.PurchaseOrderId, cancellationToken);
                             if (purchaseOrder?.PurchaseOrderDetails != null)
                                 purchaseOrder.Amount = purchaseOrder.PurchaseOrderDetails.Sum(x => x.SumPrice);
+                            if (purchaseOrder is not null) purchaseOrder.PurchaseOrderDetails = null;
                             _purchaseOrderRepository.Update(purchaseOrder!);
                         }
                     }
@@ -693,6 +697,7 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                 }
 
                 purchaseOrder.IsPaid = true;
+                purchaseOrder.PurchaseOrderDetails = null;
 
                 _purchaseOrderRepository.Update(purchaseOrder);
                 await unitOfWork.SaveAsync(cancellationToken, true);
