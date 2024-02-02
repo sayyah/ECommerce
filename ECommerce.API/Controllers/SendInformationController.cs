@@ -82,7 +82,8 @@ public class SendInformationController(IUnitOfWork unitOfWork,
 
             return Ok(new ApiResult
             {
-                Code = ResultCode.Success
+                Code = ResultCode.Success,
+                ReturnData = sendInformation
             });
         }
         catch (Exception e)

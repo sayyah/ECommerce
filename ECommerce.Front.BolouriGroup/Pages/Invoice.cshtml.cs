@@ -120,11 +120,11 @@ public class InvoiceModel(IPurchaseOrderService purchaseOrderService,
     private async Task<ActionResult> pay(PurchaseResult result)
     {
         var dataBytes = Encoding.UTF8.GetBytes(result.Token);
-        var symmetric = SymmetricAlgorithm.Create("TripleDes");
+        var symmetric = TripleDES.Create();
         symmetric.Mode = CipherMode.ECB;
         symmetric.Padding = PaddingMode.PKCS7;
-        string merchantKey = configuration.GetValue<string>(
-            "SiteSettings:SanadSettings:terminalKey"
+        string? merchantKey = configuration.GetValue<string>(
+            "terminalKey"
         );
         var encryptor = symmetric.CreateEncryptor(
             Convert.FromBase64String(merchantKey),
@@ -185,10 +185,10 @@ public class InvoiceModel(IPurchaseOrderService purchaseOrderService,
                 }
                 else if (resulPay.Code == ServiceCode.Success)
                 {
-                    string num1 = configuration.GetValue<string>("InvoiceNumbers:num1");
-                    string num2 = configuration.GetValue<string>("InvoiceNumbers:num2");
-                    string num3 = configuration.GetValue<string>("InvoiceNumbers:num3");
-                    string num4 = configuration.GetValue<string>("InvoiceNumbers:num4");
+                    string? num1 = configuration.GetValue<string>("InvoiceNumbers:num1");
+                    string? num2 = configuration.GetValue<string>("InvoiceNumbers:num2");
+                    string? num3 = configuration.GetValue<string>("InvoiceNumbers:num3");
+                    string? num4 = configuration.GetValue<string>("InvoiceNumbers:num4");
                     await userService.SendInvocieSms(
                         resulPay.Message ?? "",
                         num1,
