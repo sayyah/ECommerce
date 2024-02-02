@@ -235,8 +235,9 @@ async function loadCart() {
  * @param {number} id
  * @param {"increment" | "decrement" | "newItem" | "remove"} action
  * @param {number} productId
+ * @param {number} priceId
  */
-async function updateCartItem(id, action, productId) {
+async function updateCartItem(id, action, productId, priceId) {
   if (!id) {
     const data = await $.get("/index?handler=LoadCart");
     const newCartList = data.returnData;
@@ -247,7 +248,7 @@ async function updateCartItem(id, action, productId) {
       action = "newItem";
     } else {
       action = "increment";
-      const prod = cartList.filter((v) => v.productId === productId)[0];
+      const prod = cartList.filter((v) => v.productId === productId && v.priceId === priceId)[0];
       id = prod.id;
     }
   }
@@ -300,7 +301,7 @@ function AddCart(productId, priceId, id, showMessage = false) {
     url: "/index?handler=AddCart&id=" + productId + "&priceId=" + priceId,
     contentType: "application/json; charset=utf-8",
     dataType: "json",
-    success: function (result) {
+    success: async function (result) {
       $(`#loading-${id}`).remove();
       if (showMessage) {
         swal(result.message);
@@ -309,7 +310,7 @@ function AddCart(productId, priceId, id, showMessage = false) {
         loadCart();
       } else {
         if (result.code === 2 || result.code === 0) {
-          updateCartItem(id, "increment", productId);
+          await updateCartItem(id, "increment", productId, priceId);
         } else {
           swal(result.message);
         }
@@ -346,7 +347,7 @@ function DecreaseCart(productId, priceId, id) {
       url: "/index?handler=DecreaseCart&id=" + id + "&productId=" + productId + "&priceId=" + priceId,
       contentType: "application/json; charset=utf-8",
       dataType: "json",
-      success: function (result) {
+      success: async function (result) {
         $(`#loading-${id}`).remove();
         if ($("#Cart-List").text() === "") {
           loadCart();
@@ -398,7 +399,7 @@ function DeleteCart(id, productId, priceId) {
           $(`#loading-${id}`).remove();
           swal(result.message);
           if (result.code === 0) {
-            updateCartItem(id, "remove", productId);
+            updateCartItem(id, "remove", productId, priceId);
           }
         },
         failure: function (response) {
@@ -617,7 +618,7 @@ const checkCartRemoved = () => {
     Promise.all(promises);
     swal(message);
     soldOuts.forEach((val) => {
-      updateCartItem(val.id, "remove", val.productId);
+      updateCartItem(val.id, "remove", val.productId, val.priceId);
     });
   }
 };

@@ -86,7 +86,7 @@
                             <span asp-validation-for="SendInformation.PostalCode" class="mt-5"
                                 style="color: red; margin-top: 10px"></span>
                             <select asp-for="SendInformation.StateId" class="custom-select form-control" id="state"
-                                onchange="setCities();" style="margin-top: 10px">
+                                onchange="setCities(event);" style="margin-top: 10px">
                                 @foreach (var state in Model.StateList)
                                 {
                                     <option value="@state.Id">@state.Name</option>
@@ -243,7 +243,7 @@
             $("#SendInformation_PostalCode").val(sendInformation.postalCode);
             $("#SendInformation_Address").val(sendInformation.address);
             $("#state").val(sendInformation.stateId);
-            setCities();
+            setCities(event);
             $("#city").val(sendInformation.cityId);
 
         }
@@ -256,11 +256,11 @@
             $("#SendInformation_PostalCode").val("");
             $("#SendInformation_Address").val("");
             $("#state").val(1);
-            setCities();
+            setCities(event);
         }
 
         $(document).ready(function () {
-            setCities();
+            setCities(event);
         });
 
         function CalculateDiscount() {
