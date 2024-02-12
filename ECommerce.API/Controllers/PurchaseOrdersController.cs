@@ -698,6 +698,7 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
 
                 purchaseOrder.IsPaid = true;
                 purchaseOrder.PurchaseOrderDetails = null;
+                purchaseOrder.SendInformation = null;
 
                 _purchaseOrderRepository.Update(purchaseOrder);
                 await unitOfWork.SaveAsync(cancellationToken, true);

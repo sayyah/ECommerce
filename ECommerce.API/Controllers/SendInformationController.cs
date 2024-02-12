@@ -116,7 +116,7 @@ public class SendInformationController(IUnitOfWork unitOfWork,
                         Messages = new List<string> { "آدرس تکراری است" }
                     });
             }
-
+            _sendInformationRepository.Detach(repetitive.First());
             _sendInformationRepository.Update(sendInformation);
             await unitOfWork.SaveAsync(cancellationToken);
 
