@@ -217,24 +217,35 @@ public class UserService(IHttpService http, ICookieService cookieService, IOptio
         return Return(result);
     }
 
-    public async Task<ResponseVerifySmsIrViewModel> SendInvocieSms(string invoice, string mobile, string persianDate)
+    public async Task<List<ResponseVerifySmsIrViewModel>> SendInvoiceSms(string invoice, string[] mobile, string persianDate)
     {
+        var result = new List<ResponseVerifySmsIrViewModel>();
         var apiKey = _smsSettings.apikey;
         var apiName = _smsSettings.apiName;
         var url = _smsSettings.url;
-        var RequestSMSIrViewModel = new RequestVerifySmsIrViewModel();
-        var invoiceParameter = new RequestVerifySmsIrParameters();
-        invoiceParameter.Name = "INVOICE";
-        invoiceParameter.Value = invoice;
-        var dateParameter = new RequestVerifySmsIrParameters();
-        dateParameter.Name = "DATE";
-        dateParameter.Value = persianDate;
-        RequestSMSIrViewModel.Parameters = new[] { invoiceParameter, dateParameter };
-        RequestSMSIrViewModel.TemplateId = _smsSettings.invoiceTemplateId;
-        RequestSMSIrViewModel.Mobile = mobile;
-        var result =
-            await http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
-                apiName, apiKey, RequestSMSIrViewModel, url);
+        var invoiceParameter = new RequestVerifySmsIrParameters
+        {
+            Name = "INVOICE",
+            Value = invoice
+        };
+        var dateParameter = new RequestVerifySmsIrParameters
+        {
+            Name = "DATE",
+            Value = persianDate
+        };
+        foreach (var item in mobile)
+        {
+            var requestSmsIrViewModel = new RequestVerifySmsIrViewModel
+            {
+                Parameters = new[] { invoiceParameter, dateParameter },
+                TemplateId = _smsSettings.invoiceTemplateId,
+                Mobile = item
+            };
+            var response =
+                await http.PostAsyncWithApiKeyByRequestModel<RequestVerifySmsIrViewModel, ResponseVerifySmsIrViewModel>(
+                    apiName, apiKey, requestSmsIrViewModel, url);
+            result.Add(response);
+        }
         return result;
     }
 

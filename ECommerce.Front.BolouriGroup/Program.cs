@@ -1,9 +1,14 @@
 using ECommerce.Front.BolouriGroup;
 using ECommerce.Services.IServices;
 using ECommerce.Services.Services;
+using Hangfire;
+using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using SQLiteStorageOptions = Hangfire.Storage.SQLite.SQLiteStorageOptions;
+using Hangfire.Dashboard.BasicAuthorization;
+
 
 DotNetEnv.Env.TraversePath().Load("../.env");
 
@@ -88,6 +93,27 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<SmsIrSettings>(builder.Configuration.GetSection("SmsIr"));
 
+// Add HangFire services
+var hangFireDatabasePath = System.IO.Directory.GetCurrentDirectory();
+hangFireDatabasePath += @"\wwwroot\Databases\library.db";
+
+SQLiteStorageOptions SQLiteStorageOptions = new SQLiteStorageOptions
+{
+    InvisibilityTimeout = TimeSpan.FromMinutes(5),
+    QueuePollInterval = TimeSpan.FromMilliseconds(1),
+};
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSQLiteStorage(hangFireDatabasePath, SQLiteStorageOptions)
+);
+
+// Add the processing server as IHostedService
+builder.Services.AddHangfireServer();
+
+
+
 #region DI
 
 builder.Services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
@@ -156,6 +182,35 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+
+var options = new DashboardOptions
+{
+    Authorization = new[]
+    {
+        new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
+        {
+            SslRedirect = false,
+            RequireSsl = false,
+            LoginCaseSensitive = true,
+            Users = new []
+            {
+                new BasicAuthAuthorizationUser
+                {
+                    Login = "user",
+                    PasswordClear = "password"
+                }
+            }
+        })
+    }
+};
+
+app.UseHangfireDashboard(
+    "/SunFlowerHangFire",
+   options
+);
+
+
 app.UseOnlineUsers();
 app.UseRouting();
 
