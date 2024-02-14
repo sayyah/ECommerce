@@ -2,6 +2,7 @@
 using System.Text;
 using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
+using Hangfire;
 using PersianDate.Standard;
 using ZarinpalSandbox;
 
@@ -100,12 +101,12 @@ public class InvoiceModel(IPurchaseOrderService purchaseOrderService,
                     }
                     else if (result.Code == ServiceCode.Success)
                     {
-                        string num1 = configuration.GetValue<string>("InvoiceNumbers:num1");
-                        await userService.SendInvocieSms(
-                            result.Message ?? "",
-                            num1,
-                            DateTime.Now.ToString("MM/dd/yyyy")
-                        );
+                        var numbers = configuration.GetSection("InvoiceNumbers:Numbers").Get<string[]>();
+                        var job = BackgroundJob.Enqueue(
+                            () => userService.SendInvoiceSms(
+                                                        result.Message ?? "",
+                                                        numbers,
+                                                        DateTime.Now.ToString("MM/dd/yyyy")) );
                         Code = result.Code.ToString();
                         Message = "سفارش شما با موفقیت ثبت شد";
                     }
@@ -185,30 +186,15 @@ public class InvoiceModel(IPurchaseOrderService purchaseOrderService,
                 }
                 else if (resulPay.Code == ServiceCode.Success)
                 {
-                    string? num1 = configuration.GetValue<string>("InvoiceNumbers:num1");
-                    string? num2 = configuration.GetValue<string>("InvoiceNumbers:num2");
-                    string? num3 = configuration.GetValue<string>("InvoiceNumbers:num3");
-                    string? num4 = configuration.GetValue<string>("InvoiceNumbers:num4");
-                    await userService.SendInvocieSms(
+
+                    var numbers = configuration.GetSection("InvoiceNumbers:Numbers").Get<string[]>();
+                    var job = BackgroundJob.Enqueue(
+                        ()=> userService.SendInvoiceSms(
                         resulPay.Message ?? "",
-                        num1,
-                        DateTime.Now.ToFa()
-                    );
-                    await userService.SendInvocieSms(
-                        resulPay.Message ?? "",
-                        num2,
-                        DateTime.Now.ToFa()
-                    );
-                    await userService.SendInvocieSms(
-                        resulPay.Message ?? "",
-                        num3,
-                        DateTime.Now.ToFa()
-                    );
-                    await userService.SendInvocieSms(
-                        resulPay.Message ?? "",
-                        num4,
-                        DateTime.Now.ToFa()
-                    );
+                        numbers,
+                        DateTime.Now.ToFa(("MM/dd/yyyy"))
+                        ));
+              
                     Code = resulPay.Code.ToString();
                     Message = "سفارش شما با موفقیت ثبت شد";
                 }

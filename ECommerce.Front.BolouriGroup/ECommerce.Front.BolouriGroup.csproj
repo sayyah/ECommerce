@@ -17,13 +17,26 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="DotNetEnv" Version="2.5.0" />
+		<PackageReference Include="Hangfire" Version="1.8.*" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.*" />
+		<PackageReference Include="Hangfire.Dashboard.BasicAuthorization" Version="1.0.*" />
+		<PackageReference Include="Hangfire.SQLite" Version="1.4.*" />
+		<PackageReference Include="Hangfire.SQLite.Core" Version="1.0.*" />
+		<PackageReference Include="Hangfire.Storage.SQLite" Version="0.3.*" />
 		<PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.86" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
 		<PackageReference Include="PersianDate" Version="3.5.5" />
 		<PackageReference Include="PersianDateTimePicker" Version="1.0.1.1" />
 		<PackageReference Include="RazorEngineCore" Version="2023.11.2" />
+		<PackageReference Include="Stub.System.Data.SQLite.Core.NetFramework" Version="1.0.118" />
+		<PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+		<PackageReference Include="System.Data.SQLite.EF6" Version="1.0.118" />
+		<PackageReference Include="System.Data.SQLite.Linq" Version="1.0.118" />
 		<PackageReference Include="ZarinpalSandbox" Version="2.0.4" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.*" />
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.*" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -48,6 +61,10 @@
 
 	<ItemGroup>
 		<UpToDateCheckInput Remove="Pages\Components\Username\Default.cshtml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="wwwroot\Databases\library.db" />
 	</ItemGroup>
 
 	<!--
