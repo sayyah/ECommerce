@@ -259,9 +259,11 @@
             setCities(event);
         }
 
-        $(document).ready(function () {
-            setCities(event);
-        });
+        document.onreadystatechange = () => {
+            if (document.readyState === "complete") {
+                setCities(event);
+            }
+        };
 
         function CalculateDiscount() {
             $.ajax({
