@@ -190,7 +190,6 @@ builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
 
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 builder.Services.AddRepositories(Assembly.GetExecutingAssembly());
-builder.Services.ExecuteRegistratorsFromAssemblyOf<ECommerce.Infrastructure.Ioc.DtoMappersRegistrar>();
 builder.Services.ExecuteRegistratorsFromAssemblyOf<ECommerce.API.Ioc.DtoMappersRegistrar>();
 builder.Services.ExecuteRegistratorsFromAssemblyOf<QueryHandlerRegistrar>();
 
