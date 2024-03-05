@@ -56,6 +56,11 @@ public class BlogRepository(SunflowerECommerceDbContext context) : RepositoryBas
         return result;
     }
 
+    public async Task<List<Blog>> GetByBlogCategoryId(int categoryId, CancellationToken cancellationToken)
+    {
+        return await context.Blogs.Where(x => x.BlogCategoryId == categoryId).ToListAsync(cancellationToken);
+    }
+
     public IQueryable<Blog> Search(PaginationParameters paginationParameters)
     {
         return context.Blogs.Where(x => x.Title.Contains(paginationParameters.Search)

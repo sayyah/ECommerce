@@ -1,4 +1,5 @@
 ﻿using ECommerce.Application.Services.Objects;
+using ECommerce.Domain.Entities;
 
 namespace ECommerce.Infrastructure.Repository;
 
@@ -11,7 +12,7 @@ public class BlogCategoryRepository(SunflowerECommerceDbContext context) : Repos
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<CategoryParentViewModel>?> Parents(int blogId, CancellationToken cancellationToken)
+    public async Task<List<BlogCategory>?> Parents(int blogId, CancellationToken cancellationToken)
     {
         var blogCategoryId = 0;
         if (blogId > 0)
@@ -22,41 +23,22 @@ public class BlogCategoryRepository(SunflowerECommerceDbContext context) : Repos
         }
 
         var allCategory = await context.BlogCategories.ToListAsync(cancellationToken);
+        return allCategory;
 
-        var result = await Children(allCategory, blogCategoryId, null);
-        return result.OrderBy(x => x.DisplayOrder).ToList();
     }
 
-    public PagedList<BlogCategory> Search(PaginationParameters paginationParameters)
+    public void EditWithRelations(BlogCategory blogCategory)
     {
-        return PagedList<BlogCategory>.ToPagedList(
+        context.Entry(blogCategory).State = EntityState.Modified;
+        Entities.Update(blogCategory);
+    }
+
+    public IQueryable<BlogCategory> Search(PaginationParameters paginationParameters)
+    {
+        return
             context.BlogCategories.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id),
-            paginationParameters.PageNumber,
-            paginationParameters.PageSize);
+                .OrderBy(on => on.Id);
     }
 
-    private async Task<List<CategoryParentViewModel>> Children(List<BlogCategory> allCategory,
-        int blogCategoryId, int? parentId)
-    {
-        var temp = new List<CategoryParentViewModel>();
-        var ret = new List<CategoryParentViewModel>();
-        foreach (var parent in allCategory.Where(p => p.ParentId == parentId).ToList())
-        {
-            if (allCategory.Any(p => p.ParentId == parent.Id))
-                temp = await Children(allCategory, blogCategoryId, parent.Id);
 
-            ret.Add(new CategoryParentViewModel
-            {
-                Id = parent.Id,
-                Name = parent.Name,
-                Depth = (int)parent.Depth,
-                Children = temp,
-                Checked = blogCategoryId == parent.Id
-            });
-            temp = new List<CategoryParentViewModel>();
-        }
-
-        return ret;
-    }
 }

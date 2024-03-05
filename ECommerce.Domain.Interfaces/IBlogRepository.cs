@@ -14,4 +14,5 @@ public interface IBlogRepository : IRepositoryBase<Blog>
     Task<Blog?> GetByUrl(string url, CancellationToken cancellationToken);
     IQueryable<Blog> GetBlogByIdWithInclude(int blogId);
     IQueryable<Blog> GetBlogByUrlWithInclude(string blogUrl);
+    Task<List<Blog>> GetByBlogCategoryId(int categoryId, CancellationToken cancellationToken);
 }
