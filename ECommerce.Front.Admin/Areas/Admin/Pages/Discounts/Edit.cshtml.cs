@@ -11,11 +11,7 @@ public class EditModel(IDiscountService discountService) : PageModel
 
     public async Task OnGet(int id)
     {
-       await Initial(id);
-    }
-
-    private async Task Initial(int id)
-    {
+        return;
         var result = await discountService.GetById(id);
         Discount = result.ReturnData;
         if (!Discount.Amount.HasValue) WithPrice = false;
@@ -45,7 +41,7 @@ public class EditModel(IDiscountService discountService) : PageModel
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
         }
-        await Initial(Discount.Id);
+        //await Initial(Discount.Id);
         return Page();
     }
 }

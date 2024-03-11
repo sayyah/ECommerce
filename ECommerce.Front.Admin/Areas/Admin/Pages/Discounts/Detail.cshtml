@@ -45,13 +45,44 @@
                             </label>
                         </div>
                         <div class="form-group">
-                            <label>کد تخفیف</label>
-                            <input asp-for="@Model.Discount.Code" class="form-control form-control-solid" disabled/>
-                            <span asp-validation-for="@Model.Discount.Code" class="mt-5" style="color: red; margin-top: 10px"></span>
+                            <label>نوع تخفیف</label>
+                            <input asp-for="@Model.Discount.DiscountType" class="form-control" disabled/>
                         </div>
+                            @if (Model.Discount.DiscountType == DiscountType.Coupon)
+                            {
+                                <div class="form-group">
+                                    <label>کد تخفیف:</label>
+                                    <input asp-for="@Model.Discount.Code" class="form-control form-control-solid" disabled/>
+                                    <span asp-validation-for="@Model.Discount.Code" class="mt-5" style="color: red; margin-top: 10px"></span>
+                                </div>
+
+                            }
+                            @if (Model.Discount.DiscountType == DiscountType.Category)
+                            {
+                                <div class="form-group">
+                                    <label>دسته ها:</label>
+                                    <ui blog-widget-tag>
+                                        @foreach (var item in Model.Discount.Categories)
+                                        {
+                                            <li>@item.Name</li>
+                                        }
+                                    </ui>
+                                </div>
+                            }
+                            @if (Model.Discount.DiscountType == DiscountType.Price)
+                            {
+                                <div class="form-group">
+                                    <label>کالا:</label>
+                                    <ui blog-widget-tag>
+                                        @foreach (var item in Model.Discount.Prices)
+                                        {
+                                            <li>@item.Product.Name</li>
+                                        }
+                                    </ui>
+                                </div>
+                            }
                     </div>
                     <div class="card-footer">
-                        <a class="btn btn-primary mr-2" asp-Page="/Discounts/edit" asp-area="Admin" asp-route-id="@Model.Discount.Id">ویرایش</a>
                         <a class="btn btn-secondary" asp-Page="/Discounts/index" asp-area="Admin">لغو</a>
                     </div>
                 </form>

@@ -44,8 +44,100 @@ public class CartService(IHttpService http, ICookieService cookieService, IProdu
         };
     }
 
-    public async Task<ServiceResult<List<PurchaseOrderViewModel>>> CartListFromServer(
-        bool shouldUpdatePurchaseOrderDetails = false)
+    private struct CookiesProduct
+    {
+        public int ProductId { get; set; }
+        public ushort ProductNumber { get; set; }
+        public int ProductPrice { get; set; }
+    }
+
+    private async Task<List<PurchaseOrderViewModel>> ReadFromCookies(HttpContext context)
+    {
+        var carts = new List<PurchaseOrderViewModel>();
+
+        var productList = new List<CookiesProduct>();
+
+        var cookies = cookieService.GetCookie(context, _key);
+        foreach (var cookie in cookies.OrderBy(x => x.Key))
+        {
+            var temp = cookie.Key.Split("-");
+            var productCode = Convert.ToInt32(temp[1]);
+            var productCount = Convert.ToUInt16(cookie.Value);
+            var priceId = Convert.ToInt32(temp[2]);
+            if (productCode <= 0 || productCount <= 0 || priceId <= 0) continue;
+            productList.Add(new CookiesProduct
+            {
+                ProductId = productCode,
+                ProductNumber = productCount,
+                ProductPrice = priceId,
+            });
+        }
+
+        var responseProduct = await productService.ProductsWithIdsForCart(productList.Select(x => x.ProductId).ToList());
+        if (responseProduct.Code > 0)
+            return carts;
+
+        for (var i = 0; i < responseProduct.ReturnData.Count; i++)
+        {
+            var product = productList.First(x => x.ProductId == responseProduct.ReturnData[i].Id);
+            var priceId = product.ProductPrice;
+            var price = responseProduct.ReturnData[i].Prices.Where(x => x.Id == priceId).FirstOrDefault();
+            if (price == null)
+                continue;
+            var quantity = responseProduct.ReturnData[i].MaxOrder < product.ProductNumber && responseProduct.ReturnData[i].MaxOrder > 0
+                ? responseProduct.ReturnData[i].MaxOrder
+                : product.ProductNumber;
+
+            decimal? discount = 0;
+            var priceDiscount = price.Discount;
+            if (priceDiscount != null)
+            {
+                discount = priceDiscount.Amount > 0 ? priceDiscount.Amount : price.Amount * (decimal)priceDiscount.Percent / 100;
+            }
+            else
+            {
+                int? categoryDiscountAmount = 0;
+                double? categoryDiscountPercent = 0;
+                if (responseProduct.ReturnData[i].Categories != null)
+                    foreach (var category in responseProduct.ReturnData[i].Categories)
+                    {
+                        if (category.Discount != null && category.Discount.IsActive)
+                        {
+                            categoryDiscountAmount = category.Discount.Amount;
+                            categoryDiscountPercent = category.Discount.Percent;
+                        }
+                    }
+                discount = categoryDiscountAmount > 0 ? categoryDiscountAmount : price.Amount * (decimal)categoryDiscountPercent / 100;
+            }
+
+            discount = discount > price.Amount ? price.Amount : discount;
+
+            var tempPurchaseOrderDetail = new PurchaseOrderViewModel
+            {
+                ProductId = responseProduct.ReturnData[i].Id,
+                Quantity = quantity,
+                Name = responseProduct.ReturnData[i].Name,
+                Price = price,
+                Url = responseProduct.ReturnData[i].Url,
+                ImagePath = responseProduct.ReturnData[i].ImagePath,
+                Alt = responseProduct.ReturnData[i].Alt,
+                Brand = responseProduct.ReturnData[i].Brand,
+                SumPrice = price.Amount * quantity,
+                PriceAmount = price.Amount,
+                PriceId = priceId,
+                ColorName = price.Color.Name,
+                Id = responseProduct.ReturnData[i].Id,
+                DiscountAmount = (int)discount,
+                Exist = price.Exist                
+            };
+
+            carts.Add(tempPurchaseOrderDetail);
+        }
+
+        return carts;
+    }
+
+    public async Task<ServiceResult<List<PurchaseOrderViewModel>>> CartListFromServer(bool shouldUpdatePurchaseOrderDetails = false)
     {
         var currentUser = cookieService.GetCurrentUser();
         if (currentUser.Id != 0)
@@ -66,7 +158,36 @@ public class CartService(IHttpService http, ICookieService cookieService, IProdu
         var productResult = await productService.ProductsWithIdsForCart(new List<int> { productId });
         var productFromServer = productResult.ReturnData[0];
 
-        var exist = productFromServer.Prices.First(x => x.Id == priceId).Exist;
+        var price = productFromServer.Prices.First(x => x.Id == priceId);
+        var exist = price.Exist;
+
+        decimal? discountAmount = 0;
+        int? discountId = null;
+        var priceDiscount = productFromServer.Prices.First(x => x.Id == priceId).Discount;
+        if (priceDiscount != null)
+        {
+            discountAmount = priceDiscount.Amount > 0 ? priceDiscount.Amount : price.Amount * (decimal)priceDiscount.Percent / 100;
+            discountId = priceDiscount.Id;
+        }
+        else
+        {
+            int? categoryDiscountAmount = 0;
+            double? categoryDiscountPercent = 0;
+            if (productFromServer.Categories != null)
+                foreach (var category in productFromServer.Categories)
+                {
+                    if (category.Discount != null && category.Discount.IsActive)
+                    {
+                        categoryDiscountAmount = category.Discount.Amount;
+                        categoryDiscountPercent = category.Discount.Percent;
+                        discountId = category.Discount.Id;
+                    }
+                }
+            discountAmount = categoryDiscountAmount > 0 ? categoryDiscountAmount : price.Amount * (decimal)categoryDiscountPercent / 100;
+        }
+
+        discountAmount = discountAmount > price.Amount ? price.Amount : discountAmount;
+
         var maxOrder = productFromServer.MaxOrder;
 
         var currentUser = cookieService.GetCurrentUser();
@@ -111,7 +232,8 @@ public class CartService(IHttpService http, ICookieService cookieService, IProdu
             Quantity = Convert.ToUInt16(count),
             ProductId = productId,
             PriceId = priceId,
-            DiscountAmount = 0
+            DiscountAmount = (int) discountAmount!,
+            DiscountId = discountId,
         };
         var result = await Create(Url, purchaseOrderViewModel);
         if (result.Code == ResultCode.Repetitive)
@@ -175,74 +297,5 @@ public class CartService(IHttpService http, ICookieService cookieService, IProdu
 
         var success = await Delete(Url, id);
         return Return(success);
-    }
-
-    private async Task<List<PurchaseOrderViewModel>> ReadFromCookies(HttpContext context)
-    {
-        var carts = new List<PurchaseOrderViewModel>();
-
-        var productList = new List<CookiesProduct>();
-
-        var cookies = cookieService.GetCookie(context, _key);
-        foreach (var cookie in cookies.OrderBy(x => x.Key))
-        {
-            var temp = cookie.Key.Split("-");
-            var productCode = Convert.ToInt32(temp[1]);
-            var productCount = Convert.ToUInt16(cookie.Value);
-            var priceId = Convert.ToInt32(temp[2]);
-            if (productCode <= 0 || productCount <= 0 || priceId <= 0) continue;
-            productList.Add(new CookiesProduct
-            {
-                ProductId = productCode,
-                ProductNumber = productCount,
-                ProductPrice = priceId
-            });
-        }
-
-        var responseProduct =
-            await productService.ProductsWithIdsForCart(productList.Select(x => x.ProductId).ToList());
-        if (responseProduct.Code > 0)
-            return carts;
-
-        for (var i = 0; i < responseProduct.ReturnData.Count; i++)
-        {
-            var product = productList.First(x => x.ProductId == responseProduct.ReturnData[i].Id);
-            var priceId = product.ProductPrice;
-            var price = responseProduct.ReturnData[i].Prices.Where(x => x.Id == priceId).FirstOrDefault();
-            if (price == null)
-                continue;
-            var quantity = responseProduct.ReturnData[i].MaxOrder < product.ProductNumber &&
-                           responseProduct.ReturnData[i].MaxOrder > 0
-                ? responseProduct.ReturnData[i].MaxOrder
-                : product.ProductNumber;
-            var tempPurchaseOrderDetail = new PurchaseOrderViewModel
-            {
-                ProductId = responseProduct.ReturnData[i].Id,
-                Quantity = quantity,
-                Name = responseProduct.ReturnData[i].Name,
-                Price = price,
-                Url = responseProduct.ReturnData[i].Url,
-                ImagePath = responseProduct.ReturnData[i].ImagePath,
-                Alt = responseProduct.ReturnData[i].Alt,
-                Brand = responseProduct.ReturnData[i].Brand,
-                SumPrice = price.Amount * quantity,
-                PriceAmount = price.Amount,
-                PriceId = priceId,
-                ColorName = price.Color.Name,
-                Id = responseProduct.ReturnData[i].Id,
-                Exist = price.Exist
-            };
-
-            carts.Add(tempPurchaseOrderDetail);
-        }
-
-        return carts;
-    }
-
-    private struct CookiesProduct
-    {
-        public int ProductId { get; set; }
-        public ushort ProductNumber { get; set; }
-        public int ProductPrice { get; set; }
     }
 }

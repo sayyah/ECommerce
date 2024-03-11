@@ -17,7 +17,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -4038,9 +4038,14 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
+
+                    b.Property<int?>("CouponQty")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DiscountType")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -4447,6 +4452,9 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("DiscountId")
+                        .HasColumnType("int");
+
                     b.Property<int>("HolooCompanyId")
                         .HasColumnType("int");
 
@@ -4495,6 +4503,8 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
+
+                    b.HasIndex("DiscountId");
 
                     b.HasIndex("HolooCompanyId");
 
@@ -5702,7 +5712,7 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             Birthday = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "6059c33c-aacc-4348-a731-ce1727c331f6",
+                            ConcurrencyStamp = "5211b5d6-dd3b-408a-8d11-4b2b96a6c144",
                             Email = "sayyah.alireza@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Alireza",
@@ -5717,10 +5727,10 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                             Mobile = "No Mobile",
                             NormalizedEmail = "SAYYAH.ALIREZA@GMAIL.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK8wjIF038UjDcsPXFdGExtZQBSLTkOtEMf2hQUMkHV7YFtFDyEFT24PfMD15e7lhg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGh/vR7RmyXw7NjXu7Y9pDRNAyKQPGSmKDLsRxyRUXxLTuzce4cJztWK5+oyXqBjpQ==",
                             PhoneNumber = "0911307006",
                             PhoneNumberConfirmed = true,
-                            RegisterDate = new DateTime(2023, 12, 31, 7, 44, 44, 95, DateTimeKind.Local).AddTicks(771),
+                            RegisterDate = new DateTime(2024, 3, 19, 6, 13, 44, 164, DateTimeKind.Local).AddTicks(4311),
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "superadmin",
@@ -6176,6 +6186,10 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                         .WithMany("Products")
                         .HasForeignKey("BrandId");
 
+                    b.HasOne("ECommerce.Domain.Entities.Discount", "Discount")
+                        .WithMany("Products")
+                        .HasForeignKey("DiscountId");
+
                     b.HasOne("ECommerce.Domain.Entities.HolooCompany", "HolooCompany")
                         .WithMany()
                         .HasForeignKey("HolooCompanyId")
@@ -6195,6 +6209,8 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                         .IsRequired();
 
                     b.Navigation("Brand");
+
+                    b.Navigation("Discount");
 
                     b.Navigation("HolooCompany");
 
@@ -6644,6 +6660,8 @@ namespace ECommerce.Infrastructure.DataContext.Migrations
                     b.Navigation("Categories");
 
                     b.Navigation("Prices");
+
+                    b.Navigation("Products");
 
                     b.Navigation("PurchaseOrderDetails");
 

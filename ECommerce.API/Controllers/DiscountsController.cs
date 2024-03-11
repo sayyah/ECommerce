@@ -1,5 +1,5 @@
 ﻿using ECommerce.Domain.Entities.HolooEntity;
-using System.Threading;
+using Ecommerce.Entities.ViewModel;
 
 namespace ECommerce.API.Controllers;
 
@@ -52,7 +52,8 @@ public class DiscountsController(IUnitOfWork unitOfWork, ILogger<DiscountsContro
     {
         try
         {
-            var result = await _discountRepository.GetByIdAsync(cancellationToken, id);
+            var result = await _discountRepository.GetByIdAsync(id, cancellationToken);
+
             if (result == null)
                 return Ok(new ApiResult
                 {
@@ -190,7 +191,7 @@ public class DiscountsController(IUnitOfWork unitOfWork, ILogger<DiscountsContro
 
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Post(Discount? discount, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post(DiscountViewModel discount, CancellationToken cancellationToken)
     {
         try
         {
@@ -210,7 +211,7 @@ public class DiscountsController(IUnitOfWork unitOfWork, ILogger<DiscountsContro
                 });
 
             var repetitiveCode = await _discountRepository.GetByCode(discount.Code, cancellationToken);
-            if (repetitiveCode != null)
+            if (repetitiveCode != null && discount.DiscountType==DiscountType.Coupon)
                 return Ok(new ApiResult
                 {
                     Code = ResultCode.Repetitive,
@@ -223,6 +224,7 @@ public class DiscountsController(IUnitOfWork unitOfWork, ILogger<DiscountsContro
             return Ok(new ApiResult
             {
                 Code = ResultCode.Success,
+                ReturnData = await _discountRepository.AddWithRelations(discount, cancellationToken)
             });
         }
         catch (Exception e)

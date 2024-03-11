@@ -1,4 +1,5 @@
-﻿using ECommerce.Application.Services.Commands.Purchase.Purchases;
+﻿using System.Linq.Expressions;
+using ECommerce.Application.Services.Commands.Purchase.Purchases;
 using ECommerce.Domain.Entities;
 using ECommerce.Domain.Entities.HolooEntity;
 
@@ -314,7 +315,6 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
             if (prices != null)
             {
                 var price = prices.FirstOrDefault(x => x.Id == createPurchaseCommand.PriceId);
-
                 //var colleaguePrice = product.Prices.Where(x => x.IsColleague == createPurchaseCommand.IsColleague ).ToList();
                 //var minPrice = colleaguePrice.Any()
                 //    ? colleaguePrice.Where(x => x.MinQuantity <= createPurchaseCommand.Quantity).ToList()
@@ -324,14 +324,14 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
 
                 //var price = maxPrice ?? product.Prices.FirstOrDefault();
                 var repetitivePurchaseOrder =
-                    await _purchaseOrderRepository.GetByUser(createPurchaseCommand.UserId, Status.New, cancellationToken);
+                    await _purchaseOrderRepository.GetByUser(createPurchaseCommand.UserId, Status.New,
+                        cancellationToken);
 
                 var repetitivePurchaseOrderDetails =
                     repetitivePurchaseOrder?.PurchaseOrderDetails?.FirstOrDefault(
                         x =>
                             x.ProductId == createPurchaseCommand.ProductId &&
-                            x.PriceId == createPurchaseCommand.PriceId
-                    );
+                            x.PriceId == createPurchaseCommand.PriceId);
 
                 var repetitiveQuantity = repetitivePurchaseOrderDetails?.Quantity ?? 0;
 
@@ -398,7 +398,7 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                             });
                         }
 
-                        _purchaseOrderDetailRepository.Add(new PurchaseOrderDetail
+                        await _purchaseOrderDetailRepository.AddAsync(new PurchaseOrderDetail
                         {
                             PurchaseOrderId = repetitivePurchaseOrder.Id,
                             Name = product.Name,
@@ -406,10 +406,11 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                             ProductId = product.Id,
                             PriceId = price!.Id,
                             Quantity = createPurchaseCommand.Quantity,
-                            SumPrice = sumPrice
-                        });
+                            SumPrice = sumPrice,
+                            DiscountAmount = createPurchaseCommand.DiscountAmount,
+                            DiscountId = createPurchaseCommand.DiscountId,
+                        }, cancellationToken);
                         _purchaseOrderRepository.Update(repetitivePurchaseOrder);
-                        await unitOfWork.SaveAsync(cancellationToken);
 
                         return Ok(new ApiResult
                         {
@@ -418,41 +419,45 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                         });
                     }
 
-                    var purchaseOrder = new PurchaseOrder
+                    var purchaseOrder = await _purchaseOrderRepository.AddAsync(new PurchaseOrder
                     {
                         Amount = sumPrice,
                         Status = 0,
                         UserId = createPurchaseCommand.UserId,
-                        DiscountAmount = createPurchaseCommand.DiscountAmount
-                    };
-                    var purchaseOrderDetail = new PurchaseOrderDetail
+                    }, cancellationToken);
+                    var purchaseOrderDetail = await _purchaseOrderDetailRepository.AddAsync(new PurchaseOrderDetail
                     {
+                        PurchaseOrderId = purchaseOrder.Id,
                         Name = product.Name,
                         UnitPrice = unitPrice,
                         ProductId = product.Id,
                         PriceId = price!.Id,
                         Quantity = createPurchaseCommand.Quantity,
-                        SumPrice = sumPrice
-                    };
-                    purchaseOrder.PurchaseOrderDetails?.Add(purchaseOrderDetail);
-                    _purchaseOrderRepository.Add(purchaseOrder);
+                        SumPrice = sumPrice,
+                        DiscountAmount = createPurchaseCommand.DiscountAmount
+                    }, cancellationToken);
+                    purchaseOrder.PurchaseOrderDetails.Add(purchaseOrderDetail);
+                    return Ok(new ApiResult
+                    {
+                        Messages = new[] { "کالا با موفقیت به سبد خرید اضافه شد" },
+                        Code = ResultCode.Success
+                    });
+
                 }
             }
-
-            await unitOfWork.SaveAsync(cancellationToken);
-
             return Ok(new ApiResult
             {
-                Messages = new[] { "کالا با موفقیت به سبد خرید اضافه شد" },
-                Code = ResultCode.Success
+                Code = ResultCode.BadRequest
             });
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
+            return Ok(new ApiResult { Code = ResultCode.DatabaseError
+            });
         }
     }
+
 
     [HttpPut]
     [Authorize(Roles = "Client,Admin,SuperAdmin")]
@@ -542,174 +547,193 @@ public class PurchaseOrdersController(IUnitOfWork unitOfWork, ILogger<PurchaseOr
                     Code = ResultCode.BadRequest
                 });
             if (string.IsNullOrEmpty(purchaseOrder.Description)) purchaseOrder.Description = "";
-            Discount? discount = null;
+            Discount? orderDiscount = null;
             if (purchaseOrder.DiscountId != null)
             {
-                discount = await _discountRepository.GetByIdAsync(cancellationToken, purchaseOrder.DiscountId);
-                if (discount != null && (!discount.IsActive ||
-                    discount.StartDate?.Date > DateTime.Now.Date ||
-                    discount.EndDate?.Date < DateTime.Now.Date))
-                    discount = null;
+                orderDiscount = await _discountRepository.GetByIdAsync(cancellationToken, purchaseOrder.DiscountId);
+                if (!orderDiscount.IsActive ||
+                    orderDiscount.StartDate?.Date > DateTime.Now.Date ||
+                    orderDiscount.EndDate?.Date < DateTime.Now.Date)
+                {
+                    orderDiscount = null;
+                }
             }
 
             //purchaseOrder.PaymentDate = DateTime.Now;
             var resultUser = await _userRepository.GetByIdAsync(cancellationToken, purchaseOrder.UserId);
-            if (resultUser != null)
+            var cCode = resultUser.CustomerCode;
+            var (fCode, fCodeC) = await _fBailRepository.GetFactorCode(cancellationToken);
+            var amount = Convert.ToDouble(purchaseOrder.Amount);
+            double? takhfif = 0;
+
+            var orderDetailsDiscount = 0;
+            foreach (var item in purchaseOrder.PurchaseOrderDetails!)
             {
-                var cCode = resultUser.CustomerCode;
-                var (fCode, fCodeC) = await _fBailRepository.GetFactorCode(cancellationToken);
-                var amount = Convert.ToDouble(purchaseOrder.Amount);
-                double? calculateDiscount = null;
-                if (discount != null) calculateDiscount = (amount - CalculateDiscount(discount, amount)) * 10;
+                orderDetailsDiscount = orderDetailsDiscount + (int)item.DiscountAmount! * item.Quantity;
+            }
 
-                amount *= 10;
-                var userCode = Convert.ToInt32(configuration.GetValue<string>("UserCode"));
-                var fBail = await _fBailRepository.Add(new HolooFBail
+            takhfif = orderDetailsDiscount;
+
+            if (orderDiscount != null)
+            {
+                var amountWithOrderDetailsDiscount = amount - orderDetailsDiscount;
+                takhfif = takhfif + (amountWithOrderDetailsDiscount -
+                                     CalculateDiscount(orderDiscount, amountWithOrderDetailsDiscount));
+            }
+
+            takhfif = takhfif > 0 ? takhfif * 10 : null;
+            amount *= 10;
+
+            var userCode = Convert.ToInt32(configuration.GetValue<string>("UserCode"));
+            var fBail = await _fBailRepository.Add(new HolooFBail
+            {
+                C_Code = cCode,
+                Fac_Code = fCode,
+                Fac_Code_C = fCodeC,
+                Fac_Comment =
+                    $"پیش فاکتور از سایت برای سفارش شماره {purchaseOrder.OrderGuid} به آدرس : {purchaseOrder.SendInformation.State.Name} - {purchaseOrder.SendInformation.City.Name} - {purchaseOrder.SendInformation.Address}, کد پستی : {purchaseOrder.SendInformation.PostalCode}, شماره تماس : {purchaseOrder.SendInformation.Mobile}",
+                Fac_Date = DateTime.Now,
+                Fac_Time = DateTime.Now,
+                Fac_Type = "P",
+                Sum_Price = amount,
+                Takhfif = takhfif,
+                UserCode = userCode
+            }, cancellationToken);
+
+            var aBail = new List<HolooABail>();
+            var i = 1;
+
+            var purchaseOrderDetails =
+                await _purchaseOrderDetailRepository.GetByPurchaseOrderId(purchaseOrder.Id, cancellationToken);
+            var holooArticle = await _articleRepository.GetHolooArticlesDefaultWarehouse(
+                purchaseOrderDetails.Select(c => c.Price?.ArticleCodeCustomer).ToList(), cancellationToken);
+            foreach (var orderDetail in purchaseOrderDetails)
+            {
+                var twoFactor = false;
+                double defaultWarehouseCount = orderDetail.Quantity;
+                double otherWarehouseCount = orderDetail.Quantity;
+                var holooA = holooArticle?.FirstOrDefault(c => c.A_Code_C == orderDetail.Price?.ArticleCodeCustomer);
+                if (holooA?.A_Code != null)
                 {
-                    C_Code = cCode,
-                    Fac_Code = fCode,
-                    Fac_Code_C = fCodeC,
-                    Fac_Comment =
-                        $"پیش فاکتور از سایت برای سفارش شماره {purchaseOrder.OrderGuid} به آدرس : {purchaseOrder.SendInformation?.State?.Name} - {purchaseOrder.SendInformation?.City?.Name} - {purchaseOrder.SendInformation?.Address}, کد پستی : {purchaseOrder.SendInformation?.PostalCode}, شماره تماس : {purchaseOrder.SendInformation?.Mobile}",
-                    Fac_Date = DateTime.Now,
-                    Fac_Time = DateTime.Now,
-                    Fac_Type = "P",
-                    Sum_Price = amount,
-                    Takhfif = calculateDiscount,
-                    UserCode = userCode
-                }, cancellationToken);
-
-                var aBail = new List<HolooABail>();
-                var i = 1;
-
-                var purchaseOrderDetails =
-                    await _purchaseOrderDetailRepository.GetByPurchaseOrderId(purchaseOrder.Id, cancellationToken);
-                var holooArticle = await _articleRepository.GetHolooArticlesDefaultWarehouse(
-                    purchaseOrderDetails.Select(c => c.Price?.ArticleCodeCustomer).ToList(), cancellationToken);
-                foreach (var orderDetail in purchaseOrderDetails)
-                {
-                    var twoFactor = false;
-                    double defaultWarehouseCount = orderDetail.Quantity;
-                    double otherWarehouseCount = orderDetail.Quantity;
-                    var holooA = holooArticle?.FirstOrDefault(c => c.A_Code_C == orderDetail.Price?.ArticleCodeCustomer);
-                    if (holooA?.A_Code != null)
+                    double soldExist = _aBailRepository.GetWithACode(userCode, holooA.A_Code, cancellationToken);
+                    if ((holooA.Exist - soldExist) > 0)
                     {
-                        double soldExist = _aBailRepository.GetWithACode(userCode, holooA.A_Code, cancellationToken);
-                        if ((holooA.Exist - soldExist) > 0)
+                        if ((holooA.Exist - soldExist) < orderDetail.Quantity)
                         {
-                            if ((holooA.Exist - soldExist) < orderDetail.Quantity)
-                            {
-                                twoFactor = true;
-                                defaultWarehouseCount = (double)holooA.Exist! - soldExist;
-                                otherWarehouseCount = orderDetail.Quantity - defaultWarehouseCount;
-                            }
+                            twoFactor = true;
+                            defaultWarehouseCount = (double)holooA.Exist! - soldExist;
+                            otherWarehouseCount = orderDetail.Quantity - defaultWarehouseCount;
+                        }
 
+                        aBail.Add(new HolooABail
+                        {
+                            A_Code = holooA.A_Code,
+                            ACode_C = orderDetail.Price?.ArticleCodeCustomer,
+                            A_Index = Convert.ToInt16(i++),
+                            Fac_Code = fBail,
+                            Fac_Type = "P",
+                            Few_Article = defaultWarehouseCount,
+                            First_Article = defaultWarehouseCount,
+                            Price_BS = Convert.ToDouble(orderDetail.UnitPrice) * 10,
+                            Unit_Few = 0
+                        });
+                    }
+
+                    if (holooA.Exist - soldExist == 0 || twoFactor)
+                    {
+                        var holooArticleOther = await _articleRepository.GetHolooArticlesOtherWarehouse(
+                            purchaseOrderDetails.Select(c => c.Price?.ArticleCodeCustomer).ToList(), cancellationToken);
+                        var holooAOther =
+                            holooArticleOther.FirstOrDefault(c => c.A_Code_C == orderDetail.Price?.ArticleCodeCustomer);
+                        double soldOtherExist =
+                            _aBailRepository.GetWithACode(userCode, holooAOther?.A_Code!, cancellationToken);
+                        if (holooAOther?.Exist - soldOtherExist > 0)
                             aBail.Add(new HolooABail
                             {
-                                A_Code = holooA.A_Code,
+                                A_Code = holooAOther?.A_Code!,
                                 ACode_C = orderDetail.Price?.ArticleCodeCustomer,
                                 A_Index = Convert.ToInt16(i++),
                                 Fac_Code = fBail,
                                 Fac_Type = "P",
-                                Few_Article = defaultWarehouseCount,
-                                First_Article = defaultWarehouseCount,
+                                Few_Article = otherWarehouseCount,
+                                First_Article = otherWarehouseCount,
                                 Price_BS = Convert.ToDouble(orderDetail.UnitPrice) * 10,
                                 Unit_Few = 0
                             });
-                        }
-
-                        if (holooA.Exist - soldExist == 0 || twoFactor)
+                        else
                         {
-                            var holooArticleOther = await _articleRepository.GetHolooArticlesOtherWarehouse(
-                                purchaseOrderDetails.Select(c => c.Price?.ArticleCodeCustomer).ToList(), cancellationToken);
-                            var holooAOther = holooArticleOther.FirstOrDefault(c => c.A_Code_C == orderDetail.Price?.ArticleCodeCustomer);
-                            double soldOtherExist = _aBailRepository.GetWithACode(userCode, holooAOther?.A_Code!, cancellationToken);
-                            if (holooAOther?.Exist - soldOtherExist > 0)
-                                aBail.Add(new HolooABail
-                                {
-                                    A_Code = holooAOther?.A_Code!,
-                                    ACode_C = orderDetail.Price?.ArticleCodeCustomer,
-                                    A_Index = Convert.ToInt16(i++),
-                                    Fac_Code = fBail,
-                                    Fac_Type = "P",
-                                    Few_Article = otherWarehouseCount,
-                                    First_Article = otherWarehouseCount,
-                                    Price_BS = Convert.ToDouble(orderDetail.UnitPrice) * 10,
-                                    Unit_Few = 0
-                                });
-                            else
+                            return Ok(new ApiResult
                             {
-                                return Ok(new ApiResult
-                                {
-                                    Code = ResultCode.BadRequest,
-                                    Messages = new List<string> { "عدم تطابق موجودی کالا" }
-                                });
-                            }
+                                Code = ResultCode.BadRequest,
+                                Messages = new List<string> { "عدم تطابق موجودی کالا" }
+                            });
                         }
                     }
                 }
-
-
-                _aBailRepository.Add(aBail);
-                purchaseOrder.FBailCode = fBail;
-
-
-                if (cCode != null)
-                {
-                    var customer = await _customerRepository.GetCustomerByCode(cCode);
-                    var sanad = new HolooSanad($"کدرهگیری:{purchaseOrder.Transaction?.RefId}-{purchaseOrder.Description}");
-                    var sanadCodes = await _sanadRepository.Add(sanad, cancellationToken);
-                    var sanadCode = Convert.ToInt32(sanadCodes.Item1);
-                    var sanadCodeCustomer = Convert.ToInt32(sanadCodes.Item2);
-                    if (purchaseOrder.Transaction != null)
-                    {
-                        purchaseOrder.Transaction.Amount *= 10;
-                        _transactionRepository.Add(new Transaction
-                        {
-                            Amount = purchaseOrder.Transaction.Amount,
-                            PaymentId = purchaseOrder.Transaction.PaymentId,
-                            HolooCompanyId = purchaseOrder.Transaction.HolooCompanyId,
-                            PaymentMethodId = purchaseOrder.Transaction.PaymentMethodId,
-                            RefId = purchaseOrder.Transaction.RefId,
-                            UserId = purchaseOrder.Transaction.UserId,
-                            TransactionDate = DateTime.Now,
-                            SanadCode = sanadCode,
-                            SanadCodeCustomer = sanadCodeCustomer,
-                            PurchaseOrderId = purchaseOrder.Id
-                        });
-
-                        var colCode = configuration.GetValue<string>("SiteSettings:SanadSettings:col_Code");
-                        var moienCode = configuration.GetValue<string>("SiteSettings:SanadSettings:moien_Code");
-                        var tafziliCode = configuration.GetValue<string>("SiteSettings:SanadSettings:tafzili_Code");
-
-                        if (colCode != null && moienCode != null && tafziliCode != null && customer.Moien_Code_Bed != null)
-                        {
-                            _sanadListRepository.Add(
-                                new HolooSndList(sanadCode, colCode, moienCode, tafziliCode,
-                                    Convert.ToDouble(purchaseOrder.Transaction.Amount), 0,
-                                    $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"));
-                            _sanadListRepository.Add(
-                                new HolooSndList(sanadCode, "103", customer.Moien_Code_Bed, "", 0,
-                                    Convert.ToDouble(purchaseOrder.Transaction.Amount),
-                                    $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"));
-                        }
-                    }
-                }
-
-                purchaseOrder.IsPaid = true;
-                purchaseOrder.PurchaseOrderDetails = null;
-                purchaseOrder.SendInformation = null;
-
-                _purchaseOrderRepository.Update(purchaseOrder);
-                await unitOfWork.SaveAsync(cancellationToken, true);
-
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.Success,
-                    Messages = new List<string> { fBail }
-                });
             }
+
+
+            _aBailRepository.Add(aBail);
+            purchaseOrder.FBailCode = fBail;
+
+
+            if (cCode != null)
+            {
+                var customer = await _customerRepository.GetCustomerByCode(cCode);
+                var sanad = new HolooSanad($"کدرهگیری:{purchaseOrder.Transaction?.RefId}-{purchaseOrder.Description}");
+                var sanadCodes = await _sanadRepository.Add(sanad, cancellationToken);
+                var sanadCode = Convert.ToInt32(sanadCodes.Item1);
+                var sanadCodeCustomer = Convert.ToInt32(sanadCodes.Item2);
+                if (purchaseOrder.Transaction != null)
+                {
+                    purchaseOrder.Transaction.Amount *= 10;
+                    _transactionRepository.Add(new Transaction
+                    {
+                        Amount = purchaseOrder.Transaction.Amount,
+                        PaymentId = purchaseOrder.Transaction.PaymentId,
+                        HolooCompanyId = purchaseOrder.Transaction.HolooCompanyId,
+                        PaymentMethodId = purchaseOrder.Transaction.PaymentMethodId,
+                        RefId = purchaseOrder.Transaction.RefId,
+                        UserId = purchaseOrder.Transaction.UserId,
+                        TransactionDate = DateTime.Now,
+                        SanadCode = sanadCode,
+                        SanadCodeCustomer = sanadCodeCustomer,
+                        PurchaseOrderId = purchaseOrder.Id
+                    });
+
+                    var colCode = configuration.GetValue<string>("SiteSettings:SanadSettings:col_Code");
+                    var moienCode = configuration.GetValue<string>("SiteSettings:SanadSettings:moien_Code");
+                    var tafziliCode = configuration.GetValue<string>("SiteSettings:SanadSettings:tafzili_Code");
+
+                    if (colCode != null && moienCode != null && tafziliCode != null && customer.Moien_Code_Bed != null)
+                    {
+                        _sanadListRepository.Add(
+                            new HolooSndList(sanadCode, colCode, moienCode, tafziliCode,
+                                Convert.ToDouble(purchaseOrder.Transaction.Amount), 0,
+                                $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"));
+                        _sanadListRepository.Add(
+                            new HolooSndList(sanadCode, "103", customer.Moien_Code_Bed, "", 0,
+                                Convert.ToDouble(purchaseOrder.Transaction.Amount),
+                                $"فاکتور شماره {fCodeC} سفارش در سایت به شماره {purchaseOrder.OrderGuid}"));
+                    }
+                }
+            }
+
+            purchaseOrder.IsPaid = true;
+            purchaseOrder.PurchaseOrderDetails = null;
+            purchaseOrder.SendInformation = null;
+
+            _purchaseOrderRepository.Update(purchaseOrder);
+            await unitOfWork.SaveAsync(cancellationToken, true);
+
             return Ok(new ApiResult
+            {
+                Code = ResultCode.Success,
+                Messages = new List<string> { fBail }
+            });
+        
+    
+    return Ok(new ApiResult
             {
                 Code = ResultCode.NotFound,
                 Messages = new List<string> { "دسترسی غیر مجاز"}
