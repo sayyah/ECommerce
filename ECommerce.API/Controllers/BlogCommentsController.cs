@@ -1,203 +1,123 @@
-﻿// Ignore Spelling: Blog
+﻿using AutoMapper;
+using ECommerce.API.DataTransferObject.BlogComments.Commands;
+using ECommerce.API.DataTransferObject.BlogComments.Queries;
+using ECommerce.API.DataTransferObject.Blogs.Commands;
+using ECommerce.API.DataTransferObject.Blogs.Queris;
+using ECommerce.Application.Base.Services.Interfaces;
+using ECommerce.Application.Services.BlogComments.Commands;
+using ECommerce.Application.Services.BlogComments.Queries;
+using ECommerce.Application.Services.BlogComments.Result;
+using ECommerce.Application.Services.Blogs.Commands;
+using ECommerce.Application.Services.Blogs.Queries;
+using ECommerce.Application.Services.Blogs.Results;
 
 namespace ECommerce.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class BlogCommentsController(IUnitOfWork unitOfWork, ILogger<BlogCommentsController> logger)
+public class BlogCommentsController(IMapper mapper)
     : ControllerBase
 {
-    private readonly IBlogCommentRepository _blogCommentRepository = unitOfWork.GetRepository<BlogCommentRepository,BlogComment>();
-    private readonly IImageRepository _imageRepository = unitOfWork.GetRepository <ImageRepository,Image>();
 
     [HttpGet]
-    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
+    public async Task<ActionResult<ICollection<ReadBlogCommentDto>>> Get(
+        [FromQuery] GetBlogCommentQueryDto getBlogCommentQueryDto,
+        [FromServices] IQueryHandler<GetBlogCommentQuery, PagedList<BlogCommentResult>> queryHandler)
     {
-        try
+        if (string.IsNullOrEmpty(getBlogCommentQueryDto.PaginationParameters.Search))
         {
-            if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity =  _blogCommentRepository.Search(paginationParameters);
-            var paginationDetails = new PaginationDetails
-            {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = paginationParameters.Search
-            };
+            getBlogCommentQueryDto.PaginationParameters.Search = "";
+        }
 
-            return Ok(new ApiResult
-            {
-                PaginationDetails = paginationDetails,
-                Code = ResultCode.Success,
-                ReturnData = entity
-            });
-        }
-        catch (Exception e)
+        GetBlogCommentQuery query = mapper.Map<GetBlogCommentQuery>(getBlogCommentQueryDto);
+        var blogComments = await queryHandler.HandleAsync(query);
+        PagedList<ReadBlogCommentDto> blogCommentDto = mapper.Map<PagedList<ReadBlogCommentDto>>(blogComments);
+        return Ok(new ApiResult
         {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = blogCommentDto
+        });
     }
 
     [HttpGet]
-    public async Task<ActionResult<BlogComment>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ReadBlogCommentDto>> GetById(
+        [FromQuery] GetBlogCommentByIdQueryDto getBlogCommentByIdQueryDto,
+        [FromServices] IQueryHandler<GetBlogCommentByIdQuery, BlogCommentResult> queryHandler)
     {
-        try
+        GetBlogCommentByIdQuery query = mapper.Map<GetBlogCommentByIdQuery>(getBlogCommentByIdQueryDto);
+        var blogComments = await queryHandler.HandleAsync(query);
+        ReadBlogCommentDto blogCommentDto = mapper.Map<ReadBlogCommentDto>(blogComments);
+        return Ok(new ApiResult
         {
-            var result = _blogCommentRepository.GetByIdWithInclude("Answer,Blog", id);
-            if (result?.Blog == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.NotFound
-                });
+            Code = ResultCode.Success,
+            ReturnData = blogCommentDto
+        });
+    }
 
-            result.Blog.Image = await _imageRepository.GetByBlogId(result.Blog.Id, cancellationToken);
-            result.Answer ??= new BlogComment();
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success,
-                ReturnData = result
-            });
-        }
-        catch (Exception e)
+    [HttpGet]
+    public async Task<ActionResult<ReadBlogCommentDto>> GetAllAcceptedComments(
+        [FromQuery] GetBlogCommentAllAcceptedQueryDto getBlogCommentAllAcceptedQueryDto,
+        [FromServices] IQueryHandler<GetBlogCommentAllAcceptedQuery, PagedList<BlogCommentResult>> queryHandler)
+    {
+        if (string.IsNullOrEmpty(getBlogCommentAllAcceptedQueryDto.PaginationParameters.Search))
         {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
+            getBlogCommentAllAcceptedQueryDto.PaginationParameters.Search = "";
         }
+
+        GetBlogCommentAllAcceptedQuery query = mapper.Map<GetBlogCommentAllAcceptedQuery>(getBlogCommentAllAcceptedQueryDto);
+        var blogComments = await queryHandler.HandleAsync(query);
+        PagedList<ReadBlogCommentDto> blogCommentDto = mapper.Map<PagedList<ReadBlogCommentDto>>(blogComments);
+        return Ok(new ApiResult
+        {
+            Code = ResultCode.Success,
+            ReturnData = blogCommentDto
+        });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(BlogComment? blogComment, CancellationToken cancellationToken)
+    public async Task<ActionResult<ReadBlogCommentDto>> Post(
+        [FromQuery] CreateBlogCommentDto createBlogCommentDto,
+        [FromServices] ICommandHandler<CreateBlogCommentCommand, bool> commandHandler,
+        CancellationToken cancellationToken)
     {
-        try
+        CreateBlogCommentCommand command = mapper.Map<CreateBlogCommentCommand>(createBlogCommentDto);
+        bool isSuccess = await commandHandler.HandleAsync(command, cancellationToken);
+        return Ok(new ApiResult
         {
-            if (blogComment == null)
-                return Ok(new ApiResult
-                {
-                    Code = ResultCode.BadRequest
-                });
-
-            blogComment.IsAccepted = false;
-            blogComment.IsRead = false;
-            blogComment.IsAnswered = false;
-            blogComment.DateTime = DateTime.Now;
-            _blogCommentRepository.Add(blogComment);
-            await unitOfWork.SaveAsync(cancellationToken);
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = isSuccess
+        });
     }
 
     [HttpPut]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<ActionResult<bool>> Put(BlogComment blogComment, CancellationToken cancellationToken)
+    public async Task<ActionResult<ReadBlogCommentDto>> Put(
+        [FromQuery] EditBlogCommentDto editBlogCommentDto,
+        [FromServices] ICommandHandler<EditBlogCommentCommand, bool> commandHandler,
+        CancellationToken cancellationToken)
     {
-        try
+        EditBlogCommentCommand command = mapper.Map<EditBlogCommentCommand>(editBlogCommentDto);
+        bool isSuccess = await commandHandler.HandleAsync(command, cancellationToken);
+        return Ok(new ApiResult
         {
-            BlogComment? commentAnswer;
-            if (blogComment.AnswerId != null)
-            {
-                commentAnswer = await _blogCommentRepository.GetByIdAsync(cancellationToken, blogComment.AnswerId);
-                if (commentAnswer != null)
-                {
-                    commentAnswer.DateTime = DateTime.Now;
-                    _blogCommentRepository.Update(commentAnswer);
-                }
-            }
-            else
-            {
-                if (blogComment.Answer?.Text != null)
-                {
-                    blogComment.Answer.Name = "پاسخ ادمین";
-                    blogComment.Answer.IsAccepted = false;
-                    blogComment.Answer.IsRead = false;
-                    blogComment.Answer.IsAnswered = false;
-                    blogComment.Answer.DateTime = DateTime.Now;
-                    commentAnswer = await _blogCommentRepository.AddAsync(blogComment.Answer, cancellationToken);
-                   
-                    if (commentAnswer != new BlogComment())
-                    {
-                        blogComment.Answer = commentAnswer;
-                        blogComment.AnswerId = commentAnswer.Id;
-                    }
-                }
-            }
-
-            _blogCommentRepository.Update(blogComment);
-            await unitOfWork.SaveAsync(cancellationToken);
-
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = isSuccess
+        });
     }
 
     [HttpDelete]
     [Authorize(Roles = "SuperAdmin")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete(
+        [FromQuery] DeleteBlogCommentDto deleteBlogCommentDto,
+        [FromServices] ICommandHandler<DeleteBlogCommentCommand, bool> commandHandler,
+        CancellationToken cancellationToken)
     {
-        try
+        DeleteBlogCommentCommand command = mapper.Map<DeleteBlogCommentCommand>(deleteBlogCommentDto);
+        bool isSuccess = await commandHandler.HandleAsync(command, cancellationToken);
+        return Ok(new ApiResult
         {
-            await _blogCommentRepository.DeleteById(id, cancellationToken);
-            await unitOfWork.SaveAsync(cancellationToken);
-            return Ok(new ApiResult
-            {
-                Code = ResultCode.Success
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
-    }
-
-    [HttpGet]
-    public IActionResult GetAllAcceptedComments([FromQuery] PaginationParameters paginationParameters)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = _blogCommentRepository.GetAllAcceptedComments(paginationParameters);
-            var paginationDetails = new PaginationDetails
-            {
-                TotalCount = entity.TotalCount,
-                PageSize = entity.PageSize,
-                CurrentPage = entity.CurrentPage,
-                TotalPages = entity.TotalPages,
-                HasNext = entity.HasNext,
-                HasPrevious = entity.HasPrevious,
-                Search = paginationParameters.Search
-            };
-            return Ok(new ApiResult
-            {
-                PaginationDetails = paginationDetails,
-                Code = ResultCode.Success,
-                ReturnData = entity
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogCritical(e, e.Message);
-            return Ok(new ApiResult { Code = ResultCode.DatabaseError });
-        }
+            Code = ResultCode.Success,
+            ReturnData = isSuccess
+        });
     }
 }

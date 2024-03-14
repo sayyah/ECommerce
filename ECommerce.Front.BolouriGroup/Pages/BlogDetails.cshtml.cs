@@ -1,5 +1,4 @@
-﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
-using ECommerce.API.DataTransferObject.Tags;
+﻿using ECommerce.API.DataTransferObject.BlogComments.Queries;
 using ECommerce.Application.Services.Blogs.Results;
 using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
@@ -14,8 +13,8 @@ public class BlogDetailsModel(IBlogService blogService, IBlogCategoryService blo
     public BlogCategory BlogCategory { get; set; }
     public ServiceResult<List<ReadBlogDto>> Blogs { get; set; }
     public ServiceResult<List<BlogCategory>> Categories { get; set; }
-    public ServiceResult<List<BlogComment>> BlogComments { get; set; }
-    public BlogComment? BlogComment { get; set; }
+    public ServiceResult<List<ReadBlogCommentDto>> BlogComments { get; set; }
+    public ReadBlogCommentDto? BlogComment { get; set; }
     [BindProperty] public string? Message { get; set; }
     [BindProperty] public ServiceResult<List<ReadTagDto>> Tags { get; set; }
 
@@ -65,12 +64,12 @@ public class BlogDetailsModel(IBlogService blogService, IBlogCategoryService blo
             return new JsonResult(resultData);
         }
 
-        BlogComment blogComment = new()
+        ReadBlogCommentDto blogComment = new()
         {
             Email = email,
             Name = name,
             Text = text,
-            User = null,
+            //User = null,
             UserId = null
         };
 

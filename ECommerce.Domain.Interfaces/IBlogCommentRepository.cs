@@ -4,7 +4,7 @@ namespace ECommerce.Domain.Interfaces;
 
 public interface IBlogCommentRepository : IRepositoryBase<BlogComment>
 {
-    PagedList<BlogComment> Search(PaginationParameters paginationParameters);
+    IQueryable<BlogComment> Search(PaginationParameters paginationParameters);
 
-    PagedList<BlogComment> GetAllAcceptedComments(PaginationParameters paginationParameters);
+    IQueryable<BlogComment> GetAllAcceptedComments(PaginationParameters paginationParameters);
 }

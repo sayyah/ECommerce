@@ -1,11 +1,13 @@
-﻿namespace ECommerce.Services.Services;
+﻿using ECommerce.API.DataTransferObject.BlogComments.Queries;
 
-public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(http), IBlogCommentService
+namespace ECommerce.Services.Services;
+
+public class BlogCommentService(IHttpService http) : EntityService<ReadBlogCommentDto>(http), IBlogCommentService
 {
     private const string Url = "api/BlogComments";
-    private List<BlogComment> _blogComments;
+    private List<ReadBlogCommentDto> _blogComments;
 
-    public async Task<ServiceResult<List<BlogComment>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<ReadBlogCommentDto>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
         var result = await ReadList(Url, $"Get?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
@@ -28,7 +30,7 @@ public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(
         };
     }
 
-    public async Task<ServiceResult<List<BlogComment>>> Filtering(string filter)
+    public async Task<ServiceResult<List<ReadBlogCommentDto>>> Filtering(string filter)
     {
         if (_blogComments == null)
         {
@@ -39,15 +41,15 @@ public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(
 
         var result = _blogComments.Where(x => x.Name.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<BlogComment>> { Code = ServiceCode.Info, Message = "برندی یافت نشد" };
-        return new ServiceResult<List<BlogComment>>
+            return new ServiceResult<List<ReadBlogCommentDto>> { Code = ServiceCode.Info, Message = "برندی یافت نشد" };
+        return new ServiceResult<List<ReadBlogCommentDto>>
         {
             Code = ServiceCode.Success,
             ReturnData = result
         };
     }
 
-    public async Task<ServiceResult> Add(BlogComment blogComment)
+    public async Task<ServiceResult> Add(ReadBlogCommentDto blogComment)
     {
         blogComment.IsAccepted = false;
         blogComment.IsRead = false;
@@ -57,14 +59,14 @@ public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(
         return Return(result);
     }
 
-    public async Task<ServiceResult> Edit(BlogComment blogComment)
+    public async Task<ServiceResult> Edit(ReadBlogCommentDto blogComment)
     {
         var result = await Update(Url, blogComment);
         _blogComments = null;
         return Return(result);
     }
 
-    public async Task<ServiceResult> Accept(BlogComment blogComment)
+    public async Task<ServiceResult> Accept(ReadBlogCommentDto blogComment)
     {
         var result = await Update(Url, blogComment);
         if (result.Code == ResultCode.Success && blogComment.IsAccepted)
@@ -112,13 +114,13 @@ public class BlogCommentService(IHttpService http) : EntityService<BlogComment>(
             { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
-    public async Task<ServiceResult<BlogComment>> GetById(int id)
+    public async Task<ServiceResult<ReadBlogCommentDto>> GetById(int id)
     {
-        var result = await http.GetAsync<BlogComment>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ReadBlogCommentDto>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<BlogComment>>> GetAllAcceptedComments(string search = "", int pageNumber = 0,
+    public async Task<ServiceResult<List<ReadBlogCommentDto>>> GetAllAcceptedComments(string search = "", int pageNumber = 0,
         int pageSize = 10)
     {
         var result = await ReadList(Url,

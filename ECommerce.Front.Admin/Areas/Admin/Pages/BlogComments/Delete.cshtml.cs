@@ -1,4 +1,4 @@
-using ECommerce.API.DataTransferObject.Blogs.Queries;
+using ECommerce.API.DataTransferObject.BlogComments.Queries;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;

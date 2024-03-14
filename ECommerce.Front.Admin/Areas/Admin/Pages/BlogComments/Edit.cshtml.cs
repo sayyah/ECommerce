@@ -1,4 +1,5 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.BlogComments.Queries;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
@@ -7,7 +8,7 @@ public class EditModel(IBlogCommentService blogCommentService, IBlogService blog
 {
     private readonly IBlogService _blogService = blogService;
 
-    [BindProperty] public BlogComment BlogComment { get; set; }
+    [BindProperty] public ReadBlogCommentDto BlogComment { get; set; }
     [TempData] public string Message { get; set; }
     [TempData] public string Code { get; set; }
 
@@ -15,15 +16,15 @@ public class EditModel(IBlogCommentService blogCommentService, IBlogService blog
     {
         Message = message;
         Code = code;
-        var BlogCommentResult = await blogCommentService.GetById(id);
-        BlogComment = BlogCommentResult.ReturnData;
+        var blogCommentResult = await blogCommentService.GetById(id);
+        BlogComment = blogCommentResult.ReturnData;
     }
 
     public async Task<IActionResult> OnPost()
     {
         try
         {
-            if (BlogComment.Answer!.Text == null && BlogComment.AnswerId == null) BlogComment.Answer = null;
+            //if (BlogComment.AnswerText == null && BlogComment.AnswerId == null) BlogComment.Answer = null;
             var result = await blogCommentService.Edit(BlogComment);
             Message = result.Message;
             Code = result.Code.ToString();

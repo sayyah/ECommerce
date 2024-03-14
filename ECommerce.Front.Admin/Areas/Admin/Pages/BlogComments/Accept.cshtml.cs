@@ -1,17 +1,19 @@
-﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
+﻿using ECommerce.API.DataTransferObject.BlogComments.Queries;
+using ECommerce.API.DataTransferObject.Blogs.Queris;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
-public class AcceptModel(IBlogCommentService blogCommentService, IBlogService blogService)
+public class AcceptModel(IBlogCommentService blogCommentService, IBlogService blogService, ReadBlogCommentDto blogComment, ReadBlogDto blog)
     : PageModel
 {
-    [BindProperty] public BlogComment BlogComment { get; set; }
+    //[BindProperty] public BlogComment BlogComment { get; set; }
+    [BindProperty] public ReadBlogCommentDto BlogComment { get; set; } 
     [TempData] public string? Message { get; set; }
     [TempData] public string Code { get; set; }
     public ReadBlogDto Blog { get; set; }
 
-    public async Task OnGet(int id, string message = null, string code = null)
+    public async Task OnGet(int id, string message = "", string code = "")
     {
         Message = message;
         Code = code;

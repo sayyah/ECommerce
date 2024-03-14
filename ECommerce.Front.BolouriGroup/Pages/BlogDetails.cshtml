@@ -92,9 +92,9 @@
                                     @{
                                         var _answer = "";
                                     }
-                                    @if (!string.IsNullOrEmpty(blogComment.Answer?.Text))
+                                    @if (!string.IsNullOrEmpty(blogComment.AnswerText))
                                     {
-                                        _answer = $"{blogComment.Answer?.Name} : {blogComment.Answer?.Text}";
+                                        _answer = $"{blogComment.AnswerName} : {blogComment.AnswerText}";
                                     }
                                     @_answer
                                 </p>
