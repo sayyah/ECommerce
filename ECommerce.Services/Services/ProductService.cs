@@ -220,4 +220,11 @@ public class ProductService(IHttpService http, ITagService tagService, IImageSer
             $"GetTops?includeProperties={includeProperties}&userid={currentUser.Id}");
         return Return(result);
     }
+
+    public async Task<ServiceResult<List<ProductViewModel>>> GetByCategoryId(int categoryId)
+    {
+        var result = await http.GetAsync<List<ProductViewModel>>(Url, $"GetByCategoryId?categoryId={categoryId}");
+        return Return(result);
+    }
+
 }

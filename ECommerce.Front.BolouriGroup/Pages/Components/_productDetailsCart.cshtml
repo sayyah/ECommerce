@@ -1,6 +1,18 @@
 ﻿@model ProductIndexPageViewModel
-
-<div class="col" style="padding: 0px 4px">
+@{
+    var singlePrice = Model.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
+    int? categoryDiscountAmount = 0;
+    double? categoryDiscountPercent = 0;
+    @foreach(var category in @Model.Categories)
+    {
+        if (category.Discount != null && category.Discount.IsActive)
+        {
+            categoryDiscountAmount = category.Discount.Amount;
+            categoryDiscountPercent = category.Discount.Percent;
+        }
+    }
+}
+<div class="col" style="padding:0px 4px">
     <div class="feature-card" style="height: 299px">
         <div class="feature-media">
             <div class="feature-label">
@@ -38,7 +50,7 @@
         </div>
         <div class="feature-content">
             <h6 class="feature-name">
-                <a asp-area="" asp-page="Product" asp-route-productUrl="@Model.Url">@Model.Name</a>
+                <a asp-area="" asp-page="Product" asp-route-productUrl="@Model.Url.Trim()">@Model.Name</a>
             </h6>
             <div class="feature-rating">
                 <div>
@@ -63,12 +75,11 @@
                 </div>
                 <a asp-area="" asp-page="Product" asp-route-productUrl="@Model.Url.Trim()">(@Model.Stars.ToString("0.##") امتیاز)</a>
             </div>
-
             @{
                 decimal? discount = 0;
                 decimal? amount = 0;
                 decimal? discountAmount = 0;
-                var singlePrice = Model.Prices.OrderBy(p => p.Amount).FirstOrDefault(x => !x.IsColleague && x.Exist > 0);
+
                 if (singlePrice != null)
                 {
                     amount = singlePrice.Amount;
@@ -83,10 +94,20 @@
                         {
                             discount = singlePrice.Amount * (decimal)singlePrice.Discount.Percent / 100;
                         }
-                    discountAmount = amount - discount;
-                }
+                    if (discount == 0 )
+                        if (categoryDiscountAmount > 0)
+                        {
+                            discount = (decimal)categoryDiscountAmount;
+                        }
+                        else if (categoryDiscountPercent > 0)
+                        {
+                            discount = singlePrice.Amount * (decimal)categoryDiscountPercent / 100;
+                        }
 
-            }
+                    discountAmount = amount - discount;
+                    if (discountAmount < 0) discountAmount = 0;
+                }
+	        }
             @if (singlePrice == null)
             {
                 <h6 class="feature-price">
@@ -98,7 +119,7 @@
                 @if (discount > 0)
                 {
                     <div class="feature-price">
-                        <del>@amount?.ToString("###,###,###,###") تومان</del>
+                        <del>@amount?.ToString("###,###,###,###") </del>
                     </div>
                 }
                 <h6 class="feature-price">

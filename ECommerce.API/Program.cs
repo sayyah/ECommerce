@@ -154,6 +154,7 @@ builder
         identityOption.Password.RequireUppercase = false;
     })
     .AddEntityFrameworkStores<SunflowerECommerceDbContext>()
+    .AddApiEndpoints()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<PersianIdentityErrorDescriber>();
 
@@ -236,6 +237,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapIdentityApi<User>();
 
 app.MapControllers();
 

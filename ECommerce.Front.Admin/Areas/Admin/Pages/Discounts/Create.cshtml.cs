@@ -1,18 +1,24 @@
-﻿using ECommerce.Services.IServices;
+﻿using Ecommerce.Entities.ViewModel;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Discounts;
 
-public class CreateModel(IDiscountService discountService) : PageModel
+public class CreateModel(IDiscountService discountService, ICategoryService categoryService) : PageModel
 {
-    [BindProperty] public Discount Discount { get; set; }
+ 
+
     [BindProperty] public bool WithPrice { get; set; }
+    [BindProperty] public DiscountViewModel Discount { get; set; }
+
+    [BindProperty] public List<CategoryParentViewModel> CategoryParentViewModel { get; set; }
 
     [TempData] public string Message { get; set; }
 
     [TempData] public string Code { get; set; }
 
-    public void OnGet()
+    public async Task OnGet()
     {
+        CategoryParentViewModel = (await categoryService.GetParents()).ReturnData;
     }
 
     public async Task<IActionResult> OnPost()
@@ -25,6 +31,7 @@ public class CreateModel(IDiscountService discountService) : PageModel
             ModelState.AddModelError(string.Empty, "تاریخ پایان نباید قبل از تاریخ شروع باشد.");
         if (Discount.MinOrder > Discount.MaxOrder)
             ModelState.AddModelError(string.Empty, "حداقل تعداد سفارش باید کم تر از حداکثر آن باشد.");
+        Discount.DiscountType = DiscountType.Category;
         if (ModelState.IsValid)
         {
             if (WithPrice) Discount.Percent = null;
@@ -37,6 +44,9 @@ public class CreateModel(IDiscountService discountService) : PageModel
             Code = result.Code.ToString();
             ModelState.AddModelError("", result.Message);
         }
+        
+        CategoryParentViewModel = (await categoryService.GetParents()).ReturnData;
+        if (Discount.CategoriesId==null) Discount.CategoriesId?.Clear();
 
         return Page();
     }

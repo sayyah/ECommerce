@@ -1,4 +1,7 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using Ecommerce.Entities.ViewModel;
+using ECommerce.Infrastructure.DataContext;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class DiscountRepository(SunflowerECommerceDbContext context) : RepositoryBase<Discount>(context),
     IDiscountRepository
@@ -6,6 +9,14 @@ public class DiscountRepository(SunflowerECommerceDbContext context) : Repositor
     public async Task<Discount?> GetByName(string name, CancellationToken cancellationToken)
     {
         return await context.Discounts.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<Discount> GetByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        return await context.Discounts.Where(x => x.Id == id)
+            .Include(d=>d.Categories)
+            .Include(d=>d.Prices).ThenInclude(p=>p.Product)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Discount?> GetLast(CancellationToken cancellationToken)
@@ -16,7 +27,28 @@ public class DiscountRepository(SunflowerECommerceDbContext context) : Repositor
         return null;
     }
 
-    public async Task<Discount?> GetByCode(string code, CancellationToken cancellationToken)
+
+    public async Task<Discount> AddWithRelations(DiscountViewModel discountViewModel, CancellationToken cancellationToken)
+    {
+        Discount discount = discountViewModel;
+        if (discount.DiscountType == DiscountType.Category)
+        {
+            discount.Code = null;
+            discount.Categories = new List<Category>();
+            foreach (var id in discountViewModel.CategoriesId) discount.Categories.Add(await context.Categories.FindAsync(id));
+        }
+        if (discount.DiscountType == DiscountType.Price)
+        {
+            discount.Code = null;
+            discount.Prices = new List<Price>();
+            foreach (var id in discountViewModel.PricesId) discount.Prices.Add(await context.Prices.FindAsync(id));
+        }
+        await context.Discounts.AddAsync(discount, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+        return discount;
+    }
+
+    public async Task<Discount> GetByCode(string code, CancellationToken cancellationToken)
     {
         return await context.Discounts.Where(x => x.Code == code).FirstOrDefaultAsync(cancellationToken);
     }

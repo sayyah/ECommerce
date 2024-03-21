@@ -1,4 +1,7 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Domain.Interfaces;
+using ECommerce.Infrastructure.DataContext;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class UnitOfWork(SunflowerECommerceDbContext context, HolooDbContext holooContext) : IUnitOfWork
 {

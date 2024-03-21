@@ -8,6 +8,58 @@
 {
 @foreach (var product in Model)
 {
+    if (product.Price.Discount != null)
+    {
+            product.Price.Discount.IsActive = (product.Price.Discount.IsActive &&
+                                    product.Price.Discount.StartDate <= DateTime.UtcNow &&
+                                    product.Price.Discount.EndDate >= DateTime.UtcNow);
+            if (!product.Price.Discount.IsActive) product.Price.Discount = null;
+    }
+    foreach (var _cat in product.ProductCategories)
+    {
+        if (_cat.Discount != null)
+        {
+            _cat.Discount.IsActive = (_cat.Discount.IsActive &&
+                                    _cat.Discount.StartDate <= DateTime.UtcNow &&
+                                    _cat.Discount.EndDate >= DateTime.UtcNow);
+            if (!_cat.Discount.IsActive) _cat.Discount = null;
+        }
+    }
+
+    int? categoryDiscountAmount = 0;
+    double? categoryDiscountPercent = 0;    
+    if (product.ProductCategories != null)
+        foreach (var category in product.ProductCategories)
+    {
+        if (category.Discount != null && category.Discount.IsActive)
+        {
+            categoryDiscountAmount = category.Discount.Amount;
+            categoryDiscountPercent = category.Discount.Percent;
+        }
+    }
+
+    decimal? discount = 0;
+    if (product.Price.Discount != null)
+        if (product.Price.Discount.Amount > 0)
+        {
+            discount = product.Price.Discount.Amount;
+        }
+        else if (product.Price.Discount.Percent > 0)
+        {
+            discount = product.PriceAmount * (decimal)product.Price.Discount.Percent / 100;
+        }
+    if (discount == 0)
+        if (categoryDiscountAmount > 0)
+        {
+            discount = (decimal)categoryDiscountAmount;
+        }
+        else if (categoryDiscountPercent > 0)
+        {
+            discount = product.PriceAmount * (decimal)categoryDiscountPercent / 100;
+        }
+
+    product.DiscountAmount = discount > product.PriceAmount ? (int)product.PriceAmount : (int)discount ;
+
     <li class="cart-item" id="CartDrop-@product.Id">
         <div class="cart-media">
             <a asp-page="Product" asp-route-productUrl="@product.Url">
@@ -26,6 +78,7 @@
                 </h5>
                 <h6>برند : @product.Brand</h6>
                 <h6>رنگ : @product.ColorName</h6>
+                <h6>مبلغ تخفیف کالا : @product.DiscountAmount.ToString("N0")</h6>
                 <p>@product.PriceAmount.ToString("N0")</p>
             </div>
             <div class="cart-action-group">
@@ -40,14 +93,17 @@
                         <i class="far fa-plus"></i>
                     </button>
                 </div>
-                <h6>@product.SumPrice.ToString("N0")</h6>
+                    @{
+                        var sumPrice = product.SumPrice - (product.DiscountAmount * product.Quantity);
+                    }
+                <h6> @sumPrice </h6>
                 <h6>تومان</h6>
                 <input hidden="hidden" value="@product.SumPrice" id="SumPrice-@product.Id"/>
             </div>
         </div>
-    </li>
-    allPrice += product.SumPrice;
-}
+        </li>
+        allPrice += product.SumPrice - (product.DiscountAmount * product.Quantity);        
+    }
 }
 @{
     TempData["cartAllPrice"] = allPrice;

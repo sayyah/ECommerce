@@ -6,16 +6,16 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-		<Using Include="ECommerce.Domain.Entities.Helper"/>
-		<Using Include="ECommerce.Domain.Entities"/>
-		<Using Include="ECommerce.Services.IServices"/>
+		<Using Include="ECommerce.Domain.Entities.Helper" />
+		<Using Include="ECommerce.Domain.Entities" />
+		<Using Include="ECommerce.Services.IServices" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ECommerce.Application.ViewModels\ECommerce.Application.ViewModels.csproj" />

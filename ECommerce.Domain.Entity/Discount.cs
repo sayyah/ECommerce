@@ -26,12 +26,23 @@ public class Discount : BaseEntity
 
     [StringLength(40)]
     [Display(Name = "کد تخفیف")]
-    [Required(ErrorMessage = @"{0} را وارد کنید")]
-    public string Code { get; set; }
+    public string? Code { get; set; }
+
+    [Display(Name = "تعداد کوپن")] public int? CouponQty { get; set; }
+    [Display(Name = "نوع تخفیف")] public DiscountType? DiscountType { get; set; }
 
     //ForeignKey
+
+    public ICollection<Product>? Products { get; set; }
     public ICollection<Price>? Prices { get; set; }
     public ICollection<Category>? Categories { get; set; }
     public ICollection<PurchaseOrder>? PurchaseOrders { get; set; }
     public ICollection<PurchaseOrderDetail>? PurchaseOrderDetails { get; set; }
+}
+
+public enum DiscountType
+{
+    Coupon = 0,
+    Category = 1,
+    Price = 2,
 }
