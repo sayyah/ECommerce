@@ -1,4 +1,7 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
+using ECommerce.API.DataTransferObject.Keywords;
+using ECommerce.API.DataTransferObject.Tags;
+using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 
@@ -9,12 +12,13 @@ public class EditModel(IBlogService blogService, IImageService imageService, ITa
         IBlogCategoryService blogCategoryService)
     : PageModel
 {
-    [BindProperty] public BlogViewModel Blog { get; set; }
+    [BindProperty] public ReadBlogDto? Blog { get; set; }
     [BindProperty] public IFormFile? Upload { get; set; }
-    [TempData] public string Message { get; set; }
-    [TempData] public string Code { get; set; }
-    public List<Tag> Tags { get; set; }
-    public List<Keyword> Keywords { get; set; }
+    [TempData] public string? Message { get; set; }
+    [TempData] public string? Code { get; set; }
+    [TempData] public Image? BlogImage { get; set; }
+    public List<ReadTagDto>? Tags { get; set; }
+    public List<ReadKeywordDto>? Keywords { get; set; }
     public List<BlogAuthor> BlogAuthors { get; set; }
     public List<BlogCategory> Categories { get; set; }
 
@@ -29,7 +33,7 @@ public class EditModel(IBlogService blogService, IImageService imageService, ITa
 
     public async Task<IActionResult> OnPost()
     {
-        if (Blog.BlogCategoryId == 0)
+        if (Blog is { BlogCategoryId: 0 })
         {
             Message = "لطفا دسته بندی را انتخاب کنید";
             Code = ServiceCode.Error.ToString();
@@ -37,70 +41,84 @@ public class EditModel(IBlogService blogService, IImageService imageService, ITa
             return Page();
         }
 
-        var _image = await imageService.GetImagesByBlogId(Blog.Id);
-        Blog.Image = _image.ReturnData;
-
-        if (Upload == null && Blog.Image.Id == 0)
+        if (Blog != null)
         {
-            Message = "لطفا عکس را انتخاب کنید";
-            Code = ServiceCode.Error.ToString();
-            await Initial(Blog.Id);
-            return Page();
-        }
+            var image = await imageService.GetImagesByBlogId(Blog.Id);
+            BlogImage = image.ReturnData;
 
-        if (Upload != null)
-            if (Upload.FileName.Split('.').Last().ToLower() != "webp")
+            if (Upload == null && BlogImage.Id == 0)
             {
-                ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
+                Message = "لطفا عکس را انتخاب کنید";
+                Code = ServiceCode.Error.ToString();
                 await Initial(Blog.Id);
                 return Page();
             }
 
+            if (Upload != null)
+                if (Upload.FileName.Split('.').Last().ToLower() != "webp")
+                {
+                    ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
+                    await Initial(Blog.Id);
+                    return Page();
+                }
 
-        if (Upload != null && Blog.Image.Id != 0)
-        {
-            await imageService.Delete($"Images/Blogs/{Blog.Image?.Name}", Blog.Image.Id, environment.ContentRootPath);
-            _image = await imageService.GetImagesByBlogId(Blog.Id);
-            Blog.Image = _image.ReturnData;
-        }
 
-        if (Upload != null && Blog.Image.Id == 0)
-        {
-            var resultImage = await imageService.Add(Upload, Blog.Id, "Images/Blogs",
-                environment.ContentRootPath);
-            if (resultImage.Code > 0)
+            if (Upload != null && BlogImage.Id != 0)
             {
-                Message = resultImage.Message;
-                Code = resultImage.Code.ToString();
-                ModelState.AddModelError("", resultImage.Message);
+                await imageService.Delete($"Images/Blogs/{BlogImage?.Name}", BlogImage.Id, environment.ContentRootPath);
+                image = await imageService.GetImagesByBlogId(Blog.Id);
+                BlogImage = image.ReturnData;
+                Blog.ImageId = BlogImage.Id;
+                Blog.ImagePath = BlogImage.Path;
+                Blog.ImageName = BlogImage.Name;
+                Blog.ImageAlt = BlogImage.Alt;
             }
 
-            _image = await imageService.GetImagesByBlogId(Blog.Id);
-            Blog.Image = _image.ReturnData;
+            if (Upload != null && BlogImage.Id == 0)
+            {
+                var resultImage = await imageService.Add(Upload, Blog.Id, "Images/Blogs",
+                    environment.ContentRootPath);
+                if (resultImage.Code > 0)
+                {
+                    Message = resultImage.Message;
+                    Code = resultImage.Code.ToString();
+                    if (resultImage.Message != null) ModelState.AddModelError("", resultImage.Message);
+                }
+
+                image = await imageService.GetImagesByBlogId(Blog.Id);
+                BlogImage = image.ReturnData;
+                Blog.ImageId = BlogImage.Id;
+                Blog.ImagePath = BlogImage.Path;
+                Blog.ImageName = BlogImage.Name;
+                Blog.ImageAlt = BlogImage.Alt;
+            }
         }
 
 
         if (ModelState.IsValid)
         {
-            var result = await blogService.Edit(Blog);
-            if (result.Code == 0)
-                return RedirectToPage("/Blogs/Index",
-                    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
+            if (Blog != null)
+            {
+                var result = await blogService.Edit(Blog);
+                if (result.Code == 0)
+                    return RedirectToPage("/Blogs/Index",
+                        new { area = "Admin", message = result.Message, code = result.Code.ToString() });
 
-            Message = result.Message;
-            Code = result.Code.ToString();
-            ModelState.AddModelError("", result.Message);
+                Message = result.Message;
+                Code = result.Code.ToString();
+                if (result.Message != null) ModelState.AddModelError("", result.Message);
+            }
         }
 
-        await Initial(Blog.Id);
+        if (Blog != null) await Initial(Blog.Id);
         return Page();
     }
 
-    private async Task<ServiceResult<BlogViewModel>> Initial(int id)
+    private async Task<ServiceResult<ReadBlogDto>> Initial(int id)
     {
         var result = await blogService.GetById(id);
         if (result.Code > 0)
-            return new ServiceResult<BlogViewModel>
+            return new ServiceResult<ReadBlogDto>
             {
                 Code = result.Code,
                 Message = result.Message
@@ -126,7 +144,7 @@ public class EditModel(IBlogService blogService, IImageService imageService, ITa
             //    new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
         Code = result.Code.ToString();
-        ModelState.AddModelError("", result.Message);
+        if (result.Message != null) ModelState.AddModelError("", result.Message);
 
         await Initial(blogId);
         return Page();

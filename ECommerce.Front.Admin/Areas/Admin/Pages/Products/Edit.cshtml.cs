@@ -1,4 +1,6 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Keywords;
+using ECommerce.API.DataTransferObject.Tags;
+using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 
@@ -15,15 +17,15 @@ public class EditModel(IProductService productService, ITagService tagService, I
     public List<Store> Stores { get; set; }
     public List<Supplier> Suppliers { get; set; }
     public List<Brand> Brands { get; set; }
-    public List<Tag> Tags { get; set; }
-    public List<Keyword> Keywords { get; set; }
+    public List<ReadTagDto>? Tags { get; set; }
+    public List<ReadKeywordDto>? Keywords { get; set; }
 
-    public List<CategoryParentViewModel> CategoryParentViewModel { get; set; }
+    public List<CategoryParentViewModel>? CategoryParentViewModel { get; set; }
 
     [BindProperty] public ProductViewModel Product { get; set; }
     [BindProperty] public List<IFormFile> Uploads { get; set; }
-    [TempData] public string Message { get; set; }
-    [TempData] public string Code { get; set; }
+    [TempData] public string? Message { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {

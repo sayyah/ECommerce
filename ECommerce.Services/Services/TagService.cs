@@ -1,20 +1,21 @@
-﻿using ECommerce.Application.ViewModels;
+﻿using ECommerce.API.DataTransferObject.Tags;
+using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.Services;
 
 public class TagService(IHttpService http, IEntityService<TagProductId> tagViewModelEntityService)
-    : EntityService<Tag>(http), ITagService
+    : EntityService<ReadTagDto>(http), ITagService
 {
     private const string Url = "api/Tags";
-    private List<Tag> _tags;
+    private List<ReadTagDto> _tags;
 
-    public async Task<ServiceResult<List<Tag>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<ReadTagDto>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
         var result = await ReadList(Url, $"Get?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<Tag>>> GetAll()
+    public async Task<ServiceResult<List<ReadTagDto>>> GetAll()
     {
         var result = await ReadList(Url, "GetAll");
         return Return(result);
@@ -37,7 +38,7 @@ public class TagService(IHttpService http, IEntityService<TagProductId> tagViewM
         };
     }
 
-    public async Task<ServiceResult<List<Tag>>> Filtering(string filter)
+    public async Task<ServiceResult<List<ReadTagDto>>> Filtering(string filter)
     {
         if (_tags == null)
         {
@@ -48,22 +49,22 @@ public class TagService(IHttpService http, IEntityService<TagProductId> tagViewM
 
         var result = _tags.Where(x => x.TagText.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Tag>> { Code = ServiceCode.Info, Message = "تگی یافت نشد" };
-        return new ServiceResult<List<Tag>>
+            return new ServiceResult<List<ReadTagDto>> { Code = ServiceCode.Info, Message = "تگی یافت نشد" };
+        return new ServiceResult<List<ReadTagDto>>
         {
             Code = ServiceCode.Success,
             ReturnData = result
         };
     }
 
-    public async Task<ServiceResult> Add(Tag tag)
+    public async Task<ServiceResult> Add(ReadTagDto tag)
     {
         var result = await Create(Url, tag);
         _tags = null;
         return Return(result);
     }
 
-    public async Task<ServiceResult> Edit(Tag tag)
+    public async Task<ServiceResult> Edit(ReadTagDto tag)
     {
         var result = await Update(Url, tag);
         _tags = null;
@@ -93,25 +94,25 @@ public class TagService(IHttpService http, IEntityService<TagProductId> tagViewM
         return Return(result);
     }
 
-    public async Task<ServiceResult<Tag>> GetById(int id)
+    public async Task<ServiceResult<ReadTagDto>> GetById(int id)
     {
-        var result = await http.GetAsync<Tag>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ReadTagDto>(Url, $"GetById?id={id}");
         return Return(result);
     }
 
-    public async Task<ServiceResult<Tag>> GetByTagText(string TagText)
+    public async Task<ServiceResult<ReadTagDto>> GetByTagText(string TagText)
     {
-        var result = await http.GetAsync<Tag>(Url, $"GetByTagText={TagText}");
+        var result = await http.GetAsync<ReadTagDto>(Url, $"GetByTagText={TagText}");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<Tag>>> GetAllProductTags()
+    public async Task<ServiceResult<List<ReadTagDto>>> GetAllProductTags()
     {
         var result = await ReadList(Url, "GetAllProductTags");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<Tag>>> GetAllBlogTags()
+    public async Task<ServiceResult<List<ReadTagDto>>> GetAllBlogTags()
     {
         var result = await ReadList(Url, "GetAllBlogTags");
         return Return(result);

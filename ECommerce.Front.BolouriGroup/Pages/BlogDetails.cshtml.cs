@@ -1,4 +1,7 @@
-﻿using ECommerce.Front.BolouriGroup.Models;
+﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
+using ECommerce.API.DataTransferObject.Tags;
+using ECommerce.Application.Services.Blogs.Results;
+using ECommerce.Front.BolouriGroup.Models;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.BolouriGroup.Pages;
@@ -7,14 +10,14 @@ public class BlogDetailsModel(IBlogService blogService, IBlogCategoryService blo
         IBlogCommentService blogCommentService, IUserService userService, ITagService tagService)
     : PageModel
 {
-    public BlogDetailsViewModel Blog { get; set; }
+    public ReadBlogDto Blog { get; set; }
     public BlogCategory BlogCategory { get; set; }
-    public ServiceResult<List<BlogViewModel>> Blogs { get; set; }
+    public ServiceResult<List<ReadBlogDto>> Blogs { get; set; }
     public ServiceResult<List<BlogCategory>> Categories { get; set; }
     public ServiceResult<List<BlogComment>> BlogComments { get; set; }
     public BlogComment? BlogComment { get; set; }
     [BindProperty] public string? Message { get; set; }
-    [BindProperty] public ServiceResult<List<Tag>> Tags { get; set; }
+    [BindProperty] public ServiceResult<List<ReadTagDto>> Tags { get; set; }
 
     private async Task Initial(string blogUrl, int pageNumber = 1, int pageSize = 10)
     {

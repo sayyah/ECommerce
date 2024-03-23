@@ -1,13 +1,10 @@
-﻿using ECommerce.Application.ViewModels;
-using ECommerce.Domain.Entities;
-using ECommerce.Domain.Interfaces.Utilities;
+﻿using ECommerce.Domain.Entities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface IUserRepository : IRepositoryBase<User>
 {
-    Task<PagedList<UserListViewModel>> Search(userFilterParameters userFilteredParameters,
-        CancellationToken cancellationToken);
+    PagedList<UserListViewModel> Search(userFilterParameters userFilteredParameters);
 
     Task<bool> Exists(int id, string email, string phoneNumber, CancellationToken cancellationToken);
     Task<User?> GetByEmailOrUserName(string input, CancellationToken cancellationToken);

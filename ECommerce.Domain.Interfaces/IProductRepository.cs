@@ -1,7 +1,4 @@
-﻿using ECommerce.Application.ViewModels;
-using ECommerce.Domain.Entities;
-using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
+﻿using ECommerce.Domain.Entities;
 
 namespace ECommerce.Domain.Interfaces;
 
@@ -37,8 +34,7 @@ public interface IProductRepository : IRepositoryBase<Product>
 
     Task<List<Product>> GetByCategoryId(int categoryId, CancellationToken cancellationToken);
 
-    Task<PagedList<ProductIndexPageViewModel>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken);
+    PagedList<ProductIndexPageViewModel> Search(PaginationParameters paginationParameters);
 
     Task<Product?> GetProductById(int id, CancellationToken cancellationToken);
 

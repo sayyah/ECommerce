@@ -1,19 +1,20 @@
-﻿using ECommerce.Application.ViewModels;
+﻿using ECommerce.API.DataTransferObject.Tags;
+using ECommerce.Application.ViewModels;
 
 namespace ECommerce.Services.IServices;
 
-public interface ITagService : IEntityService<Tag>
+public interface ITagService : IEntityService<ReadTagDto>
 {
-    Task<ServiceResult<List<Tag>>> GetAll();
-    Task<ServiceResult<List<Tag>>> Filtering(string filter);
-    Task<ServiceResult<Tag>> GetByTagText(string TagText);
-    Task<ServiceResult<List<Tag>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
+    Task<ServiceResult<List<ReadTagDto>>> GetAll();
+    Task<ServiceResult<List<ReadTagDto>>> Filtering(string filter);
+    Task<ServiceResult<ReadTagDto>> GetByTagText(string tagText);
+    Task<ServiceResult<List<ReadTagDto>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult<Dictionary<int, string>>> LoadDictionary();
-    Task<ServiceResult> Add(Tag tag);
-    Task<ServiceResult> Edit(Tag tag);
+    Task<ServiceResult> Add(ReadTagDto tag);
+    Task<ServiceResult> Edit(ReadTagDto tag);
     Task<ServiceResult> Delete(int id);
-    Task<ServiceResult<Tag>> GetById(int id);
+    Task<ServiceResult<ReadTagDto>> GetById(int id);
     Task<ServiceResult<List<TagProductId>>> GetTagsByProductId(int productId);
-    Task<ServiceResult<List<Tag>>> GetAllProductTags();
-    Task<ServiceResult<List<Tag>>> GetAllBlogTags();
+    Task<ServiceResult<List<ReadTagDto>>> GetAllProductTags();
+    Task<ServiceResult<List<ReadTagDto>>> GetAllBlogTags();
 }

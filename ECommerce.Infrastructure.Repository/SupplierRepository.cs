@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class SupplierRepository(SunflowerECommerceDbContext context) : RepositoryBase<Supplier>(context),
     ISupplierRepository
@@ -8,12 +10,11 @@ public class SupplierRepository(SunflowerECommerceDbContext context) : Repositor
         return await context.Suppliers.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Supplier>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Supplier> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Supplier>.ToPagedList(
-            await context.Suppliers.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+           context.Suppliers.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

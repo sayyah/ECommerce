@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class BlogCategoryRepository(SunflowerECommerceDbContext context) : RepositoryBase<BlogCategory>(context),
     IBlogCategoryRepository
@@ -25,12 +27,11 @@ public class BlogCategoryRepository(SunflowerECommerceDbContext context) : Repos
         return result.OrderBy(x => x.DisplayOrder).ToList();
     }
 
-    public async Task<PagedList<BlogCategory>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<BlogCategory> Search(PaginationParameters paginationParameters)
     {
         return PagedList<BlogCategory>.ToPagedList(
-            await context.BlogCategories.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+            context.BlogCategories.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

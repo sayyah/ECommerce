@@ -1,17 +1,19 @@
-﻿namespace ECommerce.Services.Services;
+﻿using ECommerce.API.DataTransferObject.Keywords;
 
-public class KeywordService(IHttpService http) : EntityService<Keyword>(http), IKeywordService
+namespace ECommerce.Services.Services;
+
+public class KeywordService(IHttpService http) : EntityService<ReadKeywordDto>(http), IKeywordService
 {
     private const string Url = "api/Keywords";
-    private List<Keyword> _keywords;
+    private List<ReadKeywordDto> _keywords;
 
-    public async Task<ServiceResult<List<Keyword>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
+    public async Task<ServiceResult<List<ReadKeywordDto>>> Load(string search = "", int pageNumber = 0, int pageSize = 10)
     {
         var result = await ReadList(Url, $"Get?PageNumber={pageNumber}&PageSize={pageSize}&Search={search}");
         return Return(result);
     }
 
-    public async Task<ServiceResult<List<Keyword>>> GetAll()
+    public async Task<ServiceResult<List<ReadKeywordDto>>> GetAll()
     {
         var result = await ReadList(Url, "GetAll");
         return Return(result);
@@ -34,7 +36,7 @@ public class KeywordService(IHttpService http) : EntityService<Keyword>(http), I
         };
     }
 
-    public async Task<ServiceResult<List<Keyword>>> Filtering(string filter)
+    public async Task<ServiceResult<List<ReadKeywordDto>>> Filtering(string filter)
     {
         if (_keywords == null)
         {
@@ -45,22 +47,22 @@ public class KeywordService(IHttpService http) : EntityService<Keyword>(http), I
 
         var result = _keywords.Where(x => x.KeywordText.Contains(filter)).ToList();
         if (result.Count == 0)
-            return new ServiceResult<List<Keyword>> { Code = ServiceCode.Info, Message = "کلمه کلیدی یافت نشد" };
-        return new ServiceResult<List<Keyword>>
+            return new ServiceResult<List<ReadKeywordDto>> { Code = ServiceCode.Info, Message = "کلمه کلیدی یافت نشد" };
+        return new ServiceResult<List<ReadKeywordDto>>
         {
             Code = ServiceCode.Success,
             ReturnData = result
         };
     }
 
-    public async Task<ServiceResult> Add(Keyword keyword)
+    public async Task<ServiceResult> Add(ReadKeywordDto keyword)
     {
         var result = await Create(Url, keyword);
         _keywords = null;
         return Return(result);
     }
 
-    public async Task<ServiceResult> Edit(Keyword keyword)
+    public async Task<ServiceResult> Edit(ReadKeywordDto keyword)
     {
         var result = await Update(Url, keyword);
         _keywords = null;
@@ -88,7 +90,7 @@ public class KeywordService(IHttpService http) : EntityService<Keyword>(http), I
             { Code = ServiceCode.Error, Message = "به علت وابستگی با عناصر دیگر امکان حذف وجود ندارد" };
     }
 
-    public async Task<ServiceResult<List<Keyword>>> GetKeywordsByProductId(int productId)
+    public async Task<ServiceResult<List<ReadKeywordDto>>> GetKeywordsByProductId(int productId)
     {
         var result = await ReadList(Url, $"GetKeywordsByProductId?id={productId}");
         return Return(result);
@@ -96,9 +98,9 @@ public class KeywordService(IHttpService http) : EntityService<Keyword>(http), I
         //return _keywordProductId.Where(x => x.ProductsId.Any(y => y == productId)).ToList();
     }
 
-    public async Task<ServiceResult<Keyword>> GetById(int id)
+    public async Task<ServiceResult<ReadKeywordDto>> GetById(int id)
     {
-        var result = await http.GetAsync<Keyword>(Url, $"GetById?id={id}");
+        var result = await http.GetAsync<ReadKeywordDto>(Url, $"GetById?id={id}");
         return Return(result);
     }
 }

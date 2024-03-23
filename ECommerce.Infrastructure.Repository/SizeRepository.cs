@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Infrastructure.Repository;
+﻿using ECommerce.Application.Services.Objects;
+
+namespace ECommerce.Infrastructure.Repository;
 
 public class SizeRepository(SunflowerECommerceDbContext context) : RepositoryBase<Size>(context), ISizeRepository
 {
@@ -7,12 +9,11 @@ public class SizeRepository(SunflowerECommerceDbContext context) : RepositoryBas
         return await context.Sizes.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedList<Size>> Search(PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public PagedList<Size> Search(PaginationParameters paginationParameters)
     {
         return PagedList<Size>.ToPagedList(
-            await context.Sizes.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
-                .OrderBy(on => on.Id).ToListAsync(cancellationToken),
+           context.Sizes.Where(x => x.Name.Contains(paginationParameters.Search)).AsNoTracking()
+                .OrderBy(on => on.Id),
             paginationParameters.PageNumber,
             paginationParameters.PageSize);
     }

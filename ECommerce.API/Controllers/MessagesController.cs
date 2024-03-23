@@ -7,13 +7,12 @@ public class MessagesController(IUnitOfWork unitOfWork, ILogger<MessagesControll
     private readonly IMessageRepository _messageRepository = unitOfWork.GetRepository<MessageRepository, Message>();
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParameters,
-        CancellationToken cancellationToken)
+    public IActionResult Get([FromQuery] PaginationParameters paginationParameters)
     {
         try
         {
             if (string.IsNullOrEmpty(paginationParameters.Search)) paginationParameters.Search = "";
-            var entity = await _messageRepository.Search(paginationParameters, cancellationToken);
+            var entity = _messageRepository.Search(paginationParameters);
             var paginationDetails = new PaginationDetails
             {
                 TotalCount = entity.TotalCount,

@@ -1,4 +1,5 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
+using ECommerce.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Hosting;
@@ -10,21 +11,21 @@ public class CreateModel(IBlogService blogService, IImageService imageService, I
         IBlogCategoryService blogCategoryService)
     : PageModel
 {
-    [BindProperty] public BlogViewModel Blog { get; set; }
+    [BindProperty] public ReadBlogDto? Blog { get; set; }
 
     [BindProperty] public IFormFile? Upload { get; set; }
 
-    [TempData] public string Message { get; set; }
+    [TempData] public string? Message { get; set; }
 
-    [TempData] public string Code { get; set; }
-    public SelectList Tags { get; set; }
-    public SelectList Keywords { get; set; }
-    public SelectList BlogAuthors { get; set; }
-    public List<CategoryParentViewModel> Categories { get; set; }
+    [TempData] public string? Code { get; set; }
+    public SelectList? Tags { get; set; }
+    public SelectList? Keywords { get; set; }
+    public SelectList? BlogAuthors { get; set; }
+    public List<CategoryParentViewModel>? Categories { get; set; }
 
     private async Task Initial()
     {
-        Blog = new BlogViewModel();
+        Blog = new ReadBlogDto();
 
         var tags = (await tagService.GetAll()).ReturnData;
         Tags = new SelectList(tags, nameof(Tag.Id), nameof(Tag.TagText));
@@ -46,7 +47,7 @@ public class CreateModel(IBlogService blogService, IImageService imageService, I
 
     public async Task<IActionResult> OnPost()
     {
-        if (Blog.BlogCategoryId == 0)
+        if (Blog is { BlogCategoryId: 0 })
         {
             Message = "لطفا دسته بندی را انتخاب کنید";
             Code = ServiceCode.Error.ToString();
@@ -64,7 +65,7 @@ public class CreateModel(IBlogService blogService, IImageService imageService, I
 
         if (Upload.FileName.Split('.').Last().ToLower() != "webp")
         {
-            ModelState.AddModelError("IvalidFileExtention", "فرمت فایل پشتیبانی نمی‌شود.");
+            ModelState.AddModelError("InvalidFileExtension", "فرمت فایل پشتیبانی نمی‌شود.");
             await Initial();
             return Page();
         }
@@ -72,23 +73,26 @@ public class CreateModel(IBlogService blogService, IImageService imageService, I
 
         if (ModelState.IsValid)
         {
-            var result = await blogService.Add(Blog);
-            if (result.Code == 0)
+            if (Blog != null)
             {
-                var resultImage = await imageService.Add(Upload, result.ReturnData.Id, "Images/Blogs",
-                    environment.ContentRootPath);
+                var result = await blogService.Add(Blog);
+                if (result.Code == 0)
+                {
+                    var resultImage = await imageService.Add(Upload, result.ReturnData.Id, "Images/Blogs",
+                        environment.ContentRootPath);
 
-                if (resultImage.Code == 0)
-                    return RedirectToPage("/Blogs/Index",
-                        new { area = "Admin", message = result.Message, code = result.Code.ToString() });
-                Message = result.Message;
-                Code = result.Code.ToString();
-                ModelState.AddModelError("", result.Message);
-            }
-            else
-            {
-                Message = result.Message;
-                Code = result.Code.ToString();
+                    if (resultImage.Code == 0)
+                        return RedirectToPage("/Blogs/Index",
+                            new { area = "Admin", message = result.Message, code = result.Code.ToString() });
+                    Message = result.Message;
+                    Code = result.Code.ToString();
+                    if (result.Message != null) ModelState.AddModelError("", result.Message);
+                }
+                else
+                {
+                    Message = result.Message;
+                    Code = result.Code.ToString();
+                }
             }
         }
 

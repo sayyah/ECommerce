@@ -12,27 +12,26 @@
     </div>
     <div class="card-body">
         <!--begin::نمونه-->
-        @if (Model.Message != null)
+        @switch (Model.Code)
         {
-            switch (Model.Code)
-            {
-                case "Error":
-                    <div class="alert alert-danger"> @Model.Message </div>
-                    break;
-                case "Warning":
-                    <div class="alert alert-warning"> @Model.Message </div>
-                    break;
-                case "Info":
-                    <div class="alert alert-info"> @Model.Message </div>
-                    break;
-                default:
-                    <div class="alert alert-success"> @Model.Message </div>
-                    break;
-            }
-
-            Model.Message = null;
-            Model.Code = null;
+            case "Error":
+                <div class="alert alert-danger"> @Model.Message </div>
+                break;
+            case "Warning":
+                <div class="alert alert-warning"> @Model.Message </div>
+                break;
+            case "Info":
+                <div class="alert alert-info"> @Model.Message </div>
+                break;
+            default:
+                <div class="alert alert-success"> @Model.Message </div>
+                break;
         }
+        @{
+            Model.Message = "";
+            Model.Code = "";
+        }
+
         <div class="example mb-10">
             <p>
                 <a asp-page="Create" class="label label-inline label-light-primary font-weight-bold">ایجاد مقاله جدید</a>

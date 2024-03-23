@@ -1,22 +1,22 @@
-﻿using ECommerce.Application.ViewModels;
+﻿using ECommerce.API.DataTransferObject.Blogs.Queries;
 
 namespace ECommerce.Services.IServices;
 
-public interface IBlogService : IEntityService<Blog>
+public interface IBlogService : IEntityService<ReadBlogDto>
 {
-    Task<ServiceResult<List<Blog>>> Filtering(string filter);
-    Task<ServiceResult<List<Blog>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
+    Task<ServiceResult<List<ReadBlogDto>>> Filtering(string filter);
+    Task<ServiceResult<List<ReadBlogDto>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult<Dictionary<int, string>>> LoadDictionary();
-    Task<ServiceResult<BlogViewModel>> Add(BlogViewModel blogViewModel);
-    Task<ServiceResult> Edit(BlogViewModel blogViewModel);
+    Task<ServiceResult<ReadBlogDto>> Add(ReadBlogDto blog);
+    Task<ServiceResult> Edit(ReadBlogDto blog);
     Task<ServiceResult> Delete(int id);
-    Task<ServiceResult<BlogViewModel>> GetById(int id);
+    Task<ServiceResult<ReadBlogDto>> GetById(int id);
 
-    Task<ServiceResult<List<BlogViewModel>>> TopBlogs(string CategoryId = "", string search = "",
+    Task<ServiceResult<List<ReadBlogDto>>> TopBlogs(string CategoryId = "", string search = "",
         int pageNumber = 0, int pageSize = 10, int blogSort = 1);
 
-    Task<ServiceResult<List<BlogViewModel>>> TopBlogsByTagText(string CategoryId = "", string TagText = "",
+    Task<ServiceResult<List<ReadBlogDto>>> TopBlogsByTagText(string CategoryId = "", string TagText = "",
         int pageNumber = 0, int pageSize = 10, int blogSort = 1);
 
-    Task<ServiceResult<BlogDetailsViewModel>> GetByUrl(string blogUrl);
+    Task<ServiceResult<ReadBlogDto>> GetByUrl(string blogUrl);
 }

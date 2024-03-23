@@ -1,13 +1,10 @@
-﻿using ECommerce.Application.ViewModels;
-using ECommerce.Domain.Entities;
-using ECommerce.Domain.Entities.Helper;
-using ECommerce.Domain.Interfaces.Utilities;
+﻿using ECommerce.Domain.Entities;
 
 namespace ECommerce.Domain.Interfaces;
 
 public interface IPriceRepository : IRepositoryBase<Price>
 {
-    Task<PagedList<Price>> Search(PaginationParameters paginationParameters, CancellationToken cancellationToken);
+    PagedList<Price> Search(PaginationParameters paginationParameters);
     void AddAll(IEnumerable<Price> prices);
 
     void EditAll(IEnumerable<Price> prices, int id);

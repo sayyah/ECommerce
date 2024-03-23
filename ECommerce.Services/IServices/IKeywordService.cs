@@ -1,14 +1,16 @@
-﻿namespace ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Keywords;
 
-public interface IKeywordService : IEntityService<Keyword>
+namespace ECommerce.Services.IServices;
+
+public interface IKeywordService : IEntityService<ReadKeywordDto>
 {
-    Task<ServiceResult<List<Keyword>>> GetKeywordsByProductId(int productId);
-    Task<ServiceResult<List<Keyword>>> GetAll();
-    Task<ServiceResult<List<Keyword>>> Filtering(string filter);
-    Task<ServiceResult<List<Keyword>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
+    Task<ServiceResult<List<ReadKeywordDto>>> GetKeywordsByProductId(int productId);
+    Task<ServiceResult<List<ReadKeywordDto>>> GetAll();
+    Task<ServiceResult<List<ReadKeywordDto>>> Filtering(string filter);
+    Task<ServiceResult<List<ReadKeywordDto>>> Load(string search = "", int pageNumber = 0, int pageSize = 10);
     Task<ServiceResult<Dictionary<int, string>>> LoadDictionary();
-    Task<ServiceResult> Add(Keyword keyword);
-    Task<ServiceResult> Edit(Keyword keyword);
+    Task<ServiceResult> Add(ReadKeywordDto keyword);
+    Task<ServiceResult> Edit(ReadKeywordDto keyword);
     Task<ServiceResult> Delete(int id);
-    Task<ServiceResult<Keyword>> GetById(int id);
+    Task<ServiceResult<ReadKeywordDto>> GetById(int id);
 }

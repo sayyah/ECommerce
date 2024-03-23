@@ -1,12 +1,13 @@
-﻿using ECommerce.Services.IServices;
+﻿using ECommerce.API.DataTransferObject.Tags;
+using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Tags;
 
 public class EditModel(ITagService tagService) : PageModel
 {
-    [BindProperty] public Tag Tag { get; set; }
-    [TempData] public string Message { get; set; }
-    [TempData] public string Code { get; set; }
+    [BindProperty] public ReadTagDto? Tag { get; set; }
+    [TempData] public string? Message { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task OnGet(int id)
     {
@@ -34,7 +35,7 @@ public class EditModel(ITagService tagService) : PageModel
                     new { area = "Admin", message = result.Message, code = result.Code.ToString() });
             Message = result.Message;
             Code = result.Code.ToString();
-            ModelState.AddModelError("", result.Message);
+            if (result.Message != null) ModelState.AddModelError("", result.Message);
         }
 
         return Page();

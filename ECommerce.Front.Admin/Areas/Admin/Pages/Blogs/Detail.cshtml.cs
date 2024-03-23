@@ -1,10 +1,11 @@
+using ECommerce.API.DataTransferObject.Blogs.Queries;
 using ECommerce.Services.IServices;
 
 namespace ECommerce.Front.Admin.Areas.Admin.Pages.Blogs;
 
 public class DetailModel(IBlogService blogService) : PageModel
 {
-    public Blog Blog { get; set; }
+    public ReadBlogDto? Blog { get; set; }
 
     public async Task<IActionResult> OnGet(int id)
     {

@@ -4,12 +4,12 @@ namespace ECommerce.Front.Admin.Areas.Admin.Pages.BlogComments;
 
 public class IndexModel(IBlogCommentService blogCommentService) : PageModel
 {
-    public ServiceResult<List<BlogComment>> BlogComments { get; set; }
-    [TempData] public string Message { get; set; }
-    [TempData] public string Code { get; set; }
+    public ServiceResult<List<BlogComment>>? BlogComments { get; set; }
+    [TempData] public string? Message { get; set; }
+    [TempData] public string? Code { get; set; }
 
     public async Task<IActionResult> OnGet(string search = "", int pageNumber = 1, int pageSize = 10,
-        string message = null, string code = null)
+        string message = "", string code = "")
     {
         Message = message;
         Code = code;

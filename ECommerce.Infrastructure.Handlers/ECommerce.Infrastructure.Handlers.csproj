@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ECommerce.Application.Services\ECommerce.Application.Services.csproj" />
+    <ProjectReference Include="..\ECommerce.Domain.Entity\ECommerce.Domain.Entities.csproj" />
+    <ProjectReference Include="..\ECommerce.Domain.Exception\ECommerce.Domain.Exceptions.csproj" />
+    <ProjectReference Include="..\ECommerce.Domain.Interfaces\ECommerce.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\ECommerce.Infrastructure.Repository\ECommerce.Infrastructure.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
